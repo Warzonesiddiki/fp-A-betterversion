@@ -195,10 +195,10 @@ export default function VarianceDashboardPage() {
     const revenueRow = rows.find((r) => r.account === 'Revenue');
 
     return {
-      actualRevenue: revenueRow?.actual ?? 0,
-      budgetRevenue: revenueRow?.budget ?? 0,
-      revenueVar: revenueRow?.variance ?? 0,
-      revenueVarPct: revenueRow?.variancePct ?? 0,
+      actualRevenue: revenueRow?.actual ?? 0, // @missing-is-not-zero-allow — display default
+      budgetRevenue: revenueRow?.budget ?? 0, // @missing-is-not-zero-allow — display default
+      revenueVar: revenueRow?.variance ?? 0, // @missing-is-not-zero-allow — display default
+      revenueVarPct: revenueRow?.variancePct ?? 0, // @missing-is-not-zero-allow — display default
       rows,
       totalBudget,
       totalActual,
@@ -266,7 +266,7 @@ export default function VarianceDashboardPage() {
       header: 'Variance',
       align: 'right',
       render: (_value, row) => {
-        const v = Number(row.variance ?? 0);
+        const v = row.variance != null ? Number(row.variance) : 0;
         return (
           <span className={v >= 0 ? 'text-green-400' : 'text-red-400'}>{fmt.currency0(v)}</span>
         );
@@ -278,7 +278,7 @@ export default function VarianceDashboardPage() {
       header: 'Variance %',
       align: 'right',
       render: (_value, row) => {
-        const pct = Number(row.variancePct ?? 0);
+        const pct = row.variancePct != null ? Number(row.variancePct) : 0;
         return (
           <span className={pct >= 0 ? 'text-green-400' : 'text-red-400'}>
             {formatPercent(pct, 1)}

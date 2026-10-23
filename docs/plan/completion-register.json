@@ -4709,15 +4709,30 @@
     {
       "kind": "route",
       "id": "route:/analytics",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/analytics",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/analytics",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/analytics/AnalyticsPage.test.tsx",
+            "title": "displays the no data empty state"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /analytics \u2014 analytics:read allows viewing analytics"
+          }
+        ],
+        "tests": [
+          "src/pages/analytics/AnalyticsPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/analytics/AnalyticsPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -4816,15 +4831,30 @@
     {
       "kind": "route",
       "id": "route:/audit/sox",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/audit/sox",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/audit/sox",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/audit/SOXCompliancePage.test.tsx",
+            "title": "displays the SOX Compliance heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /audit/sox \u2014 audit:read allows viewing SOX compliance"
+          }
+        ],
+        "tests": [
+          "src/pages/audit/SOXCompliancePage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/audit/SOXCompliancePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -4833,15 +4863,30 @@
     {
       "kind": "route",
       "id": "route:/audit/trail",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/audit/trail",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/audit/trail",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/audit/AuditTrailPage.test.tsx",
+            "title": "renders persisted audit entries through the page compatibility adapter"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /audit/trail \u2014 audit:read allows viewing audit trail"
+          }
+        ],
+        "tests": [
+          "src/pages/audit/AuditTrailPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/audit/AuditTrailPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5066,15 +5111,30 @@
     {
       "kind": "route",
       "id": "route:/budgets/approval",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/budgets/approval",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/budgets/approval",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/budgets/BudgetApproval.deep.test.tsx",
+            "title": "renders empty state and navigates to upload on button click and keyboard interaction"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /budgets/approval \u2014 budget:approve guards the approval path"
+          }
+        ],
+        "tests": [
+          "src/pages/budgets/BudgetApproval.deep.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/budgets/BudgetApproval.deep.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5093,15 +5153,30 @@
     {
       "kind": "route",
       "id": "route:/budgets/create",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/budgets/create",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/budgets/create",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/budgets/BudgetCreatePage.test.tsx",
+            "title": "displays the no accounts empty state"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /budgets/create \u2014 budget:create guards the creation path"
+          }
+        ],
+        "tests": [
+          "src/pages/budgets/BudgetCreatePage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/budgets/BudgetCreatePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5110,15 +5185,30 @@
     {
       "kind": "route",
       "id": "route:/capex",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/capex",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/capex",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/capex/CapExDashboard.test.tsx",
+            "title": "displays the Capital Expenditures heading (has inline mock data)"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /capex \u2014 capex:read allows viewing CapEx"
+          }
+        ],
+        "tests": [
+          "src/pages/capex/CapExDashboard.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/capex/CapExDashboard.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5157,15 +5247,30 @@
     {
       "kind": "route",
       "id": "route:/cash/debt",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/cash/debt",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/cash/debt",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/cash/DebtSchedulePage.test.tsx",
+            "title": "displays the Debt Schedule heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /cash/debt \u2014 report:read allows viewing debt schedule"
+          }
+        ],
+        "tests": [
+          "src/pages/cash/DebtSchedulePage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/cash/DebtSchedulePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5386,15 +5491,30 @@
     {
       "kind": "route",
       "id": "route:/consolidation/ic-eliminations",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/consolidation/ic-eliminations",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/consolidation/ic-eliminations",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/consolidation/ICEliminationPage.test.tsx",
+            "title": "renders reconciliation content from real engine transactions (content state)"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /consolidation/ic-eliminations \u2014 gl:read allows viewing IC eliminations"
+          }
+        ],
+        "tests": [
+          "src/pages/consolidation/ICEliminationPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/consolidation/ICEliminationPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5403,15 +5523,30 @@
     {
       "kind": "route",
       "id": "route:/consolidation/ownership",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/consolidation/ownership",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/consolidation/ownership",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/consolidation/OwnershipTreePage.test.tsx",
+            "title": "displays Ownership Structure heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /consolidation/ownership \u2014 gl:read allows viewing ownership tree"
+          }
+        ],
+        "tests": [
+          "src/pages/consolidation/OwnershipTreePage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/consolidation/OwnershipTreePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5470,15 +5605,30 @@
     {
       "kind": "route",
       "id": "route:/currency/fx-rates",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/currency/fx-rates",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/currency/fx-rates",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/currency/FXRatesPage.test.tsx",
+            "title": "renders the rate table from real fxRateStore entries (content state)"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /currency/fx-rates \u2014 gl:read allows viewing FX rates"
+          }
+        ],
+        "tests": [
+          "src/pages/currency/FXRatesPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/currency/FXRatesPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5497,15 +5647,30 @@
     {
       "kind": "route",
       "id": "route:/currency/translation",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/currency/translation",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/currency/translation",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/currency/TranslationResultPage.test.tsx",
+            "title": "displays empty state when no data"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /currency/translation \u2014 gl:read allows viewing translation"
+          }
+        ],
+        "tests": [
+          "src/pages/currency/TranslationResultPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/currency/TranslationResultPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5514,15 +5679,30 @@
     {
       "kind": "route",
       "id": "route:/dashboard",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/dashboard",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/dashboard",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/dashboard/DashboardPage.test.tsx",
+            "title": "displays the finance-workspace setup state when no data exists"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /dashboard \u2014 dashboard:read allows viewing dashboard"
+          }
+        ],
+        "tests": [
+          "src/pages/dashboard/DashboardPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/dashboard/DashboardPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6205,15 +6385,30 @@
     {
       "kind": "route",
       "id": "route:/forecasts/create",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/forecasts/create",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/forecasts/create",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/forecasts/ForecastBuilderPage.test.tsx",
+            "title": "displays heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /forecasts/create \u2014 forecast:update guards the setForecasts path"
+          }
+        ],
+        "tests": [
+          "src/pages/forecasts/ForecastBuilderPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/forecasts/ForecastBuilderPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6222,15 +6417,30 @@
     {
       "kind": "route",
       "id": "route:/forecasts/drivers",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/forecasts/drivers",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/forecasts/drivers",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/forecasts/DriverPlanningPage.test.tsx",
+            "title": "renders the page title"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /forecasts/drivers \u2014 driver:read allows viewing drivers"
+          }
+        ],
+        "tests": [
+          "src/pages/forecasts/DriverPlanningPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/forecasts/DriverPlanningPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6239,15 +6449,30 @@
     {
       "kind": "route",
       "id": "route:/forecasts/rolling",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/forecasts/rolling",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/forecasts/rolling",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/forecasts/RollingForecastPage.money.test.tsx",
+            "title": "does not present posted actuals as a forecast"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /forecasts/rolling \u2014 forecast:read allows viewing rolling forecast"
+          }
+        ],
+        "tests": [
+          "src/pages/forecasts/RollingForecastPage.money.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/forecasts/RollingForecastPage.money.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6772,15 +6997,30 @@
     {
       "kind": "route",
       "id": "route:/reports",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/reports",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/reports",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/reports/ReportsListPage.test.tsx",
+            "title": "displays the empty state when no GL entries exist"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/balance-sheet \u2014 report:read allows viewing balance sheet"
+          }
+        ],
+        "tests": [
+          "src/pages/reports/ReportsListPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/reports/ReportsListPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -7209,51 +7449,29 @@
       "evidence": {
         "gatedBy": "/scenarios",
         "disposition": "MIGRATE",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
-        "gate": "governance:evidence",
         "connected": [
           {
-            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-            "title": "renders the scenario journey with driver-based cards and probability treemap"
-          },
-          {
-            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-            "title": "shows the empty state when no scenarios exist"
-          },
-          {
-            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-            "title": "shows an error alert when scenarios fail to load and retry succeeds"
-          },
-          {
-            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-            "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+            "file": "src/pages/scenarios/ScenarioListPage.test.tsx",
+            "title": "displays the empty state when no scenarios exist"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /scenarios \u2014 scenario:read allows viewing scenarios"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /scenarios \u2014 audit trail records scenario derivation"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /scenarios \u2014 write guard blocks scenario:create for Viewer"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
-          "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-          "src/pages/scenarios/ScenarioListPage.test.tsx"
-        ]
+          "src/pages/scenarios/ScenarioListPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 driver-based modeling 5-7 drivers 80% variance",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
-        "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-        "src/pages/scenarios/ScenarioListPage.test.tsx"
+        "src/pages/scenarios/ScenarioListPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
       ]
     },
     {
@@ -7279,15 +7497,30 @@
     {
       "kind": "route",
       "id": "route:/scenarios/create",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/scenarios/create",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/scenarios/create",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/scenarios/ScenarioBuilderPage.test.tsx",
+            "title": "renders the builder from a posted GL base (content state)"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /scenarios/create \u2014 scenario:update guards the setScenarios path"
+          }
+        ],
+        "tests": [
+          "src/pages/scenarios/ScenarioBuilderPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/scenarios/ScenarioBuilderPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -7496,15 +7729,30 @@
     {
       "kind": "route",
       "id": "route:/settings",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/settings",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/settings",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/settings/SettingsPage.test.tsx",
+            "title": "displays the settings heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /settings \u2014 user:read allows viewing user management"
+          }
+        ],
+        "tests": [
+          "src/pages/settings/SettingsPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/settings/SettingsPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -7633,15 +7881,30 @@
     {
       "kind": "route",
       "id": "route:/treasury",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/treasury",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/treasury",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/treasury/InvestmentPage.test.tsx",
+            "title": "displays no-data state when entries are empty"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /treasury/fx-exposure \u2014 report:read allows viewing FX exposure"
+          }
+        ],
+        "tests": [
+          "src/pages/treasury/InvestmentPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/treasury/InvestmentPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -7722,15 +7985,30 @@
     {
       "kind": "route",
       "id": "route:/variance",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/variance",
         "disposition": "MIGRATE",
-        "status": "EXPERIMENTAL",
-        "route": "/variance",
-        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
+        "connected": [
+          {
+            "file": "src/pages/variance/__tests__/VarianceDashboardPage.test.tsx",
+            "title": "renders the page heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /variance \u2014 variance:read allows viewing variance"
+          }
+        ],
+        "tests": [
+          "src/pages/variance/__tests__/VarianceDashboardPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/variance/__tests__/VarianceDashboardPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"

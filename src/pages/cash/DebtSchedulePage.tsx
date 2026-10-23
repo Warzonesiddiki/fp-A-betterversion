@@ -85,8 +85,8 @@ export default function DebtSchedulePage() {
     principal: row.principal,
     rate: row.rate * 100,
     maturity: addMonths(row.startDate, row.termMonths),
-    monthlyPayment: result.schedule[0]?.payment ?? 0,
-    remaining: result.schedule[result.schedule.length - 1]?.endingBalance ?? 0,
+    monthlyPayment: result.schedule[0]?.payment ?? null,
+    remaining: result.schedule[result.schedule.length - 1]?.endingBalance ?? null,
     status: row.status,
   }));
 

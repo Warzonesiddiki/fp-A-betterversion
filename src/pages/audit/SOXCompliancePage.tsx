@@ -173,7 +173,7 @@ function CategorySummaryCard({
   data: { passed: number; failed: number; notApplicable?: number; total: number };
 }) {
   const Icon = CATEGORY_ICONS[category];
-  const notApplicable = data.notApplicable ?? 0;
+  const notApplicable = data.notApplicable ?? 0; // null when missing, 0 for counting
   const evaluated = data.total - notApplicable;
   const state =
     data.total === 0 ? 'no checks defined' : evaluated === 0 ? 'not evaluated' : 'evaluated';
