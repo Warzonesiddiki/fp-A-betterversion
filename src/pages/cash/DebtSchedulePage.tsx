@@ -342,7 +342,7 @@ export default function DebtSchedulePage() {
         <KPIValue
           label="DSCR"
           value={formatPercent(dscr)}
-          trend={dscr ?? 0 >= 1.25 ? 'up' : 'down'}
+          trend={(dscr ?? 0 >= 1.25) ? 'up' : 'down'}
           changeLabel="Target: 1.25x"
         />
       </div>

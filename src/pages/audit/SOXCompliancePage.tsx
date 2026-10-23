@@ -596,7 +596,7 @@ export default function SOXCompliancePage() {
                           className="text-2xl font-bold text-[var(--text-muted)]"
                           data-testid="sox-not-evaluated-count"
                         >
-                          {report.summary.notApplicable ?? "n/a"}
+                          {report.summary.notApplicable ?? 'n/a'}
                         </p>
                         <p className="text-xs text-[var(--text-muted)]">Not evaluated</p>
                       </div>

@@ -73,54 +73,54 @@ export function TourOverlay() {
       />
 
       <div
-          key={currentStepIndex}
-          className="absolute pointer-events-auto bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-6 w-80 animate-in fade-in slide-in-from-bottom-2 duration-200"
-          style={{
-            top:
-              step.placement === 'bottom'
-                ? coords.top + coords.height + 12
-                : step.placement === 'top'
-                  ? coords.top - 200
-                  : coords.top,
-            left: coords.left + coords.width / 2 - 160,
-          }}
-        >
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="font-bold text-white">{step.title}</h3>
-            <button
-              onClick={stopTour}
-              aria-label="Close tour"
-              className="text-[var(--text-muted)] hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-            >
-              <X className="h-4 w-4" />
-            </button>
+        key={currentStepIndex}
+        className="absolute pointer-events-auto bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-6 w-80 animate-in fade-in slide-in-from-bottom-2 duration-200"
+        style={{
+          top:
+            step.placement === 'bottom'
+              ? coords.top + coords.height + 12
+              : step.placement === 'top'
+                ? coords.top - 200
+                : coords.top,
+          left: coords.left + coords.width / 2 - 160,
+        }}
+      >
+        <div className="flex justify-between items-start mb-4">
+          <h3 className="font-bold text-white">{step.title}</h3>
+          <button
+            onClick={stopTour}
+            aria-label="Close tour"
+            className="text-[var(--text-muted)] hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <p className="text-sm text-slate-400 mb-6 leading-relaxed">{step.content}</p>
+
+        <div className="flex items-center justify-between">
+          <div className="flex gap-1">
+            {steps.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1 w-4 rounded-full transition-colors ${i === currentStepIndex ? 'bg-blue-500' : 'bg-slate-800'}`}
+              />
+            ))}
           </div>
 
-          <p className="text-sm text-slate-400 mb-6 leading-relaxed">{step.content}</p>
-
-          <div className="flex items-center justify-between">
-            <div className="flex gap-1">
-              {steps.map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-1 w-4 rounded-full transition-colors ${i === currentStepIndex ? 'bg-blue-500' : 'bg-slate-800'}`}
-                />
-              ))}
-            </div>
-
-            <div className="flex gap-2">
-              {currentStepIndex > 0 && (
-                <Button variant="ghost" size="sm" onClick={prevStep}>
-                  <ChevronLeft className="h-4 w-4 mr-1" /> Back
-                </Button>
-              )}
-              <Button size="sm" onClick={nextStep}>
-                {currentStepIndex === steps.length - 1 ? 'Finish' : 'Next'}
-                <ChevronRight className="h-4 w-4 ml-1" />
+          <div className="flex gap-2">
+            {currentStepIndex > 0 && (
+              <Button variant="ghost" size="sm" onClick={prevStep}>
+                <ChevronLeft className="h-4 w-4 mr-1" /> Back
               </Button>
-            </div>
+            )}
+            <Button size="sm" onClick={nextStep}>
+              {currentStepIndex === steps.length - 1 ? 'Finish' : 'Next'}
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
           </div>
         </div>
+      </div>
     </div>
   );
 }

@@ -226,7 +226,9 @@ export class ExcelImportEngine {
 
       worksheet.eachRow((row: any, rowNumber: number) => {
         if (rowNumber === 1) {
-          headers = (Array.isArray(row.values) ? row.values : []).slice(1).map((v: any) => String(v));
+          headers = (Array.isArray(row.values) ? row.values : [])
+            .slice(1)
+            .map((v: any) => String(v));
           return;
         }
 

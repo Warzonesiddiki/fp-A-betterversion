@@ -2,10 +2,9 @@ import type { ExactConsolidationResult } from '@/engines/ConsolidationEngine';
 
 async function loadExcelJS() {
   const mod = await import('exceljs');
-  return (mod.default ?? mod) as any;
+  return (mod.default ?? mod) as unknown;
 }
 
-type ExcelJS = any;
 import {
   addMoney,
   compareMoney,
@@ -110,7 +109,7 @@ function moneyNum(value: string): number {
 
 const ACCOUNTING_NUM_FMT = '#,##0.00;(#,##0.00);"0.00"';
 
-function makeFormulaCell(formula: string, exactResult: string): any {
+function makeFormulaCell(formula: string, exactResult: string): unknown {
   return {
     formula: assertSafeSpreadsheetFormula(formula),
     result: moneyNum(exactResult),
@@ -482,14 +481,14 @@ export async function inspectFormulaWorkbookBytes(
   ) as ArrayBuffer;
   await workbook.xlsx.load(safeArrayBuffer);
 
-  const sheetNames = workbook.worksheets.map((ws: any) => ws.name);
+  const sheetNames = workbook.worksheets.map((ws: unknown) => ws.name);
   const formulaCells: FormulaCellRecord[] = [];
   const keyedMetrics = new Map<string, string>();
   const sheetRows: Record<string, (string | number | null)[][]> = {};
 
   for (const ws of workbook.worksheets) {
     const rows: (string | number | null)[][] = [];
-    ws.eachRow({ includeEmpty: false }, (row: any) => {
+    ws.eachRow({ includeEmpty: false }, (row: unknown) => {
       const rowKey = String(row.getCell(1).value ?? '').trim();
       const rowVals: (string | number | null)[] = [];
       const colLimit = Math.max(row.cellCount, row.actualCellCount);
@@ -514,7 +513,7 @@ export async function inspectFormulaWorkbookBytes(
       }
       rows.push(rowVals);
 
-      row.eachCell((cell: any) => {
+      row.eachCell((cell: unknown) => {
         const val = cell.value;
         if (val && typeof val === 'object' && 'formula' in val) {
           const formulaObj = val as { formula?: string; result?: number | string };

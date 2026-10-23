@@ -149,31 +149,44 @@ export default function DataFlowMapPage() {
           <div className="space-y-4" role="img" aria-label="Data flow from sources to pages">
             <div className="flex flex-wrap gap-2">
               {nodes.slice(0, 4).map((n) => (
-                <div key={n.name} className="px-3 py-1 rounded bg-[var(--accent-primary)] text-white text-xs">
+                <div
+                  key={n.name}
+                  className="px-3 py-1 rounded bg-[var(--accent-primary)] text-white text-xs"
+                >
                   {n.name}
                 </div>
               ))}
               <span className="text-[var(--text-muted)]">→</span>
               {nodes.slice(4, 11).map((n) => (
-                <div key={n.name} className="px-3 py-1 rounded bg-[var(--positive)] text-white text-xs">
+                <div
+                  key={n.name}
+                  className="px-3 py-1 rounded bg-[var(--positive)] text-white text-xs"
+                >
                   {n.name}
                 </div>
               ))}
               <span className="text-[var(--text-muted)]">→</span>
               {nodes.slice(11, 17).map((n) => (
-                <div key={n.name} className="px-3 py-1 rounded bg-[var(--financial-pending)] text-black text-xs">
+                <div
+                  key={n.name}
+                  className="px-3 py-1 rounded bg-[var(--financial-pending)] text-black text-xs"
+                >
                   {n.name}
                 </div>
               ))}
               <span className="text-[var(--text-muted)]">→</span>
               {nodes.slice(17, 25).map((n) => (
-                <div key={n.name} className="px-3 py-1 rounded bg-[var(--financial-calculated)] text-white text-xs">
+                <div
+                  key={n.name}
+                  className="px-3 py-1 rounded bg-[var(--financial-calculated)] text-white text-xs"
+                >
                   {n.name}
                 </div>
               ))}
             </div>
             <div className="text-xs text-[var(--text-muted)]">
-              {links.length} flow connections: Sources → ImportEngine → glStore → FormulaEngine → Stores → Pages
+              {links.length} flow connections: Sources → ImportEngine → glStore → FormulaEngine →
+              Stores → Pages
             </div>
           </div>
         </CardContent>

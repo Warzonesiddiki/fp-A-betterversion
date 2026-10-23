@@ -345,7 +345,7 @@ export default function VarianceDashboardPage() {
           label="Revenue Variance"
           value={fmt.currency0(data.revenueVar)}
           icon={
-            data.revenueVar ?? 0 >= 0 ? (
+            (data.revenueVar ?? 0 >= 0) ? (
               <TrendingUp className="h-4 w-4" />
             ) : (
               <TrendingDown className="h-4 w-4" />
@@ -356,7 +356,7 @@ export default function VarianceDashboardPage() {
           label="Variance %"
           value={`${formatPercent(data.revenueVarPct, 1)}`}
           icon={
-            data.revenueVarPct ?? 0 >= 0 ? (
+            (data.revenueVarPct ?? 0 >= 0) ? (
               <TrendingUp className="h-4 w-4" />
             ) : (
               <TrendingDown className="h-4 w-4" />

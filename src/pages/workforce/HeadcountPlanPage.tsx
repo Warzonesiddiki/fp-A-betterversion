@@ -89,7 +89,9 @@ export default function HeadcountPlanPage() {
   if (error) {
     return (
       <div className="p-12 text-center" role="alert" aria-live="assertive">
-        <h2 className="text-xl font-semibold mb-2 text-[var(--negative)]">Failed to load workforce data</h2>
+        <h2 className="text-xl font-semibold mb-2 text-[var(--negative)]">
+          Failed to load workforce data
+        </h2>
         <p className="text-[var(--text-muted)] mb-6">{error}</p>
         <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>

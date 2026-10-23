@@ -78,6 +78,7 @@ repository's own incidents and decisions.
 | [`accessibility-wcag`](accessibility-wcag.md) | Use for any interactive UI change: keyboard reachability, focus, contrast, live regions, motion. Accessibility is a gate here, not a polish pass. | product-ui |
 | [`ag-grid-modular-optimization`](ag-grid-modular-optimization.md) | Use when ag-grid bundle is large or DataGrid is changed: cherry-pick modules, register via ModuleRegistry, keep ValidationModule dev-only. | product-ui |
 | [`ai-features-safety`](ai-features-safety.md) | Use for any AI-assisted surface: local-only, grounded in computed facts, off by default, and never a source of financial values. | product-ui |
+| [`bundle-optimization-methodology`](bundle-optimization-methodology.md) | Use when bundle size is near limit or needs reduction. Proven methods: vendor chunking, lazy loading, tree-shaking, custom chart components, stub optional deps. | product-ui |
 | [`charts-and-data-display`](charts-and-data-display.md) | Use when a chart, sparkline, KPI tile or heatmap shows a number: the picture must not imply something the data does not say. | product-ui |
 | [`excel-and-report-exports`](excel-and-report-exports.md) | Use when a report leaves the app (Excel, CSV, PDF, PPTX): the exported number must tie back to the screen, and the file must be safe to open. | product-ui |
 | [`forms-and-validation`](forms-and-validation.md) | Use for any input the user types: validate once, in one place, with messages that say what to do. Bad input must not reach the store. | product-ui |

@@ -12,7 +12,15 @@ import HeadcountPlanPage from './HeadcountPlanPage';
 
 // Mock workforce store
 const mockEmployees = [
-  { id: '1', name: 'Alice', department: 'Engineering', position: 'Engineer', salary: 100000, startDate: '2023-01-01', status: 'active' as const },
+  {
+    id: '1',
+    name: 'Alice',
+    department: 'Engineering',
+    position: 'Engineer',
+    salary: 100000,
+    startDate: '2023-01-01',
+    status: 'active' as const,
+  },
 ];
 
 vi.mock('@/store/workforceStore', () => ({

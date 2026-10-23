@@ -28,7 +28,6 @@ import {
 // Money adoption: financial calculations use Money primitive via toDecimal
 const _moneyAdoptionMarker = toDecimal(0);
 
-
 const CURRENCY_PLACES = 2;
 
 export interface BondResult {

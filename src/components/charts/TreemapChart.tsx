@@ -64,7 +64,9 @@ export function TreemapChart({
             <span className="text-center">
               {d.name}
               <br />
-              <span className="font-normal">{formatValue ? formatValue(d.size) : d.size.toLocaleString()}</span>
+              <span className="font-normal">
+                {formatValue ? formatValue(d.size) : d.size.toLocaleString()}
+              </span>
             </span>
           </div>
         );
