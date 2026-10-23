@@ -56,11 +56,12 @@ function factsFromLineItems(lineItems: LineItem[]): VerifiedFact[] {
       facts.push({ label: `${item.name} priorYear`, value: item.priorYear, kind: 'money' });
     }
   }
-  const totalActual = lineItems.reduce((s, i) => s + i.actual, 0);
-  const totalBudget = lineItems.reduce((s, i) => s + i.budget, 0);
+  const totalActual = sumMoney(lineItems.map((i) => i.actual)).toNumber();
+  const totalBudget = sumMoney(lineItems.map((i) => i.budget)).toNumber();
+  const totalVariance = subtractMoney(totalActual, totalBudget).toNumber();
   facts.push({ label: 'total actual', value: totalActual, kind: 'money' });
   facts.push({ label: 'total budget', value: totalBudget, kind: 'money' });
-  facts.push({ label: 'total variance', value: totalActual - totalBudget, kind: 'money' });
+  facts.push({ label: 'total variance', value: totalVariance, kind: 'money' });
   return facts;
 }
 
