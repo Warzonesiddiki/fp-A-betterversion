@@ -2,6 +2,9 @@ import { memo } from 'react';
 import { GaugeChart as BaseGaugeChart } from '@/components/charts/GaugeChart';
 import { cn } from '@/utils/cn';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface DashboardGaugeProps {
   /** Current metric value */

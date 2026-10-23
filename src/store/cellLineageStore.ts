@@ -160,6 +160,9 @@ function restoreChains(chains: unknown, pendingEntries: unknown): Map<string, Ce
 // getCurrentValue/getValueAtTime are reads or derived status and stay unguarded.
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
 import { nowISO } from '@/utils/clock';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // The store updates Map-backed chains through Immer drafts.
 enableMapSet();

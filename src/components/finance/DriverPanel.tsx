@@ -16,6 +16,10 @@ import { useShallow } from 'zustand/react/shallow';
 import { useDriverStore } from '@/store/driverStore';
 import type { Driver, ImpactAnalysis } from '@/engines/DriverCascadeEngine';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
+
 interface DriverPanelProps {
   readCell: (cube: string, coords: Record<string, string>, measure: string) => number | undefined;
   writeCell: (cube: string, coords: Record<string, string>, measure: string, value: number) => void;

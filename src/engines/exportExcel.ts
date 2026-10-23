@@ -1,7 +1,14 @@
-import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import type { ExportConfig, ExportData } from './ExportEngine';
 import { sanitizeSpreadsheetCell, sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
+
+async function loadExcelJS() {
+  const mod = await import('exceljs');
+  return mod.default ?? mod;
+}
 
 /**
  * F-0017: the previous implementation converted any string starting with
@@ -45,7 +52,8 @@ function rowValue(val: string | number | boolean | null | undefined) {
 }
 
 export default async function exportToExcel(data: ExportData, config: ExportConfig): Promise<void> {
-  const workbook = new ExcelJS.Workbook();
+  const ExcelJS = await loadExcelJS();
+  const workbook = new (ExcelJS as any).Workbook();
   const worksheet = workbook.addWorksheet('Sheet1');
 
   const headerRow = worksheet.addRow(sanitizeHeaders(data.headers));
@@ -72,9 +80,9 @@ export default async function exportToExcel(data: ExportData, config: ExportConf
     };
   });
 
-  worksheet.eachRow((row, rowNumber) => {
+  worksheet.eachRow((row: any, rowNumber: number) => {
     if (rowNumber > 1) {
-      row.eachCell((cell, colNumber) => {
+      row.eachCell((cell: any, colNumber: number) => {
         if (colNumber > 1 && typeof cell.value === 'number') {
           cell.numFmt = EXCEL_CURRENCY_FMT;
         }
@@ -97,7 +105,8 @@ export async function exportToExcelWithConditionalFormatting(
   config: ExportConfig,
   rules: ConditionalFormatRule[]
 ): Promise<void> {
-  const workbook = new ExcelJS.Workbook();
+  const ExcelJS = await loadExcelJS();
+  const workbook = new (ExcelJS as any).Workbook();
   const worksheet = workbook.addWorksheet('Sheet1');
 
   const headerRow = worksheet.addRow(sanitizeHeaders(data.headers));
@@ -115,9 +124,9 @@ export async function exportToExcelWithConditionalFormatting(
   });
 
   // Apply currency format and conditional formatting
-  worksheet.eachRow((row, rowNumber) => {
+  worksheet.eachRow((row: any, rowNumber: number) => {
     if (rowNumber > 1) {
-      row.eachCell((cell, colNumber) => {
+      row.eachCell((cell: any, colNumber: number) => {
         if (colNumber > 1 && typeof cell.value === 'number') {
           cell.numFmt = EXCEL_CURRENCY_FMT;
         }

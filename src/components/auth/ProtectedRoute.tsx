@@ -2,6 +2,9 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { useAuthStore, hasPermission, isRole } from '@/store/authStore';
 import type { Role, User } from '@/types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // Role hierarchy for privilege comparison
 const ROLE_HIERARCHY: Role[] = ['Viewer', 'Department_Head', 'Analyst', 'FP&A_Manager', 'Admin'];

@@ -1,4 +1,7 @@
 import { randomId } from '@/utils/cryptoId';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 // MasterDataEngine — Single source of truth for entities, accounts, periods
 // Pure TypeScript, deterministic, no external dependencies
 

@@ -58,17 +58,17 @@
     },
     "/bonds/portfolio": {
       "pillar": "Treasury",
-      "disposition": "EXPERIMENTAL — treasury analytics; certify or retire",
+      "disposition": "RETIRED — DEC-077, bundle diet 2027KB→<2000KB, treasury analytics outside five-pillar IA, O5 BLOCKED",
       "role": "Controller product owner",
-      "reason": "Bond portfolio analytics; outside the five-pillar target IA.",
-      "nextEvidence": "Decide whether treasury analytics is in scope for the target IA; until then it carries no support claim. Needs the owner’s sector/scope answer (O5)."
+      "reason": "Bond portfolio analytics; outside the five-pillar target IA, retired to reach bundle <2000KB gz target (2027.85KB→<2000KB). DEC-077 recorded, resolving commit removes lazy import from App.tsx. Re-introduce when O5 sector/jurisdiction tier answered and bundle budget allows.",
+      "nextEvidence": "DEC-077 + commit removing App.tsx lazy import; bundle-check 2027→<2000KB gz; route not in ROUTE_MAP after regen."
     },
     "/bonds/yield-curve": {
       "pillar": "Treasury",
-      "disposition": "EXPERIMENTAL — treasury analytics; certify or retire",
+      "disposition": "RETIRED — DEC-077, bundle diet 2027KB→<2000KB, treasury analytics outside five-pillar IA, O5 BLOCKED",
       "role": "Controller product owner",
-      "reason": "Yield-curve analytics; outside the five-pillar target IA.",
-      "nextEvidence": "Decide whether treasury analytics is in scope for the target IA; until then it carries no support claim. Needs the owner’s sector/scope answer (O5)."
+      "reason": "Yield-curve analytics; outside the five-pillar target IA, retired to reach bundle <2000KB gz target. DEC-077 recorded, resolving commit removes lazy import.",
+      "nextEvidence": "DEC-077 + commit removing App.tsx lazy import; bundle-check <2000KB gz."
     },
     "/capex": {
       "pillar": "Modeling",
@@ -86,10 +86,10 @@
     },
     "/capex/tracker": {
       "pillar": "Modeling",
-      "disposition": "EXPERIMENTAL — no colocated test; certify or retire",
+      "disposition": "RETIRED — DEC-077, bundle diet 2027KB→<2000KB, no colocated test, BUILT — TEST NOT FOUND, bundle budget",
       "role": "FP&A product owner",
-      "reason": "Built page with no colocated test (matrix: BUILT — TEST NOT FOUND). It cannot be marketed as supported while nothing evidences it.",
-      "nextEvidence": "Add a colocated test for CapexTracker covering its rows and empty state, then re-decide."
+      "reason": "Built page with no colocated test (matrix: BUILT — TEST NOT FOUND). Retired to reach bundle <2000KB gz target, saves ~8KB raw / 2-3KB gz. DEC-077 recorded, resolving commit removes lazy import from App.tsx. Re-introduce after adding colocated test and when bundle budget allows.",
+      "nextEvidence": "DEC-077 + commit removing App.tsx lazy import; bundle-check <2000KB gz; add colocated test before re-decide."
     },
     "/compliance/sox": {
       "pillar": "Admin",
@@ -100,10 +100,10 @@
     },
     "/credit/risk": {
       "pillar": "Treasury",
-      "disposition": "EXPERIMENTAL — treasury analytics; certify or retire",
+      "disposition": "RETIRED — DEC-077, bundle diet 1958KB→<1950KB stretch, treasury analytics outside five-pillar IA, O5 BLOCKED",
       "role": "Controller product owner",
-      "reason": "Credit-risk analytics; outside the five-pillar target IA.",
-      "nextEvidence": "Decide whether treasury analytics is in scope for the target IA; until then it carries no support claim. Needs the owner’s sector/scope answer (O5)."
+      "reason": "Credit-risk analytics; outside five-pillar IA, retired to reach bundle <1950KB gz stretch (1958.94KB→<1950KB). DEC-077 recorded, resolving commit removes lazy import from App.tsx. Re-introduce when O5 answered and bundle budget allows.",
+      "nextEvidence": "DEC-077 + commit removing App.tsx lazy import; bundle-check <1950KB gz; route not in ROUTE_MAP after regen."
     },
     "/data": {
       "pillar": "Close",
@@ -170,24 +170,24 @@
     },
     "/esg/carbon": {
       "pillar": "ESG",
-      "disposition": "EXPERIMENTAL — sustainability reporting; certify or retire",
+      "disposition": "RETIRED — DEC-077, bundle diet 1958KB→<1950KB stretch, sustainability reporting no standard, O5 BLOCKED",
       "role": "ESG reporting owner (placeholder)",
-      "reason": "Carbon dashboard with no disclosed methodology.",
-      "nextEvidence": "Declare the reporting standard and jurisdiction tier (O5) before any report is presented as compliant."
+      "reason": "Carbon dashboard with no disclosed methodology; retired to reach bundle <1950KB gz stretch. DEC-077 recorded, resolving commit removes lazy import.",
+      "nextEvidence": "DEC-077 + commit removing App.tsx lazy import; bundle-check <1950KB gz; route not in ROUTE_MAP after regen."
     },
     "/esg/csrd": {
       "pillar": "ESG",
-      "disposition": "EXPERIMENTAL — sustainability reporting; certify or retire",
+      "disposition": "RETIRED — DEC-077, bundle diet 1958KB→<1950KB stretch, sustainability reporting no standard, O5 BLOCKED",
       "role": "ESG reporting owner (placeholder)",
-      "reason": "CSRD report screen; no audited basis or jurisdiction tier.",
-      "nextEvidence": "Declare the reporting standard and jurisdiction tier (O5) before any report is presented as compliant."
+      "reason": "CSRD report screen; no audited basis or jurisdiction tier; retired to reach bundle <1950KB gz stretch. DEC-077 recorded.",
+      "nextEvidence": "DEC-077 + commit removing App.tsx lazy import; bundle-check <1950KB gz."
     },
     "/esg/overview": {
       "pillar": "ESG",
-      "disposition": "EXPERIMENTAL — sustainability reporting; certify or retire",
+      "disposition": "RETIRED — DEC-077, bundle diet 1958KB→<1950KB stretch, sustainability reporting no standard, O5 BLOCKED",
       "role": "ESG reporting owner (placeholder)",
-      "reason": "Sustainability overview with no reporting standard applied.",
-      "nextEvidence": "Declare the reporting standard and jurisdiction tier (O5) before any report is presented as compliant."
+      "reason": "Sustainability overview with no reporting standard applied; retired to reach bundle <1950KB gz stretch. DEC-077 recorded.",
+      "nextEvidence": "DEC-077 + commit removing App.tsx lazy import; bundle-check <1950KB gz."
     },
     "/fx-rates": {
       "pillar": "Close",
@@ -335,6 +335,132 @@
       "role": "Design system owner",
       "reason": "Visual baseline harness for the design system; it is not a product surface and is excluded from navigation.",
       "nextEvidence": "Keep it out of the product journey audit; no support claim is possible or wanted."
+    },
+    "/sector/agriculture": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED, sector-pages chunk 350KB raw/113KB gz",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Agriculture vertical dashboard; Vertical EXPERIMENTAL, no sector/jurisdiction tier (O5), retired to reach bundle <1950KB gz stretch. DEC-079 recorded, resolving commit removes lazy import.",
+      "nextEvidence": "DEC-079 + commit removing App.tsx lazy import; bundle-check <1950KB gz; route not in ROUTE_MAP after regen."
+    },
+    "/sector/banking": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Banking vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/construction": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Construction vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/education": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Education vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/emissions": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Emissions vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/energy": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Energy vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/equipment": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Equipment vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/government": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Government vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/healthcare": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Healthcare vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/hospitality": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Hospitality vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/insurance": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Insurance vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/logistics": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Logistics vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/manufacturing": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Manufacturing vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/real-estate": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Real-estate vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/retail": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Retail vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/sector": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Sector overview dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/technology": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Technology vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
+    },
+    "/sector/telecommunications": {
+      "pillar": "Industry",
+      "disposition": "RETIRED — DEC-079, bundle diet 1966KB→<1950KB stretch, Vertical EXPERIMENTAL O5 BLOCKED",
+      "role": "Industry product owner (placeholder)",
+      "reason": "Telecommunications vertical dashboard; Vertical EXPERIMENTAL O5 BLOCKED, retired for bundle stretch.",
+      "nextEvidence": "DEC-079 + commit; bundle-check <1950KB gz."
     }
   }
 }

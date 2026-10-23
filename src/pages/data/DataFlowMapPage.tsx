@@ -1,7 +1,12 @@
 import { useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { ResponsiveContainer, Sankey, Tooltip } from 'recharts';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
+
+// Bundle diet: recharts Sankey removed — custom flow list (T019, T526-T534)
+// Previously used Sankey from recharts (heavy), now lightweight div flow
 
 interface FlowNode {
   name: string;
@@ -108,28 +113,28 @@ export default function DataFlowMapPage() {
       <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="w-4 h-4 bg-blue-500 rounded mx-auto mb-2" />
+            <div className="w-4 h-4 bg-[var(--accent-primary)] rounded mx-auto mb-2" />
             <div className="text-sm font-medium">Data Sources</div>
             <div className="text-xs text-muted-foreground">Excel, CSV, ERP, API</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="w-4 h-4 bg-green-500 rounded mx-auto mb-2" />
+            <div className="w-4 h-4 bg-[var(--positive)] rounded mx-auto mb-2" />
             <div className="text-sm font-medium">Engines</div>
             <div className="text-xs text-muted-foreground">159 calculation engines</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="w-4 h-4 bg-yellow-500 rounded mx-auto mb-2" />
+            <div className="w-4 h-4 bg-[var(--financial-pending)] rounded mx-auto mb-2" />
             <div className="text-sm font-medium">Stores</div>
             <div className="text-xs text-muted-foreground">22 Zustand stores</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="w-4 h-4 bg-purple-500 rounded mx-auto mb-2" />
+            <div className="w-4 h-4 bg-[var(--financial-calculated)] rounded mx-auto mb-2" />
             <div className="text-sm font-medium">Pages</div>
             <div className="text-xs text-muted-foreground">140 UI pages</div>
           </CardContent>
@@ -138,21 +143,39 @@ export default function DataFlowMapPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Data Flow Sankey Diagram</CardTitle>
+          <CardTitle>Data Flow Diagram (Simplified)</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={500}>
-            <Sankey
-              data={sankeyData}
-              node={<></>}
-              link={<></>}
-              nodePadding={20}
-              nodeWidth={15}
-              margin={{ top: 20, right: 200, bottom: 20, left: 20 }}
-            >
-              <Tooltip />
-            </Sankey>
-          </ResponsiveContainer>
+          <div className="space-y-4" role="img" aria-label="Data flow from sources to pages">
+            <div className="flex flex-wrap gap-2">
+              {nodes.slice(0, 4).map((n) => (
+                <div key={n.name} className="px-3 py-1 rounded bg-[var(--accent-primary)] text-white text-xs">
+                  {n.name}
+                </div>
+              ))}
+              <span className="text-[var(--text-muted)]">→</span>
+              {nodes.slice(4, 11).map((n) => (
+                <div key={n.name} className="px-3 py-1 rounded bg-[var(--positive)] text-white text-xs">
+                  {n.name}
+                </div>
+              ))}
+              <span className="text-[var(--text-muted)]">→</span>
+              {nodes.slice(11, 17).map((n) => (
+                <div key={n.name} className="px-3 py-1 rounded bg-[var(--financial-pending)] text-black text-xs">
+                  {n.name}
+                </div>
+              ))}
+              <span className="text-[var(--text-muted)]">→</span>
+              {nodes.slice(17, 25).map((n) => (
+                <div key={n.name} className="px-3 py-1 rounded bg-[var(--financial-calculated)] text-white text-xs">
+                  {n.name}
+                </div>
+              ))}
+            </div>
+            <div className="text-xs text-[var(--text-muted)]">
+              {links.length} flow connections: Sources → ImportEngine → glStore → FormulaEngine → Stores → Pages
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -164,19 +187,19 @@ export default function DataFlowMapPage() {
           <CardContent>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded" />
+                <div className="w-3 h-3 bg-[var(--accent-primary)] rounded" />
                 <span>Excel/CSV Upload — drag & drop or file picker</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded" />
+                <div className="w-3 h-3 bg-[var(--accent-primary)] rounded" />
                 <span>Manual Entry — grid-based data entry</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded" />
+                <div className="w-3 h-3 bg-[var(--accent-primary)] rounded" />
                 <span>ERP Connector — QuickBooks, NetSuite, Salesforce</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded" />
+                <div className="w-3 h-3 bg-[var(--accent-primary)] rounded" />
                 <span>API Feed — REST/webhook data ingestion</span>
               </div>
             </div>

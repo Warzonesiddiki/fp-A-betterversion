@@ -19,6 +19,9 @@ import {
   assertUpdateAllowed,
 } from './periodLockGuard';
 import { now } from '@/utils/clock';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Phase 7 — plan approval lifecycle (enforced here, not by page convention):

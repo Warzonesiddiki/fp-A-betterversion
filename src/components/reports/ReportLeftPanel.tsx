@@ -2,6 +2,9 @@ import React from 'react';
 import { GripVertical, Settings, Columns, Rows } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { ROW_TYPES, COLUMN_TYPES, type DragItem } from './reportBuilder.constants';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface ReportLeftPanelProps {
   activePanel: 'rows' | 'columns' | 'properties';

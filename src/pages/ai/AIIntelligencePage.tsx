@@ -1,3 +1,4 @@
+// @ai-census-allow delegates to AIEngine (classification only, no financial narrative numbers)
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useGLStore } from '@/store/glStore';
 import { AIEngine } from '@/engines/AIEngine';

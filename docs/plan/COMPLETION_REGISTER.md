@@ -14,29 +14,30 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 30 |
-| EXPERIMENTAL | 438 |
+| SUPPORTED | 36 |
+| EXPERIMENTAL | 428 |
 | BLOCKED-ON-OWNER | 7 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
-| Total rows | 695 |
+| Total rows | 691 |
 
 | Route disposition | Count |
 | --- | --- |
 | MIGRATE | 141 |
-| EXPERIMENTAL | 84 |
+| EXPERIMENTAL | 55 |
 | REVIEW | 0 |
 | RETAIN | 6 |
+| RETIRED | 25 |
 
 | Census | Count |
 | --- | --- |
-| routes | 231 |
+| routes | 227 |
 | engines | 180 |
 | requirements | 19 |
 | annex | 200 |
 | capabilities | 65 |
 
-## Routed screens (231)
+## Routed screens (227)
 
 | Id | Status | Evidence | Note |
 | --- | --- | --- | --- |
@@ -72,8 +73,8 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/banking/reconciliation` | EXPERIMENTAL | gatedBy=/banking/reconciliation; disposition=EXPERIMENTAL | Routed screen (BankReconciliation); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/banking/statements` | EXPERIMENTAL | gatedBy=/banking/statements; disposition=EXPERIMENTAL | Routed screen (BankStatements); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/board-pack` | SUPPORTED | gatedBy=/board-pack; disposition=MIGRATE; connected=3 [src/pages/reports/BoardPackPage.exportTieOut.test.tsx src/pages/reports/BoardPackPage.probe.test.tsx src/pages/reports/BoardPackPage.probe.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/BoardPackPage.exportTieOut.test.tsx src/pages/reports/BoardPackPage.probe.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 |
-| `route:/bonds/portfolio` | EXPERIMENTAL | gatedBy=/bonds/portfolio; disposition=EXPERIMENTAL | Routed screen (BondPortfolioPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/bonds/yield-curve` | EXPERIMENTAL | gatedBy=/bonds/yield-curve; disposition=EXPERIMENTAL | Routed screen (YieldCurvePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/bonds/portfolio` | EXPERIMENTAL | gatedBy=/bonds/portfolio; disposition=RETIRED | Routed screen (BondPortfolioPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/bonds/yield-curve` | EXPERIMENTAL | gatedBy=/bonds/yield-curve; disposition=RETIRED | Routed screen (YieldCurvePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/budgets` | SUPPORTED | gatedBy=/budgets; disposition=MIGRATE; connected=4 [src/pages/budgets/BudgetListPage.deep.test.tsx src/pages/budgets/BudgetListPage.test.tsx src/pages/budgets/BudgetListPage.test.tsx src/pages/budgets/BudgetListPage.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/budgets/BudgetListPage.test.tsx src/pages/budgets/BudgetListPage.deep.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 |
 | `route:/budgets/:id` | EXPERIMENTAL | gatedBy=/budgets/:id; disposition=MIGRATE | Routed screen (BudgetDetailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/budgets/approval` | EXPERIMENTAL | gatedBy=/budgets/approval; disposition=MIGRATE | Routed screen (BudgetApproval); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -81,10 +82,10 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/budgets/create` | EXPERIMENTAL | gatedBy=/budgets/create; disposition=MIGRATE | Routed screen (BudgetCreatePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/capex` | EXPERIMENTAL | gatedBy=/capex; disposition=MIGRATE | Routed screen (CapExDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/capex/depreciation` | EXPERIMENTAL | gatedBy=/capex/depreciation; disposition=MIGRATE | Routed screen (DepreciationForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/capex/tracker` | EXPERIMENTAL | gatedBy=/capex/tracker; disposition=EXPERIMENTAL | Routed screen (CapexTracker); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/capex/tracker` | EXPERIMENTAL | gatedBy=/capex/tracker; disposition=RETIRED | Routed screen (CapexTracker); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/cash-forecast` | EXPERIMENTAL | gatedBy=/cash-forecast; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/cash/debt` | EXPERIMENTAL | gatedBy=/cash/debt; disposition=MIGRATE | Routed screen (DebtSchedulePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/cash/forecast` | EXPERIMENTAL | gatedBy=/cash/forecast; disposition=MIGRATE | Routed screen (CashForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/cash/forecast` | SUPPORTED | connected=4 [src/pages/cash/CashForecastPage.interop.test.tsx src/pages/cash/CashForecastPage.interop.test.tsx src/pages/cash/CashForecastPage.interop.test.tsx src/pages/cash/CashForecastPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/cash/forecast; tests=src/__tests__/spineGovernance.test.ts src/pages/cash/CashForecastPage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 |
 | `route:/cash/working-capital` | EXPERIMENTAL | gatedBy=/cash/working-capital; disposition=MIGRATE | Routed screen (WorkingCapitalPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/charts/chart-of-accounts` | EXPERIMENTAL | gatedBy=/charts/chart-of-accounts; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/charts/showcase` | EXPERIMENTAL | gatedBy=/charts/showcase; disposition=MIGRATE | Routed screen (ChartShowcasePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -101,7 +102,7 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/construction/dashboard` | EXPERIMENTAL | gatedBy=/construction/dashboard; disposition=EXPERIMENTAL | Routed screen (ConstructionDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/construction/equipment` | EXPERIMENTAL | gatedBy=/construction/equipment; disposition=EXPERIMENTAL | Routed screen (EquipmentManagementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/construction/project` | EXPERIMENTAL | gatedBy=/construction/project; disposition=EXPERIMENTAL | Routed screen (ProjectCostingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/credit/risk` | EXPERIMENTAL | gatedBy=/credit/risk; disposition=EXPERIMENTAL | Routed screen (CreditRiskPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/credit/risk` | EXPERIMENTAL | gatedBy=/credit/risk; disposition=RETIRED | Routed screen (CreditRiskPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/currency` | EXPERIMENTAL | gatedBy=/currency; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/currency/fx-rates` | EXPERIMENTAL | gatedBy=/currency/fx-rates; disposition=MIGRATE | Routed screen (FXRatesPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/currency/hedging` | EXPERIMENTAL | gatedBy=/currency/hedging; disposition=MIGRATE | Routed screen (HedgeManagementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -133,9 +134,9 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/energy/renewable` | EXPERIMENTAL | gatedBy=/energy/renewable; disposition=EXPERIMENTAL | Routed screen (RenewableEnergyPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/energy/risk` | EXPERIMENTAL | gatedBy=/energy/risk; disposition=EXPERIMENTAL | Routed screen (EnergyRiskPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/energy/sector` | EXPERIMENTAL | gatedBy=/energy/sector; disposition=EXPERIMENTAL | Routed screen (EnergySectorPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/esg/carbon` | EXPERIMENTAL | gatedBy=/esg/carbon; disposition=EXPERIMENTAL | Routed screen (CarbonDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/esg/csrd` | EXPERIMENTAL | gatedBy=/esg/csrd; disposition=EXPERIMENTAL | Routed screen (CSRDReportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/esg/overview` | EXPERIMENTAL | gatedBy=/esg/overview; disposition=EXPERIMENTAL | Routed screen (ESGPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/esg/carbon` | EXPERIMENTAL | gatedBy=/esg/carbon; disposition=RETIRED | Routed screen (CarbonDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/esg/csrd` | EXPERIMENTAL | gatedBy=/esg/csrd; disposition=RETIRED | Routed screen (CSRDReportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/esg/overview` | EXPERIMENTAL | gatedBy=/esg/overview; disposition=RETIRED | Routed screen (ESGPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/forecasts` | SUPPORTED | gatedBy=/forecasts; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; connected=4 [src/pages/forecasts/ForecastListPage.interop.test.tsx src/pages/forecasts/ForecastListPage.interop.test.tsx src/pages/forecasts/ForecastListPage.interop.test.tsx src/pages/forecasts/ForecastListPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/forecasts/ForecastListPage.interop.test.tsx src/pages/forecasts/ForecastListPage.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — rolling forecast 12-18mo horizon 5-day cycle |
 | `route:/forecasts/:id` | EXPERIMENTAL | gatedBy=/forecasts/:id; disposition=MIGRATE | Routed screen (ForecastBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/forecasts/auto-update` | EXPERIMENTAL | gatedBy=/forecasts/auto-update; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -191,14 +192,14 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/reconciliation` | EXPERIMENTAL | gatedBy=/reconciliation; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/register` | EXPERIMENTAL | gatedBy=/register; disposition=RETAIN | Routed screen (RegisterPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports` | EXPERIMENTAL | gatedBy=/reports; disposition=MIGRATE | Routed screen (ReportsListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/reports/balance-sheet` | EXPERIMENTAL | gatedBy=/reports/balance-sheet; disposition=MIGRATE | Routed screen (BalanceSheetPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/balance-sheet` | SUPPORTED | connected=4 [src/pages/reports/BalanceSheetPage.interop.test.tsx src/pages/reports/BalanceSheetPage.interop.test.tsx src/pages/reports/BalanceSheetPage.interop.test.tsx src/pages/reports/BalanceSheetPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/reports/balance-sheet; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/BalanceSheetPage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — report tie-out |
 | `route:/reports/board-pack/new` | EXPERIMENTAL | gatedBy=/reports/board-pack/new; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports/book-builder` | EXPERIMENTAL | gatedBy=/reports/book-builder; disposition=MIGRATE | Routed screen (ReportBookBuilder); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports/budget-vs-actual` | EXPERIMENTAL | gatedBy=/reports/budget-vs-actual; disposition=MIGRATE | Routed screen (BudgetVsActualPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/reports/cash-flow` | EXPERIMENTAL | gatedBy=/reports/cash-flow; disposition=MIGRATE | Routed screen (CashFlowPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/cash-flow` | SUPPORTED | connected=4 [src/pages/reports/CashFlowPage.interop.test.tsx src/pages/reports/CashFlowPage.interop.test.tsx src/pages/reports/CashFlowPage.interop.test.tsx src/pages/reports/CashFlowPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/reports/cash-flow; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/CashFlowPage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — report tie-out |
 | `route:/reports/designer` | EXPERIMENTAL | gatedBy=/reports/designer; disposition=MIGRATE | Routed screen (ReportDesignerPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports/library` | EXPERIMENTAL | gatedBy=/reports/library; disposition=MIGRATE | Routed screen (ReportTemplateLibraryPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/reports/profit-loss` | EXPERIMENTAL | gatedBy=/reports/profit-loss; disposition=MIGRATE | Routed screen (ProfitLossPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/profit-loss` | SUPPORTED | connected=4 [src/pages/reports/ProfitLossPage.interop.test.tsx src/pages/reports/ProfitLossPage.interop.test.tsx src/pages/reports/ProfitLossPage.interop.test.tsx src/pages/reports/ProfitLossPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/reports/profit-loss; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/ProfitLossPage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — report tie-out |
 | `route:/reports/scheduler` | EXPERIMENTAL | gatedBy=/reports/scheduler; disposition=MIGRATE | Routed screen (ReportScheduler); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports/segment` | EXPERIMENTAL | gatedBy=/reports/segment; disposition=MIGRATE | Routed screen (SegmentReportingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports/templates` | EXPERIMENTAL | gatedBy=/reports/templates; disposition=MIGRATE | Routed screen (FinancialStatementTemplates); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -226,28 +227,24 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/scenarios/create` | EXPERIMENTAL | gatedBy=/scenarios/create; disposition=MIGRATE | Routed screen (ScenarioBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/scenarios/lock` | EXPERIMENTAL | gatedBy=/scenarios/lock; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/scenarios/merge` | EXPERIMENTAL | gatedBy=/scenarios/merge; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/agriculture` | EXPERIMENTAL | gatedBy=/sector/agriculture; disposition=EXPERIMENTAL | Routed screen (AgricultureDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/banking` | EXPERIMENTAL | gatedBy=/sector/banking; disposition=EXPERIMENTAL | Routed screen (SectorBankingDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/construction` | EXPERIMENTAL | gatedBy=/sector/construction; disposition=EXPERIMENTAL | Routed screen (SectorConstructionDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/education` | EXPERIMENTAL | gatedBy=/sector/education; disposition=EXPERIMENTAL | Routed screen (SectorEducationDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/emissions` | EXPERIMENTAL | gatedBy=/sector/emissions; disposition=EXPERIMENTAL | Routed screen (EmissionsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/energy` | EXPERIMENTAL | gatedBy=/sector/energy; disposition=EXPERIMENTAL | Routed screen (SectorEnergyDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/equipment` | EXPERIMENTAL | gatedBy=/sector/equipment; disposition=EXPERIMENTAL | Routed screen (EquipmentDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/government` | EXPERIMENTAL | gatedBy=/sector/government; disposition=EXPERIMENTAL | Routed screen (SectorGovernmentDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/healthcare` | EXPERIMENTAL | gatedBy=/sector/healthcare; disposition=EXPERIMENTAL | Routed screen (SectorHealthcareDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/hospitality` | EXPERIMENTAL | gatedBy=/sector/hospitality; disposition=EXPERIMENTAL | Routed screen (HospitalityDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/insurance` | EXPERIMENTAL | gatedBy=/sector/insurance; disposition=EXPERIMENTAL | Routed screen (SectorInsuranceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/logistics` | EXPERIMENTAL | gatedBy=/sector/logistics; disposition=EXPERIMENTAL | Routed screen (SectorLogisticsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/manufacturing` | EXPERIMENTAL | gatedBy=/sector/manufacturing; disposition=EXPERIMENTAL | Routed screen (SectorManufacturingDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/real-estate` | EXPERIMENTAL | gatedBy=/sector/real-estate; disposition=EXPERIMENTAL | Routed screen (SectorRealEstateDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/retail` | EXPERIMENTAL | gatedBy=/sector/retail; disposition=EXPERIMENTAL | Routed screen (SectorRetailDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/sector` | EXPERIMENTAL | gatedBy=/sector/sector; disposition=EXPERIMENTAL | Routed screen (SectorDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/technology` | EXPERIMENTAL | gatedBy=/sector/technology; disposition=EXPERIMENTAL | Routed screen (TechnologyDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sector/telecommunications` | EXPERIMENTAL | gatedBy=/sector/telecommunications; disposition=EXPERIMENTAL | Routed screen (TelecommunicationsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sectors/education` | EXPERIMENTAL | gatedBy=/sectors/education; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sectors/government` | EXPERIMENTAL | gatedBy=/sectors/government; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sectors/logistics` | EXPERIMENTAL | gatedBy=/sectors/logistics; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sectors/telecom` | EXPERIMENTAL | gatedBy=/sectors/telecom; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/agriculture` | EXPERIMENTAL | gatedBy=/sector/agriculture; disposition=RETIRED | Routed screen (AgricultureDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/banking` | EXPERIMENTAL | gatedBy=/sector/banking; disposition=RETIRED | Routed screen (SectorBankingDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/construction` | EXPERIMENTAL | gatedBy=/sector/construction; disposition=RETIRED | Routed screen (SectorConstructionDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/education` | EXPERIMENTAL | gatedBy=/sector/education; disposition=RETIRED | Routed screen (SectorEducationDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/emissions` | EXPERIMENTAL | gatedBy=/sector/emissions; disposition=RETIRED | Routed screen (EmissionsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/energy` | EXPERIMENTAL | gatedBy=/sector/energy; disposition=RETIRED | Routed screen (SectorEnergyDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/equipment` | EXPERIMENTAL | gatedBy=/sector/equipment; disposition=RETIRED | Routed screen (EquipmentDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/government` | EXPERIMENTAL | gatedBy=/sector/government; disposition=RETIRED | Routed screen (SectorGovernmentDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/healthcare` | EXPERIMENTAL | gatedBy=/sector/healthcare; disposition=RETIRED | Routed screen (SectorHealthcareDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/hospitality` | EXPERIMENTAL | gatedBy=/sector/hospitality; disposition=RETIRED | Routed screen (HospitalityDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/insurance` | EXPERIMENTAL | gatedBy=/sector/insurance; disposition=RETIRED | Routed screen (SectorInsuranceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/logistics` | EXPERIMENTAL | gatedBy=/sector/logistics; disposition=RETIRED | Routed screen (SectorLogisticsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/manufacturing` | EXPERIMENTAL | gatedBy=/sector/manufacturing; disposition=RETIRED | Routed screen (SectorManufacturingDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/real-estate` | EXPERIMENTAL | gatedBy=/sector/real-estate; disposition=RETIRED | Routed screen (SectorRealEstateDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/retail` | EXPERIMENTAL | gatedBy=/sector/retail; disposition=RETIRED | Routed screen (SectorRetailDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/sector` | EXPERIMENTAL | gatedBy=/sector/sector; disposition=RETIRED | Routed screen (SectorDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/technology` | EXPERIMENTAL | gatedBy=/sector/technology; disposition=RETIRED | Routed screen (TechnologyDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/telecommunications` | EXPERIMENTAL | gatedBy=/sector/telecommunications; disposition=RETIRED | Routed screen (TelecommunicationsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/settings` | EXPERIMENTAL | gatedBy=/settings; disposition=MIGRATE | Routed screen (SettingsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/settings/backup` | EXPERIMENTAL | gatedBy=/settings/backup; disposition=MIGRATE | Routed screen (BackupRestorePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/settings/connectors` | EXPERIMENTAL | gatedBy=/settings/connectors; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -262,14 +259,14 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/templates` | EXPERIMENTAL | gatedBy=/templates; disposition=MIGRATE | Routed screen (TemplateGalleryPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/templates/preview` | EXPERIMENTAL | gatedBy=/templates/preview; disposition=MIGRATE | Routed screen (TemplatePreviewPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/treasury` | EXPERIMENTAL | gatedBy=/treasury; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/treasury/fx-exposure` | EXPERIMENTAL | gatedBy=/treasury/fx-exposure; disposition=MIGRATE | Routed screen (FXExposurePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/treasury/fx-exposure` | SUPPORTED | connected=4 [src/pages/treasury/FXExposurePage.interop.test.tsx src/pages/treasury/FXExposurePage.interop.test.tsx src/pages/treasury/FXExposurePage.interop.test.tsx src/pages/treasury/FXExposurePage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/treasury/fx-exposure; tests=src/__tests__/spineGovernance.test.ts src/pages/treasury/FXExposurePage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — ASC 830 FX translation |
 | `route:/treasury/investments` | EXPERIMENTAL | gatedBy=/treasury/investments; disposition=MIGRATE | Routed screen (InvestmentPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/treasury/loan-amortization` | EXPERIMENTAL | gatedBy=/treasury/loan-amortization; disposition=MIGRATE | Routed screen (LoanAmortizationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/variance` | EXPERIMENTAL | gatedBy=/variance; disposition=MIGRATE | Routed screen (VarianceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/visual/atlas` | EXPERIMENTAL | gatedBy=/visual/atlas; disposition=RETAIN | Routed screen (AtlasVisualBaselinePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/workforce` | EXPERIMENTAL | gatedBy=/workforce; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/workforce/compensation` | EXPERIMENTAL | gatedBy=/workforce/compensation; disposition=MIGRATE | Routed screen (CompModelingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/workforce/headcount` | EXPERIMENTAL | gatedBy=/workforce/headcount; disposition=MIGRATE | Routed screen (HeadcountPlanPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/workforce/headcount` | SUPPORTED | connected=4 [src/pages/workforce/HeadcountPlanPage.interop.test.tsx src/pages/workforce/HeadcountPlanPage.interop.test.tsx src/pages/workforce/HeadcountPlanPage.interop.test.tsx src/pages/workforce/HeadcountPlanPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/workforce/headcount; tests=src/__tests__/spineGovernance.test.ts src/pages/workforce/HeadcountPlanPage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 |
 | `route:/workforce/payroll` | EXPERIMENTAL | gatedBy=/workforce/payroll; disposition=MIGRATE | Routed screen (PayrollForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 
 ## Engines (180)

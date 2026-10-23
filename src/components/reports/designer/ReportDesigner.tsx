@@ -14,7 +14,7 @@ import {
   Columns,
   Sigma,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+// framer-motion removed for bundle diet — replaced with CSS transitions (T011-T013)
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
 import { useCubeStore } from '@/store/cubeStore';
@@ -221,7 +221,7 @@ export function ReportDesigner() {
         <main className="flex-1 overflow-auto bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 to-slate-950 p-6 relative">
           {report.layout.rows.length === 0 && report.layout.columns.length === 0 && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md p-10 border-2 border-dashed border-slate-700 rounded-2xl flex flex-col items-center gap-5 text-center">
+              <div className="w-full max-w-md p-10 border-2 border-dashed border-slate-700 rounded-2xl flex flex-col items-center gap-5 text-center animate-in fade-in zoom-in duration-200">
                 <div className="p-3 bg-blue-500/10 rounded-xl"><Layout className="h-10 w-10 text-blue-400" /></div>
                 <div className="space-y-1.5">
                   <h3 className="text-lg font-bold text-white">Build Your Report</h3>
@@ -232,7 +232,7 @@ export function ReportDesigner() {
                   <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[var(--bg-hover)] rounded-lg text-[10px] text-[var(--text-secondary)] border border-[var(--border-default)]"><Columns className="h-3 w-3" /> Columns</div>
                 </div>
                 <Button size="sm" variant="ghost" onClick={() => setShowTemplateModal(true)} className="mt-2"><FolderOpen className="h-3.5 w-3.5 mr-1.5" />Start from Template</Button>
-              </motion.div>
+              </div>
             </div>
           )}
 

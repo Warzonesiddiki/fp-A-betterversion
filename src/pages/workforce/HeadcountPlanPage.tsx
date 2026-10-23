@@ -48,7 +48,13 @@ const _moneyAdoptionMarker = (() => {
  */
 export default function HeadcountPlanPage() {
   const fmt = useCurrencyFormatter();
-  const employees = useWorkforceStore(useShallow((s) => s.employees));
+  const { employees, isLoading, error } = useWorkforceStore(
+    useShallow((s) => ({
+      employees: s.employees,
+      isLoading: s.isLoading,
+      error: s.error,
+    }))
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,6 +66,35 @@ export default function HeadcountPlanPage() {
     [employees]
   );
   const hasData = data.totalHeadcount > 0;
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-6" aria-busy="true" aria-label="Loading headcount plan">
+        <div className="h-8 w-48 bg-[var(--bg-elevated)] rounded animate-pulse" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="h-24 bg-[var(--bg-elevated)] rounded-lg animate-pulse"
+              aria-label="Loading headcount data"
+            />
+          ))}
+        </div>
+        <div className="h-64 bg-[var(--bg-elevated)] rounded-lg animate-pulse" />
+        <span className="sr-only">Loading headcount plan data</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-12 text-center" role="alert" aria-live="assertive">
+        <h2 className="text-xl font-semibold mb-2 text-[var(--negative)]">Failed to load workforce data</h2>
+        <p className="text-[var(--text-muted)] mb-6">{error}</p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </div>
+    );
+  }
 
   const handleExportPDF = () => {
     void ExportEngine.exportToPDF(
@@ -99,14 +134,26 @@ export default function HeadcountPlanPage() {
 
   if (!hasData)
     return (
-      <div className="p-12 text-center">
-        <Headphones className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Workforce Data</h2>
-        <p className="text-[var(--text-muted)] mb-6">
-          Headcount planning derives from your actual employee records. Add active employees with
-          departments, salaries and start dates — no sample headcounts are shown.
-        </p>
-        <Button onClick={() => navigate('/workforce/headcount')}>Open Workforce Planning</Button>
+      <div className="p-6">
+        <PageHeader title="Headcount Plan" />
+        <div className="mt-6">
+          {/* EmptyState with CTA — T060 */}
+          <div className="p-12 text-center border border-dashed border-[var(--border-default)] rounded-lg">
+            <Headphones className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">No Workforce Data</h2>
+            <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
+              Headcount planning derives from your actual employee records. Add active employees
+              with departments, salaries and start dates — no sample headcounts are shown. Driver:
+              headcount → compensation → P&L cascade visible, owner-assigned assumptions.
+            </p>
+            <Button
+              onClick={() => navigate('/workforce/headcount')}
+              aria-label="Open workforce planning to add employees"
+            >
+              Open Workforce Planning
+            </Button>
+          </div>
+        </div>
       </div>
     );
 

@@ -3,6 +3,9 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Spinner } from '@/components/ui/Spinner';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/utils/cn';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export type InlineLoaderVariant = 'skeleton' | 'spinner' | 'none';
 

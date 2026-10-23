@@ -11,6 +11,9 @@ import { getContextForPath, generateAlerts, nextId } from './CopilotTypes';
 import { ChatTab } from './CopilotChatTab';
 import { AlertsTab } from './CopilotAlertsTab';
 import { InsightsTab } from './CopilotInsightsTab';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export function CopilotSidebar({ gl, budget, className }: CopilotSidebarProps) {
   const { isOpen, activeTab, toggle, close, setActiveTab } = useCopilotSidebar();

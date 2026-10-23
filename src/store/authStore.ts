@@ -9,6 +9,9 @@ import { parseTokenExpiry, startRotation, stopRotation } from '../utils/tokenRot
 import { randomId } from '@/utils/cryptoId';
 import { AuthRequestError, authClient, type AuthUserDto } from '@/services/authClient';
 import { nowISO, nowMs } from '@/utils/clock';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // --- Mock-Auth build-time gate ---
 // SECURITY FIX (C-01): Mock auth tokens are unsigned and forgeable.

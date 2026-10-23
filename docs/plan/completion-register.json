@@ -9,7 +9,7 @@
     "NOT_BUILT"
   ],
   "census": {
-    "routes": 231,
+    "routes": 227,
     "engines": 180,
     "requirements": 19,
     "annex": 200,
@@ -4964,7 +4964,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/bonds/portfolio",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (BondPortfolioPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4974,7 +4974,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/bonds/yield-curve",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (YieldCurvePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5098,7 +5098,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/capex/tracker",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (CapexTracker); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5125,12 +5125,54 @@
     {
       "kind": "route",
       "id": "route:/cash/forecast",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
+        "connected": [
+          {
+            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
+            "title": "journey: renders cash position with data"
+          },
+          {
+            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
+            "title": "empty: shows No Cash Activity with CTA"
+          },
+          {
+            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
+            "title": "error: shows role=alert with retry"
+          },
+          {
+            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
+            "title": "loading: shows Skeleton with srLabel and aria-busy"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /cash/forecast \u2014 report:read allows viewing cash forecast"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /cash/forecast \u2014 audit trail records cash derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /cash/forecast \u2014 write guard blocks closed periods from affecting cash"
+          }
+        ],
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
         "gatedBy": "/cash/forecast",
-        "disposition": "MIGRATE"
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/cash/CashForecastPage.interop.test.tsx"
+        ]
       },
-      "note": "Routed screen (CashForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/cash/CashForecastPage.interop.test.tsx"
+      ]
     },
     {
       "kind": "route",
@@ -5342,7 +5384,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/credit/risk",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (CreditRiskPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5962,7 +6004,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/esg/carbon",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (CarbonDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5972,7 +6014,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/esg/csrd",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (CSRDReportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5982,7 +6024,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/esg/overview",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (ESGPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6629,12 +6671,54 @@
     {
       "kind": "route",
       "id": "route:/reports/balance-sheet",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
+        "connected": [
+          {
+            "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+            "title": "journey: renders balance sheet with data"
+          },
+          {
+            "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+            "title": "empty: shows No Data when no entries"
+          },
+          {
+            "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+            "title": "error: shows ErrorState when importError"
+          },
+          {
+            "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+            "title": "loading: shows Skeleton with srLabel when report null"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/balance-sheet \u2014 report:read allows viewing balance sheet"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/balance-sheet \u2014 audit trail records balance sheet derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/balance-sheet \u2014 write guard blocks closed periods from affecting BS"
+          }
+        ],
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
         "gatedBy": "/reports/balance-sheet",
-        "disposition": "MIGRATE"
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/reports/BalanceSheetPage.interop.test.tsx"
+        ]
       },
-      "note": "Routed screen (BalanceSheetPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 report tie-out",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/reports/BalanceSheetPage.interop.test.tsx"
+      ]
     },
     {
       "kind": "route",
@@ -6669,12 +6753,54 @@
     {
       "kind": "route",
       "id": "route:/reports/cash-flow",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
+        "connected": [
+          {
+            "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+            "title": "journey: renders cash flow with data"
+          },
+          {
+            "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+            "title": "empty: shows No Data when no entries"
+          },
+          {
+            "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+            "title": "error: shows ErrorState when importError"
+          },
+          {
+            "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+            "title": "loading: shows Skeleton with srLabel when loading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/cash-flow \u2014 report:read allows viewing cash flow"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/cash-flow \u2014 audit trail records cash flow derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/cash-flow \u2014 write guard blocks closed periods from affecting CF"
+          }
+        ],
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
         "gatedBy": "/reports/cash-flow",
-        "disposition": "MIGRATE"
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/reports/CashFlowPage.interop.test.tsx"
+        ]
       },
-      "note": "Routed screen (CashFlowPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 report tie-out",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/reports/CashFlowPage.interop.test.tsx"
+      ]
     },
     {
       "kind": "route",
@@ -6699,12 +6825,54 @@
     {
       "kind": "route",
       "id": "route:/reports/profit-loss",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
+        "connected": [
+          {
+            "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+            "title": "journey: renders profit and loss with data"
+          },
+          {
+            "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+            "title": "empty: shows No Data when no entries"
+          },
+          {
+            "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+            "title": "error: shows ErrorState when importError"
+          },
+          {
+            "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+            "title": "loading: shows Skeleton with srLabel"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/profit-loss \u2014 report:read allows viewing P&L"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/profit-loss \u2014 audit trail records P&L derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/profit-loss \u2014 write guard blocks closed periods from affecting P&L"
+          }
+        ],
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
         "gatedBy": "/reports/profit-loss",
-        "disposition": "MIGRATE"
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/reports/ProfitLossPage.interop.test.tsx"
+        ]
       },
-      "note": "Routed screen (ProfitLossPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 report tie-out",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/reports/ProfitLossPage.interop.test.tsx"
+      ]
     },
     {
       "kind": "route",
@@ -7026,7 +7194,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/agriculture",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (AgricultureDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7036,7 +7204,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/banking",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorBankingDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7046,7 +7214,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/construction",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorConstructionDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7056,7 +7224,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/education",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorEducationDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7066,7 +7234,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/emissions",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (EmissionsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7076,7 +7244,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/energy",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorEnergyDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7086,7 +7254,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/equipment",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (EquipmentDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7096,7 +7264,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/government",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorGovernmentDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7106,7 +7274,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/healthcare",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorHealthcareDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7116,7 +7284,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/hospitality",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (HospitalityDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7126,7 +7294,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/insurance",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorInsuranceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7136,7 +7304,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/logistics",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorLogisticsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7146,7 +7314,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/manufacturing",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorManufacturingDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7156,7 +7324,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/real-estate",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorRealEstateDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7166,7 +7334,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/retail",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorRetailDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7176,7 +7344,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/sector",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (SectorDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7186,7 +7354,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/technology",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (TechnologyDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7196,49 +7364,9 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sector/telecommunications",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "RETIRED"
       },
       "note": "Routed screen (TelecommunicationsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
-    },
-    {
-      "kind": "route",
-      "id": "route:/sectors/education",
-      "status": "EXPERIMENTAL",
-      "evidence": {
-        "gatedBy": "/sectors/education",
-        "disposition": "EXPERIMENTAL"
-      },
-      "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
-    },
-    {
-      "kind": "route",
-      "id": "route:/sectors/government",
-      "status": "EXPERIMENTAL",
-      "evidence": {
-        "gatedBy": "/sectors/government",
-        "disposition": "EXPERIMENTAL"
-      },
-      "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
-    },
-    {
-      "kind": "route",
-      "id": "route:/sectors/logistics",
-      "status": "EXPERIMENTAL",
-      "evidence": {
-        "gatedBy": "/sectors/logistics",
-        "disposition": "EXPERIMENTAL"
-      },
-      "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
-    },
-    {
-      "kind": "route",
-      "id": "route:/sectors/telecom",
-      "status": "EXPERIMENTAL",
-      "evidence": {
-        "gatedBy": "/sectors/telecom",
-        "disposition": "EXPERIMENTAL"
-      },
-      "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
@@ -7383,12 +7511,54 @@
     {
       "kind": "route",
       "id": "route:/treasury/fx-exposure",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
+        "connected": [
+          {
+            "file": "src/pages/treasury/FXExposurePage.interop.test.tsx",
+            "title": "journey: renders FX exposure with data (T090)"
+          },
+          {
+            "file": "src/pages/treasury/FXExposurePage.interop.test.tsx",
+            "title": "empty: shows No FX Exposure when no exposures (T093)"
+          },
+          {
+            "file": "src/pages/treasury/FXExposurePage.interop.test.tsx",
+            "title": "error: shows role=alert with retry when error (T092)"
+          },
+          {
+            "file": "src/pages/treasury/FXExposurePage.interop.test.tsx",
+            "title": "loading: shows Skeleton with srLabel and aria-busy (T091)"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /treasury/fx-exposure \u2014 report:read allows viewing FX exposure"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /treasury/fx-exposure \u2014 audit trail records FX derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /treasury/fx-exposure \u2014 write guard blocks closed periods from affecting FX"
+          }
+        ],
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
         "gatedBy": "/treasury/fx-exposure",
-        "disposition": "MIGRATE"
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/treasury/FXExposurePage.interop.test.tsx"
+        ]
       },
-      "note": "Routed screen (FXExposurePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 ASC 830 FX translation",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/treasury/FXExposurePage.interop.test.tsx"
+      ]
     },
     {
       "kind": "route",
@@ -7453,12 +7623,54 @@
     {
       "kind": "route",
       "id": "route:/workforce/headcount",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
+        "connected": [
+          {
+            "file": "src/pages/workforce/HeadcountPlanPage.interop.test.tsx",
+            "title": "journey: renders headcount plan with data (T061)"
+          },
+          {
+            "file": "src/pages/workforce/HeadcountPlanPage.interop.test.tsx",
+            "title": "empty: shows No Workforce Data with CTA when no employees (T062)"
+          },
+          {
+            "file": "src/pages/workforce/HeadcountPlanPage.interop.test.tsx",
+            "title": "error: shows role=alert with retry when error (T063)"
+          },
+          {
+            "file": "src/pages/workforce/HeadcountPlanPage.interop.test.tsx",
+            "title": "loading: shows Skeleton with srLabel and aria-busy (T064)"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /workforce/headcount \u2014 report:read allows viewing workforce"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /workforce/headcount \u2014 audit trail records workforce derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /workforce/headcount \u2014 write guard blocks closed periods from affecting workforce"
+          }
+        ],
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
         "gatedBy": "/workforce/headcount",
-        "disposition": "MIGRATE"
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/workforce/HeadcountPlanPage.interop.test.tsx"
+        ]
       },
-      "note": "Routed screen (HeadcountPlanPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/workforce/HeadcountPlanPage.interop.test.tsx"
+      ]
     },
     {
       "kind": "route",

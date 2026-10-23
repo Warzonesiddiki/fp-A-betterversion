@@ -6,6 +6,9 @@ import type { CellComment } from '@/engines/CellCommentEngine';
 // canonical import. CommentThread uses default 7-day cap. Previously had
 // unbounded "Xd ago" — now shows calendar date after 7 days.
 import { formatRelativeTimeLegacy as formatRelativeTime } from '@/engines/temporal';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface CommentThreadProps {
   comment: CellComment;

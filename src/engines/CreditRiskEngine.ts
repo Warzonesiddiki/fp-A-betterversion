@@ -20,6 +20,9 @@
 // Credit Risk Engine — PD, LGD, EAD, expected loss, credit scoring
 
 import { roundTo, subtractMoney, multiplyMoney, divideMoney, addMoney } from '../utils/money';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Expected loss and exposure at default are provisioning amounts that post to

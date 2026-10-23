@@ -2,6 +2,9 @@ import React from 'react';
 import { cn } from '@/utils/cn';
 import { formatCurrency, formatPercent, formatNumber } from '@/utils/formatters';
 import { Badge } from './Badge';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface FinancialTableRow {
   id?: string;

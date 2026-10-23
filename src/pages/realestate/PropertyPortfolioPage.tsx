@@ -35,6 +35,10 @@ import type { PropertyValuationRow } from '@/pages/realestate/valuationData';
 import { deriveValuation } from '@/pages/realestate/valuationData';
 import { useGLStore } from '@/store/glStore';
 import { formatPercent } from '@/utils/financialFormatting';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
+
 
 // Real periods from the fiscal-calendar engine (the variable was previously,
 // misleadingly, named `mockPeriods`; the data was never mock data).

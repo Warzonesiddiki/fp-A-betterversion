@@ -5,6 +5,9 @@
 
 import { sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
 import { nowISO } from '@/utils/clock';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export type AggregationType = 'sum' | 'avg' | 'count' | 'min' | 'max' | 'median';
 

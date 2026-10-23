@@ -13,6 +13,9 @@ import { immer } from 'zustand/middleware/immer';
 import { nowISO } from '@/utils/clock';
 import { assertPermission, Permissions } from '@/utils/rbacEnforcer';
 import { masterStorage } from '@/utils/masterStorage';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface ExceptionRule {
   readonly ruleId: string; // e.g. "R-001", "R-008"

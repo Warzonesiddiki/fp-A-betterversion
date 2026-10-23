@@ -1,5 +1,5 @@
-import { LineChart, Line, ResponsiveContainer } from 'recharts';
-
+// Bundle diet: recharts removed for sparkline — custom SVG (T019, T526-T534)
+// Previously used LineChart from recharts (heavy), now lightweight SVG path
 interface SparklineChartProps {
   data: number[];
   color?: string;
@@ -17,7 +17,29 @@ export function SparklineChart({
   ariaLabel = 'Sparkline chart',
   onClick,
 }: SparklineChartProps) {
-  const chartData = data.map((value, index) => ({ index, value }));
+  if (data.length === 0) {
+    return (
+      <div
+        role="img"
+        aria-label={ariaLabel}
+        data-testid="sparkline-chart"
+        style={{ width, height, display: 'inline-block' }}
+      />
+    );
+  }
+
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const stepX = width / (data.length - 1 || 1);
+
+  const points = data
+    .map((v, i) => {
+      const x = i * stepX;
+      const y = height - ((v - min) / range) * height;
+      return `${x},${y}`;
+    })
+    .join(' ');
 
   return (
     <div
@@ -36,11 +58,9 @@ export function SparklineChart({
       className="dark:opacity-90"
       style={{ width, height, display: 'inline-block', cursor: onClick ? 'pointer' : 'default' }}
     >
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData}>
-          <Line type="monotone" dataKey="value" stroke={color} strokeWidth={1.5} dot={false} />
-        </LineChart>
-      </ResponsiveContainer>
+      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+        <polyline fill="none" stroke={color} strokeWidth={1.5} points={points} strokeLinejoin="round" strokeLinecap="round" />
+      </svg>
     </div>
   );
 }

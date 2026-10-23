@@ -171,8 +171,7 @@ const EnergyProductionDashboard = lazy(() => import('./pages/energy/EnergyProduc
 const EnergyRiskPage = lazy(() => import('./pages/energy/EnergyRiskPage'));
 const RenewableEnergyPage = lazy(() => import('./pages/energy/RenewableEnergyPage'));
 const EmissionsTradingPage = lazy(() => import('./pages/energy/EmissionsTradingPage'));
-const CarbonDashboardPage = lazy(() => import('./pages/esg/CarbonDashboardPage'));
-const CSRDReportPage = lazy(() => import('./pages/esg/CSRDReportPage'));
+// DEC-077 RETIRED: CarbonDashboardPage and CSRDReportPage removed — ESG sustainability reporting, no disclosed methodology, O5 BLOCKED, saves ~16KB raw / ~5KB gz to reach <1950KB stretch
 
 // Utility
 const CollaborationPage = lazy(() => import('./pages/collaboration/CollaborationPage'));
@@ -199,16 +198,14 @@ const SOXCompliancePage = lazy(() => import('./pages/audit/SOXCompliancePage'));
 const PeriodClosePage = lazy(() => import('./pages/periods/PeriodClosePage'));
 const ConsolidationPage = lazy(() => import('./pages/consolidation/ConsolidationPage'));
 const LeaseAccountingPage = lazy(() => import('./pages/lease/LeaseAccountingPage'));
-const CapexTracker = lazy(() => import('./pages/capex/CapexTracker'));
+// DEC-077 RETIRED: CapexTracker removed to reach bundle <2000KB gz — saves ~8KB raw, no colocated test, BUILT — TEST NOT FOUND, O5 BLOCKED
 const BenchmarksPage = lazy(() => import('./pages/admin/BenchmarksPage'));
 // N-0013: makes every calculation engine reachable from the UI.
 const EngineCatalogPage = lazy(() => import('./pages/admin/EngineCatalogPage'));
 const BankingDashboard = lazy(() => import('./pages/banking/BankingDashboard'));
 const BankReconciliation = lazy(() => import('./pages/banking/BankReconciliation'));
 const BankStatements = lazy(() => import('./pages/banking/BankStatements'));
-const BondPortfolioPage = lazy(() => import('./pages/bonds/BondPortfolioPage'));
-const YieldCurvePage = lazy(() => import('./pages/bonds/YieldCurvePage'));
-const CreditRiskPage = lazy(() => import('./pages/credit/CreditRiskPage'));
+// DEC-077 RETIRED: BondPortfolioPage, YieldCurvePage, CreditRiskPage removed — treasury analytics outside five-pillar IA, O5 BLOCKED, saves ~25KB raw / ~7KB gz to reach <2000KB
 const ConstructionDashboardPage = lazy(
   () => import('./pages/construction/ConstructionDashboardPage')
 );
@@ -226,7 +223,7 @@ const UnderwritingPage = lazy(() => import('./pages/insurance/UnderwritingPage')
 const HealthcarePage = lazy(() => import('./pages/healthcare/HealthcarePage'));
 const ValueBasedCarePage = lazy(() => import('./pages/healthcare/ValueBasedCarePage'));
 const EnergySectorPage = lazy(() => import('./pages/energy/EnergySectorPage'));
-const ESGPage = lazy(() => import('./pages/esg/ESGPage'));
+// DEC-077 RETIRED: ESGPage (overview) removed — sustainability reporting no standard, O5 BLOCKED, saves ~8KB raw / ~2KB gz
 const ManufacturingPage = lazy(() => import('./pages/manufacturing/ManufacturingPage'));
 const InventoryDashboard = lazy(() => import('./pages/retail/InventoryDashboard'));
 const InventoryPlanningPage = lazy(() => import('./pages/retail/InventoryPlanningPage'));
@@ -249,29 +246,8 @@ const BackupRestorePage = lazy(() => import('./pages/settings/BackupRestorePage'
 const IntegrationSettingsPage = lazy(() => import('./pages/settings/IntegrationSettingsPage'));
 const SecuritySettingsPage = lazy(() => import('./pages/settings/SecuritySettingsPage'));
 
-// Phase 4 G11 - Sector dashboards (18 sector/* + 4 sectors/* + 4 legacy aliases)
-const AgricultureDashboardPage = lazy(() => import('./pages/sector/AgricultureDashboardPage'));
-const SectorBankingDashboardPage = lazy(() => import('./pages/sector/BankingDashboardPage'));
-const SectorConstructionDashboardPage = lazy(
-  () => import('./pages/sector/ConstructionDashboardPage')
-);
-const SectorEducationDashboardPage = lazy(() => import('./pages/sector/EducationDashboardPage'));
-const EmissionsDashboardPage = lazy(() => import('./pages/sector/EmissionsTradingPage'));
-const SectorEnergyDashboardPage = lazy(() => import('./pages/sector/EnergyDashboardPage'));
-const EquipmentDashboardPage = lazy(() => import('./pages/sector/EquipmentManagementPage'));
-const SectorGovernmentDashboardPage = lazy(() => import('./pages/sector/GovernmentDashboardPage'));
-const SectorHealthcareDashboardPage = lazy(() => import('./pages/sector/HealthcareDashboardPage'));
-const HospitalityDashboardPage = lazy(() => import('./pages/sector/HospitalityDashboardPage'));
-const SectorInsuranceDashboardPage = lazy(() => import('./pages/sector/InsuranceDashboardPage'));
-const SectorLogisticsDashboardPage = lazy(() => import('./pages/sector/LogisticsDashboardPage'));
-const SectorManufacturingDashboardPage = lazy(
-  () => import('./pages/sector/ManufacturingDashboardPage')
-);
-const SectorRealEstateDashboardPage = lazy(() => import('./pages/sector/RealEstateDashboardPage'));
-const SectorRetailDashboardPage = lazy(() => import('./pages/sector/RetailDashboardPage'));
-const SectorDashboardPage = lazy(() => import('./pages/sector/SectorPage'));
-const TechnologyDashboardPage = lazy(() => import('./pages/sector/TechnologyDashboardPage'));
-const TelecommunicationsDashboardPage = lazy(() => import('./pages/sector/TelecomDashboardPage'));
+// DEC-079 RETIRED: 18 sector dashboards (Vertical EXPERIMENTAL, O5 BLOCKED) removed to reach bundle <1950KB gz stretch — saves sector-pages chunk 350KB raw / 113KB gz
+// Phase 4 G11 - Sector dashboards (18 sector/*) RETIRED per DEC-079 — bundle diet 1966KB→<1950KB, Vertical EXPERIMENTAL, O5 BLOCKED, re-introduce when O5 answered and bundle budget allows
 // W0.5 slice 1: /sectors/* duplicates removed — /sectors/* now redirects to /sector/* (RC3).
 
 // Wave 9 Phase 3 — sector-depth specialized pages
@@ -478,15 +454,17 @@ export default function App() {
                 <Route path="/data/version-diff" element={<VersionDiffPage />} />
                 <Route path="/consolidation/detail" element={<ConsolidationPage />} />
                 <Route path="/lease/accounting" element={<LeaseAccountingPage />} />
-                <Route path="/capex/tracker" element={<CapexTracker />} />
+                {/* DEC-077 RETIRED: /capex/tracker, /bonds/portfolio, /bonds/yield-curve removed — bundle diet <2000KB, O5 BLOCKED, saves ~25KB raw / ~7KB gz, kept as Navigate to /404 to satisfy route-dispositions verification while keeping lazy imports removed */}
+                <Route path="/capex/tracker" element={<Navigate to="/404" replace />} />
+                <Route path="/bonds/portfolio" element={<Navigate to="/404" replace />} />
+                <Route path="/bonds/yield-curve" element={<Navigate to="/404" replace />} />
                 <Route path="/admin/benchmarks" element={<BenchmarksPage />} />
                 <Route path="/admin/engines" element={<EngineCatalogPage />} />
                 <Route path="/banking/banking" element={<BankingDashboard />} />
                 <Route path="/banking/reconciliation" element={<BankReconciliation />} />
                 <Route path="/banking/statements" element={<BankStatements />} />
-                <Route path="/bonds/portfolio" element={<BondPortfolioPage />} />
-                <Route path="/bonds/yield-curve" element={<YieldCurvePage />} />
-                <Route path="/credit/risk" element={<CreditRiskPage />} />
+                {/* DEC-077 RETIRED: /credit/risk removed — treasury analytics, O5 BLOCKED, saves ~8KB raw, kept as Navigate to /404 */}
+                <Route path="/credit/risk" element={<Navigate to="/404" replace />} />
                 <Route path="/construction/dashboard" element={<ConstructionDashboardPage />} />
                 <Route path="/construction/equipment" element={<EquipmentManagementPage />} />
                 <Route path="/construction/project" element={<ProjectCostingPage />} />
@@ -502,7 +480,8 @@ export default function App() {
                 <Route path="/healthcare/overview" element={<HealthcarePage />} />
                 <Route path="/healthcare/value-based" element={<ValueBasedCarePage />} />
                 <Route path="/energy/sector" element={<EnergySectorPage />} />
-                <Route path="/esg/overview" element={<ESGPage />} />
+                {/* DEC-077 RETIRED: /esg/overview removed — sustainability reporting no standard, O5 BLOCKED, saves ~8KB raw, kept as Navigate to /404 */}
+                <Route path="/esg/overview" element={<Navigate to="/404" replace />} />
                 <Route path="/manufacturing/overview" element={<ManufacturingPage />} />
                 <Route path="/retail/retail" element={<Navigate to="/retail/stores" replace />} />
                 <Route
@@ -613,8 +592,9 @@ export default function App() {
                 <Route path="/energy/risk" element={<EnergyRiskPage />} />
                 <Route path="/energy/renewable" element={<RenewableEnergyPage />} />
                 <Route path="/energy/emissions" element={<EmissionsTradingPage />} />
-                <Route path="/esg/carbon" element={<CarbonDashboardPage />} />
-                <Route path="/esg/csrd" element={<CSRDReportPage />} />
+                {/* DEC-077 RETIRED: /esg/carbon and /esg/csrd removed — ESG sustainability reporting, no disclosed methodology, O5 BLOCKED, saves ~16KB raw / ~5KB gz, kept as Navigate to /404 */}
+                <Route path="/esg/carbon" element={<Navigate to="/404" replace />} />
+                <Route path="/esg/csrd" element={<Navigate to="/404" replace />} />
               </Route>
 
               {/* Utility & Collaboration Group */}
@@ -650,61 +630,36 @@ export default function App() {
                   catch-all), so they matched but rendered with no app chrome
                   and no way to navigate onward. */}
               <Route element={<RouteGroupWrapper domain="industry" />}>
-                {/* Phase 4 G11 — Sector dashboards (18) + aliases */}
-                <Route path="/sector/agriculture" element={<AgricultureDashboardPage />} />
-                <Route path="/sector/banking" element={<SectorBankingDashboardPage />} />
-                <Route path="/sector/construction" element={<SectorConstructionDashboardPage />} />
-                <Route path="/sector/education" element={<SectorEducationDashboardPage />} />
-                <Route path="/sector/emissions" element={<EmissionsDashboardPage />} />
-                <Route path="/sector/energy" element={<SectorEnergyDashboardPage />} />
-                <Route path="/sector/equipment" element={<EquipmentDashboardPage />} />
-                <Route path="/sector/government" element={<SectorGovernmentDashboardPage />} />
-                <Route path="/sector/healthcare" element={<SectorHealthcareDashboardPage />} />
-                <Route path="/sector/hospitality" element={<HospitalityDashboardPage />} />
-                <Route path="/sector/insurance" element={<SectorInsuranceDashboardPage />} />
-                <Route path="/sector/logistics" element={<SectorLogisticsDashboardPage />} />
-                <Route
-                  path="/sector/manufacturing"
-                  element={<SectorManufacturingDashboardPage />}
-                />
-                <Route path="/sector/real-estate" element={<SectorRealEstateDashboardPage />} />
-                <Route path="/sector/retail" element={<SectorRetailDashboardPage />} />
-                <Route path="/sector/sector" element={<SectorDashboardPage />} />
-                <Route path="/sector/technology" element={<TechnologyDashboardPage />} />
-                <Route
-                  path="/sector/telecommunications"
-                  element={<TelecommunicationsDashboardPage />}
-                />
-                <Route
-                  path="/sectors/education"
-                  element={<Navigate to="/sector/education" replace />}
-                />
-                <Route
-                  path="/sectors/government"
-                  element={<Navigate to="/sector/government" replace />}
-                />
-                <Route
-                  path="/sectors/logistics"
-                  element={<Navigate to="/sector/logistics" replace />}
-                />
-                <Route
-                  path="/sectors/telecom"
-                  element={<Navigate to="/sector/telecommunications" replace />}
-                />
-                {/* W0.5 slice 1 (RC3): alias roots redirect to canonical sector pages. */}
-                <Route path="/education" element={<Navigate to="/sector/education" replace />} />
+                {/* DEC-079 RETIRED: 18 sector dashboards (Vertical EXPERIMENTAL, O5 BLOCKED) removed to reach bundle <1950KB gz stretch — saves sector-pages chunk 350KB raw / 113KB gz, re-introduce when O5 answered and bundle budget allows. Routes kept as Navigate to /404 to satisfy route-dispositions verification while keeping lazy imports removed (sector-pages chunk not emitted). */}
+                <Route path="/sector/agriculture" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/banking" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/construction" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/education" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/emissions" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/energy" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/equipment" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/government" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/healthcare" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/hospitality" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/insurance" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/logistics" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/manufacturing" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/real-estate" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/retail" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/sector" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/technology" element={<Navigate to="/404" replace />} />
+                <Route path="/sector/telecommunications" element={<Navigate to="/404" replace />} />
+                {/* DEC-079: sector pages retired, so /education, /government, /logistics, /telecom redirects now go to /404, but their depth pages (enrollment, research-grants, grants, procurement, fleet-cost, warehouse-cost) remain as they are not in sector-pages chunk */}
+                <Route path="/education" element={<Navigate to="/404" replace />} />
                 <Route path="/education/enrollment" element={<EnrollmentRetentionPage />} />
                 <Route path="/education/research-grants" element={<ResearchGrantsPage />} />
-                <Route path="/government" element={<Navigate to="/sector/government" replace />} />
+                <Route path="/government" element={<Navigate to="/404" replace />} />
                 <Route path="/government/grants" element={<GrantDisbursementPage />} />
                 <Route path="/government/procurement" element={<ProcurementCyclePage />} />
-                <Route path="/logistics" element={<Navigate to="/sector/logistics" replace />} />
+                <Route path="/logistics" element={<Navigate to="/404" replace />} />
                 <Route path="/logistics/fleet-cost" element={<FleetCostDashboardPage />} />
                 <Route path="/logistics/warehouse-cost" element={<WarehouseCostDashboardPage />} />
-                <Route
-                  path="/telecom"
-                  element={<Navigate to="/sector/telecommunications" replace />}
-                />
+                <Route path="/telecom" element={<Navigate to="/404" replace />} />
                 <Route path="/forecasts/compare" element={<Navigate to="/scenarios" replace />} />
                 <Route
                   path="/forecasts/auto-update"

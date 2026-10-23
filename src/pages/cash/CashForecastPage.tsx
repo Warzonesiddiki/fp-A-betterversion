@@ -58,7 +58,9 @@ const _moneyAdoptionMarker = (() => {
  */
 export default function CashForecastPage() {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
+  const isLoading = useGLStore((s) => s.isLoading);
+  const importError = useGLStore((s) => s.importError);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,9 +69,6 @@ export default function CashForecastPage() {
 
   const data = useMemo(() => deriveCashPosition(entries), [entries]);
 
-  // Phase 10: with GL-derived AR/AP aging the 13-week ladder the model
-  // used to declare impossible can be shown — as an assumption-stated
-  // settlement expectation, only when open items actually exist.
   const ladder = useMemo(() => {
     if (entries.length === 0) return null;
     const asOf = entries.reduce((max, e) => (e.date > max ? e.date : max), '');
@@ -78,6 +77,35 @@ export default function CashForecastPage() {
     if (aging.items.length === 0) return null;
     return deriveSettlementLadder(entries, { asOf });
   }, [entries]);
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-6" aria-busy="true" aria-label="Loading cash position">
+        <div className="h-8 w-48 bg-[var(--bg-elevated)] rounded animate-pulse" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="h-24 bg-[var(--bg-elevated)] rounded-lg animate-pulse"
+              aria-label="Loading cash data"
+            />
+          ))}
+        </div>
+        <div className="h-64 bg-[var(--bg-elevated)] rounded-lg animate-pulse" />
+        <span className="sr-only">Loading cash position data</span>
+      </div>
+    );
+  }
+
+  if (importError) {
+    return (
+      <div className="p-12 text-center" role="alert" aria-live="assertive">
+        <h2 className="text-xl font-semibold mb-2 text-[var(--negative)]">Failed to load cash data</h2>
+        <p className="text-[var(--text-muted)] mb-6">{importError}</p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </div>
+    );
+  }
 
   const handleExportPDF = () => {
     if (!data) return;
@@ -117,14 +145,14 @@ export default function CashForecastPage() {
       key: 'receipts',
       header: 'Receipts',
       align: 'right',
-      render: (_, r) => <span className="text-green-400">{fmt.currency0(r.receipts)}</span>,
+      render: (_, r) => <span className="text-[var(--positive)]">{fmt.currency0(r.receipts)}</span>,
       sortable: true,
     },
     {
       key: 'disbursements',
       header: 'Disbursements',
       align: 'right',
-      render: (_, r) => <span className="text-red-400">{fmt.currency0(r.disbursements)}</span>,
+      render: (_, r) => <span className="text-[var(--negative)]">{fmt.currency0(r.disbursements)}</span>,
       sortable: true,
     },
     {
@@ -132,7 +160,7 @@ export default function CashForecastPage() {
       header: 'Net',
       align: 'right',
       render: (_, r) => (
-        <span className={r.net >= 0 ? 'text-green-400' : 'text-red-400'}>
+        <span className={r.net >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}>
           {fmt.currency0(r.net)}
         </span>
       ),

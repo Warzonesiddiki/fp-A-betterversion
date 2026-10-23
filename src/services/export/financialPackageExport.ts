@@ -1,5 +1,11 @@
-import ExcelJS from 'exceljs';
 import type { ExactConsolidationResult } from '@/engines/ConsolidationEngine';
+
+async function loadExcelJS() {
+  const mod = await import('exceljs');
+  return (mod.default ?? mod) as any;
+}
+
+type ExcelJS = any;
 import {
   addMoney,
   compareMoney,
@@ -104,7 +110,7 @@ function moneyNum(value: string): number {
 
 const ACCOUNTING_NUM_FMT = '#,##0.00;(#,##0.00);"0.00"';
 
-function makeFormulaCell(formula: string, exactResult: string): ExcelJS.CellFormulaValue {
+function makeFormulaCell(formula: string, exactResult: string): any {
   return {
     formula: assertSafeSpreadsheetFormula(formula),
     result: moneyNum(exactResult),
@@ -119,6 +125,7 @@ export async function buildFormulaPreservingWorkbookBytes(
   result: ExactConsolidationResult,
   metadata: FinancialPackageMetadata
 ): Promise<Uint8Array> {
+  const ExcelJS = await loadExcelJS();
   const workbook = new ExcelJS.Workbook();
   workbook.creator = sanitizeSpreadsheetText(metadata.preparedBy);
   workbook.title = sanitizeSpreadsheetText(
@@ -467,6 +474,7 @@ export async function buildFormulaPreservingWorkbookBytes(
 export async function inspectFormulaWorkbookBytes(
   bytes: Uint8Array
 ): Promise<FormulaWorkbookInspection> {
+  const ExcelJS = await loadExcelJS();
   const workbook = new ExcelJS.Workbook();
   const safeArrayBuffer = bytes.buffer.slice(
     bytes.byteOffset,
@@ -474,14 +482,14 @@ export async function inspectFormulaWorkbookBytes(
   ) as ArrayBuffer;
   await workbook.xlsx.load(safeArrayBuffer);
 
-  const sheetNames = workbook.worksheets.map((ws) => ws.name);
+  const sheetNames = workbook.worksheets.map((ws: any) => ws.name);
   const formulaCells: FormulaCellRecord[] = [];
   const keyedMetrics = new Map<string, string>();
   const sheetRows: Record<string, (string | number | null)[][]> = {};
 
   for (const ws of workbook.worksheets) {
     const rows: (string | number | null)[][] = [];
-    ws.eachRow({ includeEmpty: false }, (row) => {
+    ws.eachRow({ includeEmpty: false }, (row: any) => {
       const rowKey = String(row.getCell(1).value ?? '').trim();
       const rowVals: (string | number | null)[] = [];
       const colLimit = Math.max(row.cellCount, row.actualCellCount);
@@ -506,7 +514,7 @@ export async function inspectFormulaWorkbookBytes(
       }
       rows.push(rowVals);
 
-      row.eachCell((cell) => {
+      row.eachCell((cell: any) => {
         const val = cell.value;
         if (val && typeof val === 'object' && 'formula' in val) {
           const formulaObj = val as { formula?: string; result?: number | string };

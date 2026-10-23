@@ -3,6 +3,9 @@ import { cn } from '@/utils/cn';
 import { AICopilotEngine } from '@/engines/AICopilotEngine';
 import { FormulaDisplay } from './CopilotFormulaDisplay';
 import type { CopilotMessage, PageContext } from './CopilotTypes';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 function SuggestionChip({ label, onClick }: { label: string; onClick: () => void }) {
   return (

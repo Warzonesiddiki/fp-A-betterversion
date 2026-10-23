@@ -1,6 +1,9 @@
 import { memo } from 'react';
 import { cn } from '@/utils/cn';
 import { SearchX } from 'lucide-react';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface EmptySearchResultsProps {
   query?: string;

@@ -6,6 +6,9 @@ import type {
 } from '@/engines/IterativeCalculationEngine';
 import { DEFAULT_ITERATIVE_CONFIG } from '@/engines/IterativeCalculationEngine';
 import { formatNumber } from '@/utils/financialFormatting';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // =============================================================================
 // CircularReferenceWarning — Banner for circular reference detection

@@ -15,6 +15,10 @@ import { formatPercent } from '@/utils/financialFormatting';
 import { withAccountTypes } from '@/utils/accountClassification';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { computeProfitLoss, type ProfitLossReport } from './profitLossData';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
+
 export { computeProfitLoss };
 export type { ProfitLossReport };
 

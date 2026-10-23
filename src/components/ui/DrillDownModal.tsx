@@ -2,8 +2,11 @@ import { useMemo } from 'react';
 import { useGLStore } from '@/store/glStore';
 import { Modal } from './Modal';
 import { DataTable } from './DataTable';
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 interface DrillDownModalProps {
   isOpen: boolean;

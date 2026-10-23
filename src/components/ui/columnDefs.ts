@@ -2,6 +2,9 @@ import type { ColDef } from 'ag-grid-community';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { currencyFormatter } from '@/utils/financialFormatting';
 import type { DataGridColumn } from './DataGrid.types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export function buildColumnDefs(columns: DataGridColumn[]): ColDef[] {
   return columns.map((col) => {

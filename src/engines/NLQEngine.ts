@@ -13,6 +13,7 @@ import { reportingCurrency } from '@/store/financialContextStore';
 import { currencyFormatter } from '@/utils/financialFormatting';
 import { divideMoney, roundTo, sumMoney, toDecimal } from '../utils/money';
 import { now as clockNow } from '@/utils/clock';
+import { verifyNarrative, type VerifiedFact } from '@/services/ai/verifiedFactsGate';
 
 /**
  * MONEY MIGRATION (2026-08-03): All currency-bearing paths (netChange, debit,
@@ -210,7 +211,17 @@ export class NLQEngine {
     const data = this.aggregateGrouped(grouped, metrics, aggregation);
 
     // Generate summary
-    const summary = this.generateSummary(query, data);
+    const rawSummary = this.generateSummary(query, data);
+    // AI-001 verified-facts gate: numbers in NLQ summary must resolve to query results
+    const facts: VerifiedFact[] = data.map((d, idx) => ({
+      label: `data-point-${idx}`,
+      value: d.value,
+      kind: 'money' as const,
+    }));
+    const verdict = verifyNarrative(rawSummary, facts);
+    const summary = verdict.accepted
+      ? rawSummary
+      : `${rawSummary} [GATED: ${verdict.unsupported.length} unsupported number(s) withheld]`;
 
     // Generate chart config
     const chartConfig = query.intent === 'kpi' ? null : this.generateChartConfig(query, data);
@@ -637,6 +648,8 @@ export class NLQEngine {
   // ─── Summary Generation ─────────────────────────────────────────────────
 
   private static generateSummary(query: NLQQuery, data: readonly NLQDataPoint[]): string {
+    // Gating will be applied after summary generation in the caller
+
     if (data.length === 0) return 'No data found for this query.';
 
     // Total is a money sum; use sumMoney + roundTo to keep exact cents.

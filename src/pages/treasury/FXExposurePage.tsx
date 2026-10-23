@@ -1,5 +1,8 @@
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/Button';
@@ -86,14 +89,8 @@ const mockExposures = [
   },
 ];
 
-const netExposureData = mockExposures.map((e) => ({
-  currency: e.currency,
-  gross: divideMoney(e.exposure, 1_000_000).toNumber(),
-  hedged: divideMoney(e.hedged, 1_000_000).toNumber(),
-  unhedged: divideMoney(roundTo(subtractMoney(e.exposure, e.hedged)), 1_000_000).toNumber(),
-}));
-
-const hedgeBreakdown = mockExposures.map((e) => ({ name: e.currency, value: e.hedged }));
+// netExposureData and hedgeBreakdown are computed inside component to respect initialExposures prop
+// (moved inside component for testability, but kept here as fallback for legacy callers)
 
 /** Money-primitive FX exposure totals (GAP-1 F-0006).
  *  Total exposure / hedged / unrealized G/L are exact-decimal summed across
@@ -127,7 +124,15 @@ export function computeFXExposureTotals(exposures: readonly FXExposure[]): FXExp
   return { totalExposure, totalHedged, totalUnrealizedGL, overallHedgeRatio };
 }
 
-export default function FXExposurePage() {
+export default function FXExposurePage({
+  initialExposures,
+  initialError,
+  initialLoading,
+}: {
+  initialExposures?: FXExposure[];
+  initialError?: string | null;
+  initialLoading?: boolean;
+} = {}) {
   const fmt = useCurrencyFormatter();
   const _navigate = useNavigate();
 
@@ -135,8 +140,28 @@ export default function FXExposurePage() {
     document.title = 'FinPlan Pro — FX Exposure';
   }, []);
 
+  const [isLoading] = React.useState(initialLoading ?? false);
+  const [importError, setImportError] = React.useState<string | null>(initialError ?? null);
+  const exposures = initialExposures ?? mockExposures;
+
   const { totalExposure, totalHedged, totalUnrealizedGL, overallHedgeRatio } =
-    computeFXExposureTotals(mockExposures);
+    computeFXExposureTotals(exposures);
+
+  const netExposureData = useMemo(
+    () =>
+      exposures.map((e) => ({
+        currency: e.currency,
+        gross: divideMoney(e.exposure, 1_000_000).toNumber(),
+        hedged: divideMoney(e.hedged, 1_000_000).toNumber(),
+        unhedged: divideMoney(roundTo(subtractMoney(e.exposure, e.hedged)), 1_000_000).toNumber(),
+      })),
+    [exposures]
+  );
+
+  const hedgeBreakdown = useMemo(
+    () => exposures.map((e) => ({ name: e.currency, value: e.hedged })),
+    [exposures]
+  );
 
   const columns: Column[] = useMemo(
     () => [
@@ -198,7 +223,7 @@ export default function FXExposurePage() {
     void ExportEngine.exportToPDF(
       {
         headers: ['Currency', 'Gross Exposure', 'Hedged', 'Hedge Ratio', 'Unrealized G/L'],
-        rows: mockExposures.map((e) => [
+        rows: exposures.map((e) => [
           e.currency,
           fmt.currency0(e.exposure),
           fmt.currency0(e.hedged),
@@ -221,7 +246,7 @@ export default function FXExposurePage() {
           'Spot Rate',
           'Unrealized G/L',
         ],
-        rows: mockExposures.map((e) => [
+        rows: exposures.map((e) => [
           e.currency,
           e.exposure,
           e.hedged,
@@ -236,6 +261,48 @@ export default function FXExposurePage() {
       { title: 'FX_Exposure_Report' }
     ).catch(reportExportFailure);
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader
+          title="FX Exposure"
+          purpose="Foreign currency risk monitoring and hedging status"
+        />
+        <div aria-busy="true" aria-label="Loading FX exposure">
+          <Skeleton className="h-24 w-full" />
+          <span className="sr-only">Loading FX exposure data</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (importError) {
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader
+          title="FX Exposure"
+          purpose="Foreign currency risk monitoring and hedging status"
+        />
+        <ErrorState message={importError} onRetry={() => setImportError(null)} />
+      </div>
+    );
+  }
+
+  if (exposures.length === 0) {
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader
+          title="FX Exposure"
+          purpose="Foreign currency risk monitoring and hedging status"
+        />
+        <EmptyState
+          title="No FX Exposure"
+          description="No currency exposures found. Import FX data to monitor hedging."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -332,7 +399,7 @@ export default function FXExposurePage() {
         <CardContent>
           <DataTable
             columns={columns}
-            data={mockExposures as unknown as Record<string, unknown>[]}
+            data={exposures as unknown as Record<string, unknown>[]}
             pageSize={10}
             caption="Currency exposure detail table"
             ariaLabel="Currency exposure detail data table for FX exposure"

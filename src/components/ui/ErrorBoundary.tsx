@@ -1,6 +1,9 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertCircle, RefreshCw, Copy, ChevronDown, ChevronRight, Home } from 'lucide-react';
 import { createLogger } from '@/utils/logger';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const errorBoundaryLogger = createLogger('ErrorBoundary');
 

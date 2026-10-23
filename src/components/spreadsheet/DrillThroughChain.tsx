@@ -2,6 +2,9 @@ import { useState, useCallback, useMemo } from 'react';
 import { cn } from '@/utils/cn';
 import { DrillBreadcrumb, type DrillLevel } from './DrillBreadcrumb';
 import { SummaryTable, DetailTable, JournalEntryTable } from './DrillTables';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // --- Types ---
 

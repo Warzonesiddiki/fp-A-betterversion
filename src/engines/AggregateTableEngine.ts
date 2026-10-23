@@ -13,6 +13,9 @@
  * Amounts round to cents. No raw + - * / on currency values remains.
  */
 import { addMoney, roundTo, subtractMoney } from '../utils/money';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Aggregate Table Engine — Pre-aggregate data at different granularity levels

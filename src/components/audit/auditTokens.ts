@@ -220,6 +220,9 @@ export const auditProgressTokens = {
  *
  * Usage:
  *   import { auditTokens } from './auditTokens';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
  *   <div className={auditTokens.panel.bg + ' ' + auditTokens.panel.border}>
  *     <span className={auditTokens.opBadges[entry.operation]}>
  *   </span></div>

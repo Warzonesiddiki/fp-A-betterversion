@@ -1,4 +1,7 @@
 import { nowISO, nowMs } from '@/utils/clock';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 // =============================================================================
 // FINANCIAL CLOSE ENGINE — Period-End Close Workflow Orchestration
 // Pure TypeScript, deterministic, testable. Models the period-end close

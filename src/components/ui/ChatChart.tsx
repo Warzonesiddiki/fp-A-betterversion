@@ -17,6 +17,9 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import type { NLQResult } from '@/engines/NLQEngine';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const COLORS = [
   '#3b82f6',

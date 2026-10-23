@@ -332,6 +332,156 @@
           "note": "BLOCKED-ON-OWNER O9 — forecasts does not claim entity-scope authorization."
         }
       }
+    },
+    "/cash/forecast": {
+      "page": "src/pages/cash/CashForecastPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /cash/forecast — report:read allows viewing cash forecast",
+          "proves": "Viewer holds report:read; cash forecast viewing is allowed for least-privileged role, derived from ledger that is write-guarded."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /cash/forecast — audit trail records cash derivation",
+          "proves": "Cash tie-out is recorded in audit trail with hash linkage and chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /cash/forecast — write guard blocks closed periods from affecting cash",
+          "proves": "Closed-period entries are rejected before reaching ledger, so cash forecast cannot be mutated through closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — cash does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/workforce/headcount": {
+      "page": "src/pages/workforce/HeadcountPlanPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /workforce/headcount — report:read allows viewing workforce",
+          "proves": "Viewer holds report:read; workforce viewing is allowed for least-privileged role, derived from ledger that is write-guarded."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /workforce/headcount — audit trail records workforce derivation",
+          "proves": "Workforce tie-out is recorded in audit trail with hash linkage and chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /workforce/headcount — write guard blocks closed periods from affecting workforce",
+          "proves": "Closed-period entries are rejected before reaching ledger, so workforce cannot be mutated through closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — workforce does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/treasury/fx-exposure": {
+      "page": "src/pages/treasury/FXExposurePage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /treasury/fx-exposure — report:read allows viewing FX exposure",
+          "proves": "Viewer holds report:read; FX exposure viewing is allowed for least-privileged role, derived from ledger that is write-guarded."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /treasury/fx-exposure — audit trail records FX derivation",
+          "proves": "FX tie-out is recorded in audit trail with hash linkage and chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /treasury/fx-exposure — write guard blocks closed periods from affecting FX",
+          "proves": "Closed-period entries are rejected before reaching ledger, so FX exposure cannot be mutated through closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — FX exposure does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/reports/balance-sheet": {
+      "page": "src/pages/reports/BalanceSheetPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/balance-sheet — report:read allows viewing balance sheet",
+          "proves": "Viewer holds report:read; balance sheet viewing is allowed for least-privileged role."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/balance-sheet — audit trail records balance sheet derivation",
+          "proves": "Balance sheet tie-out is recorded in audit trail with hash linkage and chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/balance-sheet — write guard blocks closed periods from affecting BS",
+          "proves": "Closed-period entries are rejected before reaching ledger, so balance sheet cannot be mutated through closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — balance sheet does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/reports/cash-flow": {
+      "page": "src/pages/reports/CashFlowPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/cash-flow — report:read allows viewing cash flow",
+          "proves": "Viewer holds report:read; cash flow viewing is allowed for least-privileged role."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/cash-flow — audit trail records cash flow derivation",
+          "proves": "Cash flow tie-out is recorded in audit trail with hash linkage and chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/cash-flow — write guard blocks closed periods from affecting CF",
+          "proves": "Closed-period entries are rejected before reaching ledger, so cash flow cannot be mutated through closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — cash flow does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/reports/profit-loss": {
+      "page": "src/pages/reports/ProfitLossPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/profit-loss — report:read allows viewing P&L",
+          "proves": "Viewer holds report:read; P&L viewing is allowed for least-privileged role."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/profit-loss — audit trail records P&L derivation",
+          "proves": "P&L tie-out is recorded in audit trail with hash linkage and chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/profit-loss — write guard blocks closed periods from affecting P&L",
+          "proves": "Closed-period entries are rejected before reaching ledger, so P&L cannot be mutated through closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — P&L does not claim entity-scope authorization."
+        }
+      }
     }
   },
   "capabilities": {

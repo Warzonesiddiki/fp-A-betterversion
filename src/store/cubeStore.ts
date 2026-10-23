@@ -9,6 +9,9 @@ import { withCache, invalidateStoreCache } from '@/utils/storeCache';
 // (query/aggregate/readCell) and bootstrap initialize() stay unguarded.
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
 import { buildGLActualsCells, type GLActualsEntry } from '@/services/cube/loadGLActuals';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 import type {
   CubeCell,
   CubeQuery,

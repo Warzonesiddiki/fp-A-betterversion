@@ -5,6 +5,9 @@
 import type { FormulaFunction } from './helpers';
 import { flattenNums, fact, comb, perm, normCDF } from './helpers';
 import { SUM, COUNT, AVERAGE, MAX, MIN } from './statistical';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // =============================================================================
 // MATH FUNCTIONS

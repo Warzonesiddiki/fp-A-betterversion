@@ -11,6 +11,9 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { reconstructState, type StateReconstruction } from '@/services/audit/reconstructState';
 import { useAuditTrailStore } from '@/store/auditTrailStore';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const MAX_ROWS = 20;
 

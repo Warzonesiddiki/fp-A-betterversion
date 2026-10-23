@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useTourStore } from '@/store/tourStore';
-import { motion, AnimatePresence } from 'framer-motion';
+// framer-motion removed for bundle diet — CSS transitions only (T011-T013)
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from './Button';
 
@@ -69,13 +69,9 @@ export function TourOverlay() {
         }}
       />
 
-      <AnimatePresence mode="wait">
-        <motion.div
+      <div
           key={currentStepIndex}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="absolute pointer-events-auto bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-6 w-80"
+          className="absolute pointer-events-auto bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-6 w-80 animate-in fade-in slide-in-from-bottom-2 duration-200"
           style={{
             top:
               step.placement === 'bottom'
@@ -121,8 +117,7 @@ export function TourOverlay() {
               </Button>
             </div>
           </div>
-        </motion.div>
-      </AnimatePresence>
+        </div>
     </div>
   );
 }

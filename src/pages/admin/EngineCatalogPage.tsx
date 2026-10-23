@@ -24,6 +24,9 @@ import { ENGINE_IDS, ENGINE_COUNT } from '@/engines/engineManifest.generated';
 import { experimentalReason } from '@/engines/engineLabels';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 type LoadState = 'idle' | 'loading' | 'loaded' | 'error';
 

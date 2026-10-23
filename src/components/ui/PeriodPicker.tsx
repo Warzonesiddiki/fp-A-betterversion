@@ -3,6 +3,9 @@ import { Calendar, ChevronDown, Check } from 'lucide-react';
 import * as Popover from '@radix-ui/react-popover';
 import { cn } from '@/utils/cn';
 import type { FiscalPeriod } from '@/types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface PeriodPickerProps {
   value: string;

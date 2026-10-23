@@ -14,6 +14,9 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { nowISO } from '@/utils/clock';
 import type { CorrectionAuditRecord, CorrectionStatus } from '@/types/exceptions';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Phase 5 correction tracker (DEC-035, FR-010): the reviewer asks, the

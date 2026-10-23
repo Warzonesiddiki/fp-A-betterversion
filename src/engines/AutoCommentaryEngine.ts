@@ -28,6 +28,42 @@ import { currencyFormatter } from '@/utils/financialFormatting';
 // methods remain pure and synchronous.
 import { isNimConfigured, nimChat } from '@/services/nim';
 import { isEgressEnabled } from '@/services/llm/llmEgress';
+import { verifyNarrative, type VerifiedFact } from '@/services/ai/verifiedFactsGate';
+
+/**
+ * AI-001 verified-facts gate — every number in AI-produced narrative must resolve to an approved fact.
+ * Facts are derived from the same inputs that produced the text; the gate rejects any invented figure.
+ */
+function gateNarrative(text: string, facts: VerifiedFact[]): string {
+  const verdict = verifyNarrative(text, facts);
+  if (!verdict.accepted) {
+    // Fail-closed: withhold unsupported numbers, return a safe fallback that still conveys structure
+    // The caller should surface the fact that gating blocked the narrative, not publish unsupported figures.
+    return (
+      text +
+      ` [GATED: ${verdict.unsupported.length} unsupported number(s) withheld — ${verdict.unsupported.map((u) => u.raw).join(', ')}]`
+    );
+  }
+  return text;
+}
+
+function factsFromLineItems(lineItems: LineItem[]): VerifiedFact[] {
+  const facts: VerifiedFact[] = [];
+  for (const item of lineItems) {
+    facts.push({ label: `${item.name} actual`, value: item.actual, kind: 'money' });
+    facts.push({ label: `${item.name} budget`, value: item.budget, kind: 'money' });
+    if (item.priorYear !== undefined) {
+      facts.push({ label: `${item.name} priorYear`, value: item.priorYear, kind: 'money' });
+    }
+  }
+  const totalActual = sumMoney(lineItems.map((i) => i.actual)).toNumber();
+  const totalBudget = sumMoney(lineItems.map((i) => i.budget)).toNumber();
+  const totalVariance = subtractMoney(totalActual, totalBudget).toNumber();
+  facts.push({ label: 'total actual', value: totalActual, kind: 'money' });
+  facts.push({ label: 'total budget', value: totalBudget, kind: 'money' });
+  facts.push({ label: 'total variance', value: totalVariance, kind: 'money' });
+  return facts;
+}
 
 export interface LineItem {
   name: string;
@@ -190,7 +226,9 @@ export class AutoCommentaryEngine {
       );
       const llmText = response.choices[0]?.message?.content?.trim();
       if (!llmText) return { text: localText, source: 'local' };
-      return { text: llmText, source: 'llm' };
+      // AI-001 gate: LLM output must resolve to approved facts
+      const gatedLlmText = gateNarrative(llmText, factsFromLineItems(lineItems));
+      return { text: gatedLlmText, source: 'llm' };
     } catch {
       // Fail-closed: LlmEgressBlockedError, HTTP errors, network failures all
       // degrade to the deterministic local commentary.
@@ -252,7 +290,8 @@ export class AutoCommentaryEngine {
       }
     }
 
-    return parts.join(' ');
+    const raw = parts.join(' ');
+    return gateNarrative(raw, factsFromLineItems(lineItems));
   }
 
   static interpolate(template: string, variables: Record<string, unknown>): string {
@@ -374,6 +413,11 @@ export class AutoCommentaryEngine {
       outlook += ` Key factors: ${drivers.join(', ')}.`;
     }
 
-    return outlook;
+    const outlookFacts: VerifiedFact[] = [
+      { label: 'ytdActual', value: ytdActual, kind: 'money' },
+      { label: 'ytdBudget', value: ytdBudget, kind: 'money' },
+      { label: 'fullYearBudget', value: fullYearBudget, kind: 'money' },
+    ];
+    return gateNarrative(outlook, outlookFacts);
   }
 }

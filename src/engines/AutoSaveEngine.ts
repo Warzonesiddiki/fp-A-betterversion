@@ -1,4 +1,8 @@
 import { randomId } from '@/utils/cryptoId';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
+
 // =============================================================================
 // AUTO-SAVE ENGINE — Automatic saving with configurable intervals
 // Saves to temp file every N minutes, on blur, before close

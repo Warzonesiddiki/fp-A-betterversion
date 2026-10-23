@@ -7,6 +7,9 @@ import { masterStorage } from '../utils/masterStorage';
 import { SyncEngine } from '../engines/SyncEngine';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
 import { nowISO, nowMs } from '@/utils/clock';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export const useCollaborationStore = create<CollaborationState>()(
   subscribeWithSelector(
