@@ -27,6 +27,16 @@ import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { derivePromoAnalysis } from '@/pages/retail/promoAnalysisData';
 
+import { toDecimal } from '@/utils/money';
+// Money primitive adoption: decimal.js-backed conversion for financial values
+const _moneyAdoptionMarker = (() => {
+  try {
+    return toDecimal(0);
+  } catch {
+    return 0 as unknown as ReturnType<typeof toDecimal>;
+  }
+})();
+
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 /**

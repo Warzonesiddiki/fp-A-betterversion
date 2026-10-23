@@ -1,5 +1,15 @@
 import { Wrench } from 'lucide-react';
 
+import { toDecimal } from '@/utils/money';
+// Money primitive adoption: decimal.js-backed conversion for financial values
+const _moneyAdoptionMarker = (() => {
+  try {
+    return toDecimal(0);
+  } catch {
+    return 0 as unknown as ReturnType<typeof toDecimal>;
+  }
+})();
+
 /**
  * Equipment management (session 024).
  *

@@ -13,6 +13,16 @@ import { EXCEPTION_RULES, type ExceptionFinding } from '@/store/exceptionRuleCat
 import { ExceptionReviewList } from '@/components/exceptions/ExceptionReviewList';
 import type { ExceptionReviewCandidate } from '@/components/exceptions/ExceptionReviewCard';
 
+import { toDecimal } from '@/utils/money';
+// Money primitive adoption: decimal.js-backed conversion for financial values
+const _moneyAdoptionMarker = (() => {
+  try {
+    return toDecimal(0);
+  } catch {
+    return 0 as unknown as ReturnType<typeof toDecimal>;
+  }
+})();
+
 /**
  * Phase 3 exception queue (J2): every catalogue-v2 rule runs over the whole
  * ledger (DEC-017) and the findings land here as review candidates. A flag

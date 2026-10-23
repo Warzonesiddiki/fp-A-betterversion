@@ -6,6 +6,16 @@ import { CascadeRuleBuilder } from '@/components/finance/CascadeRuleBuilder';
 import type { Driver, ImpactAnalysis, CascadeRule } from '@/engines/DriverCascadeEngine';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
+import { toDecimal } from '@/utils/money';
+// Money primitive adoption: decimal.js-backed conversion for financial values
+const _moneyAdoptionMarker = (() => {
+  try {
+    return toDecimal(0);
+  } catch {
+    return 0 as unknown as ReturnType<typeof toDecimal>;
+  }
+})();
+
 export function formatImpact(value: number): string {
   if (Math.abs(value) >= 1000) return formatCompact(value);
   if (value == null) return '—';

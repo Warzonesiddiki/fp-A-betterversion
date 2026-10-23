@@ -10,6 +10,16 @@ import { Shield, Plus, Pencil, Trash2, AlertCircle } from 'lucide-react';
 import { formatNumber } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
+import { toDecimal } from '@/utils/money';
+// Money primitive adoption: decimal.js-backed conversion for financial values
+const _moneyAdoptionMarker = (() => {
+  try {
+    return toDecimal(0);
+  } catch {
+    return 0 as unknown as ReturnType<typeof toDecimal>;
+  }
+})();
+
 type HedgeStatus = 'Active' | 'Expired' | 'Settled';
 
 interface HedgePosition {

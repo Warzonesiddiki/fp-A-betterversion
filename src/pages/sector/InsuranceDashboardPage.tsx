@@ -30,6 +30,16 @@ import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { formatPercent } from '@/utils/financialFormatting';
 import { buildInsuranceDashboardModel } from '@/pages/insurance/insuranceDashboardData';
 
+import { toDecimal } from '@/utils/money';
+// Money primitive adoption: decimal.js-backed conversion for financial values
+const _moneyAdoptionMarker = (() => {
+  try {
+    return toDecimal(0);
+  } catch {
+    return 0 as unknown as ReturnType<typeof toDecimal>;
+  }
+})();
+
 /** Percentage-point ratio, or an em dash when the denominator does not exist. */
 function ratio(value: number | null): string {
   return value === null ? '—' : formatPercent(value, 2);

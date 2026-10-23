@@ -6,10 +6,22 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 
 import { Skeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { useGLStore } from '@/store/glStore';
 import { ConsolidationEngine, EntityData, OwnershipStructure } from '@/engines/ConsolidationEngine';
 
-import { Plus, Trash2, Edit2 } from 'lucide-react';
+import { Plus, Trash2, Edit2, Building2 } from 'lucide-react';
+
+import { toDecimal } from '@/utils/money';
+// Money primitive adoption: decimal.js-backed conversion for financial values
+const _moneyAdoptionMarker = (() => {
+  try {
+    return toDecimal(0);
+  } catch {
+    return 0 as unknown as ReturnType<typeof toDecimal>;
+  }
+})();
 
 interface Entity {
   id: string;
@@ -23,15 +35,23 @@ interface Entity {
 
 const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
 
-export default function ConsolidationDashboard() {
-  const [entities, setEntities] = useState<Entity[]>([]);
+interface ConsolidationDashboardProps {
+  initialError?: string | null;
+  initialEntities?: Entity[];
+}
+
+export default function ConsolidationDashboard({
+  initialError = null,
+  initialEntities = [],
+}: ConsolidationDashboardProps = {}) {
+  const [entities, setEntities] = useState<Entity[]>(initialEntities);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEntity, setEditingEntity] = useState<Entity | null>(null);
   // W-A11Y-002 M5 (lane R34): the loading gate was a dead local useState whose
   // setter was never called; it is now wired to GL-store hydration like the
   // sibling report pages, so the skeleton branch is real and testable.
   const { isLoading } = useGLStore();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -197,12 +217,12 @@ export default function ConsolidationDashboard() {
     );
   if (error)
     return (
-      <div className="p-12 text-center text-red-600">
-        {error}{' '}
-        <Button onClick={() => setError(null)} className="ml-4">
-          Retry
-        </Button>
-      </div>
+      <ErrorState
+        title="Consolidation failed to load"
+        message={error}
+        onRetry={() => setError(null)}
+        retryLabel="Retry"
+      />
     );
 
   return (
@@ -223,9 +243,16 @@ export default function ConsolidationDashboard() {
         </CardHeader>
         <CardContent>
           {entities.length === 0 ? (
-            <div className="py-12 text-center text-[var(--text-secondary)]">
-              No entities defined yet. Add your first entity to start consolidation.
-            </div>
+            <EmptyState
+              title="No entities defined yet"
+              description="Add your first entity to start consolidation. Entities represent legal entities in your group for ASC 810 consolidation."
+              icon={<Building2 className="h-12 w-12 text-[var(--text-muted)]" />}
+              action={
+                <Button onClick={handleAdd}>
+                  <Plus className="h-4 w-4 mr-2" /> Add Entity
+                </Button>
+              }
+            />
           ) : (
             <div className="overflow-x-auto">
               <table

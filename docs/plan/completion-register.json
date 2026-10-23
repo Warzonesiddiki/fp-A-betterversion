@@ -23,7 +23,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — file import proven (Gate 2); connector classes for QuickBooks/NetSuite/Xero/Sage/Dynamics(CRM)/Salesforce/Stripe/Plaid/Slack exist, **0 wired**; SAP/Oracle/Workday/HRIS/billing/e-comm/DB direct/market/economic feeds MISSING; OCR/email/SFTP MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 file import proven (Gate 2); connector classes for QuickBooks/NetSuite/Xero/Sage/Dynamics(CRM)/Salesforce/Stripe/Plaid/Slack exist, **0 wired**; SAP/Oracle/Workday/HRIS/billing/e-comm/DB direct/market/economic feeds MISSING; OCR/email/SFTP MISSING\"."
     },
     {
       "kind": "annex",
@@ -32,7 +32,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — exact pipeline built/tested with independent CTA/elimination oracle; FX/CTA/IC engines built; UI per DEC-012; PPA + goodwill impairment engine built (AcquisitionAccounting, ASC 805/350 oracles, labelled EXPERIMENTAL — no acquisition workflow UI yet); legacy worksheet goodwill no longer emits a wrong ASC-350 amortization; VIE remains a consolidation-engine path without a dedicated oracle\"."
+      "note": "Checklist status \"PARTIAL \u2014 exact pipeline built/tested with independent CTA/elimination oracle; FX/CTA/IC engines built; UI per DEC-012; PPA + goodwill impairment engine built (AcquisitionAccounting, ASC 805/350 oracles, labelled EXPERIMENTAL \u2014 no acquisition workflow UI yet); legacy worksheet goodwill no longer emits a wrong ASC-350 amortization; VIE remains a consolidation-engine path without a dedicated oracle\"."
     },
     {
       "kind": "annex",
@@ -41,7 +41,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — money primitive exact; GLEntry numbers remain (F-A); stress suites exist, 100M-txn UNPROVEN\"."
+      "note": "Checklist status \"PARTIAL \u2014 money primitive exact; GLEntry numbers remain (F-A); stress suites exist, 100M-txn UNPROVEN\"."
     },
     {
       "kind": "annex",
@@ -50,7 +50,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — license inventory script exists; DPA/SLA/support-matrix docs PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 license inventory script exists; DPA/SLA/support-matrix docs PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -59,7 +59,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — backup/restore tested; DR drill/cloud failover DECIDE\"."
+      "note": "Checklist status \"PARTIAL \u2014 backup/restore tested; DR drill/cloud failover DECIDE\"."
     },
     {
       "kind": "annex",
@@ -68,7 +68,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"UNWIRED — plugin SDK exists; REST/GraphQL/webhooks MISSING; server 0 frontend callers (DEC-011)\"."
+      "note": "Checklist status \"UNWIRED \u2014 plugin SDK exists; REST/GraphQL/webhooks MISSING; server 0 frontend callers (DEC-011)\"."
     },
     {
       "kind": "annex",
@@ -77,7 +77,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — shortcut system exists; financial-shortcut map PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 shortcut system exists; financial-shortcut map PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -86,7 +86,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — demo company + sector fixtures exist (labelled); sample-co rollback PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 demo company + sector fixtures exist (labelled); sample-co rollback PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -104,7 +104,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — decimal money + JPY/BHD precision in money layer; DBL-zero/unicode/orphan handling PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 decimal money + JPY/BHD precision in money layer; DBL-zero/unicode/orphan handling PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -131,7 +131,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — statements + oracles strong; changes-in-equity + direct-method operating CF derived and tied (Phase 9); XBRL EXPERIMENTAL (DEC-021); scheduler governed, distribution manual; report designer now GL-wired with cube tie-out (Phase 14)\"."
+      "note": "Checklist status \"PARTIAL \u2014 statements + oracles strong; changes-in-equity + direct-method operating CF derived and tied (Phase 9); XBRL EXPERIMENTAL (DEC-021); scheduler governed, distribution manual; report designer now GL-wired with cube tie-out (Phase 14)\"."
     },
     {
       "kind": "annex",
@@ -230,7 +230,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — widget/chart estate large; sector $0-KPI flaw class EVIDENCE-OWED (W6-P0-06); real-time refresh is local-state only\"."
+      "note": "Checklist status \"PARTIAL \u2014 widget/chart estate large; sector $0-KPI flaw class EVIDENCE-OWED (W6-P0-06); real-time refresh is local-state only\"."
     },
     {
       "kind": "annex",
@@ -329,7 +329,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — RatioAnalysis engine; variance pages use prefix rollups + canned drivers (must purge); price/volume/mix engines PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 RatioAnalysis engine; variance pages use prefix rollups + canned drivers (must purge); price/volume/mix engines PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -428,7 +428,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — CashEngine/13-week model disclosures; bank rec page built; bank-format imports (OFX/BAI2/MT940/CAMT) MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 CashEngine/13-week model disclosures; bank rec page built; bank-format imports (OFX/BAI2/MT940/CAMT) MISSING\"."
     },
     {
       "kind": "annex",
@@ -527,7 +527,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — DebtSchedule/Loan/Bond engines; covenant tracking PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 DebtSchedule/Loan/Bond engines; covenant tracking PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -626,7 +626,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — TaxEngine/provision page; transfer pricing rebuilt on entered benchmarks (Phase 8: `tpBenchmarkStore` + `applyBenchmarks`, both tested; out-of-range flags labelled judgement calls); jurisdiction packs still MISSING (E4)\"."
+      "note": "Checklist status \"PARTIAL \u2014 TaxEngine/provision page; transfer pricing rebuilt on entered benchmarks (Phase 8: `tpBenchmarkStore` + `applyBenchmarks`, both tested; out-of-range flags labelled judgement calls); jurisdiction packs still MISSING (E4)\"."
     },
     {
       "kind": "annex",
@@ -725,7 +725,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — LeaseEngine + dashboard; disclosure pack PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 LeaseEngine + dashboard; disclosure pack PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -824,7 +824,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — RevRecEngine + dashboard; contract DB PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 RevRecEngine + dashboard; contract DB PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -923,7 +923,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — pages decontaminated (Phase 10): comp modelling + headcount derive from actual employee records; planned headcount/attrition not displayed (no source data); WorkforceEngine paths remain\"."
+      "note": "Checklist status \"PARTIAL \u2014 pages decontaminated (Phase 10): comp modelling + headcount derive from actual employee records; planned headcount/attrition not displayed (no source data); WorkforceEngine paths remain\"."
     },
     {
       "kind": "annex",
@@ -1022,7 +1022,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — encrypted blob KV works; SQLite schema exists unwritten by client; staging pipeline UNWIRED; OLAP cube engines ×6 UNWIRED/PARTIAL; lineage/quality engines UNWIRED\"."
+      "note": "Checklist status \"PARTIAL \u2014 encrypted blob KV works; SQLite schema exists unwritten by client; staging pipeline UNWIRED; OLAP cube engines \u00d76 UNWIRED/PARTIAL; lineage/quality engines UNWIRED\"."
     },
     {
       "kind": "annex",
@@ -1031,7 +1031,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL/SHALLOW — sector pages largely template clones; CRM pipeline is connector-only\"."
+      "note": "Checklist status \"PARTIAL/SHALLOW \u2014 sector pages largely template clones; CRM pipeline is connector-only\"."
     },
     {
       "kind": "annex",
@@ -1049,7 +1049,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — construction/job-cost pieces; WIP/%-complete PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 construction/job-cost pieces; WIP/%-complete PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1058,7 +1058,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — NPV/IRR engines; IRR flaw class EVIDENCE-OWED (W6-P0-16); DCF/comps/LBO PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 NPV/IRR engines; IRR flaw class EVIDENCE-OWED (W6-P0-16); DCF/comps/LBO PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1067,7 +1067,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — copilot/NLQ/commentary behind flags; verified-facts gate BUILT (Phase 13, DEC-022: `verifyNarrative` + AI-001 corpus, wired at the NLQ boundary — unsupported figures are withheld, never published); ML forecasting still MISSING (statistical only, E3)\"."
+      "note": "Checklist status \"PARTIAL \u2014 copilot/NLQ/commentary behind flags; verified-facts gate BUILT (Phase 13, DEC-022: `verifyNarrative` + AI-001 corpus, wired at the NLQ boundary \u2014 unsupported figures are withheld, never published); ML forecasting still MISSING (statistical only, E3)\"."
     },
     {
       "kind": "annex",
@@ -1076,7 +1076,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — workflow engines ×6 (duplicated); close checklist built; approvals PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 workflow engines \u00d76 (duplicated); close checklist built; approvals PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1085,7 +1085,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — SOX engine reports not-evaluated by design (authority = owner DEC, still pending); XBRL engine EXPERIMENTAL-labelled (DEC-021, export withheld until taxonomy validation exists); ESG frameworks PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 SOX engine reports not-evaluated by design (authority = owner DEC, still pending); XBRL engine EXPERIMENTAL-labelled (DEC-021, export withheld until taxonomy validation exists); ESG frameworks PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1094,7 +1094,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — AST census pins 409 Zustand store actions (302 guarded, 107 explicit reasoned exceptions); failing-first denial tests cover consequential actions. Production callers cannot reach imported store `setState` directly; 401 refresh delegates through an auth-store action. `authStore.register` is disabled in production and when mock auth is off. `getCurrentUser()` requires `isAuthenticated`. N3 remains active; `authStore.switchEntity` is owner-blocked under O9 until authorized entity scope is defined. MFA/SSO/ABAC/cell-level authorization remain MISSING; offline auth is governed by DEC-014.\"."
+      "note": "Checklist status \"PARTIAL \u2014 AST census pins 409 Zustand store actions (302 guarded, 107 explicit reasoned exceptions); failing-first denial tests cover consequential actions. Production callers cannot reach imported store `setState` directly; 401 refresh delegates through an auth-store action. `authStore.register` is disabled in production and when mock auth is off. `getCurrentUser()` requires `isAuthenticated`. N3 remains active; `authStore.switchEntity` is owner-blocked under O9 until authorized entity scope is defined. MFA/SSO/ABAC/cell-level authorization remain MISSING; offline auth is governed by DEC-014.\"."
     },
     {
       "kind": "annex",
@@ -1103,7 +1103,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — import pipeline + staging (UNWIRED); visual pipeline designer MISSING; rollback = undo-batch only\"."
+      "note": "Checklist status \"PARTIAL \u2014 import pipeline + staging (UNWIRED); visual pipeline designer MISSING; rollback = undo-batch only\"."
     },
     {
       "kind": "annex",
@@ -1112,7 +1112,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — canonical subset DECLARED (DEC-020: SafeMathParser, Excel-known-answer oracle suite MISSION E passes); W6-P0-01 silent-zero class guard witness added in the batch worker (erroring cells named, prior values kept); duplicate formula/cube engines remain for Phase 14 retire-or-wire\"."
+      "note": "Checklist status \"PARTIAL \u2014 canonical subset DECLARED (DEC-020: SafeMathParser, Excel-known-answer oracle suite MISSION E passes); W6-P0-01 silent-zero class guard witness added in the batch worker (erroring cells named, prior values kept); duplicate formula/cube engines remain for Phase 14 retire-or-wire\"."
     },
     {
       "kind": "annex",
@@ -1121,7 +1121,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — spreadsheet components + AG Grid; cell lineage store exists; 100k-row virtualization bench exists\"."
+      "note": "Checklist status \"PARTIAL \u2014 spreadsheet components + AG Grid; cell lineage store exists; 100k-row virtualization bench exists\"."
     },
     {
       "kind": "annex",
@@ -1130,7 +1130,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — account types + COA domain exist; hierarchies/templates/mapping wizard PARTIAL; merge/split, impact analysis MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 account types + COA domain exist; hierarchies/templates/mapping wizard PARTIAL; merge/split, impact analysis MISSING\"."
     },
     {
       "kind": "annex",
@@ -1139,7 +1139,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"UNWIRED — DocumentEngine 0 consumers; documentStore exists\"."
+      "note": "Checklist status \"UNWIRED \u2014 DocumentEngine 0 consumers; documentStore exists\"."
     },
     {
       "kind": "annex",
@@ -1148,7 +1148,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — XLSX/PDF/PPTX(board) built; DOCX/HTML/JSON/XML PARTIAL; print PARTIAL; bursting/distribution MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 XLSX/PDF/PPTX(board) built; DOCX/HTML/JSON/XML PARTIAL; print PARTIAL; bursting/distribution MISSING\"."
     },
     {
       "kind": "annex",
@@ -1157,7 +1157,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — notification store + Tauri notifications; alert rule builder MISSING; email/push channels DECIDE (egress, DEC-003)\"."
+      "note": "Checklist status \"PARTIAL \u2014 notification store + Tauri notifications; alert rule builder MISSING; email/push channels DECIDE (egress, DEC-003)\"."
     },
     {
       "kind": "annex",
@@ -1166,7 +1166,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — settings/integrations pages built; feature toggles/license PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 settings/integrations pages built; feature toggles/license PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1175,7 +1175,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — bench/load suites exist (Monte Carlo, 100k grid, chaos); millions-of-rows UNPROVEN on blob store\"."
+      "note": "Checklist status \"PARTIAL \u2014 bench/load suites exist (Monte Carlo, 100k grid, chaos); millions-of-rows UNPROVEN on blob store\"."
     },
     {
       "kind": "annex",
@@ -1184,7 +1184,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — desktop-local by design; offline sign-in broken (DEC-014); sync/conflict N/A in single-user v1 = DECIDE for team mode\"."
+      "note": "Checklist status \"PARTIAL \u2014 desktop-local by design; offline sign-in broken (DEC-014); sync/conflict N/A in single-user v1 = DECIDE for team mode\"."
     },
     {
       "kind": "annex",
@@ -1193,7 +1193,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — i18n en/ar parity proven; RTL exists; 10-language set MISSING; locale number/date formats PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 i18n en/ar parity proven; RTL exists; 10-language set MISSING; locale number/date formats PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1202,7 +1202,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — help pages/\\_docs map; tutorials/tours store exists; demo company exists as mock-data (must stay labelled)\"."
+      "note": "Checklist status \"PARTIAL \u2014 help pages/\\_docs map; tutorials/tours store exists; demo company exists as mock-data (must stay labelled)\"."
     },
     {
       "kind": "annex",
@@ -1211,7 +1211,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"WORKS as discipline (15k tests, ratchets) — gaps named per row in this annex\"."
+      "note": "Checklist status \"WORKS as discipline (15k tests, ratchets) \u2014 gaps named per row in this annex\"."
     },
     {
       "kind": "annex",
@@ -1220,7 +1220,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — Tauri packaging config; signing/notarization/updater UNVERIFIED (native); delta updates MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 Tauri packaging config; signing/notarization/updater UNVERIFIED (native); delta updates MISSING\"."
     },
     {
       "kind": "annex",
@@ -1229,7 +1229,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — import GL proven; manual/recurring/reversing JE UI PARTIAL; approvals/attachments PARTIAL; double-entry enforced in store\"."
+      "note": "Checklist status \"PARTIAL \u2014 import GL proven; manual/recurring/reversing JE UI PARTIAL; approvals/attachments PARTIAL; double-entry enforced in store\"."
     },
     {
       "kind": "annex",
@@ -1238,7 +1238,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — plugin system + sandbox (escape class EVIDENCE-OWED W6-P0-02/03); custom fields/KPI PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 plugin system + sandbox (escape class EVIDENCE-OWED W6-P0-02/03); custom fields/KPI PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1247,7 +1247,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — backup/restore built + tested; key escrow MISSING (owner DEC, F-B); scheduled/cloud backup DECIDE (egress)\"."
+      "note": "Checklist status \"PARTIAL \u2014 backup/restore built + tested; key escrow MISSING (owner DEC, F-B); scheduled/cloud backup DECIDE (egress)\"."
     },
     {
       "kind": "annex",
@@ -1256,7 +1256,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL/SHALLOW — 18 sector packs, mostly template clones (F-E)\"."
+      "note": "Checklist status \"PARTIAL/SHALLOW \u2014 18 sector packs, mostly template clones (F-E)\"."
     },
     {
       "kind": "annex",
@@ -1265,7 +1265,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — pillar nav; command palette MISSING (global search engine UNWIRED); tabs/split PARTIAL; 242-route overload\"."
+      "note": "Checklist status \"PARTIAL \u2014 pillar nav; command palette MISSING (global search engine UNWIRED); tabs/split PARTIAL; 242-route overload\"."
     },
     {
       "kind": "annex",
@@ -1274,7 +1274,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — Office/Google/Slack surfaces PARTIAL (Slack connector UNWIRED); Excel add-in/Teams/BI bridges MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 Office/Google/Slack surfaces PARTIAL (Slack connector UNWIRED); Excel add-in/Teams/BI bridges MISSING\"."
     },
     {
       "kind": "annex",
@@ -1283,7 +1283,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — F-0015 SHA-256 chain + R-009 reconstruction remain proven. N2 evidence: `AuditTrailPage` consumes persisted `auditTrailStore` via typed adapter (20 tests); persistence compatibility test exercises v0→v1 migration contract, preserves entries + chain head, and verifies restored chain (7 persistence tests total); `npm run tsc` passes. `docs/architecture/AUDIT_CHAIN_REACHABILITY.md` maps additional paths. DEC-025 selects `auditTrailStore` as client-side canonical chain; DEC-026–028 retire EventLedger and three unconsumed in-memory audit engines (`CellAuditTrailEngine`, `AuditEngine`, `AuditTrailEngine`) with no production writers or persisted data. Server integration/retirement remains Q6 and SOX authority remains O4. Retirement evidence: `rbacMatrixCompleteness.test.ts` 9/9; regenerated capability matrix omits retired prototypes; current README count 48 Zustand stores, 43 persisted. Period-close remains separate and unanchored after DEC-030 repairs per-period append-order verification; `periodCloseStore.test.ts` + `PeriodClosePage.test.tsx` pass 50/50 and relevant gates pass; it is not SOX/general-audit proof. DEC-029 retains cell-lineage as separate local-draft state with v1→v2 reconstruction and digest-verification unit evidence, but no production caller/native restart or general-audit adapter. DEC-031 retains `AuditLogger` only as an isolated in-memory helper with snapshot compatibility; `SecretRotation-AuditLogger.test.ts` (63/63) and `SecretsVault.test.ts` (75/75) pass, but their callback bridge/mocks are not production wiring. DEC-032 retains `PIIRedactor` as an isolated in-memory helper (70 tests); no production caller/persistence was found, and prior policy claims of product-wide redaction are now marked unverified. Historic policy/A11Y integration claims are not runtime evidence. Server authority remains Q6-blocked. Do not claim one canonical product-wide audit chain. DEC-038 reversion attribution: authenticated per-call actor, historical record preserved, stale-session/Viewer/partial-permission denials; `auditTrailStore.attribution.test.ts` (6 tests); combined trust slice 8 files / 204 tests (2026-10-20). No ledger rollback or native/compliance proof.\"."
+      "note": "Checklist status \"PARTIAL \u2014 F-0015 SHA-256 chain + R-009 reconstruction remain proven. N2 evidence: `AuditTrailPage` consumes persisted `auditTrailStore` via typed adapter (20 tests); persistence compatibility test exercises v0\u2192v1 migration contract, preserves entries + chain head, and verifies restored chain (7 persistence tests total); `npm run tsc` passes. `docs/architecture/AUDIT_CHAIN_REACHABILITY.md` maps additional paths. DEC-025 selects `auditTrailStore` as client-side canonical chain; DEC-026\u2013028 retire EventLedger and three unconsumed in-memory audit engines (`CellAuditTrailEngine`, `AuditEngine`, `AuditTrailEngine`) with no production writers or persisted data. Server integration/retirement remains Q6 and SOX authority remains O4. Retirement evidence: `rbacMatrixCompleteness.test.ts` 9/9; regenerated capability matrix omits retired prototypes; current README count 48 Zustand stores, 43 persisted. Period-close remains separate and unanchored after DEC-030 repairs per-period append-order verification; `periodCloseStore.test.ts` + `PeriodClosePage.test.tsx` pass 50/50 and relevant gates pass; it is not SOX/general-audit proof. DEC-029 retains cell-lineage as separate local-draft state with v1\u2192v2 reconstruction and digest-verification unit evidence, but no production caller/native restart or general-audit adapter. DEC-031 retains `AuditLogger` only as an isolated in-memory helper with snapshot compatibility; `SecretRotation-AuditLogger.test.ts` (63/63) and `SecretsVault.test.ts` (75/75) pass, but their callback bridge/mocks are not production wiring. DEC-032 retains `PIIRedactor` as an isolated in-memory helper (70 tests); no production caller/persistence was found, and prior policy claims of product-wide redaction are now marked unverified. Historic policy/A11Y integration claims are not runtime evidence. Server authority remains Q6-blocked. Do not claim one canonical product-wide audit chain. DEC-038 reversion attribution: authenticated per-call actor, historical record preserved, stale-session/Viewer/partial-permission denials; `auditTrailStore.attribution.test.ts` (6 tests); combined trust slice 8 files / 204 tests (2026-10-20). No ledger rollback or native/compliance proof.\"."
     },
     {
       "kind": "annex",
@@ -1292,7 +1292,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — error boundaries per route group; chaos benches exist; crash recovery engine UNWIRED\"."
+      "note": "Checklist status \"PARTIAL \u2014 error boundaries per route group; chaos benches exist; crash recovery engine UNWIRED\"."
     },
     {
       "kind": "annex",
@@ -1301,7 +1301,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — GDPR events; SOX/COSO PARTIAL; HIPAA/PCI/Basel etc = DECIDE (sector packs, E4/E5)\"."
+      "note": "Checklist status \"PARTIAL \u2014 GDPR events; SOX/COSO PARTIAL; HIPAA/PCI/Basel etc = DECIDE (sector packs, E4/E5)\"."
     },
     {
       "kind": "annex",
@@ -1310,7 +1310,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — migration page exists; onboarding wizard built; parallel-run support = the plan's §19 acceptance itself\"."
+      "note": "Checklist status \"PARTIAL \u2014 migration page exists; onboarding wizard built; parallel-run support = the plan's \u00a719 acceptance itself\"."
     },
     {
       "kind": "annex",
@@ -1319,7 +1319,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — OLAP/pivot/benchmark pages built on engines PARTIAL; cohort/regression/clustering MISSING as governed features\"."
+      "note": "Checklist status \"PARTIAL \u2014 OLAP/pivot/benchmark pages built on engines PARTIAL; cohort/regression/clustering MISSING as governed features\"."
     },
     {
       "kind": "annex",
@@ -1328,7 +1328,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"UNWIRED/MISSING — WorkingCapital scalar AR only; cash-forecast self-discloses no AR sub-ledger\"."
+      "note": "Checklist status \"UNWIRED/MISSING \u2014 WorkingCapital scalar AR only; cash-forecast self-discloses no AR sub-ledger\"."
     },
     {
       "kind": "annex",
@@ -1337,7 +1337,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — board pack is the flagship (tie-out tested); portal/watermark/versioning PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 board pack is the flagship (tie-out tested); portal/watermark/versioning PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1346,7 +1346,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — SaaS metrics engine; revenue waterfall/RPO/cohorts PARTIAL; pricing-elasticity MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 SaaS metrics engine; revenue waterfall/RPO/cohorts PARTIAL; pricing-elasticity MISSING\"."
     },
     {
       "kind": "annex",
@@ -1355,7 +1355,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — allocation engines (step-down/reciprocal components); CVP/break-even engines exist UNWIRED/PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 allocation engines (step-down/reciprocal components); CVP/break-even engines exist UNWIRED/PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1364,7 +1364,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — cash waterfall engine; FCFF/FCFE/quality-of-earnings PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 cash waterfall engine; FCFF/FCFE/quality-of-earnings PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1373,7 +1373,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — customer/product/channel P&L pages PARTIAL; fully-loaded costing depends on §52\"."
+      "note": "Checklist status \"PARTIAL \u2014 customer/product/channel P&L pages PARTIAL; fully-loaded costing depends on \u00a752\"."
     },
     {
       "kind": "annex",
@@ -1382,7 +1382,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — CreditRisk engine; VaR/heat-map/KRI PARTIAL; fraud indicators feed J2 rules (§7)\"."
+      "note": "Checklist status \"PARTIAL \u2014 CreditRisk engine; VaR/heat-map/KRI PARTIAL; fraud indicators feed J2 rules (\u00a77)\"."
     },
     {
       "kind": "annex",
@@ -1391,7 +1391,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — ESG dashboards/CSRD generator; framework templates (GRI/SASB/TCFD/CSRD/ISSB) PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 ESG dashboards/CSRD generator; framework templates (GRI/SASB/TCFD/CSRD/ISSB) PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1400,7 +1400,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — insurance dashboard/underwriting; claims register MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 insurance dashboard/underwriting; claims register MISSING\"."
     },
     {
       "kind": "annex",
@@ -1409,7 +1409,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — government/education leaves FUNCTIONAL in spots; fund accounting PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 government/education leaves FUNCTIONAL in spots; fund accounting PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1418,7 +1418,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — contract facts feed rev-rec; repository/alerts MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 contract facts feed rev-rec; repository/alerts MISSING\"."
     },
     {
       "kind": "annex",
@@ -1427,7 +1427,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"MISSING native (as §5)\"."
+      "note": "Checklist status \"MISSING native (as \u00a75)\"."
     },
     {
       "kind": "annex",
@@ -1436,7 +1436,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — real-estate dashboard FUNCTIONAL(high) per gap report; rent roll/CAM PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 real-estate dashboard FUNCTIONAL(high) per gap report; rent roll/CAM PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1454,7 +1454,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — inventory planning pages; valuation methods/landed cost PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 inventory planning pages; valuation methods/landed cost PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1463,7 +1463,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — SaaSMetricsEngine + dashboards; cohort/CAC-magic-number PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 SaaSMetricsEngine + dashboards; cohort/CAC-magic-number PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1472,7 +1472,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — equity plans section MISSING; 409A/comps PARTIAL; banding PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 equity plans section MISSING; 409A/comps PARTIAL; banding PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1481,7 +1481,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — cash positioning/hedging/investments PARTIAL; payment factory (ACH/SEPA/Wire formats) MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 cash positioning/hedging/investments PARTIAL; payment factory (ACH/SEPA/Wire formats) MISSING\"."
     },
     {
       "kind": "annex",
@@ -1490,7 +1490,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — IC matching/forensics engines; IC fees/royalties PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 IC matching/forensics engines; IC fees/royalties PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1499,7 +1499,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — country registers/templates MISSING by jurisdiction\"."
+      "note": "Checklist status \"PARTIAL \u2014 country registers/templates MISSING by jurisdiction\"."
     },
     {
       "kind": "annex",
@@ -1508,7 +1508,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — SOX suite (authority undecided, §25)\"."
+      "note": "Checklist status \"PARTIAL \u2014 SOX suite (authority undecided, \u00a725)\"."
     },
     {
       "kind": "annex",
@@ -1517,7 +1517,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — modelling framework/pack exists; SWOT/PESTEL/Porter/Boston PARTIAL; OKR/scorecard pages exist\"."
+      "note": "Checklist status \"PARTIAL \u2014 modelling framework/pack exists; SWOT/PESTEL/Porter/Boston PARTIAL; OKR/scorecard pages exist\"."
     },
     {
       "kind": "annex",
@@ -1526,7 +1526,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — Depreciation/CapEx engines exist; register/dual tax-book PARTIAL/UNWIRED\"."
+      "note": "Checklist status \"PARTIAL \u2014 Depreciation/CapEx engines exist; register/dual tax-book PARTIAL/UNWIRED\"."
     },
     {
       "kind": "annex",
@@ -1544,7 +1544,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — banking dashboard FUNCTIONAL(high); CECL/ALM/Basel calculators MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 banking dashboard FUNCTIONAL(high); CECL/ALM/Basel calculators MISSING\"."
     },
     {
       "kind": "annex",
@@ -1553,7 +1553,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — insurance dashboard (as §57); reserving/IFRS 17 MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 insurance dashboard (as \u00a757); reserving/IFRS 17 MISSING\"."
     },
     {
       "kind": "annex",
@@ -1562,7 +1562,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — healthcare payroll verified in spots; payer mix/case mix MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 healthcare payroll verified in spots; payer mix/case mix MISSING\"."
     },
     {
       "kind": "annex",
@@ -1571,7 +1571,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — retail leaf FUNCTIONAL; same-store/marketplace fees PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 retail leaf FUNCTIONAL; same-store/marketplace fees PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1580,7 +1580,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — manufacturing dashboard FUNCTIONAL(high); standard cost/absorption/EVM-depth PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 manufacturing dashboard FUNCTIONAL(high); standard cost/absorption/EVM-depth PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1589,7 +1589,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — buildingSuite; EVM (CPI/SPI/EAC) PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 buildingSuite; EVM (CPI/SPI/EAC) PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1598,7 +1598,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — SOW/process leaves; utilization-pyramid PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 SOW/process leaves; utilization-pyramid PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1607,7 +1607,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — oil&gas leaves (MRL class); rate case/fuel hedging PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 oil&gas leaves (MRL class); rate case/fuel hedging PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1616,7 +1616,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — ITBM leaf set exists; TBM taxonomy/apptio-style PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 ITBM leaf set exists; TBM taxonomy/apptio-style PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1625,7 +1625,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — budgets/BvA built; seeding/spreading/versions PARTIAL; cascade-token flaw class EVIDENCE-OWED (W6-P0-15)\"."
+      "note": "Checklist status \"PARTIAL \u2014 budgets/BvA built; seeding/spreading/versions PARTIAL; cascade-token flaw class EVIDENCE-OWED (W6-P0-15)\"."
     },
     {
       "kind": "annex",
@@ -1634,7 +1634,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — workforce pages (decontamination owed, §19); compa-ratio/attrition-cost PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 workforce pages (decontamination owed, \u00a719); compa-ratio/attrition-cost PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1643,7 +1643,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — churn dashboards; segment PnL/DHCO PARTIAL; CLV models MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 churn dashboards; segment PnL/DHCO PARTIAL; CLV models MISSING\"."
     },
     {
       "kind": "annex",
@@ -1652,7 +1652,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — forecasting engines (exponential smoothing etc.); ARIMA/Holt-Winters/Bayesian/Prophet/GBM MISSING; confidence intervals PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 forecasting engines (exponential smoothing etc.); ARIMA/Holt-Winters/Bayesian/Prophet/GBM MISSING; confidence intervals PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1661,7 +1661,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — reference-data owners PARTIAL; retention/enrichment MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 reference-data owners PARTIAL; retention/enrichment MISSING\"."
     },
     {
       "kind": "annex",
@@ -1670,7 +1670,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — AI commentary UNWIRED to proof; PDF board books PARTIAL; annotation PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 AI commentary UNWIRED to proof; PDF board books PARTIAL; annotation PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1679,7 +1679,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — fiscal/planning calendar pages; filing-deadline MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 fiscal/planning calendar pages; filing-deadline MISSING\"."
     },
     {
       "kind": "annex",
@@ -1688,7 +1688,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — driver registry exists; sensitivity-of-assumption PARTIAL; inflation/FX forecast tables PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 driver registry exists; sensitivity-of-assumption PARTIAL; inflation/FX forecast tables PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1706,7 +1706,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — workflow/rules engines duplicated; scheduled auto-posting PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 workflow/rules engines duplicated; scheduled auto-posting PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1715,7 +1715,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"UNWIRED — searchExpr engine 0 consumers; palette MISSING\"."
+      "note": "Checklist status \"UNWIRED \u2014 searchExpr engine 0 consumers; palette MISSING\"."
     },
     {
       "kind": "annex",
@@ -1724,7 +1724,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — Scenario/WhatIf/Sensitivity/MonteCarlo engines + worker; goal-seek page exists\"."
+      "note": "Checklist status \"PARTIAL \u2014 Scenario/WhatIf/Sensitivity/MonteCarlo engines + worker; goal-seek page exists\"."
     },
     {
       "kind": "annex",
@@ -1742,7 +1742,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — print/PDF generators PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 print/PDF generators PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1751,7 +1751,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — snapshot store exists; retention/backup-drill PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 snapshot store exists; retention/backup-drill PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1760,7 +1760,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — OpenTelemetryExporter engine UNWIRED; performance profiling PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 OpenTelemetryExporter engine UNWIRED; performance profiling PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1769,7 +1769,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — chart estate includes waterfall; Sankey/Gantt/map widgets PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 chart estate includes waterfall; Sankey/Gantt/map widgets PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1778,7 +1778,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — archive page exists; retention/legal-hold PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 archive page exists; retention/legal-hold PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1787,7 +1787,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — tax engine core; country rules MISSING\"."
+      "note": "Checklist status \"PARTIAL \u2014 tax engine core; country rules MISSING\"."
     },
     {
       "kind": "annex",
@@ -1796,7 +1796,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — several engines exist (impairment/EPS tests per gap report); hedge/FV hierarchy PARTIAL\"."
+      "note": "Checklist status \"PARTIAL \u2014 several engines exist (impairment/EPS tests per gap report); hedge/FV hierarchy PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1814,7 +1814,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL — zero-attrition a11y suites exist; WCAG 2.2 AA full coverage UNPROVEN\"."
+      "note": "Checklist status \"PARTIAL \u2014 zero-attrition a11y suites exist; WCAG 2.2 AA full coverage UNPROVEN\"."
     },
     {
       "kind": "capability",
@@ -1822,7 +1822,7 @@
       "status": "BLOCKED-ON-OWNER",
       "evidence": {
         "owner": "O3",
-        "question": "Encryption key-escrow/recovery decision (O3, docs/TASKBOARD.md §OWNER)"
+        "question": "Encryption key-escrow/recovery decision (O3, docs/TASKBOARD.md \u00a7OWNER)"
       },
       "note": "Named in the plan as blocked on an owner decision."
     },
@@ -1833,7 +1833,7 @@
       "evidence": {
         "gatedBy": "/data"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -1842,7 +1842,7 @@
       "evidence": {
         "gatedBy": "/settings/integrations"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -1851,7 +1851,7 @@
       "evidence": {
         "gatedBy": "/settings"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -1860,7 +1860,7 @@
       "evidence": {
         "gatedBy": "/admin"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -1869,7 +1869,7 @@
       "evidence": {
         "gatedBy": "/ai"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -1878,7 +1878,7 @@
       "evidence": {
         "gatedBy": "/ai"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -1896,7 +1896,7 @@
       "evidence": {
         "gatedBy": "/ai"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -1905,7 +1905,7 @@
       "evidence": {
         "gatedBy": "/data/gl-explorer"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -1921,7 +1921,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.exception-rules — exception rules guarded by exception:configure, audit trail"
+            "title": "GOVERNED cap:analyze.exception-rules \u2014 exception rules guarded by exception:configure, audit trail"
           }
         ],
         "tests": [
@@ -1946,7 +1946,7 @@
       "evidence": {
         "gatedBy": "/variance"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -1956,13 +1956,13 @@
         "connected": [
           {
             "file": "src/store/exceptionDispositionStore.lifecycle.test.ts",
-            "title": "REQUESTED → APPLIED → REVERIFIED is the legal path, each step audited"
+            "title": "REQUESTED \u2192 APPLIED \u2192 REVERIFIED is the legal path, each step audited"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.findings-disposition — disposition follows audited legal path"
+            "title": "GOVERNED cap:analyze.findings-disposition \u2014 disposition follows audited legal path"
           }
         ],
         "tests": [
@@ -1987,7 +1987,7 @@
       "evidence": {
         "gatedBy": "/reports/three-statement"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -1996,7 +1996,7 @@
       "evidence": {
         "gatedBy": "/variance"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2012,7 +2012,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.audit-chain — audit chain is hash-chained from genesis, single canonical authority"
+            "title": "GOVERNED cap:close.audit-chain \u2014 audit chain is hash-chained from genesis, single canonical authority"
           },
           {
             "file": "src/services/audit/auditChainCensus.test.ts",
@@ -2050,7 +2050,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.corrections — corrections are tracked with audit trail"
+            "title": "GOVERNED cap:close.corrections \u2014 corrections are tracked with audit trail"
           }
         ],
         "tests": [
@@ -2082,7 +2082,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.period-entity-scope — period-entity scope guard cannot be evaded, O9 boundary stated"
+            "title": "GOVERNED cap:close.period-entity-scope \u2014 period-entity scope guard cannot be evaded, O9 boundary stated"
           }
         ],
         "tests": [
@@ -2108,13 +2108,13 @@
         "connected": [
           {
             "file": "src/engines/PeriodCloseStateMachine.test.ts",
-            "title": "hard-close → reopen is valid"
+            "title": "hard-close \u2192 reopen is valid"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.state-machine — state machine transitions are RBAC-guarded and audited"
+            "title": "GOVERNED cap:close.state-machine \u2014 state machine transitions are RBAC-guarded and audited"
           }
         ],
         "tests": [
@@ -2146,7 +2146,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.tie-out — tie-out enforces write guards and audit chain"
+            "title": "GOVERNED cap:close.tie-out \u2014 tie-out enforces write guards and audit chain"
           }
         ],
         "tests": [
@@ -2178,7 +2178,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.trial-balance — trial balance read allowed for Viewer, audit chain intact"
+            "title": "GOVERNED cap:close.trial-balance \u2014 trial balance read allowed for Viewer, audit chain intact"
           }
         ],
         "tests": [
@@ -2210,7 +2210,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.write-guards — write guards enforce period-close, audit records guard decisions"
+            "title": "GOVERNED cap:close.write-guards \u2014 write guards enforce period-close, audit records guard decisions"
           }
         ],
         "tests": [
@@ -2242,7 +2242,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.control-totals — control totals tie out, audit chain verified"
+            "title": "GOVERNED cap:data.control-totals \u2014 control totals tie out, audit chain verified"
           }
         ],
         "tests": [
@@ -2274,7 +2274,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.csv-xlsx-intake — import:create guards intake, audit records provenance"
+            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:create guards intake, audit records provenance"
           }
         ],
         "tests": [
@@ -2298,7 +2298,7 @@
       "status": "BLOCKED-ON-OWNER",
       "evidence": {
         "owner": "O1",
-        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER)"
+        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md \u00a7OWNER)"
       },
       "note": "Named in the plan as blocked on an owner decision."
     },
@@ -2308,7 +2308,7 @@
       "status": "BLOCKED-ON-OWNER",
       "evidence": {
         "owner": "O1",
-        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER)"
+        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md \u00a7OWNER)"
       },
       "note": "Named in the plan as blocked on an owner decision."
     },
@@ -2318,7 +2318,7 @@
       "status": "BLOCKED-ON-OWNER",
       "evidence": {
         "owner": "O1",
-        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER)"
+        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md \u00a7OWNER)"
       },
       "note": "Named in the plan as blocked on an owner decision."
     },
@@ -2336,7 +2336,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.lineage — lineage carries provenance, audit records lineage changes"
+            "title": "GOVERNED cap:data.lineage \u2014 lineage carries provenance, audit records lineage changes"
           }
         ],
         "tests": [
@@ -2368,7 +2368,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.mapping — mapping respects RBAC and audit"
+            "title": "GOVERNED cap:data.mapping \u2014 mapping respects RBAC and audit"
           }
         ],
         "tests": [
@@ -2400,7 +2400,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.quarantine — quarantine blocks promotion, audit trail append-only"
+            "title": "GOVERNED cap:data.quarantine \u2014 quarantine blocks promotion, audit trail append-only"
           }
         ],
         "tests": [
@@ -2432,7 +2432,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.validation — validation quarantines with reasons, audit trail intact"
+            "title": "GOVERNED cap:data.validation \u2014 validation quarantines with reasons, audit trail intact"
           }
         ],
         "tests": [
@@ -2457,7 +2457,7 @@
       "evidence": {
         "gatedBy": "/settings/security"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2465,7 +2465,7 @@
       "status": "BLOCKED-ON-OWNER",
       "evidence": {
         "owner": "O9",
-        "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)"
+        "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md \u00a7OWNER)"
       },
       "note": "Named in the plan as blocked on an owner decision."
     },
@@ -2476,7 +2476,7 @@
       "evidence": {
         "gatedBy": "/settings/security"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2484,7 +2484,7 @@
       "status": "BLOCKED-ON-OWNER",
       "evidence": {
         "owner": "O4",
-        "question": "SOX/audit authority decision (O4, docs/TASKBOARD.md §OWNER)"
+        "question": "SOX/audit authority decision (O4, docs/TASKBOARD.md \u00a7OWNER)"
       },
       "note": "Named in the plan as blocked on an owner decision."
     },
@@ -2495,7 +2495,7 @@
       "evidence": {
         "gatedBy": "/consolidation"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2504,7 +2504,7 @@
       "evidence": {
         "gatedBy": "/currency/translation"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2513,7 +2513,7 @@
       "evidence": {
         "gatedBy": "/consolidation/ic-eliminations"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2522,7 +2522,7 @@
       "evidence": {
         "gatedBy": "/lease"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2531,7 +2531,7 @@
       "evidence": {
         "gatedBy": "/accounting"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2540,7 +2540,7 @@
       "evidence": {
         "gatedBy": "/revenue"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2549,7 +2549,7 @@
       "evidence": {
         "gatedBy": "/tax"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2558,7 +2558,7 @@
       "evidence": {
         "gatedBy": "/capex"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2567,7 +2567,7 @@
       "evidence": {
         "gatedBy": "/cash/forecast"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2576,7 +2576,7 @@
       "evidence": {
         "gatedBy": "/workforce"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2585,7 +2585,7 @@
       "evidence": {
         "gatedBy": "/forecasts/drivers"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2594,7 +2594,7 @@
       "evidence": {
         "gatedBy": "/budgets"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2603,7 +2603,7 @@
       "evidence": {
         "gatedBy": "/forecasts/drivers"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2612,7 +2612,7 @@
       "evidence": {
         "namedBy": "docs/plan/COMPLETION_PLAN_86_100.md"
       },
-      "note": "Identified in plan §4; nothing claims it yet."
+      "note": "Identified in plan \u00a74; nothing claims it yet."
     },
     {
       "kind": "capability",
@@ -2620,7 +2620,7 @@
       "status": "BLOCKED-ON-OWNER",
       "evidence": {
         "owner": "O2",
-        "question": "Roll semantics: replace vs blend, which months roll, approval interplay (O2, docs/TASKBOARD.md §OWNER)"
+        "question": "Roll semantics: replace vs blend, which months roll, approval interplay (O2, docs/TASKBOARD.md \u00a7OWNER)"
       },
       "note": "Named in the plan as blocked on an owner decision."
     },
@@ -2631,7 +2631,7 @@
       "evidence": {
         "gatedBy": "/scenarios"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2640,7 +2640,7 @@
       "evidence": {
         "gatedBy": "/budgets/bva"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2656,7 +2656,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:report.board-pack — board pack read guarded by report:read, export ties out to audited ledger"
+            "title": "GOVERNED cap:report.board-pack \u2014 board pack read guarded by report:read, export ties out to audited ledger"
           }
         ],
         "tests": [
@@ -2681,7 +2681,7 @@
       "evidence": {
         "gatedBy": "/reports"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2690,7 +2690,7 @@
       "evidence": {
         "gatedBy": "/board-pack"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2699,7 +2699,7 @@
       "evidence": {
         "gatedBy": "/reports/three-statement"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2715,7 +2715,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:report.tie-back — tie-back ensures export reflects audited ledger, not hardcoded figures"
+            "title": "GOVERNED cap:report.tie-back \u2014 tie-back ensures export reflects audited ledger, not hardcoded figures"
           }
         ],
         "tests": [
@@ -2740,7 +2740,7 @@
       "evidence": {
         "gatedBy": "/reports"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2749,7 +2749,7 @@
       "evidence": {
         "gatedBy": "/admin"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2758,7 +2758,7 @@
       "evidence": {
         "gatedBy": "/budgets/approval"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2767,7 +2767,7 @@
       "evidence": {
         "gatedBy": "/audit/trail"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2776,7 +2776,7 @@
       "evidence": {
         "gatedBy": "/data/corrections"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2785,7 +2785,7 @@
       "evidence": {
         "gatedBy": "/audit/trail"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2794,7 +2794,7 @@
       "evidence": {
         "gatedBy": "/settings/security"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
@@ -2803,7 +2803,7 @@
       "evidence": {
         "gatedBy": "/budgets/approval"
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "engine",
@@ -4930,15 +4930,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /board-pack — report:read allows viewing board pack"
+            "title": "GOVERNED /board-pack \u2014 report:read allows viewing board pack"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /board-pack — audit trail ties out to ledger figures"
+            "title": "GOVERNED /board-pack \u2014 audit trail ties out to ledger figures"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /board-pack — write guard ensures board pack reflects closed-period state"
+            "title": "GOVERNED /board-pack \u2014 write guard ensures board pack reflects closed-period state"
           }
         ],
         "tests": [
@@ -4949,7 +4949,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 3 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
@@ -5006,15 +5006,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /budgets — budget:read allows viewing budgets"
+            "title": "GOVERNED /budgets \u2014 budget:read allows viewing budgets"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /budgets — audit trail records budget derivation"
+            "title": "GOVERNED /budgets \u2014 audit trail records budget derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /budgets — write guard blocks budget:approve for Viewer"
+            "title": "GOVERNED /budgets \u2014 write guard blocks budget:approve for Viewer"
           }
         ],
         "tests": [
@@ -5025,7 +5025,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/budgets/BudgetListPage.test.tsx",
@@ -5225,12 +5225,56 @@
     {
       "kind": "route",
       "id": "route:/consolidation",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/consolidation",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
+        "connected": [
+          {
+            "file": "src/pages/consolidation/ConsolidationDashboard.interop.test.tsx",
+            "title": "renders the consolidation journey with entities and consolidated P&L"
+          },
+          {
+            "file": "src/pages/consolidation/ConsolidationDashboard.interop.test.tsx",
+            "title": "shows the empty state when no entities are defined"
+          },
+          {
+            "file": "src/pages/consolidation/ConsolidationDashboard.interop.test.tsx",
+            "title": "shows an error alert when consolidation fails to load and retry succeeds"
+          },
+          {
+            "file": "src/pages/consolidation/ConsolidationDashboard.interop.test.tsx",
+            "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /consolidation \u2014 report:read allows viewing consolidation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /consolidation \u2014 audit trail records consolidation derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /consolidation \u2014 write guard blocks closed periods from affecting consolidation"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/consolidation/ConsolidationDashboard.interop.test.tsx",
+          "src/pages/consolidation/ConsolidationDashboard.test.tsx"
+        ]
       },
-      "note": "Routed screen (ConsolidationDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 ASC 810 consolidation elimination, single economic entity",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/consolidation/ConsolidationDashboard.interop.test.tsx",
+        "src/pages/consolidation/ConsolidationDashboard.test.tsx"
+      ]
     },
     {
       "kind": "route",
@@ -5376,15 +5420,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data — import:create guards the import path"
+            "title": "GOVERNED /data \u2014 import:create guards the import path"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data — audit trail records the import provenance"
+            "title": "GOVERNED /data \u2014 audit trail records the import provenance"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data — write guard blocks closed periods"
+            "title": "GOVERNED /data \u2014 write guard blocks closed periods"
           }
         ],
         "tests": [
@@ -5394,7 +5438,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 3 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/DataImportPage.deep.test.tsx"
@@ -5446,15 +5490,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/corrections — exception:dispose guards correction request"
+            "title": "GOVERNED /data/corrections \u2014 exception:dispose guards correction request"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/corrections — audit trail records correction lifecycle"
+            "title": "GOVERNED /data/corrections \u2014 audit trail records correction lifecycle"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/corrections — write guard enforces human-only status transitions"
+            "title": "GOVERNED /data/corrections \u2014 write guard enforces human-only status transitions"
           }
         ],
         "tests": [
@@ -5464,7 +5508,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 3 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/CorrectionsPage.test.tsx"
@@ -5510,15 +5554,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/exceptions — exception:dispose guards disposition"
+            "title": "GOVERNED /data/exceptions \u2014 exception:dispose guards disposition"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/exceptions — audit trail records disposition lifecycle"
+            "title": "GOVERNED /data/exceptions \u2014 audit trail records disposition lifecycle"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/exceptions — write guard prevents bypassing quarantine"
+            "title": "GOVERNED /data/exceptions \u2014 write guard prevents bypassing quarantine"
           }
         ],
         "tests": [
@@ -5528,7 +5572,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/ExceptionQueuePage.test.tsx"
@@ -5570,15 +5614,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-explorer — gl:read allows viewing explorer"
+            "title": "GOVERNED /data/gl-explorer \u2014 gl:read allows viewing explorer"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-explorer — audit trail records explorer derivation"
+            "title": "GOVERNED /data/gl-explorer \u2014 audit trail records explorer derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-explorer — write guard blocks closed periods from affecting explorer"
+            "title": "GOVERNED /data/gl-explorer \u2014 write guard blocks closed periods from affecting explorer"
           }
         ],
         "tests": [
@@ -5589,7 +5633,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 3 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/GLExplorerPage.interop.test.tsx",
@@ -5624,15 +5668,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-journals — gl:read allows viewing journals"
+            "title": "GOVERNED /data/gl-journals \u2014 gl:read allows viewing journals"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-journals — audit trail records journals derivation"
+            "title": "GOVERNED /data/gl-journals \u2014 audit trail records journals derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-journals — write guard blocks closed periods from affecting journals"
+            "title": "GOVERNED /data/gl-journals \u2014 write guard blocks closed periods from affecting journals"
           }
         ],
         "tests": [
@@ -5643,7 +5687,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/GLJournalsPage.test.tsx",
@@ -5688,15 +5732,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-trial-balance — Viewer can read trial balance (import:read)"
+            "title": "GOVERNED /data/gl-trial-balance \u2014 Viewer can read trial balance (import:read)"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-trial-balance — audit trail records ledger derivation"
+            "title": "GOVERNED /data/gl-trial-balance \u2014 audit trail records ledger derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-trial-balance — write guard blocks closed periods from affecting TB"
+            "title": "GOVERNED /data/gl-trial-balance \u2014 write guard blocks closed periods from affecting TB"
           }
         ],
         "tests": [
@@ -5708,7 +5752,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/GLTrialBalancePage.interop.test.tsx",
@@ -5746,15 +5790,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-upload — import:create guards the upload path"
+            "title": "GOVERNED /data/gl-upload \u2014 import:create guards the upload path"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-upload — audit trail records upload provenance"
+            "title": "GOVERNED /data/gl-upload \u2014 audit trail records upload provenance"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-upload — write guard blocks closed periods"
+            "title": "GOVERNED /data/gl-upload \u2014 write guard blocks closed periods"
           }
         ],
         "tests": [
@@ -5765,7 +5809,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/data/GLUploadPage.deep.test.tsx",
         "src/pages/data/GLUploadPage.test.tsx",
@@ -5945,12 +5989,56 @@
     {
       "kind": "route",
       "id": "route:/forecasts",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/forecasts",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
+        "connected": [
+          {
+            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
+            "title": "renders the forecast journey with rolling horizon and confidence heatmap"
+          },
+          {
+            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
+            "title": "shows the empty state when no forecasts exist"
+          },
+          {
+            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
+            "title": "shows an error alert when forecasts fail to load and retry succeeds"
+          },
+          {
+            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
+            "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /forecasts \u2014 forecast:read allows viewing forecasts"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /forecasts \u2014 audit trail records forecast derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /forecasts \u2014 write guard blocks forecast:create for Viewer"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/forecasts/ForecastListPage.interop.test.tsx",
+          "src/pages/forecasts/ForecastListPage.test.tsx"
+        ]
       },
-      "note": "Routed screen (ForecastListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 rolling forecast 12-18mo horizon 5-day cycle",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/forecasts/ForecastListPage.interop.test.tsx",
+        "src/pages/forecasts/ForecastListPage.test.tsx"
+      ]
     },
     {
       "kind": "route",
@@ -6410,15 +6498,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /periods/close — Viewer cannot close, Admin can close (period:close)"
+            "title": "GOVERNED /periods/close \u2014 Viewer cannot close, Admin can close (period:close)"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /periods/close — audit trail records close transitions"
+            "title": "GOVERNED /periods/close \u2014 audit trail records close transitions"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /periods/close — write guard blocks GL writes in closed periods"
+            "title": "GOVERNED /periods/close \u2014 write guard blocks GL writes in closed periods"
           }
         ],
         "tests": [
@@ -6429,7 +6517,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/periods/PeriodClosePage.test.tsx",
@@ -6831,12 +6919,56 @@
     {
       "kind": "route",
       "id": "route:/scenarios",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/scenarios",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
+        "connected": [
+          {
+            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
+            "title": "renders the scenario journey with driver-based cards and probability treemap"
+          },
+          {
+            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
+            "title": "shows the empty state when no scenarios exist"
+          },
+          {
+            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
+            "title": "shows an error alert when scenarios fail to load and retry succeeds"
+          },
+          {
+            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
+            "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /scenarios \u2014 scenario:read allows viewing scenarios"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /scenarios \u2014 audit trail records scenario derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /scenarios \u2014 write guard blocks scenario:create for Viewer"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
+          "src/pages/scenarios/ScenarioListPage.test.tsx"
+        ]
       },
-      "note": "Routed screen (ScenarioListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 driver-based modeling 5-7 drivers 80% variance",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
+        "src/pages/scenarios/ScenarioListPage.test.tsx"
+      ]
     },
     {
       "kind": "route",

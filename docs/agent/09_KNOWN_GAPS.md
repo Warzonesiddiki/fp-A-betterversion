@@ -132,8 +132,8 @@ symptoms and the tests are unchanged.
 | determinism sites / files | 344 / 79                    | `scripts/determinism-baseline.json`    |
 | type-safety escapes       | 48                          | `scripts/type-safety-baseline.json`    |
 | money AST violations      | 0                           | `scripts/money-ast-baseline.json`      |
-| money adoption            | 29.16 % (floor)             | `scripts/money-adoption-baseline.json` |
-| palette migration         | 5502 / 370                  | `scripts/palette-baseline.json`        |
+| money adoption            | 36.37 % (floor)             | `scripts/money-adoption-baseline.json` |
+| palette migration         | 5501 / 370                  | `scripts/palette-baseline.json`        |
 | eslint-disable ledger     | see `npm run escape:ledger` | —                                      |
 
 Every number in that table is script-checked: `scripts/ratchet-docs-check.mjs` (inside

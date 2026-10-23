@@ -257,6 +257,81 @@
           "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed; activeEntityId is not an authorization decision."
         }
       }
+    },
+    "/consolidation": {
+      "page": "src/pages/consolidation/ConsolidationDashboard.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /consolidation — report:read allows viewing consolidation",
+          "proves": "Viewer holds report:read; consolidation viewing is allowed for least-privileged role, derived from ledger that is write-guarded."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /consolidation — audit trail records consolidation derivation",
+          "proves": "Consolidation tie-out is recorded in audit trail with hash linkage and chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /consolidation — write guard blocks closed periods from affecting consolidation",
+          "proves": "Closed-period entries are rejected before reaching ledger, so consolidation cannot be mutated through closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — consolidation does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/scenarios": {
+      "page": "src/pages/scenarios/ScenarioListPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /scenarios — scenario:read allows viewing scenarios",
+          "proves": "Viewer holds scenario:read; scenario reading is allowed for least-privileged role, create/update remain guarded."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /scenarios — audit trail records scenario derivation",
+          "proves": "Scenario tie-out is recorded in audit trail with hash linkage and chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /scenarios — write guard blocks scenario:create for Viewer",
+          "proves": "Viewer is denied scenario:create with PermissionError naming the permission; creation requires scenario:create."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — scenarios does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/forecasts": {
+      "page": "src/pages/forecasts/ForecastListPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /forecasts — forecast:read allows viewing forecasts",
+          "proves": "Viewer holds forecast:read; forecast reading is allowed for least-privileged role, create/run remain guarded."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /forecasts — audit trail records forecast derivation",
+          "proves": "Forecast tie-out is recorded in audit trail with hash linkage and chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /forecasts — write guard blocks forecast:create for Viewer",
+          "proves": "Viewer is denied forecast:create with PermissionError naming the permission; creation requires forecast:create."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — forecasts does not claim entity-scope authorization."
+        }
+      }
     }
   },
   "capabilities": {
