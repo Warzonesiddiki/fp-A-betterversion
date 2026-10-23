@@ -8,9 +8,17 @@ import { CompetitiveGapsToolbar } from '@/components/competitive/CompetitiveGaps
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
-import { TreemapChart, TreemapDataPoint } from '@/components/charts/TreemapChart';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { lazy, Suspense } from 'react';
 import { Plus, FlaskConical, Lock, Unlock } from 'lucide-react';
 import { formatPercent } from '@/utils/financialFormatting';
+import type { TreemapDataPoint } from '@/components/charts/TreemapChart';
+
+const TreemapChart = lazy(() =>
+  import('@/components/charts/TreemapChart').then((m) => ({ default: m.TreemapChart }))
+);
 
 export default function ScenarioListPage() {
   const [_helpOpen, setHelpOpen] = useState(false);
@@ -19,7 +27,14 @@ export default function ScenarioListPage() {
     document.title = 'FinPlan Pro — Scenario List';
   }, []);
 
-  const { scenarios } = useScenarioStore(useShallow((s) => ({ scenarios: s.scenarios })));
+  const { scenarios, isLoading, error, clearError } = useScenarioStore(
+    useShallow((s) => ({
+      scenarios: s.scenarios,
+      isLoading: s.isLoading,
+      error: s.error,
+      clearError: s.clearError,
+    }))
+  );
   const setSelectedScenario = useScenarioStore((s) => s.setSelectedScenario);
   const lockScenario = useScenarioStore((s) => s.lockScenario);
   const unlockScenario = useScenarioStore((s) => s.unlockScenario);
@@ -39,21 +54,39 @@ export default function ScenarioListPage() {
     }));
   }, [scenarios]);
 
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-4">
+        <Skeleton className="h-10 w-48" srLabel="Loading scenarios…" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <ErrorState
+        title="Scenarios failed to load"
+        message={error}
+        onRetry={() => clearError()}
+        retryLabel="Retry"
+      />
+    );
+  }
+
   if (scenarios.length === 0) {
     return (
-      <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
-          <FlaskConical className="h-10 w-10 text-[var(--text-muted)]" />
-        </div>
-        <h2 className="text-xl font-semibold mb-2">No Scenarios Yet</h2>
-        <p className="text-[var(--text-muted)] mb-6">
-          Create scenarios to model different financial outcomes and compare them side by side.
-        </p>
-        <Button onClick={() => navigate('/scenarios/create')}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Scenario
-        </Button>
-      </div>
+      <EmptyState
+        title="No Scenarios Yet"
+        description="Create scenarios to model different financial outcomes and compare them side by side. Driver-based modeling: 5-7 drivers explain 80% variance."
+        icon={<FlaskConical className="h-12 w-12 text-[var(--text-muted)]" />}
+        action={
+          <Button onClick={() => navigate('/scenarios/create')}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Scenario
+          </Button>
+        }
+      />
     );
   }
 
@@ -102,11 +135,15 @@ export default function ScenarioListPage() {
         <Card>
           <CardContent className="p-4">
             <h2 className="text-sm font-medium mb-2">Scenario Probability Distribution</h2>
-            <TreemapChart
-              data={treemapData}
-              height={200}
-              ariaLabel="Scenario probability treemap"
-            />
+            <Suspense
+              fallback={<div className="h-[200px] animate-pulse bg-[var(--bg-elevated)] rounded" />}
+            >
+              <TreemapChart
+                data={treemapData}
+                height={200}
+                ariaLabel="Scenario probability treemap"
+              />
+            </Suspense>
           </CardContent>
         </Card>
       )}

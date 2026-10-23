@@ -1,7 +1,7 @@
 {
-  "modulesScanned": 1193,
+  "modulesScanned": 1197,
   "filesWithSites": 370,
-  "total": 5502,
+  "total": 5501,
   "perFile": {
     "src/components/admin/DependencyGraph.tsx": 52,
     "src/components/ai/AICopilotPanel.tsx": 1,
@@ -262,7 +262,7 @@
     "src/pages/collaboration/CollaborationPage.tsx": 2,
     "src/pages/collaboration/SharedReports.tsx": 27,
     "src/pages/collaboration/TeamWorkspace.tsx": 29,
-    "src/pages/consolidation/ConsolidationDashboard.tsx": 8,
+    "src/pages/consolidation/ConsolidationDashboard.tsx": 7,
     "src/pages/consolidation/ConsolidationPage.tsx": 2,
     "src/pages/consolidation/ICEliminationPage.tsx": 21,
     "src/pages/consolidation/OwnershipTreePage.tsx": 17,

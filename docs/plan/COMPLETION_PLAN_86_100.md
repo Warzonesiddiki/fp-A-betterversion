@@ -120,11 +120,11 @@ the register now covers **695 rows** — 231 routes, 180 engines, 19 requirement
 which is the honest reading of a tree where 0 of 231 routes are graded CONNECTED
 or GOVERNED. Nothing seeds as SUPPORTED; that status is earned by a later PR with
 test ids that resolve. After PR #88 (spine CONNECTED), PR #89 (spine GOVERNED), PR #90 (7th route),
-PR #91 (8th), PR #92 (9th) and PR #93 (10th),
-the register is **SUPPORTED 27 · EXPERIMENTAL 441 · BLOCKED-ON-OWNER 7 · RETIRED 0 · NOT_BUILT 220**,
-with **10 of 231 routes CONNECTED and GOVERNED** (`/data`, `/data/gl-trial-balance`,
+PR #91 (8th), PR #92 (9th), PR #93 (10th) and PR #94 (11th-13th),
+the register is **SUPPORTED 30 · EXPERIMENTAL 438 · BLOCKED-ON-OWNER 7 · RETIRED 0 · NOT_BUILT 220**,
+with **13 of 231 routes CONNECTED and GOVERNED** (`/data`, `/data/gl-trial-balance`,
 `/data/exceptions`, `/periods/close`, `/board-pack`, `/data/corrections`, `/data/gl-explorer`,
-`/data/gl-journals`, `/budgets`, `/data/gl-upload`) and **17 capabilities** with
+`/data/gl-journals`, `/budgets`, `/data/gl-upload`, `/consolidation`, `/scenarios`, `/forecasts`) and **17 capabilities** with
 both CONNECTED and GOVERNED claims — the first SUPPORTED rows in the programme.
 
 **CONNECTED is graded, not asserted (DEC-062).** `docs/plan/spine-evidence.json`
@@ -134,16 +134,16 @@ screens evidence their journey, empty, error and loading states plus the shell's
 stale state, and seventeen capabilities carry claims. The matrix prints
 `CONNECTED — N test ids` for those rows and nothing else.
 
-**GOVERNED is graded, not asserted (DEC-062 extension, PR #89→#93).** `docs/plan/governance-evidence.json`
+**GOVERNED is graded, not asserted (DEC-062 extension, PR #89→#94).** `docs/plan/governance-evidence.json`
 joins each GOVERNED claim to the test that proves it: authorization (RBAC action),
 audit (hash-chained record), write-guards (period-close), with entity-scope explicitly
 BLOCKED-ON-OWNER O9. The gate `npm run governance:evidence` resolves file and exact
 title, fails on a renamed title, a claim pointing at the page it grades, or an unknown
 capability. The matrix prints `GOVERNED — N test ids` for those rows. Measured after
-PR #93: **10 of 231 routes CONNECTED and GOVERNED** (`/data`, `/data/gl-trial-balance`,
+PR #94: **13 of 231 routes CONNECTED and GOVERNED** (`/data`, `/data/gl-trial-balance`,
 `/data/exceptions`, `/periods/close`, `/board-pack`, `/data/corrections`, `/data/gl-explorer`,
-`/data/gl-journals`, `/budgets`, `/data/gl-upload`), **17 capabilities** with both
-claims, **27 rows SUPPORTED** (the first SUPPORTED rows). Seven rows stay
+`/data/gl-journals`, `/budgets`, `/data/gl-upload`, `/consolidation`, `/scenarios`, `/forecasts`), **17 capabilities** with both
+claims, **30 rows SUPPORTED** (the first SUPPORTED rows). Seven rows stay
 BLOCKED-ON-OWNER (O1×3, O2, O3, O4, O9) — the correct answer, not a defect. N2/N3 are
 bounded-closed with residual boundaries stated (restart durability O7, server authority Q6,
 SOX authority O4, payload-source authentication, entity-scope O9). `docs:verify` now also

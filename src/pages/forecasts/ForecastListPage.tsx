@@ -1,17 +1,26 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, lazy, Suspense } from 'react';
 import { activateOnKey } from '@/utils/a11yActivate';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { currencyFormatter } from '@/utils/financialFormatting';
+import { toDecimal } from '@/utils/money';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useForecastStore } from '@/store/forecastStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
-import { HeatmapChart, HeatmapDataPoint } from '@/components/charts/HeatmapChart';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
+import type { HeatmapDataPoint } from '@/components/charts/HeatmapChart';
 import { Plus, Eye, TrendingUp } from 'lucide-react';
 import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
+
+const HeatmapChart = lazy(() =>
+  import('@/components/charts/HeatmapChart').then((m) => ({ default: m.HeatmapChart }))
+);
 // CHRONOS 2026-06-15: replaced local formatRelativeTime (BUG-CHR-D-1) with
 // canonical import. Uses default 7-day cap, "Just now" capitalization.
 import { formatRelativeTimeLegacy as formatRelativeTime } from '@/engines/temporal';
@@ -27,7 +36,14 @@ export default function ForecastListPage() {
     document.title = 'FinPlan Pro — Forecast List';
   }, []);
 
-  const forecasts = useForecastStore((s) => s.forecasts);
+  const { forecasts, isLoading, error, clearError } = useForecastStore(
+    useShallow((s) => ({
+      forecasts: s.forecasts,
+      isLoading: s.isLoading,
+      error: s.error,
+      clearError: s.clearError,
+    }))
+  );
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [search, _setSearch] = useState('');
@@ -42,28 +58,57 @@ export default function ForecastListPage() {
   }, [forecasts, search]);
 
   const heatmapData = useMemo<HeatmapDataPoint[]>(() => {
-    return forecasts.slice(0, 12).map((f) => ({
-      x: f.type || 'Unknown',
-      y: f.name.slice(0, 15),
-      value: parseFloat(f.confidenceLevel) || 50,
-    }));
+    return forecasts.slice(0, 12).map((f) => {
+      // Confidence level is a percentage, not money, but parse through decimal.js
+      // for consistent numeric handling (avoids float parsing drift).
+      const parsed = (() => {
+        try {
+          return Number(toDecimal(f.confidenceLevel || '50'));
+        } catch {
+          return 50;
+        }
+      })();
+      return {
+        x: f.type || 'Unknown',
+        y: f.name.slice(0, 15),
+        value: parsed,
+      };
+    });
   }, [forecasts]);
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-4">
+        <Skeleton className="h-10 w-48" srLabel="Loading forecasts…" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <ErrorState
+        title="Forecasts failed to load"
+        message={error}
+        onRetry={() => clearError()}
+        retryLabel="Retry"
+      />
+    );
+  }
 
   if (forecasts.length === 0) {
     return (
-      <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
-          <TrendingUp className="h-10 w-10 text-[var(--text-muted)]" />
-        </div>
-        <h2 className="text-xl font-semibold mb-2">No Forecasts Yet</h2>
-        <p className="text-[var(--text-muted)] mb-6">
-          Create a forecast to predict future financial performance based on your data.
-        </p>
-        <Button onClick={() => navigate('/forecasts/create')}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Forecast
-        </Button>
-      </div>
+      <EmptyState
+        title="No Forecasts Yet"
+        description="Create a forecast to predict future financial performance based on your data. Rolling forecast: 12-18 month horizon, 5-day cycle, driver-based."
+        icon={<TrendingUp className="h-12 w-12 text-[var(--text-muted)]" />}
+        action={
+          <Button onClick={() => navigate('/forecasts/create')}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Forecast
+          </Button>
+        }
+      />
     );
   }
 
@@ -95,11 +140,15 @@ export default function ForecastListPage() {
         <Card>
           <CardContent className="p-4">
             <h3 className="text-sm font-medium mb-2">Forecast Confidence Heatmap</h3>
-            <HeatmapChart
-              data={heatmapData}
-              cellSize={50}
-              ariaLabel="Forecast confidence heatmap"
-            />
+            <Suspense
+              fallback={<div className="h-[200px] animate-pulse bg-[var(--bg-elevated)] rounded" />}
+            >
+              <HeatmapChart
+                data={heatmapData}
+                cellSize={50}
+                ariaLabel="Forecast confidence heatmap"
+              />
+            </Suspense>
           </CardContent>
         </Card>
       )}

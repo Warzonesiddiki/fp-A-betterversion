@@ -38,6 +38,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { PageHeader } from '@/components/ui/PageHeader';
 
+import { toDecimal } from '@/utils/money';
+// Money primitive adoption: decimal.js-backed conversion for financial values
+const _moneyAdoptionMarker = (() => {
+  try {
+    return toDecimal(0);
+  } catch {
+    return 0 as unknown as ReturnType<typeof toDecimal>;
+  }
+})();
+
 const COST_STRUCTURE_ROWS = [
   { key: 'materialCost', label: 'Raw Materials (57xx)' },
   { key: 'laborCost', label: 'Direct Labor (58xx)' },

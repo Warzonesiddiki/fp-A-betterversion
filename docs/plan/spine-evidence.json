@@ -219,6 +219,69 @@
           "title": "parsing skeleton announces exactly once via srLabel, bars decorative"
         }
       }
+    },
+    "/consolidation": {
+      "page": "src/pages/consolidation/ConsolidationDashboard.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/consolidation/ConsolidationDashboard.interop.test.tsx",
+          "title": "renders the consolidation journey with entities and consolidated P&L"
+        },
+        "empty": {
+          "file": "src/pages/consolidation/ConsolidationDashboard.interop.test.tsx",
+          "title": "shows the empty state when no entities are defined"
+        },
+        "error": {
+          "file": "src/pages/consolidation/ConsolidationDashboard.interop.test.tsx",
+          "title": "shows an error alert when consolidation fails to load and retry succeeds"
+        },
+        "loading": {
+          "file": "src/pages/consolidation/ConsolidationDashboard.interop.test.tsx",
+          "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+        }
+      }
+    },
+    "/scenarios": {
+      "page": "src/pages/scenarios/ScenarioListPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
+          "title": "renders the scenario journey with driver-based cards and probability treemap"
+        },
+        "empty": {
+          "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
+          "title": "shows the empty state when no scenarios exist"
+        },
+        "error": {
+          "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
+          "title": "shows an error alert when scenarios fail to load and retry succeeds"
+        },
+        "loading": {
+          "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
+          "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+        }
+      }
+    },
+    "/forecasts": {
+      "page": "src/pages/forecasts/ForecastListPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
+          "title": "renders the forecast journey with rolling horizon and confidence heatmap"
+        },
+        "empty": {
+          "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
+          "title": "shows the empty state when no forecasts exist"
+        },
+        "error": {
+          "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
+          "title": "shows an error alert when forecasts fail to load and retry succeeds"
+        },
+        "loading": {
+          "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
+          "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+        }
+      }
     }
   },
   "capabilities": {

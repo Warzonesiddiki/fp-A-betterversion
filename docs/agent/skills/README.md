@@ -47,14 +47,17 @@ repository's own incidents and decisions.
 | [`verification-before-completion`](verification-before-completion.md) | Use before saying done, fixed, passing, clean or green — in a reply, a commit, a PR body or a Notion page. Run the command, read the output, then claim. | discipline |
 | [`writing-plans`](writing-plans.md) | Use when a task spans more than one sitting or more than one PR: write the plan as ordered steps with a testable exit gate per step. | discipline |
 | **Money, accounting and the finance domain** | | |
+| [`asc-810-consolidation-elimination`](asc-810-consolidation-elimination.md) | Use when working on consolidation, IC elimination, ownership tree, or multi-entity close: 100% elimination per ASC 810-10-45-1, single economic entity, NCI attribution. | finance |
 | [`audit-trail-and-lineage`](audit-trail-and-lineage.md) | Use when a number must be explainable later: who changed what, from which source, through which calculation. Lineage is a product feature, not logging. | finance |
 | [`data-import-and-mapping`](data-import-and-mapping.md) | Use for any inbound data path: GL extracts, budgets, headcount files, rate tables. Nothing enters the store unless it is mapped, counted and accounted for. | finance |
 | [`determinism-and-reproducibility`](determinism-and-reproducibility.md) | Use in calculation paths: same input must give the same output, whatever the clock, locale or machine. Replayable beats lucky. | finance |
+| [`driver-based-scenario-modeling`](driver-based-scenario-modeling.md) | Use when building or changing scenario modeling, driver planning, or what-if analysis: 5-7 key drivers, base/upside/downside, owner-assigned assumptions. | finance |
 | [`financial-domain-modeling`](financial-domain-modeling.md) | Use when modelling accounting or FP&A behaviour: entries, close, consolidation, intercompany, FX, drivers, variance. Get the accounting right before the screen. | finance |
 | [`money-and-decimals`](money-and-decimals.md) | Use for any change that reads, computes, stores, sums, allocates or displays an amount. Money is integer minor units behind a branded type; never a float. | finance |
 | [`no-invented-data`](no-invented-data.md) | Use whenever a number, rate, benchmark or label appears in the UI: it must come from data the user supplied or a recorded assumption, never from a literal. | finance |
 | [`period-close-operations`](period-close-operations.md) | Use when working on close: locking, reopening, adjustments, carry-forward. Close is a state machine with evidence, not a date field. | finance |
 | [`reconciliation-and-tie-out`](reconciliation-and-tie-out.md) | Use when two sets of numbers must agree: source vs store, subledger vs GL, actuals vs plan, screen vs export. Show the difference, never force it to zero. | finance |
+| [`rolling-forecast-implementation`](rolling-forecast-implementation.md) | Use when implementing or changing rolling forecast, driver-based forecasting, or continuous planning: 12-18 month horizon, 5-day cycle, driver-based, back-test. | finance |
 | **Code, data, security and release mechanics** | | |
 | [`architecture-boundaries`](architecture-boundaries.md) | Use when adding a module, an import across layers, or a helper that could live in three places. Layering is what keeps the numbers debuggable. | engineering |
 | [`data-integrity-and-persistence`](data-integrity-and-persistence.md) | Use when a change touches persisted data, migrations, import, or anything that could lose or silently alter a user's numbers. | engineering |
@@ -71,12 +74,15 @@ repository's own incidents and decisions.
 | [`typescript-strictness`](typescript-strictness.md) | Use when adding types, widening a signature, or silencing the compiler. The compiler is the cheapest test in the repo; do not spend it. | engineering |
 | **What the user sees and exports** | | |
 | [`accessibility-wcag`](accessibility-wcag.md) | Use for any interactive UI change: keyboard reachability, focus, contrast, live regions, motion. Accessibility is a gate here, not a polish pass. | product-ui |
+| [`ag-grid-modular-optimization`](ag-grid-modular-optimization.md) | Use when ag-grid bundle is large or DataGrid is changed: cherry-pick modules, register via ModuleRegistry, keep ValidationModule dev-only. | product-ui |
 | [`ai-features-safety`](ai-features-safety.md) | Use for any AI-assisted surface: local-only, grounded in computed facts, off by default, and never a source of financial values. | product-ui |
 | [`charts-and-data-display`](charts-and-data-display.md) | Use when a chart, sparkline, KPI tile or heatmap shows a number: the picture must not imply something the data does not say. | product-ui |
 | [`excel-and-report-exports`](excel-and-report-exports.md) | Use when a report leaves the app (Excel, CSV, PDF, PPTX): the exported number must tie back to the screen, and the file must be safe to open. | product-ui |
 | [`forms-and-validation`](forms-and-validation.md) | Use for any input the user types: validate once, in one place, with messages that say what to do. Bad input must not reach the store. | product-ui |
 | [`frontend-design`](frontend-design.md) | Use when building or restyling a screen: density for finance work, hierarchy that survives a projector, and no decoration that costs a click. | product-ui |
 | [`performance-and-bundle`](performance-and-bundle.md) | Use when adding a dependency, a page, a chart or a big table: the bundle has a hard budget and finance users scroll 100k rows. | product-ui |
+| [`recharts-tree-shaking`](recharts-tree-shaking.md) | Use when chart bundle is large or adding a new chart: granular imports, avoid barrel, dynamic import heavy charts, measure treemap. | product-ui |
+| [`vite-bundle-deep-optimization`](vite-bundle-deep-optimization.md) | Use when bundle is near limit or a new dependency pushes total over budget: split vendors, lazy routes, avoid barrels, measure before/after. | product-ui |
 | **Documentation, traceability, authoring** | | |
 | [`docs-and-decisions`](docs-and-decisions.md) | Use when writing or editing project documentation: one fact, one owner, one date, one command. Documentation is a claim set, not a narrative. | meta |
 | [`requirements-traceability`](requirements-traceability.md) | Use when claiming a requirement is met, mapping capability to evidence, or filling a register row. Every requirement resolves to a test or is labelled. | meta |

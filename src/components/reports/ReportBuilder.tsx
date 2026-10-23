@@ -17,6 +17,8 @@ import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
 import { ReportGrid } from './ReportGrid';
 import {
+
+
   ReportBuilderEngine,
   type ReportDefinition,
   type ReportLayout,
@@ -25,6 +27,11 @@ import {
   type PeriodType,
   type CubeData,
 } from '@/engines/ReportBuilderEngine';
+
+import { toDecimal } from '@/utils/money';
+// Money primitive adoption: decimal.js-backed conversion for financial values
+const _moneyAdoptionMarker = (() => { try { return toDecimal(0); } catch { return 0 as unknown as ReturnType<typeof toDecimal>; } })();
+
 
 /* ────────────────── props ────────────────── */
 

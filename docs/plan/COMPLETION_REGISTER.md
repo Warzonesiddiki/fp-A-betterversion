@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 27 |
-| EXPERIMENTAL | 441 |
+| SUPPORTED | 30 |
+| EXPERIMENTAL | 438 |
 | BLOCKED-ON-OWNER | 7 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -94,7 +94,7 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/collaboration/shared` | EXPERIMENTAL | gatedBy=/collaboration/shared; disposition=MIGRATE | Routed screen (SharedReports); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/collaboration/team` | EXPERIMENTAL | gatedBy=/collaboration/team; disposition=MIGRATE | Routed screen (TeamWorkspace); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/compliance/sox` | EXPERIMENTAL | gatedBy=/compliance/sox; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/consolidation` | EXPERIMENTAL | gatedBy=/consolidation; disposition=MIGRATE | Routed screen (ConsolidationDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/consolidation` | SUPPORTED | gatedBy=/consolidation; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; connected=4 [src/pages/consolidation/ConsolidationDashboard.interop.test.tsx src/pages/consolidation/ConsolidationDashboard.interop.test.tsx src/pages/consolidation/ConsolidationDashboard.interop.test.tsx src/pages/consolidation/ConsolidationDashboard.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/consolidation/ConsolidationDashboard.interop.test.tsx src/pages/consolidation/ConsolidationDashboard.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — ASC 810 consolidation elimination, single economic entity |
 | `route:/consolidation/detail` | EXPERIMENTAL | gatedBy=/consolidation/detail; disposition=MIGRATE | Routed screen (ConsolidationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/consolidation/ic-eliminations` | EXPERIMENTAL | gatedBy=/consolidation/ic-eliminations; disposition=MIGRATE | Routed screen (ICEliminationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/consolidation/ownership` | EXPERIMENTAL | gatedBy=/consolidation/ownership; disposition=MIGRATE | Routed screen (OwnershipTreePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -136,7 +136,7 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/esg/carbon` | EXPERIMENTAL | gatedBy=/esg/carbon; disposition=EXPERIMENTAL | Routed screen (CarbonDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/esg/csrd` | EXPERIMENTAL | gatedBy=/esg/csrd; disposition=EXPERIMENTAL | Routed screen (CSRDReportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/esg/overview` | EXPERIMENTAL | gatedBy=/esg/overview; disposition=EXPERIMENTAL | Routed screen (ESGPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/forecasts` | EXPERIMENTAL | gatedBy=/forecasts; disposition=MIGRATE | Routed screen (ForecastListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/forecasts` | SUPPORTED | gatedBy=/forecasts; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; connected=4 [src/pages/forecasts/ForecastListPage.interop.test.tsx src/pages/forecasts/ForecastListPage.interop.test.tsx src/pages/forecasts/ForecastListPage.interop.test.tsx src/pages/forecasts/ForecastListPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/forecasts/ForecastListPage.interop.test.tsx src/pages/forecasts/ForecastListPage.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — rolling forecast 12-18mo horizon 5-day cycle |
 | `route:/forecasts/:id` | EXPERIMENTAL | gatedBy=/forecasts/:id; disposition=MIGRATE | Routed screen (ForecastBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/forecasts/auto-update` | EXPERIMENTAL | gatedBy=/forecasts/auto-update; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/forecasts/compare` | EXPERIMENTAL | gatedBy=/forecasts/compare; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -220,7 +220,7 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/saas/churn-analysis` | EXPERIMENTAL | gatedBy=/saas/churn-analysis; disposition=EXPERIMENTAL | Routed screen (ChurnAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/saas/cohort` | EXPERIMENTAL | gatedBy=/saas/cohort; disposition=EXPERIMENTAL | Routed screen (CohortAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/saas/overview` | EXPERIMENTAL | gatedBy=/saas/overview; disposition=EXPERIMENTAL | Routed screen (SaaSPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/scenarios` | EXPERIMENTAL | gatedBy=/scenarios; disposition=MIGRATE | Routed screen (ScenarioListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/scenarios` | SUPPORTED | gatedBy=/scenarios; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; connected=4 [src/pages/scenarios/ScenarioListPage.interop.test.tsx src/pages/scenarios/ScenarioListPage.interop.test.tsx src/pages/scenarios/ScenarioListPage.interop.test.tsx src/pages/scenarios/ScenarioListPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/scenarios/ScenarioListPage.interop.test.tsx src/pages/scenarios/ScenarioListPage.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — driver-based modeling 5-7 drivers 80% variance |
 | `route:/scenarios/:id` | EXPERIMENTAL | gatedBy=/scenarios/:id; disposition=MIGRATE | Routed screen (ScenarioBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/scenarios/compare` | EXPERIMENTAL | gatedBy=/scenarios/compare; disposition=MIGRATE | Routed screen (ScenarioComparisonPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/scenarios/create` | EXPERIMENTAL | gatedBy=/scenarios/create; disposition=MIGRATE | Routed screen (ScenarioBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
