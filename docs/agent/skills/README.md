@@ -80,6 +80,7 @@ repository's own incidents and decisions.
 | [`accessibility-wcag`](accessibility-wcag.md) | Use for any interactive UI change: keyboard reachability, focus, contrast, live regions, motion. Accessibility is a gate here, not a polish pass. | product-ui |
 | [`ag-grid-modular-optimization`](ag-grid-modular-optimization.md) | Use when ag-grid bundle is large or DataGrid is changed: cherry-pick modules, register via ModuleRegistry, keep ValidationModule dev-only. | product-ui |
 | [`ai-features-safety`](ai-features-safety.md) | Use for any AI-assisted surface: local-only, grounded in computed facts, off by default, and never a source of financial values. | product-ui |
+| [`bundle-optimization-advanced`](bundle-optimization-advanced.md) | Use when bundle is near limit and needs advanced optimization. Covers vendor splitting, lazy loading, tree-shaking, custom components, and EXPERIMENTAL route retirement. | product-ui |
 | [`bundle-optimization-methodology`](bundle-optimization-methodology.md) | Use when bundle size is near limit or needs reduction. Proven methods: vendor chunking, lazy loading, tree-shaking, custom chart components, stub optional deps. | product-ui |
 | [`charts-and-data-display`](charts-and-data-display.md) | Use when a chart, sparkline, KPI tile or heatmap shows a number: the picture must not imply something the data does not say. | product-ui |
 | [`excel-and-report-exports`](excel-and-report-exports.md) | Use when a report leaves the app (Excel, CSV, PDF, PPTX): the exported number must tie back to the screen, and the file must be safe to open. | product-ui |
@@ -89,6 +90,7 @@ repository's own incidents and decisions.
 | [`recharts-tree-shaking`](recharts-tree-shaking.md) | Use when chart bundle is large or adding a new chart: granular imports, avoid barrel, dynamic import heavy charts, measure treemap. | product-ui |
 | [`vite-bundle-deep-optimization`](vite-bundle-deep-optimization.md) | Use when bundle is near limit or a new dependency pushes total over budget: split vendors, lazy routes, avoid barrels, measure before/after. | product-ui |
 | **Documentation, traceability, authoring** | | |
+| [`connector-driven-documentation`](connector-driven-documentation.md) | Use when documentation needs to be shared across connectors. Maps repo artifacts to Notion, Google Docs, Google Sheets, and Gmail for owner communication. | meta |
 | [`connector-utilization`](connector-utilization.md) | Use when documentation, decisions, or release artifacts need to be shared with external systems. Maps repo artifacts to Notion, Google Docs, Google Drive, and other connectors. | meta |
 | [`docs-and-decisions`](docs-and-decisions.md) | Use when writing or editing project documentation: one fact, one owner, one date, one command. Documentation is a claim set, not a narrative. | meta |
 | [`owner-pack-completion`](owner-pack-completion.md) | Use when compiling owner decisions O1-O9 into a completion document. Records what is claimed, what is blocked, and what the owner must answer. | meta |
