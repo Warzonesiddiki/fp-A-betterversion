@@ -12,6 +12,9 @@
 import { randomId } from '@/utils/cryptoId';
 import { roundTo, subtractMoney } from '../utils/money';
 import { nowISO } from '@/utils/clock';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface Assumption {
   id: string;

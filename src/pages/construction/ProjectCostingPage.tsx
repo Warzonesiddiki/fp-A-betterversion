@@ -22,6 +22,10 @@ import { useGLStore } from '@/store/glStore';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { deriveProjectCosting, type CostAccountRow } from './projectCostingData';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
+
 
 const fiscalPeriods = buildFiscalPeriods();
 

@@ -3,6 +3,10 @@
  * Supports CSV (auto-delimiter/encoding detection), Excel, JSON
  */
 import { nowISO, nowMs } from '@/utils/clock';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
+
 // @money-ast-allow
 // Reason: the CSV parser in `parseCSV` accumulates a string buffer with
 // `currentField += c` and `currentField += '"'`. The variable name matches

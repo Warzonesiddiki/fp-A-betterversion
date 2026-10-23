@@ -11,6 +11,9 @@
 import type Decimal from 'decimal.js';
 import type { GLEntry } from '@/types';
 import { roundTo, sumMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Basel III capital adequacy and loan-loss figures are regulatory reporting

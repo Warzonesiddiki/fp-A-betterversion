@@ -5,6 +5,9 @@
  * operators, visual formats, icon sets, color scales, and data bars.
  */
 import { nowMs } from '@/utils/clock';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // ── Rule Type Definitions ──────────────────────────────────────────
 

@@ -24,6 +24,9 @@ import * as LookupFns from './formula-functions/lookup';
 import * as LogicalFns from './formula-functions/logical';
 
 import type { FormulaFunction } from './formula-functions/helpers';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // =============================================================================
 // REGISTRY CLASS

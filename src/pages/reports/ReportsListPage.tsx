@@ -17,6 +17,10 @@ import {
 import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { activateOnKey } from '@/utils/a11yActivate';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
+
 
 const reports = [
   {

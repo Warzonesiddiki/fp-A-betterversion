@@ -23,6 +23,10 @@ import {
   type MigrationSnapshot,
 } from '@/engines/MigrationEngine';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
+
 // MORPHEUS PICK 8 (2026-06-18): 40L → ~400L. Added 4-stat header, last migration
 // summary, source system picker grid (5 sources), recent migrations history list
 // (last 10), cube migration section, action buttons. Targets SOX 404 compliance

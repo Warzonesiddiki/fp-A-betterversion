@@ -1,3 +1,4 @@
+// @ai-census-allow delegates to NLQEngine which is gated via verifiedFactsGate
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';

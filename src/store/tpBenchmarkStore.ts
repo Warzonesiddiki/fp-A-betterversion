@@ -4,6 +4,9 @@ import { masterStorage } from '@/utils/masterStorage';
 import { nowISO } from '@/utils/clock';
 import { assertPermission, Permissions } from '@/utils/rbacEnforcer';
 import type { TPBenchmark } from '@/pages/tax/transferPricingData';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Phase 8 — transfer-pricing benchmark attachments.

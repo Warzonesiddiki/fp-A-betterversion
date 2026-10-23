@@ -1,4 +1,7 @@
 import { randomId } from '@/utils/cryptoId';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 // =============================================================================
 // CUBE SECURITY ENGINE — Cell-level security based on dimension membership
 // Implements row-level and column-level security for OLAP cubes

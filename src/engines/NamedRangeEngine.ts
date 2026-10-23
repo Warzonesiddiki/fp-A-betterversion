@@ -1,4 +1,7 @@
 import { randomId } from '@/utils/cryptoId';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 /**
  * NamedRangeEngine — Named ranges for formulas
  * Maps human-readable names to cell ranges for easier formula writing

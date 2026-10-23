@@ -58,11 +58,9 @@ const _moneyAdoptionMarker = (() => {
  */
 export default function CashForecastPage() {
   const fmt = useCurrencyFormatter();
-  const { entries, isLoading, importError } = useGLStore((s) => ({
-    entries: s.entries,
-    isLoading: s.isLoading,
-    importError: s.importError,
-  }));
+  const entries = useGLStore((s) => s.entries);
+  const isLoading = useGLStore((s) => s.isLoading);
+  const importError = useGLStore((s) => s.importError);
   const navigate = useNavigate();
 
   useEffect(() => {

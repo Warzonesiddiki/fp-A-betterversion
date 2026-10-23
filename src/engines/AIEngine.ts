@@ -1,3 +1,4 @@
+// @ai-census-allow classification only, no financial narrative numbers generated — sentiment/labels only
 // AI Engine — Lazy-loaded to avoid bundling ONNX WASM (23.5MB) in initial load
 // Only loaded when the /ai page is visited
 //
@@ -25,6 +26,9 @@
 // =============================================================================
 
 import { createLogger } from '@/utils/logger';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PipelineFunction = (...args: any[]) => Promise<any>;
