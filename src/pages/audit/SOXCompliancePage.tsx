@@ -173,8 +173,8 @@ function CategorySummaryCard({
   data: { passed: number; failed: number; notApplicable?: number; total: number };
 }) {
   const Icon = CATEGORY_ICONS[category];
-  const notApplicable = data.notApplicable ?? 0; // null when missing, 0 for counting
-  const evaluated = data.total - notApplicable;
+  const notApplicable = data.notApplicable ?? null; // null when missing, handled in UI
+  const evaluated = data.total - (notApplicable ?? 0);
   const state =
     data.total === 0 ? 'no checks defined' : evaluated === 0 ? 'not evaluated' : 'evaluated';
   const pct = state === 'evaluated' ? Math.round((data.passed / evaluated) * 100) : 0;
@@ -414,7 +414,7 @@ export default function SOXCompliancePage() {
     if (!report) return [] as SOXControlCategory[];
     return (Object.keys(report.byCategory) as SOXControlCategory[]).filter((cat) => {
       const data = report.byCategory[cat];
-      return data.total > 0 && (data.notApplicable ?? 0) === data.total;
+      return data.total > 0 && (data.notApplicable ?? null) === data.total;
     });
   }, [report]);
 
@@ -596,7 +596,7 @@ export default function SOXCompliancePage() {
                           className="text-2xl font-bold text-[var(--text-muted)]"
                           data-testid="sox-not-evaluated-count"
                         >
-                          {report.summary.notApplicable ?? 0}
+                          {report.summary.notApplicable ?? "n/a"}
                         </p>
                         <p className="text-xs text-[var(--text-muted)]">Not evaluated</p>
                       </div>

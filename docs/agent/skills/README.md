@@ -42,10 +42,12 @@ repository's own incidents and decisions.
 | [`receiving-review`](receiving-review.md) | Use when a review or audit finding arrives: verify it against the code before agreeing or disagreeing, and never quietly ignore it. | discipline |
 | [`requesting-review`](requesting-review.md) | Use before asking for a review or opening a PR: make the change reviewable — small, self-explaining, with the evidence a reviewer would otherwise chase. | discipline |
 | [`research-and-sourcing`](research-and-sourcing.md) | Use before repeating any external fact, benchmark, standard or library claim: find the source, date it, and say what it does not prove. | discipline |
+| [`route-promotion-evidence`](route-promotion-evidence.md) | Use when promoting a route from EXPERIMENTAL to SUPPORTED. Requires real page tests with exact titles and real governance tests in spineGovernance.test.ts. | discipline |
 | [`systematic-debugging`](systematic-debugging.md) | Use for any bug, test failure, build break or unexplained number: find the root cause before proposing a fix. No fix without a reproduced cause. | discipline |
 | [`test-driven-development`](test-driven-development.md) | Use for any bug fix, money path, parser, permission check or data write: write the failing test first, watch it fail for the right reason, then fix. | discipline |
 | [`verification-before-completion`](verification-before-completion.md) | Use before saying done, fixed, passing, clean or green — in a reply, a commit, a PR body or a Notion page. Run the command, read the output, then claim. | discipline |
 | [`writing-plans`](writing-plans.md) | Use when a task spans more than one sitting or more than one PR: write the plan as ordered steps with a testable exit gate per step. | discipline |
+| [`zero-compromise-verification`](zero-compromise-verification.md) | Use when claiming any capability is complete, verified, or perfect. Proves the claim with failing-first tests, exact evidence, and honest boundaries. | discipline |
 | **Money, accounting and the finance domain** | | |
 | [`asc-810-consolidation-elimination`](asc-810-consolidation-elimination.md) | Use when working on consolidation, IC elimination, ownership tree, or multi-entity close: 100% elimination per ASC 810-10-45-1, single economic entity, NCI attribution. | finance |
 | [`audit-trail-and-lineage`](audit-trail-and-lineage.md) | Use when a number must be explainable later: who changed what, from which source, through which calculation. Lineage is a product feature, not logging. | finance |

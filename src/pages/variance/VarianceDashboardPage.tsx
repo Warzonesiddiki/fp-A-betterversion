@@ -197,8 +197,8 @@ export default function VarianceDashboardPage() {
     return {
       actualRevenue: revenueRow?.actual ?? 0, // @missing-is-not-zero-allow — display default
       budgetRevenue: revenueRow?.budget ?? 0, // @missing-is-not-zero-allow — display default
-      revenueVar: revenueRow?.variance ?? 0, // @missing-is-not-zero-allow — display default
-      revenueVarPct: revenueRow?.variancePct ?? 0, // @missing-is-not-zero-allow — display default
+      revenueVar: revenueRow?.variance ?? null,
+      revenueVarPct: revenueRow?.variancePct ?? null,
       rows,
       totalBudget,
       totalActual,
@@ -345,7 +345,7 @@ export default function VarianceDashboardPage() {
           label="Revenue Variance"
           value={fmt.currency0(data.revenueVar)}
           icon={
-            data.revenueVar >= 0 ? (
+            data.revenueVar ?? 0 >= 0 ? (
               <TrendingUp className="h-4 w-4" />
             ) : (
               <TrendingDown className="h-4 w-4" />
@@ -356,7 +356,7 @@ export default function VarianceDashboardPage() {
           label="Variance %"
           value={`${formatPercent(data.revenueVarPct, 1)}`}
           icon={
-            data.revenueVarPct >= 0 ? (
+            data.revenueVarPct ?? 0 >= 0 ? (
               <TrendingUp className="h-4 w-4" />
             ) : (
               <TrendingDown className="h-4 w-4" />

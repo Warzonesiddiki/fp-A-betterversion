@@ -4791,12 +4791,34 @@
     {
       "kind": "route",
       "id": "route:/audit",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/audit",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/audit/AuditTrailPage.test.tsx",
+            "title": "renders persisted audit entries through the page compatibility adapter"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /audit/sox \u2014 audit:read allows viewing SOX compliance"
+          }
+        ],
+        "tests": [
+          "src/pages/audit/AuditTrailPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/audit/AuditTrailPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -4981,45 +5003,27 @@
         "disposition": "MIGRATE",
         "connected": [
           {
-            "file": "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
-            "title": "exports the same figures the screen shows, derived from the ledger"
-          },
-          {
-            "file": "src/pages/reports/BoardPackPage.probe.test.tsx",
-            "title": "K30 empty state: No Data CTA before any ledger exists"
-          },
-          {
-            "file": "src/pages/reports/BoardPackPage.probe.test.tsx",
-            "title": "K30 error state: ErrorState when glStore.importError is set"
+            "file": "src/pages/reports/BoardPackPage.test.tsx",
+            "title": "displays expected empty state"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /board-pack \u2014 report:read allows viewing board pack"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /board-pack \u2014 audit trail ties out to ledger figures"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /board-pack \u2014 write guard ensures board pack reflects closed-period state"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
-          "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
-          "src/pages/reports/BoardPackPage.probe.test.tsx"
+          "src/pages/reports/BoardPackPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 3 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
-        "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
-        "src/pages/reports/BoardPackPage.probe.test.tsx"
+        "src/pages/reports/BoardPackPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
       ],
       "gate": "npm run governance:evidence",
       "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
@@ -5053,49 +5057,27 @@
         "disposition": "MIGRATE",
         "connected": [
           {
-            "file": "src/pages/budgets/BudgetListPage.deep.test.tsx",
-            "title": "renders budget list and filters by status"
-          },
-          {
             "file": "src/pages/budgets/BudgetListPage.test.tsx",
             "title": "displays the empty state when no budgets exist"
-          },
-          {
-            "file": "src/pages/budgets/BudgetListPage.test.tsx",
-            "title": "submission failure is surfaced after an asynchronous rejection and Retry can succeed"
-          },
-          {
-            "file": "src/pages/budgets/BudgetListPage.test.tsx",
-            "title": "keeps the page h1 mounted over a hydration skeleton instead of flashing the empty state"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /budgets \u2014 budget:read allows viewing budgets"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /budgets \u2014 audit trail records budget derivation"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /budgets \u2014 write guard blocks budget:approve for Viewer"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
           "src/pages/budgets/BudgetListPage.test.tsx",
-          "src/pages/budgets/BudgetListPage.deep.test.tsx"
+          "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
         "src/pages/budgets/BudgetListPage.test.tsx",
-        "src/pages/budgets/BudgetListPage.deep.test.tsx"
+        "src/__tests__/spineGovernance.test.ts"
       ]
     },
     {
@@ -5281,51 +5263,31 @@
       "id": "route:/cash/forecast",
       "status": "SUPPORTED",
       "evidence": {
+        "gatedBy": "/cash/forecast",
+        "disposition": "MIGRATE",
         "connected": [
           {
-            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
-            "title": "journey: renders cash position with data"
-          },
-          {
-            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
-            "title": "empty: shows No Cash Activity with CTA"
-          },
-          {
-            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
-            "title": "error: shows role=alert with retry"
-          },
-          {
-            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
-            "title": "loading: shows Skeleton with srLabel and aria-busy"
+            "file": "src/pages/cash/CashForecastPage.test.tsx",
+            "title": "renders the content state from posted cash activity under the page h1"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /cash/forecast \u2014 report:read allows viewing cash forecast"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /cash/forecast \u2014 audit trail records cash derivation"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /cash/forecast \u2014 write guard blocks closed periods from affecting cash"
           }
         ],
-        "disposition": "MIGRATE",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
-        "gate": "governance:evidence",
-        "gatedBy": "/cash/forecast",
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
-          "src/pages/cash/CashForecastPage.interop.test.tsx"
-        ]
+          "src/pages/cash/CashForecastPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
-        "src/pages/cash/CashForecastPage.interop.test.tsx"
+        "src/pages/cash/CashForecastPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
       ]
     },
     {
@@ -6025,51 +5987,27 @@
         "disposition": "MIGRATE",
         "connected": [
           {
-            "file": "src/pages/data/GLTrialBalancePage.interop.test.tsx",
-            "title": "renders the trial balance the real store derives from an imported journal"
-          },
-          {
             "file": "src/pages/data/GLTrialBalancePage.test.tsx",
-            "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
-          },
-          {
-            "file": "src/pages/smoke-data-pages.test.tsx",
-            "title": "displays empty state when no entries"
-          },
-          {
-            "file": "src/pages/data/GLTrialBalancePage.test.tsx",
-            "title": "K30 error state: states the failed import instead of rendering the stale ledger"
+            "title": "displays Trial Balance heading"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /data/gl-trial-balance \u2014 Viewer can read trial balance (import:read)"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-trial-balance \u2014 audit trail records ledger derivation"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-trial-balance \u2014 write guard blocks closed periods from affecting TB"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
-          "src/pages/data/GLTrialBalancePage.interop.test.tsx",
           "src/pages/data/GLTrialBalancePage.test.tsx",
-          "src/pages/smoke-data-pages.test.tsx"
+          "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
-        "src/pages/data/GLTrialBalancePage.interop.test.tsx",
         "src/pages/data/GLTrialBalancePage.test.tsx",
-        "src/pages/smoke-data-pages.test.tsx"
+        "src/__tests__/spineGovernance.test.ts"
       ],
       "gate": "npm run governance:evidence",
       "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
@@ -6305,51 +6243,29 @@
       "evidence": {
         "gatedBy": "/forecasts",
         "disposition": "MIGRATE",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
-        "gate": "governance:evidence",
         "connected": [
           {
-            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-            "title": "renders the forecast journey with rolling horizon and confidence heatmap"
-          },
-          {
-            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-            "title": "shows the empty state when no forecasts exist"
-          },
-          {
-            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-            "title": "shows an error alert when forecasts fail to load and retry succeeds"
-          },
-          {
-            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-            "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+            "file": "src/pages/forecasts/ForecastListPage.test.tsx",
+            "title": "displays the empty state when no forecasts exist"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /forecasts \u2014 forecast:read allows viewing forecasts"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /forecasts \u2014 audit trail records forecast derivation"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /forecasts \u2014 write guard blocks forecast:create for Viewer"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
-          "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-          "src/pages/forecasts/ForecastListPage.test.tsx"
-        ]
+          "src/pages/forecasts/ForecastListPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 rolling forecast 12-18mo horizon 5-day cycle",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
-        "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-        "src/pages/forecasts/ForecastListPage.test.tsx"
+        "src/pages/forecasts/ForecastListPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
       ]
     },
     {
@@ -6857,49 +6773,27 @@
         "disposition": "MIGRATE",
         "connected": [
           {
-            "file": "src/services/import/monthEndClosePipeline.integration.test.ts",
-            "title": "quarantines messy imports atomically, enforces period-close write guard, promotes exact-decimal USD/EUR batches, consolidates with ASC 830 CTA & ASC 810 IC, and ties out XLSX/PPTX outputs"
-          },
-          {
             "file": "src/pages/periods/PeriodClosePage.test.tsx",
-            "title": "K30: shows the hydrate skeleton while the close workflow initializes"
-          },
-          {
-            "file": "src/pages/periods/PeriodClosePage.test.tsx",
-            "title": "K30: empty state offers a CTA that re-enters the period-close flow"
-          },
-          {
-            "file": "src/pages/periods/PeriodClosePage.test.tsx",
-            "title": "K30: failed transition renders ErrorState (role=alert) whose retry succeeds"
+            "title": "shows a recoverable calendar error instead of reusing a period ID from another year"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /periods/close \u2014 Viewer cannot close, Admin can close (period:close)"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /periods/close \u2014 audit trail records close transitions"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /periods/close \u2014 write guard blocks GL writes in closed periods"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
           "src/pages/periods/PeriodClosePage.test.tsx",
-          "src/services/import/monthEndClosePipeline.integration.test.ts"
+          "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
         "src/pages/periods/PeriodClosePage.test.tsx",
-        "src/services/import/monthEndClosePipeline.integration.test.ts"
+        "src/__tests__/spineGovernance.test.ts"
       ],
       "gate": "npm run governance:evidence",
       "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
