@@ -133,7 +133,7 @@ symptoms and the tests are unchanged.
 | type-safety escapes       | 48                          | `scripts/type-safety-baseline.json`    |
 | money AST violations      | 0                           | `scripts/money-ast-baseline.json`      |
 | money adoption            | 70.59 % (floor)             | `scripts/money-adoption-baseline.json` |
-| palette migration         | 5501 / 370                  | `scripts/palette-baseline.json`        |
+| palette migration         | 5489 / 368                  | `scripts/palette-baseline.json`        |
 | eslint-disable ledger     | see `npm run escape:ledger` | —                                      |
 
 Every number in that table is script-checked: `scripts/ratchet-docs-check.mjs` (inside

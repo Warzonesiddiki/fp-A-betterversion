@@ -1,7 +1,7 @@
 {
   "modulesScanned": 1197,
-  "filesWithSites": 370,
-  "total": 5501,
+  "filesWithSites": 368,
+  "total": 5489,
   "perFile": {
     "src/components/admin/DependencyGraph.tsx": 52,
     "src/components/ai/AICopilotPanel.tsx": 1,
@@ -253,7 +253,6 @@
     "src/pages/capex/CapExDashboard.tsx": 21,
     "src/pages/capex/CapexTracker.tsx": 10,
     "src/pages/capex/DepreciationForecastPage.tsx": 7,
-    "src/pages/cash/CashForecastPage.tsx": 4,
     "src/pages/cash/DebtSchedulePage.tsx": 5,
     "src/pages/cash/WorkingCapitalPage.tsx": 3,
     "src/pages/charts/ChartOfAccountsPage.tsx": 2,
@@ -273,7 +272,6 @@
     "src/pages/currency/TranslationResultPage.tsx": 13,
     "src/pages/DashboardPage.tsx": 20,
     "src/pages/data/ChartOfAccountsPage.tsx": 38,
-    "src/pages/data/DataFlowMapPage.tsx": 8,
     "src/pages/data/DataImportPage.tsx": 79,
     "src/pages/data/GLAccountAnalysisPage.tsx": 27,
     "src/pages/data/GLExplorerPage.tsx": 14,
