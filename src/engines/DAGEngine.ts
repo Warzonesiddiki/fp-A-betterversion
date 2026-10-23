@@ -1,5 +1,3 @@
-
-
 /**
  * DAG Engine — Directed Acyclic Graph for Formula Calculations
  *

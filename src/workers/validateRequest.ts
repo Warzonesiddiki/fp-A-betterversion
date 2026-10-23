@@ -1,5 +1,3 @@
-
-
 /**
  * Shared worker request-validation guards (W7E / W6-P1).
  *

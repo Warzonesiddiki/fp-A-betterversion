@@ -1,5 +1,3 @@
-
-
 /**
  * patch_16/interfaces.ts — PATCH 16 (T-3d 2026-06-19 EOD HARD)
  * Hephaestus · Security Muse · WAVE 8 ATTEMPT #5

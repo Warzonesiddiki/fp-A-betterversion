@@ -1,5 +1,3 @@
-
-
 /**
  * CUBE ENGINE PERSISTENCE — Dual-backend adapter (IndexedDB + Tauri SQLite)
  * Every operation is atomic, fully typed, and error-handled.
