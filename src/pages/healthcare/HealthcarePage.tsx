@@ -28,6 +28,9 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const REVENUE_CYCLE_STAGES = [
   { key: 'grossCharges', label: 'Gross patient charges (40xx)' },

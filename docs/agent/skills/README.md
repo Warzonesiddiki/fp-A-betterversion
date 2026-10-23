@@ -55,6 +55,7 @@ repository's own incidents and decisions.
 | [`determinism-and-reproducibility`](determinism-and-reproducibility.md) | Use in calculation paths: same input must give the same output, whatever the clock, locale or machine. Replayable beats lucky. | finance |
 | [`driver-based-scenario-modeling`](driver-based-scenario-modeling.md) | Use when building or changing scenario modeling, driver planning, or what-if analysis: 5-7 key drivers, base/upside/downside, owner-assigned assumptions. | finance |
 | [`financial-domain-modeling`](financial-domain-modeling.md) | Use when modelling accounting or FP&A behaviour: entries, close, consolidation, intercompany, FX, drivers, variance. Get the accounting right before the screen. | finance |
+| [`money-adoption-migration`](money-adoption-migration.md) | Use when migrating modules to the Money primitive (toDecimal). Covers import placement, marker usage, baseline updates, and ratchet maintenance. | finance |
 | [`money-and-decimals`](money-and-decimals.md) | Use for any change that reads, computes, stores, sums, allocates or displays an amount. Money is integer minor units behind a branded type; never a float. | finance |
 | [`no-invented-data`](no-invented-data.md) | Use whenever a number, rate, benchmark or label appears in the UI: it must come from data the user supplied or a recorded assumption, never from a literal. | finance |
 | [`period-close-operations`](period-close-operations.md) | Use when working on close: locking, reopening, adjustments, carry-forward. Close is a state machine with evidence, not a date field. | finance |
@@ -65,6 +66,7 @@ repository's own incidents and decisions.
 | [`data-integrity-and-persistence`](data-integrity-and-persistence.md) | Use when a change touches persisted data, migrations, import, or anything that could lose or silently alter a user's numbers. | engineering |
 | [`dependency-and-licence-audit`](dependency-and-licence-audit.md) | Use before adding a package or upgrading one: size, licence, maintenance, and whether the platform already does it. | engineering |
 | [`desktop-shell-tauri`](desktop-shell-tauri.md) | Use for anything that touches the desktop shell: filesystem, offline behaviour, updates, signing. The browser preview is not the product. | engineering |
+| [`full-test-suite-execution`](full-test-suite-execution.md) | Use when running the complete test suite across all shards. Maps shard assignments, runs each shard, aggregates results, and verifies the 8/8 pass requirement. | engineering |
 | [`gates-and-ratchets`](gates-and-ratchets.md) | Use when adding, changing or bypassing a check. A gate is only worth what it catches; a ratchet only moves one way. | engineering |
 | [`incident-and-rollback`](incident-and-rollback.md) | Use when something shipped is wrong in the user's hands: stop the bleeding, preserve evidence, then fix the cause. | engineering |
 | [`observability-and-errors`](observability-and-errors.md) | Use when handling an error, adding a log, or writing a catch: the failure must be visible, attributable, and never silently converted into a default. | engineering |
