@@ -1,5 +1,11 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-23 (l) — gl-journals GOVERNED as 8th route, SUPPORTED 25 (PR #91)
+
+**The claim.** `/data/gl-journals` is CONNECTED and GOVERNED as 8th SUPPORTED route. Already had journey/empty/error/loading evidenced in `GLJournalsPage.test.tsx` (content state, EmptyState with import CTA, ErrorState with retry, aria-busy). Added GOVERNED claims 52/52 for gl-journals (gl:read, audit, write-guard, O9). Register SUPPORTED 25 (8 routes + 17 caps), spine 8/28, governance 8/24, one-stop 8 routes, missingIsNotZero 0, matrix 1303 lines current.
+
+**Next.** Continue SUPPORTED expansion to 9th route (`/data/gl-reporting` or `/budgets`), re-run test:sharded 8/8, update README tally if moved.
+
 ## 2026-10-23 (k) — gl-explorer GOVERNED as 7th route, docs:verify wiring for one-stop and missing-is-not-zero (PR #90)
 
 **The claim.** `/data/gl-explorer` is CONNECTED and GOVERNED as 7th SUPPORTED route. It renders counts, money totals, rows and provenance from real store, shows empty state when store empty, shows ErrorState when importError set, and has no async skeleton (loading na). GOVERNED claims: gl:read allows viewing, audit trail records derivation, write guard blocks closed periods, O9 boundary stated. One-stop acceptance and missing-is-not-zero now wired into `docs:verify` (PR #90/#91 coding priority).
