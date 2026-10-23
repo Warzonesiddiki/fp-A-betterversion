@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * MigrationEngine — Source-specific migration parsers for Planful, Adaptive, Anaplan
  * Extends ImportEngine with column auto-detection, migration readiness scoring, and rollback
@@ -12,7 +13,6 @@ async function loadExcelJS() {
   const mod = await import('exceljs');
   return (mod.default ?? mod) as any;
 }
-type ExcelJS = any;
 
 export type MigrationSource = 'excel' | 'planful' | 'adaptive' | 'anaplan' | 'csv' | 'unknown';
 

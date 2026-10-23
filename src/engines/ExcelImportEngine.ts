@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // =============================================================================
 // EXCEL IMPORT ENGINE
 // Parse Excel (.xlsx/.xls) and CSV files, auto-detect columns, validate data

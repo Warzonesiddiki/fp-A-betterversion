@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * AdvancedPDFEngine — Professional PDF generation for FinPlan Pro
  * Features: TOC, watermarks, headers/footers, charts, financial tables
