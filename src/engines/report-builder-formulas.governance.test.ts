@@ -30,9 +30,7 @@ import type { ReportLayout, ReportRow, ReportCell } from './report-builder-types
  */
 
 describe('report-builder-formulas — GOVERNANCE (report.xlsx-formula)', () => {
-
   describe('1. Formula parsing', () => {
-
     it('parseFormulaReferences extracts cell references', () => {
       const refs = parseFormulaReferences('A1+B2+C3');
       expect(refs).toEqual(['A1', 'B2', 'C3']);
@@ -55,7 +53,6 @@ describe('report-builder-formulas — GOVERNANCE (report.xlsx-formula)', () => {
   });
 
   describe('2. Formula evaluation', () => {
-
     it('evaluateFormula computes sum of cell values', () => {
       const result = evaluateFormula('A1+B2', { A1: 100, B2: 200 });
       expect(result).toBe(300);
@@ -88,7 +85,6 @@ describe('report-builder-formulas — GOVERNANCE (report.xlsx-formula)', () => {
   });
 
   describe('3. Safe evaluation', () => {
-
     it('safeEvaluate evaluates simple expressions', () => {
       expect(safeEvaluate('2+3')).toBe(5);
       expect(safeEvaluate('10-4')).toBe(6);
@@ -112,7 +108,6 @@ describe('report-builder-formulas — GOVERNANCE (report.xlsx-formula)', () => {
   });
 
   describe('4. Missing cell reference detection', () => {
-
     it('evaluateFormula throws when cell reference is missing', () => {
       expect(() => evaluateFormula('A1+B2', { A1: 100 })).toThrow(
         'Missing value for cell reference: B2'
@@ -127,7 +122,6 @@ describe('report-builder-formulas — GOVERNANCE (report.xlsx-formula)', () => {
   });
 
   describe('5. Non-finite value detection', () => {
-
     it('evaluateFormula throws when cell value is NaN', () => {
       expect(() => evaluateFormula('A1+B2', { A1: NaN, B2: 200 })).toThrow(
         'Non-finite value for cell reference: A1'
@@ -142,7 +136,6 @@ describe('report-builder-formulas — GOVERNANCE (report.xlsx-formula)', () => {
   });
 
   describe('6. Column letter/index conversion', () => {
-
     it('columnLetterToIndex converts A to 0', () => {
       expect(columnLetterToIndex('A')).toBe(0);
     });
@@ -175,29 +168,36 @@ describe('report-builder-formulas — GOVERNANCE (report.xlsx-formula)', () => {
   });
 
   describe('7. Circular reference detection', () => {
-
-    function makeLayout(cells: Array<{ id: string; type: 'formula' | 'metric'; expression?: string }>): ReportLayout {
-      const rows: ReportRow[] = [{
-        id: 'row1',
-        type: 'data',
-        cells: cells.map((c) => {
-          const cell: ReportCell = {
-            id: c.id,
-            type: c.type,
-            content: c.type === 'formula'
-              ? { type: 'formula', content: { expression: c.expression!, format: 'currency', decimals: 2 } }
-              : { type: 'metric', content: { key: c.id, format: 'currency', decimals: 2 } },
-            style: {},
-            colspan: 1,
-            rowspan: 1,
-            isVisible: true,
-          };
-          return cell;
-        }),
-        height: 20,
-        isVisible: true,
-        pageBreakBefore: false,
-      }];
+    function makeLayout(
+      cells: Array<{ id: string; type: 'formula' | 'metric'; expression?: string }>
+    ): ReportLayout {
+      const rows: ReportRow[] = [
+        {
+          id: 'row1',
+          type: 'data',
+          cells: cells.map((c) => {
+            const cell: ReportCell = {
+              id: c.id,
+              type: c.type,
+              content:
+                c.type === 'formula'
+                  ? {
+                      type: 'formula',
+                      content: { expression: c.expression!, format: 'currency', decimals: 2 },
+                    }
+                  : { type: 'metric', content: { key: c.id, format: 'currency', decimals: 2 } },
+              style: {},
+              colspan: 1,
+              rowspan: 1,
+              isVisible: true,
+            };
+            return cell;
+          }),
+          height: 20,
+          isVisible: true,
+          pageBreakBefore: false,
+        },
+      ];
       return {
         rows,
         columns: [],
@@ -216,7 +216,7 @@ describe('report-builder-formulas — GOVERNANCE (report.xlsx-formula)', () => {
       ]);
       const result = detectCircularReferences(layout);
 
-      const circular = result.filter(d => d.hasCircularRef);
+      const circular = result.filter((d) => d.hasCircularRef);
       expect(circular.length).toBeGreaterThan(0);
     });
 
@@ -228,23 +228,20 @@ describe('report-builder-formulas — GOVERNANCE (report.xlsx-formula)', () => {
       ]);
       const result = detectCircularReferences(layout);
 
-      const circular = result.filter(d => d.hasCircularRef);
+      const circular = result.filter((d) => d.hasCircularRef);
       expect(circular.length).toBe(0);
     });
 
     it('detectCircularReferences detects self-reference', () => {
-      const layout = makeLayout([
-        { id: 'A1', type: 'formula', expression: 'A1' },
-      ]);
+      const layout = makeLayout([{ id: 'A1', type: 'formula', expression: 'A1' }]);
       const result = detectCircularReferences(layout);
 
-      const circular = result.filter(d => d.hasCircularRef);
+      const circular = result.filter((d) => d.hasCircularRef);
       expect(circular.length).toBeGreaterThan(0);
     });
   });
 
   describe('8. Determinism', () => {
-
     it('evaluateFormula produces identical results for identical inputs', () => {
       const r1 = evaluateFormula('A1+B2*C3', { A1: 10, B2: 2, C3: 3 });
       const r2 = evaluateFormula('A1+B2*C3', { A1: 10, B2: 2, C3: 3 });

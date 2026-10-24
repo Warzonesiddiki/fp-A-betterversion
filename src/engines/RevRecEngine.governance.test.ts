@@ -64,9 +64,7 @@ function makeContract(
 }
 
 describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
-
   describe('1. Input validation', () => {
-
     it('allocateTransactionPrice returns [] for null contract', () => {
       expect(RevRecEngine.allocateTransactionPrice(null as never)).toEqual([]);
     });
@@ -77,10 +75,7 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
     });
 
     it('allocateTransactionPrice returns original POs when all standalone prices are zero', () => {
-      const poList = [
-        makePO('po-1', 'Service A', 0),
-        makePO('po-2', 'Service B', 0),
-      ];
+      const poList = [makePO('po-1', 'Service A', 0), makePO('po-2', 'Service B', 0)];
       const contract = makeContract('C1', 100000, poList);
       const result = RevRecEngine.allocateTransactionPrice(contract);
       expect(result).toHaveLength(2);
@@ -91,7 +86,6 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
   });
 
   describe('2. Transaction price allocation', () => {
-
     it('allocates percentages that sum to 1 (100%)', () => {
       const poList = [
         makePO('po-1', 'Service A', 60000),
@@ -124,11 +118,8 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
   });
 
   describe('3. Revenue schedule footing', () => {
-
     it('schedule amounts foot to total contract value (cent-exact)', () => {
-      const poList = [
-        makePO('po-1', 'Annual Service', 100000, 'over_time', 'straight_line'),
-      ];
+      const poList = [makePO('po-1', 'Annual Service', 100000, 'over_time', 'straight_line')];
       const contract = makeContract('C1', 100000, poList, 'CUST-001', '2026-01-01', '2026-12-31');
       const periods = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06'];
       const schedules = RevRecEngine.calculateRevenueSchedule(contract, periods);
@@ -138,9 +129,7 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
     });
 
     it('schedule foots for uneven division (100000 / 3 months)', () => {
-      const poList = [
-        makePO('po-1', 'Quarterly Service', 100000, 'over_time', 'straight_line'),
-      ];
+      const poList = [makePO('po-1', 'Quarterly Service', 100000, 'over_time', 'straight_line')];
       const contract = makeContract('C1', 100000, poList, 'CUST-001', '2026-01-01', '2026-03-31');
       const periods = ['2026-01', '2026-02', '2026-03'];
       const schedules = RevRecEngine.calculateRevenueSchedule(contract, periods);
@@ -152,11 +141,8 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
   });
 
   describe('4. Over-time recognition (straight-line)', () => {
-
     it('recognizes revenue evenly across periods', () => {
-      const poList = [
-        makePO('po-1', 'Annual Service', 120000, 'over_time', 'straight_line'),
-      ];
+      const poList = [makePO('po-1', 'Annual Service', 120000, 'over_time', 'straight_line')];
       const contract = makeContract('C1', 120000, poList, 'CUST-001', '2026-01-01', '2026-12-31');
       const periods = ['2026-01', '2026-02', '2026-03', '2026-04'];
       const schedules = RevRecEngine.calculateRevenueSchedule(contract, periods);
@@ -169,9 +155,7 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
     });
 
     it('recognizedToDate is cumulative', () => {
-      const poList = [
-        makePO('po-1', 'Annual Service', 100000, 'over_time', 'straight_line'),
-      ];
+      const poList = [makePO('po-1', 'Annual Service', 100000, 'over_time', 'straight_line')];
       const contract = makeContract('C1', 100000, poList, 'CUST-001', '2026-01-01', '2026-04-30');
       const periods = ['2026-01', '2026-02', '2026-03', '2026-04'];
       const schedules = RevRecEngine.calculateRevenueSchedule(contract, periods);
@@ -183,9 +167,7 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
     });
 
     it('remainingToRecognize decreases to zero at end', () => {
-      const poList = [
-        makePO('po-1', 'Quarterly Service', 90000, 'over_time', 'straight_line'),
-      ];
+      const poList = [makePO('po-1', 'Quarterly Service', 90000, 'over_time', 'straight_line')];
       const contract = makeContract('C1', 90000, poList, 'CUST-001', '2026-01-01', '2026-03-31');
       const periods = ['2026-01', '2026-02', '2026-03'];
       const schedules = RevRecEngine.calculateRevenueSchedule(contract, periods);
@@ -195,7 +177,6 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
   });
 
   describe('5. Point-in-time recognition', () => {
-
     it('recognizes full amount when completion metric is met', () => {
       const poList = [
         makePO('po-1', 'License', 50000, 'point_in_time', undefined, 1, '2026-06-01'),
@@ -225,7 +206,6 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
   });
 
   describe('6. Contract modification', () => {
-
     it('termination reduces contract value', () => {
       const contract = makeContract('C1', 100000, [
         makePO('po-1', 'Service', 100000, 'over_time', 'straight_line'),
@@ -258,7 +238,6 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
   });
 
   describe('7. Variable consideration constraint', () => {
-
     it('constrains to zero when reversal probability exceeds threshold', () => {
       // probabilityOfReversal 0.8 >= threshold 0.75 → constrained to 0
       expect(RevRecEngine.constrainVariableConsideration(100000, 0.8)).toBe(0);
@@ -275,7 +254,6 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
   });
 
   describe('8. Contract asset/liability', () => {
-
     it('reports contract liability when billed exceeds recognized', () => {
       const schedules = [
         { period: '2026-01', amount: 10000, recognizedToDate: 10000, remainingToRecognize: 90000 },
@@ -302,7 +280,6 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
   });
 
   describe('9. Deferred revenue', () => {
-
     it('returns remaining to recognize as of a date', () => {
       const schedules = [
         { period: '2026-01', amount: 25000, recognizedToDate: 25000, remainingToRecognize: 75000 },
@@ -324,11 +301,8 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
   });
 
   describe('10. Money primitive safety', () => {
-
     it('schedule amounts are exact cents (no float drift)', () => {
-      const poList = [
-        makePO('po-1', 'Service', 100000, 'over_time', 'straight_line'),
-      ];
+      const poList = [makePO('po-1', 'Service', 100000, 'over_time', 'straight_line')];
       const contract = makeContract('C1', 100000, poList, 'CUST-001', '2026-01-01', '2026-03-31');
       const periods = ['2026-01', '2026-02', '2026-03'];
       const schedules = RevRecEngine.calculateRevenueSchedule(contract, periods);
@@ -340,10 +314,7 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
     });
 
     it('allocation percentages use decimal division (not IEEE-754)', () => {
-      const poList = [
-        makePO('po-1', 'A', 3),
-        makePO('po-2', 'B', 7),
-      ];
+      const poList = [makePO('po-1', 'A', 3), makePO('po-2', 'B', 7)];
       const contract = makeContract('C1', 10, poList);
       const result = RevRecEngine.allocateTransactionPrice(contract);
 
@@ -354,11 +325,8 @@ describe('RevRecEngine — GOVERNANCE (model.revenue-recognition)', () => {
   });
 
   describe('11. Determinism', () => {
-
     it('produces identical schedules for identical inputs', () => {
-      const poList = [
-        makePO('po-1', 'Annual Service', 120000, 'over_time', 'straight_line'),
-      ];
+      const poList = [makePO('po-1', 'Annual Service', 120000, 'over_time', 'straight_line')];
       const contract = makeContract('C1', 120000, poList, 'CUST-001', '2026-01-01', '2026-12-31');
       const periods = ['2026-01', '2026-02', '2026-03'];
 

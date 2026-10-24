@@ -30,7 +30,7 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Engine modules | 211 |
 | State-store modules | 51 |
 | UI component modules | 349 |
-| Service modules | 92 |
+| Service modules | 94 |
 | Server API route modules | 12 |
 
 ## Route-by-route inventory
@@ -1237,6 +1237,8 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Gl Xlsx Tokenizer | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/import/glXlsxTokenizer.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Import Provenance | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/import/importProvenance.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Parse GLRows | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/import/parseGLRows.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Universal Import Engine | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/import/universalImportEngine.ts` | BUILT — TEST NOT FOUND | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Universal Import Template | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/import/universalImportTemplate.ts` | BUILT — TEST NOT FOUND | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Interfaces | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/interfaces.ts` | BUILT — TEST NOT FOUND | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Llm Egress | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/llm/llmEgress.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Accounts | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/mockData/accounts.ts` | BUILT — TEST NOT FOUND | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |

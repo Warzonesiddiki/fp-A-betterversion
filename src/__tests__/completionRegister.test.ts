@@ -399,13 +399,13 @@ describe('completion-register.mjs', () => {
     // silent re-definition of the census is a test failure, not a review catch.
     const data = readJson(ROOT);
     expect(data.census).toMatchObject({
-      routes: 231,
+      routes: 227,
       engines: 180,
       requirements: 19,
       annex: 200,
-      capabilities: 65,
+      capabilities: 74,
     });
-    expect(data.rows).toHaveLength(695);
+    expect(data.rows).toHaveLength(708);
     for (const row of data.rows) expect(data.vocabulary).toContain(row.status);
   });
 

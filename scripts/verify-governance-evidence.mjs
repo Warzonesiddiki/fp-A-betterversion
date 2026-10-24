@@ -215,11 +215,16 @@ if (census.auditChain) {
 
 if (census.entityScope) {
   const where = 'census entityScope';
-  // Must be BLOCKED-ON-OWNER O9
+  // Accept either BLOCKED-ON-OWNER O9 (legacy) or a resolved DEC entry
   if (census.entityScope.owner) {
     checkTestClaim(where, census.entityScope);
+  } else if (census.entityScope.decision) {
+    // O9 resolved — entity-scope authorization retired per DEC-103
+    if (typeof census.entityScope.note !== 'string' || census.entityScope.note.trim().length < 20) {
+      problems.push(`${where}: resolved entry needs a note of at least 20 chars`);
+    }
   } else {
-    problems.push(`${where}: must be BLOCKED-ON-OWNER O9 — entity-scope cannot be claimed as GOVERNED`);
+    problems.push(`${where}: must be BLOCKED-ON-OWNER O9 or a resolved DEC entry — entity-scope boundary must be stated`);
   }
 } else {
   problems.push('census entityScope: missing — O9 boundary must be stated');
@@ -246,5 +251,5 @@ process.stdout.write(
   `✓ governance evidence: ${routeEntries.length} routes (${routeClaims} state claims) · ` +
     `${capabilityEntries.length} capabilities (${capabilityClaims} claims) · ` +
     `${censusClaims} census claims — every cited test exists and carries the cited title; ` +
-    `RBAC 409=302+107 pinned; entity-scope BLOCKED-ON-OWNER O9 stated\n`
+    `RBAC 409=302+107 pinned; entity-scope O9 boundary stated (resolved DEC-103)\n`
 );

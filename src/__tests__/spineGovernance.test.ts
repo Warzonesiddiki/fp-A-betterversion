@@ -117,7 +117,16 @@ function resetAll() {
     error: null,
   } as never);
   useSettingsStore.setState({
-    organization: { name: '', fiscalYear: 2026, fiscalYearStart: '2024-01-01', calendarType: 'Standard', baseCurrency: 'USD', timezone: 'UTC', dateFormat: 'MM/DD/YYYY', decimalPlaces: 2 },
+    organization: {
+      name: '',
+      fiscalYear: 2026,
+      fiscalYearStart: '2024-01-01',
+      calendarType: 'Standard',
+      baseCurrency: 'USD',
+      timezone: 'UTC',
+      dateFormat: 'MM/DD/YYYY',
+      decimalPlaces: 2,
+    },
     users: [],
     roles: [],
     preferences: { activeSector: 'technology', density: 'standard' },
@@ -125,16 +134,48 @@ function resetAll() {
     error: null,
   } as never);
   useFxRateStore.setState({ rates: [] } as never);
-  useCubeStore.setState({ isInitialized: false, cellCount: 0, historyCount: 0, snapshots: [] } as never);
+  useCubeStore.setState({
+    isInitialized: false,
+    cellCount: 0,
+    historyCount: 0,
+    snapshots: [],
+  } as never);
   useDocumentStore.setState({ documents: [] } as never);
   useDashboardStore.setState({ dashboards: [] } as never);
   useIntegrationStore.setState({ connections: {} } as never);
   useConstructionStore.setState({ changeOrders: [], costBreakdown: [], costLedger: [] } as never);
   useEntityStore.setState({ entities: [] } as never);
-  useWorkflowStore.setState({ workflows: [], stats: { total: 0, pending: 0, inProgress: 0, completed: 0 }, isLoading: false, error: null } as never);
-  useGLTrialBalanceStore.setState({ rows: [], loading: false, error: null, filters: [], sort: null, selectedRowId: null, pageSize: 20, currentPage: 0 } as never);
-  useDataStore.setState({ accounts: [], activeAccountId: null, loading: false, error: null } as never);
-  useGLUploadStore.setState({ fileInfo: null, step: 0, mappings: {}, progress: 0, autoMapping: false, errors: [], csvColumns: [] } as never);
+  useWorkflowStore.setState({
+    workflows: [],
+    stats: { total: 0, pending: 0, inProgress: 0, completed: 0 },
+    isLoading: false,
+    error: null,
+  } as never);
+  useGLTrialBalanceStore.setState({
+    rows: [],
+    loading: false,
+    error: null,
+    filters: [],
+    sort: null,
+    selectedRowId: null,
+    pageSize: 20,
+    currentPage: 0,
+  } as never);
+  useDataStore.setState({
+    accounts: [],
+    activeAccountId: null,
+    loading: false,
+    error: null,
+  } as never);
+  useGLUploadStore.setState({
+    fileInfo: null,
+    step: 0,
+    mappings: {},
+    progress: 0,
+    autoMapping: false,
+    errors: [],
+    csvColumns: [],
+  } as never);
   useVarianceStore.setState({ analyses: [], loading: false, error: null } as never);
   useAnalyticsStore.setState({ charts: [], loading: false, error: null } as never);
   useNotificationStore.setState({ notifications: [], unreadCount: 0 } as never);
@@ -143,7 +184,12 @@ function resetAll() {
   useCellLineageStore.setState({ chains: new Map() } as never);
   useRetailStore.setState({ products: [], stores: [] } as never);
   useTelecomStore.setState({ subscribers: [], networkMetrics: {} } as never);
-  useHealthcareStore.setState({ qualityMetrics: {}, savingsData: {}, programs: [], clinicalTrials: [] } as never);
+  useHealthcareStore.setState({
+    qualityMetrics: {},
+    savingsData: {},
+    programs: [],
+    clinicalTrials: [],
+  } as never);
   useGovernmentStore.setState({ funds: [], compliance: [] } as never);
   useLogisticsStore.setState({ shipments: [], routeCosts: {} } as never);
   useESGStore.setState({ metrics: [], initiatives: [] } as never);
@@ -1907,9 +1953,7 @@ describe('GOVERNED /collaboration — Collaboration surface', () => {
   });
 
   it('GOVERNED /collaboration — write guard requires workflow:approve on approval mutations', () => {
-    const error = expectPermissionDenied(() =>
-      useCollaborationStore.getState().setApprovals([])
-    );
+    const error = expectPermissionDenied(() => useCollaborationStore.getState().setApprovals([]));
     expect(error.message).toContain('workflow:approve');
   });
 
@@ -1991,9 +2035,7 @@ describe('GOVERNED /currency/hedging — Currency hedging surface', () => {
   });
 
   it('GOVERNED /currency/hedging — write guard requires forecast:delete on rate removal', () => {
-    const error = expectPermissionDenied(() =>
-      useFxRateStore.getState().deleteRate('gov-rate-1')
-    );
+    const error = expectPermissionDenied(() => useFxRateStore.getState().deleteRate('gov-rate-1'));
     expect(error.message).toContain('forecast:delete');
   });
 
@@ -2142,9 +2184,7 @@ describe('GOVERNED /settings/integrations — Integration connector surface', ()
   });
 
   it('GOVERNED /settings/integrations — write guard requires import:update on disconnect', () => {
-    const error = expectPermissionDenied(() =>
-      useIntegrationStore.getState().disconnect('d365')
-    );
+    const error = expectPermissionDenied(() => useIntegrationStore.getState().disconnect('d365'));
     expect(error.message).toContain('import:update');
   });
 
@@ -2216,9 +2256,7 @@ describe('GOVERNED /consolidation/detail — Entity management surface', () => {
   });
 
   it('GOVERNED /consolidation/detail — write guard requires entity:delete on removal', () => {
-    const error = expectPermissionDenied(() =>
-      useEntityStore.getState().deleteEntity('gov-ent-1')
-    );
+    const error = expectPermissionDenied(() => useEntityStore.getState().deleteEntity('gov-ent-1'));
     expect(error.message).toContain('entity:delete');
   });
 
@@ -2327,9 +2365,7 @@ describe('GOVERNED /settings/security — Security settings surface', () => {
   });
 
   it('GOVERNED /settings/security — write guard requires user:assign-role on role changes', () => {
-    const error = expectPermissionDenied(() =>
-      useSettingsStore.getState().setRoles([])
-    );
+    const error = expectPermissionDenied(() => useSettingsStore.getState().setRoles([]));
     expect(error.message).toContain('user:assign-role');
   });
 
@@ -2364,9 +2400,7 @@ describe('GOVERNED /collaboration/activity — Collaboration activity feed surfa
   });
 
   it('GOVERNED /collaboration/activity — write guard requires workflow:approve on approvals', () => {
-    const error = expectPermissionDenied(() =>
-      useCollaborationStore.getState().setApprovals([])
-    );
+    const error = expectPermissionDenied(() => useCollaborationStore.getState().setApprovals([]));
     expect(error.message).toContain('workflow:approve');
   });
 
@@ -2402,7 +2436,9 @@ describe('GOVERNED /reports/scheduler — Report scheduling surface', () => {
 
   it('GOVERNED /reports/scheduler — write guard requires report:schedule on schedule creation', () => {
     const error = expectPermissionDenied(() =>
-      useReportStore.getState().addScheduledReport({ id: 'gov-sched-2', reportId: 'rpt-1' } as never)
+      useReportStore
+        .getState()
+        .addScheduledReport({ id: 'gov-sched-2', reportId: 'rpt-1' } as never)
     );
     expect(error.message).toContain('report:schedule');
   });
@@ -2438,9 +2474,7 @@ describe('GOVERNED /treasury/investments — Treasury investment surface', () =>
   });
 
   it('GOVERNED /treasury/investments — write guard requires import:delete on data clear', () => {
-    const error = expectPermissionDenied(() =>
-      useGLStore.getState().clearData()
-    );
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
     expect(error.message).toContain('import:delete');
   });
 
@@ -2475,9 +2509,7 @@ describe('GOVERNED /tax/provision — Tax provision surface', () => {
   });
 
   it('GOVERNED /tax/provision — write guard requires import:delete on data clear', () => {
-    const error = expectPermissionDenied(() =>
-      useGLStore.getState().clearData()
-    );
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
     expect(error.message).toContain('import:delete');
   });
 
@@ -2493,7 +2525,9 @@ describe('GOVERNED /tax/provision — Tax provision surface', () => {
 describe('GOVERNED /lease/accounting — Lease accounting surface', () => {
   it('GOVERNED /lease/accounting — import:create guards lease entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-lease-1', accountId: '1500', amount: 2000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-lease-1', accountId: '1500', amount: 2000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
@@ -2512,9 +2546,7 @@ describe('GOVERNED /lease/accounting — Lease accounting surface', () => {
   });
 
   it('GOVERNED /lease/accounting — write guard requires import:delete on data clear', () => {
-    const error = expectPermissionDenied(() =>
-      useGLStore.getState().clearData()
-    );
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
     expect(error.message).toContain('import:delete');
   });
 
@@ -2549,9 +2581,7 @@ describe('GOVERNED /reports/budget-vs-actual — Budget vs Actual analysis surfa
   });
 
   it('GOVERNED /reports/budget-vs-actual — write guard requires budget:delete on budget removal', () => {
-    const error = expectPermissionDenied(() =>
-      useBudgetStore.getState().deleteBudget('gov-bva-1')
-    );
+    const error = expectPermissionDenied(() => useBudgetStore.getState().deleteBudget('gov-bva-1'));
     expect(error.message).toContain('budget:delete');
   });
 
@@ -2586,9 +2616,7 @@ describe('GOVERNED /collaboration/shared — Shared reports surface', () => {
   });
 
   it('GOVERNED /collaboration/shared — write guard requires workflow:approve on approvals', () => {
-    const error = expectPermissionDenied(() =>
-      useCollaborationStore.getState().setApprovals([])
-    );
+    const error = expectPermissionDenied(() => useCollaborationStore.getState().setApprovals([]));
     expect(error.message).toContain('workflow:approve');
   });
 
@@ -2660,9 +2688,7 @@ describe('GOVERNED /reports/three-statement — Three-statement model surface', 
   });
 
   it('GOVERNED /reports/three-statement — write guard requires report:delete on report removal', () => {
-    const error = expectPermissionDenied(() =>
-      useReportStore.getState().deleteReport('gov-3st-1')
-    );
+    const error = expectPermissionDenied(() => useReportStore.getState().deleteReport('gov-3st-1'));
     expect(error.message).toContain('report:delete');
   });
 
@@ -2771,9 +2797,7 @@ describe('GOVERNED /collaboration/team — Team workspace surface', () => {
   });
 
   it('GOVERNED /collaboration/team — write guard requires workflow:approve on approvals', () => {
-    const error = expectPermissionDenied(() =>
-      useCollaborationStore.getState().setApprovals([])
-    );
+    const error = expectPermissionDenied(() => useCollaborationStore.getState().setApprovals([]));
     expect(error.message).toContain('workflow:approve');
   });
 
@@ -2919,9 +2943,7 @@ describe('GOVERNED /collaboration/approvals — Approval queue surface', () => {
   });
 
   it('GOVERNED /collaboration/approvals — write guard requires workflow:approve on approvals', () => {
-    const error = expectPermissionDenied(() =>
-      useCollaborationStore.getState().setApprovals([])
-    );
+    const error = expectPermissionDenied(() => useCollaborationStore.getState().setApprovals([]));
     expect(error.message).toContain('workflow:approve');
   });
 
@@ -2937,7 +2959,9 @@ describe('GOVERNED /collaboration/approvals — Approval queue surface', () => {
 describe('GOVERNED /analytics/benchmarking — Benchmarking analysis surface', () => {
   it('GOVERNED /analytics/benchmarking — import:create guards benchmarking entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-bench-1', accountId: '4000', amount: 5000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-bench-1', accountId: '4000', amount: 5000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
@@ -2956,9 +2980,7 @@ describe('GOVERNED /analytics/benchmarking — Benchmarking analysis surface', (
   });
 
   it('GOVERNED /analytics/benchmarking — write guard requires import:delete on data clear', () => {
-    const error = expectPermissionDenied(() =>
-      useGLStore.getState().clearData()
-    );
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
     expect(error.message).toContain('import:delete');
   });
 
@@ -2980,7 +3002,12 @@ describe('GOVERNED /analytics/goal-seek — Goal seek analysis surface', () => {
   });
   it('GOVERNED /analytics/goal-seek — audit trail records goal-seek write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'goal:write', entity: 'goal', entityId: 'gov-goal-1', payload: { accountId: '5000', amount: 3000, target: 'revenue' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'goal:write',
+      entity: 'goal',
+      entityId: 'gov-goal-1',
+      payload: { accountId: '5000', amount: 3000, target: 'revenue' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3000,13 +3027,20 @@ describe('GOVERNED /analytics/goal-seek — Goal seek analysis surface', () => {
 describe('GOVERNED /data/gl-reporting — GL reporting surface', () => {
   it('GOVERNED /data/gl-reporting — import:create guards GL reporting entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-glrep-1', accountId: '6000', amount: 2500 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-glrep-1', accountId: '6000', amount: 2500 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /data/gl-reporting — audit trail records GL reporting write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'gl:write', entity: 'entry', entityId: 'gov-glrep-1', payload: { accountId: '6000', amount: 2500, type: 'revenue' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'gl:write',
+      entity: 'entry',
+      entityId: 'gov-glrep-1',
+      payload: { accountId: '6000', amount: 2500, type: 'revenue' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3032,7 +3066,12 @@ describe('GOVERNED /data/reconciliation — Reconciliation surface', () => {
   });
   it('GOVERNED /data/reconciliation — audit trail records reconciliation write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'recon:write', entity: 'entry', entityId: 'gov-recon-1', payload: { accountId: '1000', amount: 750, matched: true } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'recon:write',
+      entity: 'entry',
+      entityId: 'gov-recon-1',
+      payload: { accountId: '1000', amount: 750, matched: true },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3058,7 +3097,12 @@ describe('GOVERNED /ai — AI intelligence surface', () => {
   });
   it('GOVERNED /ai — audit trail records AI intelligence write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'ai:write', entity: 'entry', entityId: 'gov-ai-1', payload: { accountId: '7000', amount: 1000, model: 'forecast' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'ai:write',
+      entity: 'entry',
+      entityId: 'gov-ai-1',
+      payload: { accountId: '7000', amount: 1000, model: 'forecast' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3078,13 +3122,20 @@ describe('GOVERNED /ai — AI intelligence surface', () => {
 describe('GOVERNED /analytics/pivot-explorer — Pivot explorer surface', () => {
   it('GOVERNED /analytics/pivot-explorer — import:create guards pivot explorer entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-pivot-1', accountId: '8000', amount: 4000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-pivot-1', accountId: '8000', amount: 4000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /analytics/pivot-explorer — audit trail records pivot explorer write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'pivot:write', entity: 'entry', entityId: 'gov-pivot-1', payload: { accountId: '8000', amount: 4000, pivot: 'dept' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'pivot:write',
+      entity: 'entry',
+      entityId: 'gov-pivot-1',
+      payload: { accountId: '8000', amount: 4000, pivot: 'dept' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3110,7 +3161,12 @@ describe('GOVERNED /data/chart-of-accounts — Chart of accounts surface', () =>
   });
   it('GOVERNED /data/chart-of-accounts — audit trail records chart of accounts write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'coa:write', entity: 'entry', entityId: 'gov-coa-1', payload: { accountId: '9000', amount: 2000, type: 'asset' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'coa:write',
+      entity: 'entry',
+      entityId: 'gov-coa-1',
+      payload: { accountId: '9000', amount: 2000, type: 'asset' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3136,7 +3192,12 @@ describe('GOVERNED /data/comparison — Data comparison surface', () => {
   });
   it('GOVERNED /data/comparison — audit trail records comparison write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'compare:write', entity: 'entry', entityId: 'gov-cmp-1', payload: { accountId: '10000', amount: 6000, from: 'v1', to: 'v2' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'compare:write',
+      entity: 'entry',
+      entityId: 'gov-cmp-1',
+      payload: { accountId: '10000', amount: 6000, from: 'v1', to: 'v2' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3156,13 +3217,20 @@ describe('GOVERNED /data/comparison — Data comparison surface', () => {
 describe('GOVERNED /data/gl-account-analysis — GL account analysis surface', () => {
   it('GOVERNED /data/gl-account-analysis — import:create guards GL account analysis entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-glaa-1', accountId: '11000', amount: 8000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-glaa-1', accountId: '11000', amount: 8000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /data/gl-account-analysis — audit trail records GL account analysis write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'glaa:write', entity: 'entry', entityId: 'gov-glaa-1', payload: { accountId: '11000', amount: 8000, analysis: 'trend' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'glaa:write',
+      entity: 'entry',
+      entityId: 'gov-glaa-1',
+      payload: { accountId: '11000', amount: 8000, analysis: 'trend' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3188,7 +3256,12 @@ describe('GOVERNED /ai/nlq — AI natural language query surface', () => {
   });
   it('GOVERNED /ai/nlq — audit trail records NLQ write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'nlq:write', entity: 'entry', entityId: 'gov-nlq-1', payload: { accountId: '12000', amount: 9000, query: 'revenue by quarter' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'nlq:write',
+      entity: 'entry',
+      entityId: 'gov-nlq-1',
+      payload: { accountId: '12000', amount: 9000, query: 'revenue by quarter' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3208,13 +3281,20 @@ describe('GOVERNED /ai/nlq — AI natural language query surface', () => {
 describe('GOVERNED /banking/banking — Banking dashboard surface', () => {
   it('GOVERNED /banking/banking — import:create guards banking entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-bank-1', accountId: '13000', amount: 11000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-bank-1', accountId: '13000', amount: 11000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /banking/banking — audit trail records banking write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'bank:write', entity: 'entry', entityId: 'gov-bank-1', payload: { accountId: '13000', amount: 11000, type: 'deposit' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'bank:write',
+      entity: 'entry',
+      entityId: 'gov-bank-1',
+      payload: { accountId: '13000', amount: 11000, type: 'deposit' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3234,13 +3314,20 @@ describe('GOVERNED /banking/banking — Banking dashboard surface', () => {
 describe('GOVERNED /banking/reconciliation — Bank reconciliation surface', () => {
   it('GOVERNED /banking/reconciliation — import:create guards bank reconciliation entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-bkrecon-1', accountId: '14000', amount: 12000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-bkrecon-1', accountId: '14000', amount: 12000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /banking/reconciliation — audit trail records bank reconciliation write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'bkrecon:write', entity: 'entry', entityId: 'gov-bkrecon-1', payload: { accountId: '14000', amount: 12000, matched: true } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'bkrecon:write',
+      entity: 'entry',
+      entityId: 'gov-bkrecon-1',
+      payload: { accountId: '14000', amount: 12000, matched: true },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3260,13 +3347,20 @@ describe('GOVERNED /banking/reconciliation — Bank reconciliation surface', () 
 describe('GOVERNED /construction/project — Construction project costing surface', () => {
   it('GOVERNED /construction/project — import:create guards project costing entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-proj-1', accountId: '15000', amount: 13000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-proj-1', accountId: '15000', amount: 13000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /construction/project — audit trail records project costing write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'project:write', entity: 'entry', entityId: 'gov-proj-1', payload: { accountId: '15000', amount: 13000, project: 'Building A' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'project:write',
+      entity: 'entry',
+      entityId: 'gov-proj-1',
+      payload: { accountId: '15000', amount: 13000, project: 'Building A' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3286,13 +3380,20 @@ describe('GOVERNED /construction/project — Construction project costing surfac
 describe('GOVERNED /banking/statements — Bank statements surface', () => {
   it('GOVERNED /banking/statements — import:create guards bank statement entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-bstmt-1', accountId: '16000', amount: 14000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-bstmt-1', accountId: '16000', amount: 14000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /banking/statements — audit trail records bank statement write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'bstmt:write', entity: 'entry', entityId: 'gov-bstmt-1', payload: { accountId: '16000', amount: 14000, period: '2026-01' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'bstmt:write',
+      entity: 'entry',
+      entityId: 'gov-bstmt-1',
+      payload: { accountId: '16000', amount: 14000, period: '2026-01' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3318,7 +3419,12 @@ describe('GOVERNED /reports/library — Report template library surface', () => 
   });
   it('GOVERNED /reports/library — audit trail records library report write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'report:write', entity: 'report', entityId: 'gov-lib-1', payload: { name: 'Gov Library Rpt', template: 'cash-flow' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'report:write',
+      entity: 'report',
+      entityId: 'gov-lib-1',
+      payload: { name: 'Gov Library Rpt', template: 'cash-flow' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3338,13 +3444,20 @@ describe('GOVERNED /reports/library — Report template library surface', () => 
 describe('GOVERNED /revenue/rev-rec — Revenue recognition surface', () => {
   it('GOVERNED /revenue/rev-rec — import:create guards revenue recognition entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-revrec-1', accountId: '17000', amount: 15000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-revrec-1', accountId: '17000', amount: 15000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /revenue/rev-rec — audit trail records revenue recognition write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'revrec:write', entity: 'entry', entityId: 'gov-revrec-1', payload: { accountId: '17000', amount: 15000, method: 'percentage-of-completion' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'revrec:write',
+      entity: 'entry',
+      entityId: 'gov-revrec-1',
+      payload: { accountId: '17000', amount: 15000, method: 'percentage-of-completion' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3370,7 +3483,12 @@ describe('GOVERNED /tax/transfer-pricing — Transfer pricing surface', () => {
   });
   it('GOVERNED /tax/transfer-pricing — audit trail records transfer pricing write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'tp:write', entity: 'entry', entityId: 'gov-tp-1', payload: { accountId: '18000', amount: 16000, method: 'CUP' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'tp:write',
+      entity: 'entry',
+      entityId: 'gov-tp-1',
+      payload: { accountId: '18000', amount: 16000, method: 'CUP' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3390,13 +3508,20 @@ describe('GOVERNED /tax/transfer-pricing — Transfer pricing surface', () => {
 describe('GOVERNED /banking/nim — Net interest margin surface', () => {
   it('GOVERNED /banking/nim — import:create guards NIM entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-nim-1', accountId: '19000', amount: 17000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-nim-1', accountId: '19000', amount: 17000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /banking/nim — audit trail records NIM write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'nim:write', entity: 'entry', entityId: 'gov-nim-1', payload: { accountId: '19000', amount: 17000, metric: 'net-interest-margin' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'nim:write',
+      entity: 'entry',
+      entityId: 'gov-nim-1',
+      payload: { accountId: '19000', amount: 17000, metric: 'net-interest-margin' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3416,13 +3541,20 @@ describe('GOVERNED /banking/nim — Net interest margin surface', () => {
 describe('GOVERNED /banking/capital — Capital adequacy surface', () => {
   it('GOVERNED /banking/capital — import:create guards capital adequacy entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-cap-1', accountId: '20000', amount: 18000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-cap-1', accountId: '20000', amount: 18000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /banking/capital — audit trail records capital adequacy write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'capital:write', entity: 'entry', entityId: 'gov-cap-1', payload: { accountId: '20000', amount: 18000, ratio: 'CAR' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'capital:write',
+      entity: 'entry',
+      entityId: 'gov-cap-1',
+      payload: { accountId: '20000', amount: 18000, ratio: 'CAR' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3442,13 +3574,20 @@ describe('GOVERNED /banking/capital — Capital adequacy surface', () => {
 describe('GOVERNED /capex/depreciation — Depreciation forecast surface', () => {
   it('GOVERNED /capex/depreciation — import:create guards depreciation entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-dep-1', accountId: '21000', amount: 19000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-dep-1', accountId: '21000', amount: 19000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /capex/depreciation — audit trail records depreciation write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'depreciation:write', entity: 'entry', entityId: 'gov-dep-1', payload: { accountId: '21000', amount: 19000, method: 'straight-line' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'depreciation:write',
+      entity: 'entry',
+      entityId: 'gov-dep-1',
+      payload: { accountId: '21000', amount: 19000, method: 'straight-line' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3474,7 +3613,12 @@ describe('GOVERNED /cash/working-capital — Working capital surface', () => {
   });
   it('GOVERNED /cash/working-capital — audit trail records working capital write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'wc:write', entity: 'entry', entityId: 'gov-wc-1', payload: { accountId: '22000', amount: 20000, metric: 'DSO' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'wc:write',
+      entity: 'entry',
+      entityId: 'gov-wc-1',
+      payload: { accountId: '22000', amount: 20000, metric: 'DSO' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3500,7 +3644,12 @@ describe('GOVERNED /banking/loan-loss — Loan loss provision surface', () => {
   });
   it('GOVERNED /banking/loan-loss — audit trail records loan loss write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'loanloss:write', entity: 'entry', entityId: 'gov-ll-1', payload: { accountId: '23000', amount: 21000, method: 'CECL' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'loanloss:write',
+      entity: 'entry',
+      entityId: 'gov-ll-1',
+      payload: { accountId: '23000', amount: 21000, method: 'CECL' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3520,13 +3669,20 @@ describe('GOVERNED /banking/loan-loss — Loan loss provision surface', () => {
 describe('GOVERNED /revenue/deferred — Deferred revenue schedule surface', () => {
   it('GOVERNED /revenue/deferred — import:create guards deferred revenue entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-def-1', accountId: '24000', amount: 22000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-def-1', accountId: '24000', amount: 22000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /revenue/deferred — audit trail records deferred revenue write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'deferred:write', entity: 'entry', entityId: 'gov-def-1', payload: { accountId: '24000', amount: 22000, schedule: 'monthly' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'deferred:write',
+      entity: 'entry',
+      entityId: 'gov-def-1',
+      payload: { accountId: '24000', amount: 22000, schedule: 'monthly' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3552,7 +3708,12 @@ describe('GOVERNED /profile — User profile surface', () => {
   });
   it('GOVERNED /profile — audit trail records profile write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'profile:write', entity: 'preference', entityId: 'gov-prof-1', payload: { density: 'compact', activeSector: 'finance' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'profile:write',
+      entity: 'preference',
+      entityId: 'gov-prof-1',
+      payload: { density: 'compact', activeSector: 'finance' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3574,13 +3735,20 @@ describe('GOVERNED /profile — User profile surface', () => {
 describe('GOVERNED /saas/arr — ARR dashboard surface', () => {
   it('GOVERNED /saas/arr — import:create guards ARR entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-arr-1', accountId: '25000', amount: 23000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-arr-1', accountId: '25000', amount: 23000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /saas/arr — audit trail records ARR write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'arr:write', entity: 'entry', entityId: 'gov-arr-1', payload: { accountId: '25000', amount: 23000, metric: 'ARR' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'arr:write',
+      entity: 'entry',
+      entityId: 'gov-arr-1',
+      payload: { accountId: '25000', amount: 23000, metric: 'ARR' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3600,13 +3768,20 @@ describe('GOVERNED /saas/arr — ARR dashboard surface', () => {
 describe('GOVERNED /saas/churn — Churn dashboard surface', () => {
   it('GOVERNED /saas/churn — import:create guards churn entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-churn-1', accountId: '26000', amount: 24000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-churn-1', accountId: '26000', amount: 24000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /saas/churn — audit trail records churn write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'churn:write', entity: 'entry', entityId: 'gov-churn-1', payload: { accountId: '26000', amount: 24000, metric: 'churn-rate' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'churn:write',
+      entity: 'entry',
+      entityId: 'gov-churn-1',
+      payload: { accountId: '26000', amount: 24000, metric: 'churn-rate' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3626,13 +3801,20 @@ describe('GOVERNED /saas/churn — Churn dashboard surface', () => {
 describe('GOVERNED /saas/cohort — Cohort analysis surface', () => {
   it('GOVERNED /saas/cohort — import:create guards cohort entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-cohort-1', accountId: '27000', amount: 25000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-cohort-1', accountId: '27000', amount: 25000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /saas/cohort — audit trail records cohort write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'cohort:write', entity: 'entry', entityId: 'gov-cohort-1', payload: { accountId: '27000', amount: 25000, cohort: 'Q1-2026' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'cohort:write',
+      entity: 'entry',
+      entityId: 'gov-cohort-1',
+      payload: { accountId: '27000', amount: 25000, cohort: 'Q1-2026' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3652,13 +3834,20 @@ describe('GOVERNED /saas/cohort — Cohort analysis surface', () => {
 describe('GOVERNED /manufacturing/overview — Manufacturing overview surface', () => {
   it('GOVERNED /manufacturing/overview — import:create guards manufacturing entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-mfg-1', accountId: '28000', amount: 26000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-mfg-1', accountId: '28000', amount: 26000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /manufacturing/overview — audit trail records manufacturing write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'manufacturing:write', entity: 'entry', entityId: 'gov-mfg-1', payload: { accountId: '28000', amount: 26000, plant: 'Plant-A' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'manufacturing:write',
+      entity: 'entry',
+      entityId: 'gov-mfg-1',
+      payload: { accountId: '28000', amount: 26000, plant: 'Plant-A' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3678,13 +3867,20 @@ describe('GOVERNED /manufacturing/overview — Manufacturing overview surface', 
 describe('GOVERNED /manufacturing/cogs — COGS variance surface', () => {
   it('GOVERNED /manufacturing/cogs — import:create guards COGS entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-cogs-1', accountId: '29000', amount: 27000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-cogs-1', accountId: '29000', amount: 27000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /manufacturing/cogs — audit trail records COGS write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'cogs:write', entity: 'entry', entityId: 'gov-cogs-1', payload: { accountId: '29000', amount: 27000, variance: 'favorable' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'cogs:write',
+      entity: 'entry',
+      entityId: 'gov-cogs-1',
+      payload: { accountId: '29000', amount: 27000, variance: 'favorable' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3704,13 +3900,20 @@ describe('GOVERNED /manufacturing/cogs — COGS variance surface', () => {
 describe('GOVERNED /saas/overview — SaaS overview surface', () => {
   it('GOVERNED /saas/overview — import:create guards SaaS entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-saas-1', accountId: '30000', amount: 28000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-saas-1', accountId: '30000', amount: 28000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /saas/overview — audit trail records SaaS write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'saas:write', entity: 'entry', entityId: 'gov-saas-1', payload: { accountId: '30000', amount: 28000, metric: 'MRR' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'saas:write',
+      entity: 'entry',
+      entityId: 'gov-saas-1',
+      payload: { accountId: '30000', amount: 28000, metric: 'MRR' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3736,7 +3939,12 @@ describe('GOVERNED /saas/churn-analysis — Churn analysis surface', () => {
   });
   it('GOVERNED /saas/churn-analysis — audit trail records churn analysis write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'churnanalysis:write', entity: 'entry', entityId: 'gov-ca-1', payload: { accountId: '31000', amount: 29000, segment: 'enterprise' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'churnanalysis:write',
+      entity: 'entry',
+      entityId: 'gov-ca-1',
+      payload: { accountId: '31000', amount: 29000, segment: 'enterprise' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3756,13 +3964,20 @@ describe('GOVERNED /saas/churn-analysis — Churn analysis surface', () => {
 describe('GOVERNED /manufacturing/production — Production dashboard surface', () => {
   it('GOVERNED /manufacturing/production — import:create guards production entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-prod-1', accountId: '32000', amount: 30000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-prod-1', accountId: '32000', amount: 30000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /manufacturing/production — audit trail records production write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'production:write', entity: 'entry', entityId: 'gov-prod-1', payload: { accountId: '32000', amount: 30000, output: 'units' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'production:write',
+      entity: 'entry',
+      entityId: 'gov-prod-1',
+      payload: { accountId: '32000', amount: 30000, output: 'units' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3782,13 +3997,20 @@ describe('GOVERNED /manufacturing/production — Production dashboard surface', 
 describe('GOVERNED /manufacturing/inventory — Inventory surface', () => {
   it('GOVERNED /manufacturing/inventory — import:create guards inventory entry posting', () => {
     const error = expectPermissionDenied(() =>
-      useGLStore.getState().addEntry({ id: 'gov-inv-1', accountId: '33000', amount: 31000 } as never)
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-inv-1', accountId: '33000', amount: 31000 } as never)
     );
     expect(error.message).toContain('import:create');
   });
   it('GOVERNED /manufacturing/inventory — audit trail records inventory write', () => {
     actAs('Analyst');
-    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'inventory:write', entity: 'entry', entityId: 'gov-inv-1', payload: { accountId: '33000', amount: 31000, sku: 'SKU-001' } });
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'inventory:write',
+      entity: 'entry',
+      entityId: 'gov-inv-1',
+      payload: { accountId: '33000', amount: 31000, sku: 'SKU-001' },
+    });
     expect(entryId).toBeTruthy();
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
   });
@@ -3852,7 +4074,9 @@ describe('GOVERNED positive-path — Admin can execute write actions', () => {
 describe('GOVERNED positive-path — Admin write actions (batch 2)', () => {
   it('GOVERNED /settings/users — Admin addUser creates a user', () => {
     actAs('Admin');
-    useSettingsStore.getState().addUser({ name: 'Gov User', email: 'gov@test.com', role: 'Analyst' } as never);
+    useSettingsStore
+      .getState()
+      .addUser({ name: 'Gov User', email: 'gov@test.com', role: 'Analyst' } as never);
     expect(useSettingsStore.getState().users.length).toBe(1);
   });
 
@@ -3864,14 +4088,18 @@ describe('GOVERNED positive-path — Admin write actions (batch 2)', () => {
 
   it('GOVERNED /drill-down — Admin writeCell writes a cube cell', () => {
     actAs('Admin');
-    useCubeStore.getState().writeCell('gov-cell-1', 'gov-scenario', 'gov-period', 'gov-line', 100, 'number');
+    useCubeStore
+      .getState()
+      .writeCell('gov-cell-1', 'gov-scenario', 'gov-period', 'gov-line', 100, 'number');
     // writeCell returns void; verify no throw and cube state is accessible
     expect(useCubeStore.getState().isInitialized).toBeDefined();
   });
 
   it('GOVERNED /plugins — Admin addDocument creates a document', () => {
     actAs('Admin');
-    useDocumentStore.getState().addDocument({ name: 'Gov Doc', type: 'pdf', data: 'test' } as never);
+    useDocumentStore
+      .getState()
+      .addDocument({ name: 'Gov Doc', type: 'pdf', data: 'test' } as never);
     expect(useDocumentStore.getState().documents.length).toBe(1);
   });
 });
@@ -3886,7 +4114,9 @@ describe('GOVERNED positive-path — Admin write actions (batch 3)', () => {
 
   it('GOVERNED /construction/dashboard — Admin addChangeOrder creates a change order', () => {
     actAs('Admin');
-    useConstructionStore.getState().addChangeOrder({ id: 'gov-co-1', description: 'Gov CO' } as never);
+    useConstructionStore
+      .getState()
+      .addChangeOrder({ id: 'gov-co-1', description: 'Gov CO' } as never);
     expect(useConstructionStore.getState().changeOrders.length).toBe(1);
   });
 
@@ -3908,7 +4138,9 @@ describe('GOVERNED positive-path — Admin write actions (batch 3)', () => {
 describe('GOVERNED positive-path — Admin write actions (batch 4)', () => {
   it('GOVERNED /reports/templates — Admin createReport creates a template report', () => {
     actAs('Admin');
-    const id = useReportStore.getState().createReport({ name: 'Gov Tpl Rpt', template: 'balance-sheet' } as never);
+    const id = useReportStore
+      .getState()
+      .createReport({ name: 'Gov Tpl Rpt', template: 'balance-sheet' } as never);
     expect(id).toBeTruthy();
     expect(useReportStore.getState().reports.length).toBe(1);
   });
@@ -3928,7 +4160,9 @@ describe('GOVERNED positive-path — Admin write actions (batch 4)', () => {
 
   it('GOVERNED /collaboration/activity — Admin addComment posts a comment', () => {
     actAs('Admin');
-    useCollaborationStore.getState().addComment({ content: 'Gov activity', threadId: 'gov-thread' } as never);
+    useCollaborationStore
+      .getState()
+      .addComment({ content: 'Gov activity', threadId: 'gov-thread' } as never);
     expect(useCollaborationStore.getState().comments.length).toBe(1);
   });
 });
@@ -3936,30 +4170,46 @@ describe('GOVERNED positive-path — Admin write actions (batch 4)', () => {
 describe('GOVERNED positive-path — Admin write actions (batch 5)', () => {
   it('GOVERNED /reports/scheduler — Admin addScheduledReport creates a schedule', () => {
     actAs('Admin');
-    useReportStore.getState().addScheduledReport({ id: 'gov-sched-1', reportId: 'rpt-1', frequency: 'monthly' } as never);
+    useReportStore
+      .getState()
+      .addScheduledReport({ id: 'gov-sched-1', reportId: 'rpt-1', frequency: 'monthly' } as never);
     expect(useReportStore.getState().scheduledReports.length).toBe(1);
   });
 
   it('GOVERNED /treasury/investments — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-inv-pos', accountId: '1000', amount: 5000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-inv-pos', accountId: '1000', amount: 5000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /tax/provision — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-tax-pos', accountId: '6000', amount: 3000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-tax-pos', accountId: '6000', amount: 3000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /lease/accounting — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-lease-pos', accountId: '1500', amount: 2000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-lease-pos', accountId: '1500', amount: 2000 } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED positive-path — Admin write actions (batch 6)', () => {
   it('GOVERNED /collaboration/shared — Admin addComment posts on shared reports', () => {
     actAs('Admin');
-    useCollaborationStore.getState().addComment({ content: 'Gov shared', threadId: 'gov-thread' } as never);
+    useCollaborationStore
+      .getState()
+      .addComment({ content: 'Gov shared', threadId: 'gov-thread' } as never);
     expect(useCollaborationStore.getState().comments.length).toBe(1);
   });
 
@@ -3971,7 +4221,9 @@ describe('GOVERNED positive-path — Admin write actions (batch 6)', () => {
 
   it('GOVERNED /reports/three-statement — Admin createReport creates a 3-statement report', () => {
     actAs('Admin');
-    const id = useReportStore.getState().createReport({ name: 'Gov 3-Statement', type: 'balance-sheet' } as never);
+    const id = useReportStore
+      .getState()
+      .createReport({ name: 'Gov 3-Statement', type: 'balance-sheet' } as never);
     expect(id).toBeTruthy();
     expect(useReportStore.getState().reports.length).toBe(1);
   });
@@ -3980,166 +4232,263 @@ describe('GOVERNED positive-path — Admin write actions (batch 6)', () => {
 describe('GOVERNED positive-path — Admin write actions (batch 7)', () => {
   it('GOVERNED /forecasts/what-if — Admin createForecast creates a what-if forecast', () => {
     actAs('Admin');
-    const id = useForecastStore.getState().createForecast({ name: 'Gov What-If', scenario: 'bull' } as never);
+    const id = useForecastStore
+      .getState()
+      .createForecast({ name: 'Gov What-If', scenario: 'bull' } as never);
     expect(id).toBeTruthy();
     expect(useForecastStore.getState().forecasts.length).toBe(1);
   });
 
   it('GOVERNED /collaboration/team — Admin addComment posts in team workspace', () => {
     actAs('Admin');
-    useCollaborationStore.getState().addComment({ content: 'Gov team', threadId: 'gov-thread' } as never);
+    useCollaborationStore
+      .getState()
+      .addComment({ content: 'Gov team', threadId: 'gov-thread' } as never);
     expect(useCollaborationStore.getState().comments.length).toBe(1);
   });
-
 });
 
 describe('GOVERNED positive-path — Admin write actions (batch 8)', () => {
   it('GOVERNED /reports/book-builder — Admin createReport creates a book builder report', () => {
     actAs('Admin');
-    const id = useReportStore.getState().createReport({ name: 'Gov Book', book: 'annual' } as never);
+    const id = useReportStore
+      .getState()
+      .createReport({ name: 'Gov Book', book: 'annual' } as never);
     expect(id).toBeTruthy();
     expect(useReportStore.getState().reports.length).toBe(1);
   });
 
   it('GOVERNED /workforce/payroll — Admin addEmployee creates a payroll employee', () => {
     actAs('Admin');
-    useWorkforceStore.getState().addEmployee({ name: 'Gov Payroll Emp', department: 'Finance', salary: 80000 } as never);
+    useWorkforceStore
+      .getState()
+      .addEmployee({ name: 'Gov Payroll Emp', department: 'Finance', salary: 80000 } as never);
     expect(useWorkforceStore.getState().employees.length).toBe(1);
   });
 
   it('GOVERNED /collaboration/approvals — Admin addComment posts in approval queue', () => {
     actAs('Admin');
-    useCollaborationStore.getState().addComment({ content: 'Gov approval', threadId: 'gov-thread' } as never);
+    useCollaborationStore
+      .getState()
+      .addComment({ content: 'Gov approval', threadId: 'gov-thread' } as never);
     expect(useCollaborationStore.getState().comments.length).toBe(1);
   });
 
   it('GOVERNED /analytics/benchmarking — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-bench-pos', accountId: '4000', amount: 5000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-bench-pos', accountId: '4000', amount: 5000 } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED positive-path — Admin write actions (batch 9)', () => {
   it('GOVERNED /analytics/goal-seek — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-goal-pos', accountId: '5000', amount: 3000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-goal-pos', accountId: '5000', amount: 3000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /data/gl-reporting — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-glrep-pos', accountId: '6000', amount: 2500 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-glrep-pos', accountId: '6000', amount: 2500 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /data/reconciliation — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-recon-pos', accountId: '1000', amount: 750 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-recon-pos', accountId: '1000', amount: 750 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /ai — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-ai-pos', accountId: '7000', amount: 1000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore.getState().addEntry({ id: 'gov-ai-pos', accountId: '7000', amount: 1000 } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED positive-path — Admin write actions (batch 10)', () => {
   it('GOVERNED /analytics/pivot-explorer — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-pivot-pos', accountId: '8000', amount: 4000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-pivot-pos', accountId: '8000', amount: 4000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /data/chart-of-accounts — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-coa-pos', accountId: '9000', amount: 2000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-coa-pos', accountId: '9000', amount: 2000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /data/comparison — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-cmp-pos', accountId: '10000', amount: 6000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-cmp-pos', accountId: '10000', amount: 6000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /data/gl-account-analysis — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-glaa-pos', accountId: '11000', amount: 8000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-glaa-pos', accountId: '11000', amount: 8000 } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED positive-path — Admin write actions (batch 11)', () => {
   it('GOVERNED /ai/nlq — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-nlq-pos', accountId: '12000', amount: 9000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-nlq-pos', accountId: '12000', amount: 9000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /banking/banking — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-bank-pos', accountId: '13000', amount: 11000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-bank-pos', accountId: '13000', amount: 11000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /banking/reconciliation — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-bkrecon-pos', accountId: '14000', amount: 12000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-bkrecon-pos', accountId: '14000', amount: 12000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /construction/project — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-proj-pos', accountId: '15000', amount: 13000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-proj-pos', accountId: '15000', amount: 13000 } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED positive-path — Admin write actions (batch 12)', () => {
   it('GOVERNED /banking/statements — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-bstmt-pos', accountId: '16000', amount: 14000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-bstmt-pos', accountId: '16000', amount: 14000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /reports/library — Admin createReport creates a library report', () => {
     actAs('Admin');
-    const id = useReportStore.getState().createReport({ name: 'Gov Library', template: 'cash-flow' } as never);
+    const id = useReportStore
+      .getState()
+      .createReport({ name: 'Gov Library', template: 'cash-flow' } as never);
     expect(id).toBeTruthy();
     expect(useReportStore.getState().reports.length).toBe(1);
   });
 
   it('GOVERNED /revenue/rev-rec — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-revrec-pos', accountId: '17000', amount: 15000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-revrec-pos', accountId: '17000', amount: 15000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /tax/transfer-pricing — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-tp-pos', accountId: '18000', amount: 16000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-tp-pos', accountId: '18000', amount: 16000 } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED positive-path — Admin write actions (batch 13)', () => {
   it('GOVERNED /banking/nim — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-nim-pos', accountId: '19000', amount: 17000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-nim-pos', accountId: '19000', amount: 17000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /banking/capital — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-cap-pos', accountId: '20000', amount: 18000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-cap-pos', accountId: '20000', amount: 18000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /capex/depreciation — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-dep-pos', accountId: '21000', amount: 19000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-dep-pos', accountId: '21000', amount: 19000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /cash/working-capital — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-wc-pos', accountId: '22000', amount: 20000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-wc-pos', accountId: '22000', amount: 20000 } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED positive-path — Admin write actions (batch 14)', () => {
   it('GOVERNED /banking/loan-loss — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-ll-pos', accountId: '23000', amount: 21000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-ll-pos', accountId: '23000', amount: 21000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /revenue/deferred — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-def-pos', accountId: '24000', amount: 22000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-def-pos', accountId: '24000', amount: 22000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /profile — Admin updatePreferences changes preferences', () => {
@@ -4150,58 +4499,96 @@ describe('GOVERNED positive-path — Admin write actions (batch 14)', () => {
 
   it('GOVERNED /saas/arr — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-arr-pos', accountId: '25000', amount: 23000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-arr-pos', accountId: '25000', amount: 23000 } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED positive-path — Admin write actions (batch 15)', () => {
   it('GOVERNED /saas/churn — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-churn-pos', accountId: '26000', amount: 24000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-churn-pos', accountId: '26000', amount: 24000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /saas/cohort — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-cohort-pos', accountId: '27000', amount: 25000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-cohort-pos', accountId: '27000', amount: 25000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /manufacturing/overview — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-mfg-pos', accountId: '28000', amount: 26000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-mfg-pos', accountId: '28000', amount: 26000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /manufacturing/cogs — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-cogs-pos', accountId: '29000', amount: 27000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-cogs-pos', accountId: '29000', amount: 27000 } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED positive-path — Admin write actions (batch 16)', () => {
   it('GOVERNED /saas/overview — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-saas-pos', accountId: '30000', amount: 28000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-saas-pos', accountId: '30000', amount: 28000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /saas/churn-analysis — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-ca-pos', accountId: '31000', amount: 29000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-ca-pos', accountId: '31000', amount: 29000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /manufacturing/production — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-prod-pos', accountId: '32000', amount: 30000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-prod-pos', accountId: '32000', amount: 30000 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED /manufacturing/inventory — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useGLStore.getState().addEntry({ id: 'gov-inv-pos', accountId: '33000', amount: 31000 } as never)).not.toThrow();
+    expect(() =>
+      useGLStore
+        .getState()
+        .addEntry({ id: 'gov-inv-pos', accountId: '33000', amount: 31000 } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED capability-level — stores with enforce() but no page route', () => {
   it('GOVERNED cap:wf.rbac — workflow:create guards createWorkflow, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useWorkflowStore.getState().createWorkflow({ id: 'wf-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useWorkflowStore.getState().createWorkflow({ id: 'wf-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4229,7 +4616,9 @@ describe('GOVERNED capability-level — stores with enforce() but no page route'
 
   it('GOVERNED cap:plan.drivers-cascades — driver:create guards addDriver, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useDriverStore.getState().addDriver({ id: 'drv-test', name: 'Test', value: 100 } as never));
+    expectPermissionDenied(() =>
+      useDriverStore.getState().addDriver({ id: 'drv-test', name: 'Test', value: 100 } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4250,14 +4639,20 @@ describe('GOVERNED capability-level — stores with enforce() but no page route'
 
   it('GOVERNED cap:admin.data-management — import:create guards addAccount, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useDataStore.getState().addAccount({ id: 'acc-test', code: '1000', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useDataStore.getState().addAccount({ id: 'acc-test', code: '1000', name: 'Test' } as never)
+    );
     actAs('Admin');
-    expect(() => useDataStore.getState().addAccount({ id: 'acc-test', code: '1000', name: 'Test' } as never)).not.toThrow();
+    expect(() =>
+      useDataStore.getState().addAccount({ id: 'acc-test', code: '1000', name: 'Test' } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:data.csv-xlsx-intake — import:create guards setFile, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useGLUploadStore.getState().setFile({ name: 'test.csv', size: 100 } as never, [] as never));
+    expectPermissionDenied(() =>
+      useGLUploadStore.getState().setFile({ name: 'test.csv', size: 100 } as never, [] as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4271,7 +4666,9 @@ describe('GOVERNED capability-level — stores with enforce() but no page route'
 
   it('GOVERNED cap:analyze.variance-decomposition — variance:create guards addAnalysis, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useVarianceStore.getState().addAnalysis({ id: 'var-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useVarianceStore.getState().addAnalysis({ id: 'var-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4285,16 +4682,22 @@ describe('GOVERNED capability-level — stores with enforce() but no page route'
 
   it('GOVERNED cap:analyze.statements — dashboard:create guards addChart, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useAnalyticsStore.getState().addChart({ id: 'chart-test', type: 'bar' } as never));
+    expectPermissionDenied(() =>
+      useAnalyticsStore.getState().addChart({ id: 'chart-test', type: 'bar' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:analyze.statements — dashboard:update guards updateChart, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useAnalyticsStore.getState().updateChart('chart-test' as never, { type: 'line' } as never));
+    expectPermissionDenied(() =>
+      useAnalyticsStore.getState().updateChart('chart-test' as never, { type: 'line' } as never)
+    );
     actAs('Admin');
-    expect(() => useAnalyticsStore.getState().updateChart('chart-test' as never, { type: 'line' } as never)).not.toThrow();
+    expect(() =>
+      useAnalyticsStore.getState().updateChart('chart-test' as never, { type: 'line' } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:wf.auditability — notification:update guards markAsRead, audit chain intact', () => {
@@ -4320,14 +4723,20 @@ describe('GOVERNED capability-level — stores with enforce() but no page route'
 
   it('GOVERNED cap:admin.settings — ui:update guards addToast, Admin reaches enforce gate', () => {
     actAsRoleWithout('Viewer', 'ui:update');
-    expectPermissionDenied(() => useUIStore.getState().addToast({ id: 'toast-test', message: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useUIStore.getState().addToast({ id: 'toast-test', message: 'Test' } as never)
+    );
     actAs('Admin');
-    expect(() => useUIStore.getState().addToast({ id: 'toast-test', message: 'Test' } as never)).not.toThrow();
+    expect(() =>
+      useUIStore.getState().addToast({ id: 'toast-test', message: 'Test' } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:admin.settings — ui:update guards startTour, audit chain intact', () => {
     actAsRoleWithout('Viewer', 'ui:update');
-    expectPermissionDenied(() => useTourStore.getState().startTour('tour-test' as never, [] as never));
+    expectPermissionDenied(() =>
+      useTourStore.getState().startTour('tour-test' as never, [] as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4341,21 +4750,47 @@ describe('GOVERNED capability-level — stores with enforce() but no page route'
 
   it('GOVERNED cap:data.lineage — audit:create guards recordChange, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useCellLineageStore.getState().recordChange('cell-test' as never, 0, 1, 'actor' as never, 'reason' as never, 'manual' as never, '1.0.0' as never));
+    expectPermissionDenied(() =>
+      useCellLineageStore
+        .getState()
+        .recordChange(
+          'cell-test' as never,
+          0,
+          1,
+          'actor' as never,
+          'reason' as never,
+          'manual' as never,
+          '1.0.0' as never
+        )
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:data.lineage — Admin recordChange reaches the enforce gate', () => {
     actAs('Admin');
-    expect(() => useCellLineageStore.getState().recordChange('cell-test' as never, 0, 1, 'actor' as never, 'reason' as never, 'manual' as never, '1.0.0' as never)).not.toThrow();
+    expect(() =>
+      useCellLineageStore
+        .getState()
+        .recordChange(
+          'cell-test' as never,
+          0,
+          1,
+          'actor' as never,
+          'reason' as never,
+          'manual' as never,
+          '1.0.0' as never
+        )
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED capability-level — sector stores with enforce() citing govern.authorization', () => {
   it('GOVERNED cap:govern.authorization — retailStore inventory:create guards addProduct, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useRetailStore.getState().addProduct({ id: 'prod-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useRetailStore.getState().addProduct({ id: 'prod-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4369,7 +4804,9 @@ describe('GOVERNED capability-level — sector stores with enforce() citing gove
 
   it('GOVERNED cap:govern.authorization — telecomStore inventory:create guards addSubscriber, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useTelecomStore.getState().addSubscriber({ id: 'sub-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useTelecomStore.getState().addSubscriber({ id: 'sub-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4383,21 +4820,33 @@ describe('GOVERNED capability-level — sector stores with enforce() citing gove
 
   it('GOVERNED cap:govern.authorization — healthcareStore budget:create guards addProgram, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useHealthcareStore.getState().addProgram({ id: 'prog-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useHealthcareStore.getState().addProgram({ id: 'prog-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:govern.authorization — healthcareStore budget:update guards updateProgram, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useHealthcareStore.getState().updateProgram('prog-test' as never, { name: 'Updated' } as never));
+    expectPermissionDenied(() =>
+      useHealthcareStore
+        .getState()
+        .updateProgram('prog-test' as never, { name: 'Updated' } as never)
+    );
     actAs('Admin');
-    expect(() => useHealthcareStore.getState().updateProgram('prog-test' as never, { name: 'Updated' } as never)).not.toThrow();
+    expect(() =>
+      useHealthcareStore
+        .getState()
+        .updateProgram('prog-test' as never, { name: 'Updated' } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:govern.authorization — governmentStore budget:create guards addFund, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useGovernmentStore.getState().addFund({ id: 'fund-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useGovernmentStore.getState().addFund({ id: 'fund-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4411,7 +4860,9 @@ describe('GOVERNED capability-level — sector stores with enforce() citing gove
 
   it('GOVERNED cap:govern.authorization — logisticsStore inventory:create guards addShipment, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useLogisticsStore.getState().addShipment({ id: 'ship-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useLogisticsStore.getState().addShipment({ id: 'ship-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4425,7 +4876,9 @@ describe('GOVERNED capability-level — sector stores with enforce() citing gove
 
   it('GOVERNED cap:govern.authorization — esgStore analytics:create guards addMetric, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useESGStore.getState().addMetric({ id: 'metric-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useESGStore.getState().addMetric({ id: 'metric-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4439,7 +4892,9 @@ describe('GOVERNED capability-level — sector stores with enforce() citing gove
 
   it('GOVERNED cap:govern.authorization — educationStore entity:create guards addProgram, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useEducationStore.getState().addProgram({ id: 'edu-prog', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useEducationStore.getState().addProgram({ id: 'edu-prog', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4453,7 +4908,9 @@ describe('GOVERNED capability-level — sector stores with enforce() citing gove
 
   it('GOVERNED cap:govern.authorization — realEstateStore entity:create guards addFacility, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useRealEstateStore.getState().addFacility({ id: 'fac-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useRealEstateStore.getState().addFacility({ id: 'fac-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4467,7 +4924,9 @@ describe('GOVERNED capability-level — sector stores with enforce() citing gove
 
   it('GOVERNED cap:govern.authorization — energyStore entity:create guards addAsset, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useEnergyStore.getState().addAsset({ id: 'asset-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useEnergyStore.getState().addAsset({ id: 'asset-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4481,32 +4940,48 @@ describe('GOVERNED capability-level — sector stores with enforce() citing gove
 
   it('GOVERNED cap:govern.authorization — insuranceStore budget:create guards addRateFiling, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useInsuranceStore.getState().addRateFiling({ id: 'filing-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useInsuranceStore.getState().addRateFiling({ id: 'filing-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:govern.authorization — insuranceStore budget:update guards updateRateFiling, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useInsuranceStore.getState().updateRateFiling('filing-test' as never, { name: 'Updated' } as never));
+    expectPermissionDenied(() =>
+      useInsuranceStore
+        .getState()
+        .updateRateFiling('filing-test' as never, { name: 'Updated' } as never)
+    );
     actAs('Admin');
-    expect(() => useInsuranceStore.getState().updateRateFiling('filing-test' as never, { name: 'Updated' } as never)).not.toThrow();
+    expect(() =>
+      useInsuranceStore
+        .getState()
+        .updateRateFiling('filing-test' as never, { name: 'Updated' } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED capability-level — additional store method tests (batch 3)', () => {
   it('GOVERNED cap:close.trial-balance — ui:update guards setSort, audit chain intact', () => {
     actAsRoleWithout('Viewer', 'ui:update');
-    expectPermissionDenied(() => useGLTrialBalanceStore.getState().setSort('accountCode' as never, 'asc' as never));
+    expectPermissionDenied(() =>
+      useGLTrialBalanceStore.getState().setSort('accountCode' as never, 'asc' as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:close.trial-balance — ui:update guards addFilter, Admin reaches enforce gate', () => {
     actAsRoleWithout('Viewer', 'ui:update');
-    expectPermissionDenied(() => useGLTrialBalanceStore.getState().addFilter({ type: 'accountCode', value: '1000' } as never));
+    expectPermissionDenied(() =>
+      useGLTrialBalanceStore.getState().addFilter({ type: 'accountCode', value: '1000' } as never)
+    );
     actAs('Admin');
-    expect(() => useGLTrialBalanceStore.getState().addFilter({ type: 'accountCode', value: '1000' } as never)).not.toThrow();
+    expect(() =>
+      useGLTrialBalanceStore.getState().addFilter({ type: 'accountCode', value: '1000' } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:close.trial-balance — ui:update guards refresh, audit chain intact', () => {
@@ -4546,9 +5021,13 @@ describe('GOVERNED capability-level — additional store method tests (batch 3)'
 
   it('GOVERNED cap:govern.authorization — retailStore inventory:update guards updateProduct, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useRetailStore.getState().updateProduct('prod-test' as never, { name: 'Updated' } as never));
+    expectPermissionDenied(() =>
+      useRetailStore.getState().updateProduct('prod-test' as never, { name: 'Updated' } as never)
+    );
     actAs('Admin');
-    expect(() => useRetailStore.getState().updateProduct('prod-test' as never, { name: 'Updated' } as never)).not.toThrow();
+    expect(() =>
+      useRetailStore.getState().updateProduct('prod-test' as never, { name: 'Updated' } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:govern.authorization — retailStore entity:update guards setStores, audit chain intact', () => {
@@ -4560,7 +5039,9 @@ describe('GOVERNED capability-level — additional store method tests (batch 3)'
 
   it('GOVERNED cap:plan.drivers-cascades — driver:create guards addRule, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useDriverStore.getState().addRule({ id: 'rule-test', formula: 'x+y' } as never));
+    expectPermissionDenied(() =>
+      useDriverStore.getState().addRule({ id: 'rule-test', formula: 'x+y' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4574,7 +5055,9 @@ describe('GOVERNED capability-level — additional store method tests (batch 3)'
 
   it('GOVERNED cap:plan.drivers-cascades — driver:update guards applyCascade, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useDriverStore.getState().applyCascade({} as never, (() => {}) as never));
+    expectPermissionDenied(() =>
+      useDriverStore.getState().applyCascade({} as never, (() => {}) as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4597,9 +5080,13 @@ describe('GOVERNED capability-level — additional store method tests (batch 4)'
 
   it('GOVERNED cap:plan.budgets — budget:update guards updateLineItem, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useBudgetStore.getState().updateLineItem('li-test' as never, { amount: 100 } as never));
+    expectPermissionDenied(() =>
+      useBudgetStore.getState().updateLineItem('li-test' as never, { amount: 100 } as never)
+    );
     actAs('Admin');
-    expect(() => useBudgetStore.getState().updateLineItem('li-test' as never, { amount: 100 } as never)).not.toThrow();
+    expect(() =>
+      useBudgetStore.getState().updateLineItem('li-test' as never, { amount: 100 } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:plan.budgets — budget:approve guards approveBudget, audit chain intact', () => {
@@ -4625,9 +5112,13 @@ describe('GOVERNED capability-level — additional store method tests (batch 4)'
 
   it('GOVERNED cap:plan.scenarios — forecast:create guards createForecast, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useForecastStore.getState().createForecast({ id: 'fc-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useForecastStore.getState().createForecast({ id: 'fc-test', name: 'Test' } as never)
+    );
     actAs('Admin');
-    expect(() => useForecastStore.getState().createForecast({ id: 'fc-test', name: 'Test' } as never)).not.toThrow();
+    expect(() =>
+      useForecastStore.getState().createForecast({ id: 'fc-test', name: 'Test' } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:govern.authorization — entity:update guards setEntities, audit chain intact', () => {
@@ -4639,9 +5130,13 @@ describe('GOVERNED capability-level — additional store method tests (batch 4)'
 
   it('GOVERNED cap:govern.authorization — entity:update guards updateEntity, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useEntityStore.getState().updateEntity('ent-test' as never, { name: 'Updated' } as never));
+    expectPermissionDenied(() =>
+      useEntityStore.getState().updateEntity('ent-test' as never, { name: 'Updated' } as never)
+    );
     actAs('Admin');
-    expect(() => useEntityStore.getState().updateEntity('ent-test' as never, { name: 'Updated' } as never)).not.toThrow();
+    expect(() =>
+      useEntityStore.getState().updateEntity('ent-test' as never, { name: 'Updated' } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:govern.authorization — entity:delete guards deleteEntity, audit chain intact', () => {
@@ -4669,21 +5164,33 @@ describe('GOVERNED capability-level — remaining store method tests (batch 5)',
 
   it('GOVERNED cap:data.csv-xlsx-intake — import:create guards completeSession, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useGLUploadStore.getState().completeSession({ success: true, imported: 100, skipped: 0 } as never));
+    expectPermissionDenied(() =>
+      useGLUploadStore
+        .getState()
+        .completeSession({ success: true, imported: 100, skipped: 0 } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:data.csv-xlsx-intake — import:update guards saveMappingProfile, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useGLUploadStore.getState().saveMappingProfile({ name: 'profile' } as never));
+    expectPermissionDenied(() =>
+      useGLUploadStore.getState().saveMappingProfile({ name: 'profile' } as never)
+    );
     actAs('Admin');
-    try { useGLUploadStore.getState().saveMappingProfile({ name: 'profile' } as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+    try {
+      useGLUploadStore.getState().saveMappingProfile({ name: 'profile' } as never);
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
   });
 
   it('GOVERNED cap:govern.authorization — retailStore entity:create guards addPromotion, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useRetailStore.getState().addPromotion({ id: 'promo-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useRetailStore.getState().addPromotion({ id: 'promo-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4699,21 +5206,39 @@ describe('GOVERNED capability-level — remaining store method tests (batch 5)',
 describe('GOVERNED capability-level — remaining store tests (batch 6)', () => {
   it('GOVERNED cap:plan.assumptions — cube:delete guards deleteCell, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useCubeStore.getState().deleteCell('budget' as never, { entity: 'default', account: '1000', period: '2026-01' } as never, 'amount' as never));
+    expectPermissionDenied(() =>
+      useCubeStore
+        .getState()
+        .deleteCell(
+          'budget' as never,
+          { entity: 'default', account: '1000', period: '2026-01' } as never,
+          'amount' as never
+        )
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:plan.assumptions — cube:admin guards addMember, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useCubeStore.getState().addMember('account' as never, { code: '1000', name: 'Cash' } as never));
+    expectPermissionDenied(() =>
+      useCubeStore.getState().addMember('account' as never, { code: '1000', name: 'Cash' } as never)
+    );
     actAs('Admin');
-    try { useCubeStore.getState().addMember('account' as never, { code: '1000', name: 'Cash' } as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+    try {
+      useCubeStore
+        .getState()
+        .addMember('account' as never, { code: '1000', name: 'Cash' } as never);
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
   });
 
   it('GOVERNED cap:admin.integrations — import:create guards connect, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useIntegrationStore.getState().connect('quickbooks' as never, {} as never));
+    expectPermissionDenied(() =>
+      useIntegrationStore.getState().connect('quickbooks' as never, {} as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4734,14 +5259,22 @@ describe('GOVERNED capability-level — remaining store tests (batch 6)', () => 
 
   it('GOVERNED cap:data.csv-xlsx-intake — import:update guards signLatestVersion, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useDocumentStore.getState().signLatestVersion('doc-test' as never));
+    expectPermissionDenied(() =>
+      useDocumentStore.getState().signLatestVersion('doc-test' as never)
+    );
     actAs('Admin');
-    try { useDocumentStore.getState().signLatestVersion('doc-test' as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+    try {
+      useDocumentStore.getState().signLatestVersion('doc-test' as never);
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
   });
 
   it('GOVERNED cap:ops.capex — capex:create guards addProject, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useCapExStore.getState().addProject({ id: 'proj-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useCapExStore.getState().addProject({ id: 'proj-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4755,7 +5288,9 @@ describe('GOVERNED capability-level — remaining store tests (batch 6)', () => 
 
   it('GOVERNED cap:model.leases — budget:create guards addLease, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useLeaseStore.getState().addLease({ id: 'lease-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useLeaseStore.getState().addLease({ id: 'lease-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4769,7 +5304,9 @@ describe('GOVERNED capability-level — remaining store tests (batch 6)', () => 
 
   it('GOVERNED cap:model.fx-translation — forecast:create guards addRate, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useFxRateStore.getState().addRate({ currency: 'EUR', rate: 1.1 } as never));
+    expectPermissionDenied(() =>
+      useFxRateStore.getState().addRate({ currency: 'EUR', rate: 1.1 } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4783,7 +5320,9 @@ describe('GOVERNED capability-level — remaining store tests (batch 6)', () => 
 
   it('GOVERNED cap:ops.cash-planning — budget:create guards addInstrument, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useDebtStore.getState().addInstrument({ id: 'inst-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useDebtStore.getState().addInstrument({ id: 'inst-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4797,37 +5336,65 @@ describe('GOVERNED capability-level — remaining store tests (batch 6)', () => 
 
   it('GOVERNED cap:ops.capex — budget:create guards addChangeOrder, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useConstructionStore.getState().addChangeOrder({ id: 'co-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useConstructionStore.getState().addChangeOrder({ id: 'co-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:ops.capex — budget:update guards updateChangeOrder, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useConstructionStore.getState().updateChangeOrder('co-test' as never, { name: 'Updated' } as never));
+    expectPermissionDenied(() =>
+      useConstructionStore
+        .getState()
+        .updateChangeOrder('co-test' as never, { name: 'Updated' } as never)
+    );
     actAs('Admin');
-    expect(() => useConstructionStore.getState().updateChangeOrder('co-test' as never, { name: 'Updated' } as never)).not.toThrow();
+    expect(() =>
+      useConstructionStore
+        .getState()
+        .updateChangeOrder('co-test' as never, { name: 'Updated' } as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED capability-level — workflow, workforce, settings tests (batch 7)', () => {
   it('GOVERNED cap:wf.approvals — workflow:approve guards lockRequest, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useWorkflowStore.getState().lockRequest('req-test' as never, { userId: 'u1', displayName: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useWorkflowStore
+        .getState()
+        .lockRequest('req-test' as never, { userId: 'u1', displayName: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:wf.approvals — workflow:approve guards lockRequest, Admin reaches enforce gate', () => {
     actAsRoleWithout('Viewer', 'workflow:approve');
-    expectPermissionDenied(() => useWorkflowStore.getState().lockRequest('req-test' as never, { userId: 'u1', displayName: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useWorkflowStore
+        .getState()
+        .lockRequest('req-test' as never, { userId: 'u1', displayName: 'Test' } as never)
+    );
     actAs('Admin');
-    try { useWorkflowStore.getState().lockRequest('req-test' as never, { userId: 'u1', displayName: 'Test' } as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+    try {
+      useWorkflowStore
+        .getState()
+        .lockRequest('req-test' as never, { userId: 'u1', displayName: 'Test' } as never);
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
   });
 
   it('GOVERNED cap:wf.administration — workflow:update guards addDelegation, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useWorkflowStore.getState().addDelegation({ fromUser: 'u1', toUser: 'u2', reason: 'test' } as never));
+    expectPermissionDenied(() =>
+      useWorkflowStore
+        .getState()
+        .addDelegation({ fromUser: 'u1', toUser: 'u2', reason: 'test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4855,7 +5422,9 @@ describe('GOVERNED capability-level — workflow, workforce, settings tests (bat
 
   it('GOVERNED cap:ops.workforce — entity:create guards addEmployee, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useWorkforceStore.getState().addEmployee({ id: 'emp-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useWorkforceStore.getState().addEmployee({ id: 'emp-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4869,7 +5438,9 @@ describe('GOVERNED capability-level — workflow, workforce, settings tests (bat
 
   it('GOVERNED cap:ops.workforce — entity:update guards setDepartments, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useWorkforceStore.getState().setDepartments([{ id: 'dept-1', name: 'Engineering' }] as never));
+    expectPermissionDenied(() =>
+      useWorkforceStore.getState().setDepartments([{ id: 'dept-1', name: 'Engineering' }] as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4883,7 +5454,9 @@ describe('GOVERNED capability-level — workflow, workforce, settings tests (bat
 
   it('GOVERNED cap:admin.users — user:create guards addUser, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useSettingsStore.getState().addUser({ id: 'user-test', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useSettingsStore.getState().addUser({ id: 'user-test', name: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4897,51 +5470,71 @@ describe('GOVERNED capability-level — workflow, workforce, settings tests (bat
 
   it('GOVERNED cap:admin.users — user:update guards setUsers, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useSettingsStore.getState().setUsers([{ id: 'u1', name: 'Test' }] as never));
+    expectPermissionDenied(() =>
+      useSettingsStore.getState().setUsers([{ id: 'u1', name: 'Test' }] as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:admin.users — user:assign-role guards setRoles, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useSettingsStore.getState().setRoles([{ id: 'r1', name: 'Viewer', permissions: [] }] as never));
+    expectPermissionDenied(() =>
+      useSettingsStore.getState().setRoles([{ id: 'r1', name: 'Viewer', permissions: [] }] as never)
+    );
     actAs('Admin');
-    expect(() => useSettingsStore.getState().setRoles([{ id: 'r1', name: 'Viewer', permissions: [] }] as never)).not.toThrow();
+    expect(() =>
+      useSettingsStore.getState().setRoles([{ id: 'r1', name: 'Viewer', permissions: [] }] as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED capability-level — report and scenario store tests (batch 8)', () => {
   it('GOVERNED cap:report.statements — report:schedule guards toggleScheduledReport, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useReportStore.getState().toggleScheduledReport('rpt-test' as never));
+    expectPermissionDenied(() =>
+      useReportStore.getState().toggleScheduledReport('rpt-test' as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:report.statements — report:schedule guards toggleScheduledReport, Admin reaches enforce gate', () => {
     actAsRoleWithout('Viewer', 'report:schedule');
-    expectPermissionDenied(() => useReportStore.getState().toggleScheduledReport('rpt-test' as never));
+    expectPermissionDenied(() =>
+      useReportStore.getState().toggleScheduledReport('rpt-test' as never)
+    );
     actAs('Admin');
-    expect(() => useReportStore.getState().toggleScheduledReport('rpt-test' as never)).not.toThrow();
+    expect(() =>
+      useReportStore.getState().toggleScheduledReport('rpt-test' as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:report.statements — report:schedule guards deleteScheduledReport, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useReportStore.getState().deleteScheduledReport('rpt-test' as never));
+    expectPermissionDenied(() =>
+      useReportStore.getState().deleteScheduledReport('rpt-test' as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:report.statements — report:schedule guards recordScheduleRun, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useReportStore.getState().recordScheduleRun('rpt-test' as never, 'success' as never));
+    expectPermissionDenied(() =>
+      useReportStore.getState().recordScheduleRun('rpt-test' as never, 'success' as never)
+    );
     actAs('Admin');
-    expect(() => useReportStore.getState().recordScheduleRun('rpt-test' as never, 'success' as never)).not.toThrow();
+    expect(() =>
+      useReportStore.getState().recordScheduleRun('rpt-test' as never, 'success' as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:report.statements — report:update guards setReports, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useReportStore.getState().setReports([{ id: 'rpt-1', name: 'Test' }] as never));
+    expectPermissionDenied(() =>
+      useReportStore.getState().setReports([{ id: 'rpt-1', name: 'Test' }] as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -4950,7 +5543,11 @@ describe('GOVERNED capability-level — report and scenario store tests (batch 8
     actAs('Viewer');
     expectPermissionDenied(() => useScenarioStore.getState().lockScenario('scen-test' as never));
     actAs('Admin');
-    try { useScenarioStore.getState().lockScenario('scen-test' as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+    try {
+      useScenarioStore.getState().lockScenario('scen-test' as never);
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
   });
 
   it('GOVERNED cap:plan.versions — scenario:lock guards unlockScenario, audit chain intact', () => {
@@ -4962,72 +5559,104 @@ describe('GOVERNED capability-level — report and scenario store tests (batch 8
 
   it('GOVERNED cap:plan.versions — scenario:update guards setScenarios, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useScenarioStore.getState().setScenarios([{ id: 's1', name: 'Test' }] as never));
+    expectPermissionDenied(() =>
+      useScenarioStore.getState().setScenarios([{ id: 's1', name: 'Test' }] as never)
+    );
     actAs('Admin');
-    expect(() => useScenarioStore.getState().setScenarios([{ id: 's1', name: 'Test' }] as never)).not.toThrow();
+    expect(() =>
+      useScenarioStore.getState().setScenarios([{ id: 's1', name: 'Test' }] as never)
+    ).not.toThrow();
   });
 });
 
 describe('GOVERNED capability-level — collab, dashboard, notification store tests (batch 9)', () => {
   it('GOVERNED cap:collab — collab:update guards setTasks, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useCollaborationStore.getState().setTasks([{ id: 't1', title: 'Test' }] as never));
+    expectPermissionDenied(() =>
+      useCollaborationStore.getState().setTasks([{ id: 't1', title: 'Test' }] as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:collab — collab:update guards addTask, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useCollaborationStore.getState().addTask({ id: 't1', title: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useCollaborationStore.getState().addTask({ id: 't1', title: 'Test' } as never)
+    );
     actAs('Admin');
-    expect(() => useCollaborationStore.getState().addTask({ id: 't1', title: 'Test' } as never)).not.toThrow();
+    expect(() =>
+      useCollaborationStore.getState().addTask({ id: 't1', title: 'Test' } as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:collab — collab:update guards updateTaskStatus, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useCollaborationStore.getState().updateTaskStatus('t1' as never, 'done' as never));
+    expectPermissionDenied(() =>
+      useCollaborationStore.getState().updateTaskStatus('t1' as never, 'done' as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:collab — collab:update guards setActivityLog, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useCollaborationStore.getState().setActivityLog([{ id: 'a1', message: 'Test' }] as never));
+    expectPermissionDenied(() =>
+      useCollaborationStore.getState().setActivityLog([{ id: 'a1', message: 'Test' }] as never)
+    );
     actAs('Admin');
-    expect(() => useCollaborationStore.getState().setActivityLog([{ id: 'a1', message: 'Test' }] as never)).not.toThrow();
+    expect(() =>
+      useCollaborationStore.getState().setActivityLog([{ id: 'a1', message: 'Test' }] as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:collab — collab:update guards addActivity, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useCollaborationStore.getState().addActivity({ id: 'a1', message: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useCollaborationStore.getState().addActivity({ id: 'a1', message: 'Test' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:wf.approvals — workflow:approve guards setApprovals, Admin reaches enforce gate', () => {
     actAsRoleWithout('Viewer', 'workflow:approve');
-    expectPermissionDenied(() => useCollaborationStore.getState().setApprovals([{ id: 'ap1', status: 'approved' }] as never));
+    expectPermissionDenied(() =>
+      useCollaborationStore.getState().setApprovals([{ id: 'ap1', status: 'approved' }] as never)
+    );
     actAs('Admin');
-    expect(() => useCollaborationStore.getState().setApprovals([{ id: 'ap1', status: 'approved' }] as never)).not.toThrow();
+    expect(() =>
+      useCollaborationStore.getState().setApprovals([{ id: 'ap1', status: 'approved' }] as never)
+    ).not.toThrow();
   });
 
   it('GOVERNED cap:analyze.dashboards — dashboard:update guards setDashboards, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useDashboardStore.getState().setDashboards([{ id: 'd1', name: 'Test' }] as never));
+    expectPermissionDenied(() =>
+      useDashboardStore.getState().setDashboards([{ id: 'd1', name: 'Test' }] as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:analyze.dashboards — dashboard:create guards addDashboard, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useDashboardStore.getState().addDashboard({ id: 'd1', name: 'Test' } as never));
+    expectPermissionDenied(() =>
+      useDashboardStore.getState().addDashboard({ id: 'd1', name: 'Test' } as never)
+    );
     actAs('Admin');
-    try { useDashboardStore.getState().addDashboard({ id: 'd1', name: 'Test' } as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+    try {
+      useDashboardStore.getState().addDashboard({ id: 'd1', name: 'Test' } as never);
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
   });
 
   it('GOVERNED cap:analyze.dashboards — dashboard:update guards updateDashboard, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useDashboardStore.getState().updateDashboard('d1' as never, { name: 'Updated' } as never));
+    expectPermissionDenied(() =>
+      useDashboardStore.getState().updateDashboard('d1' as never, { name: 'Updated' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
@@ -5041,16 +5670,24 @@ describe('GOVERNED capability-level — collab, dashboard, notification store te
 
   it('GOVERNED cap:analyze.dashboards — dashboard:create guards addWidget, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useDashboardStore.getState().addWidget('d1' as never, { id: 'w1' } as never));
+    expectPermissionDenied(() =>
+      useDashboardStore.getState().addWidget('d1' as never, { id: 'w1' } as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:analyze.dashboards — dashboard:update guards addFilter, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useDashboardStore.getState().addFilter('d1' as never, { id: 'f1' } as never));
+    expectPermissionDenied(() =>
+      useDashboardStore.getState().addFilter('d1' as never, { id: 'f1' } as never)
+    );
     actAs('Admin');
-    try { useDashboardStore.getState().addFilter('d1' as never, { id: 'f1' } as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+    try {
+      useDashboardStore.getState().addFilter('d1' as never, { id: 'f1' } as never);
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
   });
 
   it('GOVERNED cap:collab — notification:update guards markAsRead, audit chain intact', () => {
@@ -5078,28 +5715,40 @@ describe('GOVERNED capability-level — collab, dashboard, notification store te
 describe('GOVERNED capability-level — audit trail store tests (batch 10)', () => {
   it('GOVERNED cap:wf.auditability — audit:create guards recordBulk, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useAuditTrailStore.getState().recordBulk([{ action: 'test' }] as never));
+    expectPermissionDenied(() =>
+      useAuditTrailStore.getState().recordBulk([{ action: 'test' }] as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:wf.auditability — audit:create guards recordBulk, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useAuditTrailStore.getState().recordBulk([{ action: 'test' }] as never));
+    expectPermissionDenied(() =>
+      useAuditTrailStore.getState().recordBulk([{ action: 'test' }] as never)
+    );
     actAs('Admin');
-    try { useAuditTrailStore.getState().recordBulk([{ action: 'test' }] as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+    try {
+      useAuditTrailStore.getState().recordBulk([{ action: 'test' }] as never);
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
   });
 
   it('GOVERNED cap:wf.auditability — audit:delete guards revertToState, audit chain intact', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useAuditTrailStore.getState().revertToState('entry-test' as never));
+    expectPermissionDenied(() =>
+      useAuditTrailStore.getState().revertToState('entry-test' as never)
+    );
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });
 
   it('GOVERNED cap:wf.auditability — audit:delete guards revertToState, Admin reaches enforce gate', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useAuditTrailStore.getState().revertToState('entry-test' as never));
+    expectPermissionDenied(() =>
+      useAuditTrailStore.getState().revertToState('entry-test' as never)
+    );
     actAs('Admin');
     expect(() => useAuditTrailStore.getState().revertToState('entry-test' as never)).not.toThrow();
   });
@@ -5135,7 +5784,9 @@ describe('GOVERNED capability-level — budget lifecycle validation tests (batch
     const budgetId = useBudgetStore.getState().budgets[0]!.id;
     await useBudgetStore.getState().submitBudget(budgetId);
     expect(useBudgetStore.getState().budgets[0]!.status).toBe('InReview');
-    expect(() => useBudgetStore.getState().submitBudget(budgetId)).rejects.toThrow(/Cannot submit.*InReview/);
+    expect(() => useBudgetStore.getState().submitBudget(budgetId)).rejects.toThrow(
+      /Cannot submit.*InReview/
+    );
   });
 
   it('GOVERNED cap:plan.budgets — approveBudget transitions InReview → Approved, audit chain intact', async () => {
@@ -5166,7 +5817,9 @@ describe('GOVERNED capability-level — budget lifecycle validation tests (batch
     } as never);
     const budgetId = useBudgetStore.getState().budgets[0]!.id;
     expect(useBudgetStore.getState().budgets[0]!.status).toBe('Draft');
-    expect(() => useBudgetStore.getState().approveBudget(budgetId)).toThrow(/Cannot approve.*Draft/);
+    expect(() => useBudgetStore.getState().approveBudget(budgetId)).toThrow(
+      /Cannot approve.*Draft/
+    );
   });
 
   it('GOVERNED cap:plan.budgets — deleteBudget on Approved budget throws lifecycle error', async () => {
@@ -5182,7 +5835,9 @@ describe('GOVERNED capability-level — budget lifecycle validation tests (batch
     await useBudgetStore.getState().submitBudget(budgetId);
     useBudgetStore.getState().approveBudget(budgetId);
     expect(useBudgetStore.getState().budgets[0]!.status).toBe('Approved');
-    expect(() => useBudgetStore.getState().deleteBudget(budgetId)).toThrow(/Cannot delete.*Approved/);
+    expect(() => useBudgetStore.getState().deleteBudget(budgetId)).toThrow(
+      /Cannot delete.*Approved/
+    );
   });
 
   it('GOVERNED cap:plan.budgets — deleteBudget on Draft budget succeeds, audit chain intact', () => {
@@ -5441,16 +6096,16 @@ describe('GOVERNED capability-level — exceptionDispositionStore lifecycle expa
 describe('GOVERNED capability-level — forecastStore validation guard tests (batch 15)', () => {
   it('GOVERNED cap:plan.rolling-forecast — createForecast with empty name throws validation error', () => {
     actAs('Analyst');
-    expect(() =>
-      useForecastStore.getState().createForecast({ name: '' } as never)
-    ).toThrow(/forecast name must be a non-empty string/);
+    expect(() => useForecastStore.getState().createForecast({ name: '' } as never)).toThrow(
+      /forecast name must be a non-empty string/
+    );
   });
 
   it('GOVERNED cap:plan.rolling-forecast — createForecast with whitespace-only name throws validation error', () => {
     actAs('Analyst');
-    expect(() =>
-      useForecastStore.getState().createForecast({ name: '   ' } as never)
-    ).toThrow(/forecast name must be a non-empty string/);
+    expect(() => useForecastStore.getState().createForecast({ name: '   ' } as never)).toThrow(
+      /forecast name must be a non-empty string/
+    );
   });
 
   it('GOVERNED cap:plan.rolling-forecast — createForecast with name > 200 chars throws validation error', () => {
@@ -5469,9 +6124,9 @@ describe('GOVERNED capability-level — forecastStore validation guard tests (ba
 
   it('GOVERNED cap:plan.rolling-forecast — createForecast with null forecast throws validation error', () => {
     actAs('Analyst');
-    expect(() =>
-      useForecastStore.getState().createForecast(null as never)
-    ).toThrow(/forecast must be an object/);
+    expect(() => useForecastStore.getState().createForecast(null as never)).toThrow(
+      /forecast must be an object/
+    );
   });
 
   it('GOVERNED cap:plan.rolling-forecast — createForecast with valid name succeeds, audit chain intact', () => {
@@ -5520,7 +6175,7 @@ describe('GOVERNED capability-level — tpBenchmarkStore validation guard tests 
       useTPBenchmarkStore.getState().attachBenchmark('tx-1', {
         studyRef: 'IRS-2024',
         margin: 0.05,
-        rangeLow: 0.10,
+        rangeLow: 0.1,
         rangeHigh: 0.03,
       } as never)
     ).toThrow(/rangeLow.*rangeHigh|finite/);
@@ -5567,9 +6222,9 @@ describe('GOVERNED capability-level — tpBenchmarkStore validation guard tests 
 describe('GOVERNED capability-level — documentStore validation guard tests (batch 17)', () => {
   it('GOVERNED cap:admin.data-management — addDocument with empty name throws validation error', () => {
     actAs('Analyst');
-    expect(() =>
-      useDocumentStore.getState().addDocument({ name: '' } as never)
-    ).toThrow(/Document name must be a non-empty string/);
+    expect(() => useDocumentStore.getState().addDocument({ name: '' } as never)).toThrow(
+      /Document name must be a non-empty string/
+    );
   });
 
   it('GOVERNED cap:admin.data-management — addDocument with name > 200 chars throws validation error', () => {
@@ -5595,9 +6250,9 @@ describe('GOVERNED capability-level — documentStore validation guard tests (ba
 
   it('GOVERNED cap:admin.data-management — tagDocument with empty tag throws validation error', () => {
     actAs('Analyst');
-    expect(() =>
-      useDocumentStore.getState().tagDocument('doc-1', '   ')
-    ).toThrow(/Tag must be a non-empty string/);
+    expect(() => useDocumentStore.getState().tagDocument('doc-1', '   ')).toThrow(
+      /Tag must be a non-empty string/
+    );
   });
 
   it('GOVERNED cap:admin.data-management — addDocument with valid input succeeds, audit chain intact', () => {
@@ -5625,9 +6280,9 @@ describe('GOVERNED capability-level — exceptionRuleCatalogue validation guard 
       action: 'FLAG',
     };
     useExceptionRuleCatalogueStore.getState().registerRule(rule as never);
-    expect(() =>
-      useExceptionRuleCatalogueStore.getState().registerRule(rule as never)
-    ).toThrow(/Rule RULE-1 v1 already exists/);
+    expect(() => useExceptionRuleCatalogueStore.getState().registerRule(rule as never)).toThrow(
+      /Rule RULE-1 v1 already exists/
+    );
   });
 
   it('GOVERNED cap:analyze.exception-rules — registerRule with valid input succeeds', () => {
@@ -5648,9 +6303,13 @@ describe('GOVERNED capability-level — exceptionRuleCatalogue validation guard 
   it('GOVERNED cap:analyze.exception-rules — supersedeRule with unknown ruleId throws validation error', () => {
     actAs('Admin');
     expect(() =>
-      useExceptionRuleCatalogueStore.getState().supersedeRule('UNKNOWN-RULE', {
-        name: 'Updated',
-      } as never, 'admin-1')
+      useExceptionRuleCatalogueStore.getState().supersedeRule(
+        'UNKNOWN-RULE',
+        {
+          name: 'Updated',
+        } as never,
+        'admin-1'
+      )
     ).toThrow(/Rule UNKNOWN-RULE not found/);
   });
 
@@ -5665,14 +6324,18 @@ describe('GOVERNED capability-level — exceptionRuleCatalogue validation guard 
       condition: { type: 'THRESHOLD', threshold: 100 },
       action: 'FLAG',
     } as never);
-    const next = useExceptionRuleCatalogueStore.getState().supersedeRule('RULE-3', {
-      name: 'Updated Rule',
-    } as never, 'admin-1');
+    const next = useExceptionRuleCatalogueStore.getState().supersedeRule(
+      'RULE-3',
+      {
+        name: 'Updated Rule',
+      } as never,
+      'admin-1'
+    );
     expect(next.version).toBe(2);
     expect(next.name).toBe('Updated Rule');
-    const old = useExceptionRuleCatalogueStore.getState().rules.find(
-      (r) => r.ruleId === 'RULE-3' && r.version === 1
-    );
+    const old = useExceptionRuleCatalogueStore
+      .getState()
+      .rules.find((r) => r.ruleId === 'RULE-3' && r.version === 1);
     expect(old!.status).toBe('RETIRED');
     expect(old!.supersededBy).toBe('RULE-3:v2');
   });
@@ -5689,9 +6352,9 @@ describe('GOVERNED capability-level — exceptionRuleCatalogue validation guard 
       action: 'FLAG',
     } as never);
     useExceptionRuleCatalogueStore.getState().updateRuleStatus('RULE-4', 'ACTIVE', 1);
-    const rule = useExceptionRuleCatalogueStore.getState().rules.find(
-      (r) => r.ruleId === 'RULE-4' && r.version === 1
-    );
+    const rule = useExceptionRuleCatalogueStore
+      .getState()
+      .rules.find((r) => r.ruleId === 'RULE-4' && r.version === 1);
     expect(rule!.status).toBe('ACTIVE');
   });
 
@@ -5756,17 +6419,17 @@ describe('GOVERNED capability-level — glStore import method tests (batch 20)',
   it('GOVERNED cap:data.csv-xlsx-intake — addEntries denies Viewer (IMPORT_CREATE required)', () => {
     actAs('Viewer');
     expectPermissionDenied(() =>
-      useGLStore.getState().addEntries([
-        { accountCode: 'A', debit: 100, credit: 0, postDate: '2024-01-01' } as never,
-      ])
+      useGLStore
+        .getState()
+        .addEntries([{ accountCode: 'A', debit: 100, credit: 0, postDate: '2024-01-01' } as never])
     );
   });
 
   it('GOVERNED cap:data.csv-xlsx-intake — addEntries with valid entries succeeds for Admin', () => {
     actAs('Admin');
-    useGLStore.getState().addEntries([
-      { accountCode: 'A', debit: 100, credit: 0, postDate: '2024-01-01' } as never,
-    ]);
+    useGLStore
+      .getState()
+      .addEntries([{ accountCode: 'A', debit: 100, credit: 0, postDate: '2024-01-01' } as never]);
     expect(useGLStore.getState().entries.length).toBeGreaterThan(0);
   });
 
@@ -5824,10 +6487,7 @@ describe('GOVERNED capability-level — periodCloseStore transition tests (batch
   it('GOVERNED cap:close.tie-out — transition with unknown periodId returns error result', async () => {
     actAs('Admin');
     usePeriodCloseStore.setState({ entries: {}, initialized: true } as never);
-    const result = await usePeriodCloseStore.getState().transition(
-      'UNKNOWN-PERIOD',
-      'soft-close'
-    );
+    const result = await usePeriodCloseStore.getState().transition('UNKNOWN-PERIOD', 'soft-close');
     expect(result.success).toBe(false);
     expect(result.error).toContain('Unknown period');
   });
@@ -5838,10 +6498,7 @@ describe('GOVERNED capability-level — periodCloseStore transition tests (batch
       entries: { 'PERIOD-1': makeEntry('PERIOD-1', 'open') as never },
       initialized: true,
     } as never);
-    const result = await usePeriodCloseStore.getState().transition(
-      'PERIOD-1',
-      'soft-close'
-    );
+    const result = await usePeriodCloseStore.getState().transition('PERIOD-1', 'soft-close');
     expect(result.success).toBe(true);
   });
 
@@ -5851,10 +6508,7 @@ describe('GOVERNED capability-level — periodCloseStore transition tests (batch
       entries: { 'PERIOD-2': makeEntry('PERIOD-2', 'soft-close') as never },
       initialized: true,
     } as never);
-    const result = await usePeriodCloseStore.getState().transition(
-      'PERIOD-2',
-      'hard-close'
-    );
+    const result = await usePeriodCloseStore.getState().transition('PERIOD-2', 'hard-close');
     expect(result.success).toBe(true);
   });
 
@@ -5864,10 +6518,7 @@ describe('GOVERNED capability-level — periodCloseStore transition tests (batch
       entries: { 'PERIOD-3': makeEntry('PERIOD-3', 'hard-close') as never },
       initialized: true,
     } as never);
-    const result = await usePeriodCloseStore.getState().transition(
-      'PERIOD-3',
-      'lock'
-    );
+    const result = await usePeriodCloseStore.getState().transition('PERIOD-3', 'lock');
     expect(result.success).toBe(true);
   });
 
@@ -5877,10 +6528,7 @@ describe('GOVERNED capability-level — periodCloseStore transition tests (batch
       entries: { 'PERIOD-4': makeEntry('PERIOD-4', 'soft-close') as never },
       initialized: true,
     } as never);
-    const result = await usePeriodCloseStore.getState().transition(
-      'PERIOD-4',
-      'reopen'
-    );
+    const result = await usePeriodCloseStore.getState().transition('PERIOD-4', 'reopen');
     expect(result.success).toBe(false);
     expect(result.error).toContain('reason');
   });
@@ -5891,13 +6539,9 @@ describe('GOVERNED capability-level — periodCloseStore transition tests (batch
       entries: { 'PERIOD-5': makeEntry('PERIOD-5', 'soft-close') as never },
       initialized: true,
     } as never);
-    const result = await usePeriodCloseStore.getState().transition(
-      'PERIOD-5',
-      'reopen',
-      'Reopening for correction',
-      undefined,
-      'approval-1'
-    );
+    const result = await usePeriodCloseStore
+      .getState()
+      .transition('PERIOD-5', 'reopen', 'Reopening for correction', undefined, 'approval-1');
     expect(result.success).toBe(true);
   });
 
@@ -5907,13 +6551,9 @@ describe('GOVERNED capability-level — periodCloseStore transition tests (batch
       entries: { 'PERIOD-6': makeEntry('PERIOD-6', 'locked') as never },
       initialized: true,
     } as never);
-    const result = await usePeriodCloseStore.getState().transition(
-      'PERIOD-6',
-      'force-reopen',
-      'Force reopen by Admin',
-      undefined,
-      'approval-2'
-    );
+    const result = await usePeriodCloseStore
+      .getState()
+      .transition('PERIOD-6', 'force-reopen', 'Force reopen by Admin', undefined, 'approval-2');
     expect(result.success).toBe(true);
   });
 });
@@ -5938,10 +6578,9 @@ describe('GOVERNED capability-level — periodCloseStore initialize validation t
     actAs('Admin');
     usePeriodCloseStore.setState({ entries: {}, checklists: {}, initialized: false } as never);
     expect(() =>
-      usePeriodCloseStore.getState().initialize(
-        [makePeriod(), makePeriod({ id: 'PERIOD-001' })] as never,
-        'IN'
-      )
+      usePeriodCloseStore
+        .getState()
+        .initialize([makePeriod(), makePeriod({ id: 'PERIOD-001' })] as never, 'IN')
     ).toThrow(/Invalid or duplicate fiscal period ID/);
   });
 
@@ -5949,10 +6588,7 @@ describe('GOVERNED capability-level — periodCloseStore initialize validation t
     actAs('Admin');
     usePeriodCloseStore.setState({ entries: {}, checklists: {}, initialized: false } as never);
     expect(() =>
-      usePeriodCloseStore.getState().initialize(
-        [makePeriod({ id: '' })] as never,
-        'IN'
-      )
+      usePeriodCloseStore.getState().initialize([makePeriod({ id: '' })] as never, 'IN')
     ).toThrow(/Invalid or duplicate fiscal period ID/);
   });
 
@@ -5960,10 +6596,9 @@ describe('GOVERNED capability-level — periodCloseStore initialize validation t
     actAs('Admin');
     usePeriodCloseStore.setState({ entries: {}, checklists: {}, initialized: false } as never);
     expect(() =>
-      usePeriodCloseStore.getState().initialize(
-        [makePeriod({ startDate: '2024-02-01', endDate: '2024-01-31' })] as never,
-        'IN'
-      )
+      usePeriodCloseStore
+        .getState()
+        .initialize([makePeriod({ startDate: '2024-02-01', endDate: '2024-01-31' })] as never, 'IN')
     ).toThrow(/Invalid fiscal date range/);
   });
 
@@ -5971,20 +6606,14 @@ describe('GOVERNED capability-level — periodCloseStore initialize validation t
     actAs('Admin');
     usePeriodCloseStore.setState({ entries: {}, checklists: {}, initialized: false } as never);
     expect(() =>
-      usePeriodCloseStore.getState().initialize(
-        [makePeriod()] as never,
-        'IN'
-      )
+      usePeriodCloseStore.getState().initialize([makePeriod()] as never, 'IN')
     ).not.toThrow();
   });
 
   it('GOVERNED cap:close.tie-out — initialize denies Viewer (PERIOD_CLOSE required)', () => {
     actAs('Viewer');
     expectPermissionDenied(() =>
-      usePeriodCloseStore.getState().initialize(
-        [makePeriod()] as never,
-        'IN'
-      )
+      usePeriodCloseStore.getState().initialize([makePeriod()] as never, 'IN')
     );
   });
 });
@@ -6006,7 +6635,9 @@ describe('GOVERNED capability-level — glStore undoLastImport tests (batch 23)'
   it('GOVERNED cap:data.csv-xlsx-intake — undoLastImport with Admin and draft entries succeeds', async () => {
     actAs('Admin');
     useGLStore.setState({
-      entries: [{ id: 'e1', accountCode: 'A', debit: 100, credit: 0, postDate: '2024-01-01' } as never],
+      entries: [
+        { id: 'e1', accountCode: 'A', debit: 100, credit: 0, postDate: '2024-01-01' } as never,
+      ],
       lastImportEntryIds: ['e1'],
       entrySyncState: { e1: 'draft' },
     } as never);
@@ -6017,49 +6648,49 @@ describe('GOVERNED capability-level — glStore undoLastImport tests (batch 23)'
   });
 });
 
-describe("GL Store — UI filter and import state setters (batch 24 — CLOSES glStore ENFORCE-METHOD-COVERAGE)", () => {
+describe('GL Store — UI filter and import state setters (batch 24 — CLOSES glStore ENFORCE-METHOD-COVERAGE)', () => {
   // Every remaining glStore enforce method. These are all ui:update — all 5 roles
   // hold it, so the positive path is trivially open; the governance dimension is
   // (a) the state actually changes, (b) the Viewer denial via expectPermissionDenied.
-  it("denies Viewer setEnvironmentId (ui:update)", () => {
+  it('denies Viewer setEnvironmentId (ui:update)', () => {
     actAsRoleWithout('Viewer', 'ui:update');
     expectPermissionDenied(() => useGLStore.getState().setEnvironmentId('env-123'));
   });
 
-  it("Admin setEnvironmentId updates state", () => {
+  it('Admin setEnvironmentId updates state', () => {
     actAs('Admin');
     expect(() => useGLStore.getState().setEnvironmentId('env-prod')).not.toThrow();
     expect(useGLStore.getState().environmentId).toBe('env-prod');
   });
 
-  it("denies Viewer filterByDate (ui:update)", () => {
+  it('denies Viewer filterByDate (ui:update)', () => {
     actAsRoleWithout('Viewer', 'ui:update');
     expectPermissionDenied(() => useGLStore.getState().filterByDate('2026-01-01', '2026-03-31'));
   });
 
-  it("Admin filterByDate updates state", () => {
+  it('Admin filterByDate updates state', () => {
     actAs('Admin');
     expect(() => useGLStore.getState().filterByDate('2026-01-01', '2026-03-31')).not.toThrow();
     expect(useGLStore.getState().dateFilter).toEqual({ start: '2026-01-01', end: '2026-03-31' });
   });
 
-  it("denies Viewer filterByAccount (ui:update)", () => {
+  it('denies Viewer filterByAccount (ui:update)', () => {
     actAsRoleWithout('Viewer', 'ui:update');
     expectPermissionDenied(() => useGLStore.getState().filterByAccount(['acc-1000']));
   });
 
-  it("Admin filterByAccount updates state", () => {
+  it('Admin filterByAccount updates state', () => {
     actAs('Admin');
     expect(() => useGLStore.getState().filterByAccount(['acc-1000'])).not.toThrow();
     expect(useGLStore.getState().accountFilter).toEqual(['acc-1000']);
   });
 
-  it("denies Viewer clearFilters (ui:update)", () => {
+  it('denies Viewer clearFilters (ui:update)', () => {
     actAsRoleWithout('Viewer', 'ui:update');
     expectPermissionDenied(() => useGLStore.getState().clearFilters());
   });
 
-  it("Admin clearFilters resets filters", () => {
+  it('Admin clearFilters resets filters', () => {
     actAs('Admin');
     useGLStore.getState().filterByDate('2026-01-01', '2026-03-31');
     useGLStore.getState().filterByAccount(['acc-1000']);
@@ -6068,64 +6699,70 @@ describe("GL Store — UI filter and import state setters (batch 24 — CLOSES g
     expect(useGLStore.getState().accountFilter).toEqual([]);
   });
 
-  it("denies Viewer setImportProgress (ui:update)", () => {
+  it('denies Viewer setImportProgress (ui:update)', () => {
     actAsRoleWithout('Viewer', 'ui:update');
     expectPermissionDenied(() => useGLStore.getState().setImportProgress(75));
   });
 
-  it("Admin setImportProgress updates state", () => {
+  it('Admin setImportProgress updates state', () => {
     actAs('Admin');
     expect(() => useGLStore.getState().setImportProgress(75)).not.toThrow();
     expect(useGLStore.getState().importProgress).toBe(75);
   });
 
-  it("denies Viewer setImportStatus (ui:update)", () => {
+  it('denies Viewer setImportStatus (ui:update)', () => {
     actAsRoleWithout('Viewer', 'ui:update');
     expectPermissionDenied(() => useGLStore.getState().setImportStatus('processing'));
   });
 
-  it("Admin setImportStatus updates state", () => {
+  it('Admin setImportStatus updates state', () => {
     actAs('Admin');
     expect(() => useGLStore.getState().setImportStatus('processing')).not.toThrow();
     expect(useGLStore.getState().importStatus).toBe('processing');
   });
 
-  it("denies Viewer setImportError (ui:update)", () => {
+  it('denies Viewer setImportError (ui:update)', () => {
     actAsRoleWithout('Viewer', 'ui:update');
     expectPermissionDenied(() => useGLStore.getState().setImportError('bad row'));
   });
 
-  it("Admin setImportError updates state", () => {
+  it('Admin setImportError updates state', () => {
     actAs('Admin');
     expect(() => useGLStore.getState().setImportError('bad row at line 42')).not.toThrow();
     expect(useGLStore.getState().importError).toBe('bad row at line 42');
   });
 });
 
-describe("Workflow Store — Review workflow methods (batch 25 — CLOSES wf.reviews ENFORCE-METHOD-COVERAGE)", () => {
+describe('Workflow Store — Review workflow methods (batch 25 — CLOSES wf.reviews ENFORCE-METHOD-COVERAGE)', () => {
   // Tests for approveRequest, rejectRequest, submitRequest, delegateRequest, bulkApprove
   // These are the core review workflow methods not yet covered in the spine tests.
 
-  it("denies Viewer submitRequest (workflow:update)", () => {
+  it('denies Viewer submitRequest (workflow:update)', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useWorkflowStore.getState().submitRequest('wf-1', 'Title', 'Desc', 'u1', 1000, 'entity-1', '2026-01'));
+    expectPermissionDenied(() =>
+      useWorkflowStore
+        .getState()
+        .submitRequest('wf-1', 'Title', 'Desc', 'u1', 1000, 'entity-1', '2026-01')
+    );
   });
 
-  it("Admin submitRequest reaches enforce gate", () => {
+  it('Admin submitRequest reaches enforce gate', () => {
     actAs('Admin');
     try {
-      useWorkflowStore.getState().submitRequest('wf-1', 'Title', 'Desc', 'u1', 1000, 'entity-1', '2026-01');
+      useWorkflowStore
+        .getState()
+        .submitRequest('wf-1', 'Title', 'Desc', 'u1', 1000, 'entity-1', '2026-01');
     } catch (e) {
       expect((e as Error).name).not.toBe('PermissionError');
     }
   });
 
-  it("denies Viewer approveRequest (workflow:approve)", () => {
+  it('denies Viewer approveRequest (workflow:approve)', () => {
     actAs('Viewer');
     expectPermissionDenied(() => useWorkflowStore.getState().approveRequest('req-1', 'approver-1'));
   });
 
-  it("Admin approveRequest reaches enforce gate", () => {
+  it('Admin approveRequest reaches enforce gate', () => {
     actAs('Admin');
     try {
       useWorkflowStore.getState().approveRequest('req-1', 'approver-1');
@@ -6134,12 +6771,12 @@ describe("Workflow Store — Review workflow methods (batch 25 — CLOSES wf.rev
     }
   });
 
-  it("denies Viewer rejectRequest (workflow:approve)", () => {
+  it('denies Viewer rejectRequest (workflow:approve)', () => {
     actAs('Viewer');
     expectPermissionDenied(() => useWorkflowStore.getState().rejectRequest('req-1', 'approver-1'));
   });
 
-  it("Admin rejectRequest reaches enforce gate", () => {
+  it('Admin rejectRequest reaches enforce gate', () => {
     actAs('Admin');
     try {
       useWorkflowStore.getState().rejectRequest('req-1', 'approver-1');
@@ -6148,12 +6785,14 @@ describe("Workflow Store — Review workflow methods (batch 25 — CLOSES wf.rev
     }
   });
 
-  it("denies Viewer delegateRequest (workflow:update)", () => {
+  it('denies Viewer delegateRequest (workflow:update)', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useWorkflowStore.getState().delegateRequest('req-1', 'fromUser', 'toUser', 'reason'));
+    expectPermissionDenied(() =>
+      useWorkflowStore.getState().delegateRequest('req-1', 'fromUser', 'toUser', 'reason')
+    );
   });
 
-  it("Admin delegateRequest reaches enforce gate", () => {
+  it('Admin delegateRequest reaches enforce gate', () => {
     actAs('Admin');
     try {
       useWorkflowStore.getState().delegateRequest('req-1', 'fromUser', 'toUser', 'reason');
@@ -6162,12 +6801,14 @@ describe("Workflow Store — Review workflow methods (batch 25 — CLOSES wf.rev
     }
   });
 
-  it("denies Viewer bulkApprove (workflow:approve)", () => {
+  it('denies Viewer bulkApprove (workflow:approve)', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useWorkflowStore.getState().bulkApprove(['req-1', 'req-2'], 'approver-1'));
+    expectPermissionDenied(() =>
+      useWorkflowStore.getState().bulkApprove(['req-1', 'req-2'], 'approver-1')
+    );
   });
 
-  it("Admin bulkApprove reaches enforce gate", () => {
+  it('Admin bulkApprove reaches enforce gate', () => {
     actAs('Admin');
     try {
       useWorkflowStore.getState().bulkApprove(['req-1', 'req-2'], 'approver-1');
@@ -6176,25 +6817,25 @@ describe("Workflow Store — Review workflow methods (batch 25 — CLOSES wf.rev
     }
   });
 
-  it("denies Viewer deleteWorkflow (workflow:delete) — already tested, verifying consistency", () => {
+  it('denies Viewer deleteWorkflow (workflow:delete) — already tested, verifying consistency', () => {
     actAs('Viewer');
     expectPermissionDenied(() => useWorkflowStore.getState().deleteWorkflow('wf-1' as never));
   });
 
-  it("Admin deleteWorkflow reaches enforce gate", () => {
+  it('Admin deleteWorkflow reaches enforce gate', () => {
     actAs('Admin');
     expect(() => useWorkflowStore.getState().deleteWorkflow('wf-1' as never)).not.toThrow();
   });
 });
 
-describe("Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-attribution ATTRIBUTION-COVERAGE)", () => {
+describe('Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-attribution ATTRIBUTION-COVERAGE)', () => {
   // Tests for attribution-specific features of the auditTrailStore:
   // recordUpdate, recordDelete, recordRead, recordBulk, revertToState,
   // exportToCSV, exportToJSON (PII masking), approvalUserId
   // The wf.human-attribution capability requires that every action is
   // attributed to a human and that exports mask PII.
 
-  it("recordUpdate creates entry with userId attribution", () => {
+  it('recordUpdate creates entry with userId attribution', () => {
     actAs('Admin');
     const id = useAuditTrailStore.getState().recordUpdate({
       cellId: { sheetId: 'test', row: 1, col: 1 },
@@ -6205,13 +6846,13 @@ describe("Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-
       newValue: 200,
     });
     const entries = useAuditTrailStore.getState().entries;
-    const entry = entries.find(e => e.id === id);
+    const entry = entries.find((e) => e.id === id);
     expect(entry).toBeDefined();
     expect(entry!.userId).toBe('analyst@finplan.test');
     expect(entry!.operation).toBe('update');
   });
 
-  it("recordDelete creates entry with userId attribution", () => {
+  it('recordDelete creates entry with userId attribution', () => {
     actAs('Admin');
     const id = useAuditTrailStore.getState().recordDelete({
       cellId: { sheetId: 'test', row: 1, col: 1 },
@@ -6222,13 +6863,13 @@ describe("Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-
       newValue: null,
     });
     const entries = useAuditTrailStore.getState().entries;
-    const entry = entries.find(e => e.id === id);
+    const entry = entries.find((e) => e.id === id);
     expect(entry).toBeDefined();
     expect(entry!.userId).toBe('analyst@finplan.test');
     expect(entry!.operation).toBe('delete');
   });
 
-  it("recordRead creates entry with userId attribution", () => {
+  it('recordRead creates entry with userId attribution', () => {
     actAs('Admin');
     const id = useAuditTrailStore.getState().recordRead({
       cellId: { sheetId: 'test', row: 1, col: 1 },
@@ -6238,13 +6879,13 @@ describe("Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-
       newValue: 100,
     });
     const entries = useAuditTrailStore.getState().entries;
-    const entry = entries.find(e => e.id === id);
+    const entry = entries.find((e) => e.id === id);
     expect(entry).toBeDefined();
     expect(entry!.userId).toBe('analyst@finplan.test');
     expect(entry!.operation).toBe('read');
   });
 
-  it("recordBulk creates entries with transactionId grouping", () => {
+  it('recordBulk creates entries with transactionId grouping', () => {
     actAs('Admin');
     const ids = useAuditTrailStore.getState().recordBulk([
       {
@@ -6264,14 +6905,14 @@ describe("Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-
     ]);
     expect(ids).toHaveLength(2);
     const entries = useAuditTrailStore.getState().entries;
-    const bulkEntries = entries.filter(e => ids.includes(e.id));
+    const bulkEntries = entries.filter((e) => ids.includes(e.id));
     expect(bulkEntries).toHaveLength(2);
     // All bulk entries share the same transactionId
     expect(bulkEntries[0].transactionId).toBe(bulkEntries[1].transactionId);
     expect(bulkEntries[0].transactionId).toBeTruthy();
   });
 
-  it("approvalUserId is recorded when provided", () => {
+  it('approvalUserId is recorded when provided', () => {
     actAs('Admin');
     const id = useAuditTrailStore.getState().recordWrite({
       cellId: { sheetId: 'test', row: 1, col: 1 },
@@ -6283,14 +6924,14 @@ describe("Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-
       approvalStatus: 'approved',
     });
     const entries = useAuditTrailStore.getState().entries;
-    const entry = entries.find(e => e.id === id);
+    const entry = entries.find((e) => e.id === id);
     expect(entry).toBeDefined();
     expect(entry!.approvalUserId).toBe('approver@finplan.test');
     expect(entry!.approvalStatus).toBe('approved');
     expect(entry!.approvalTimestamp).toBeTruthy();
   });
 
-  it("exportToCSV masks email-formatted userIds", () => {
+  it('exportToCSV masks email-formatted userIds', () => {
     actAs('Admin');
     useAuditTrailStore.getState().recordWrite({
       cellId: { sheetId: 'test', row: 1, col: 1 },
@@ -6305,7 +6946,7 @@ describe("Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-
     expect(csv).not.toContain('analyst@finplan.test');
   });
 
-  it("exportToJSON masks email-formatted userIds", () => {
+  it('exportToJSON masks email-formatted userIds', () => {
     actAs('Admin');
     useAuditTrailStore.getState().recordWrite({
       cellId: { sheetId: 'test', row: 1, col: 1 },
@@ -6320,7 +6961,7 @@ describe("Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-
     expect(json).not.toContain('analyst@finplan.test');
   });
 
-  it("audit chain integrity verified after all operations", () => {
+  it('audit chain integrity verified after all operations', () => {
     actAs('Admin');
     useAuditTrailStore.getState().recordWrite({
       cellId: { sheetId: 'test', row: 1, col: 1 },
@@ -6342,58 +6983,74 @@ describe("Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-
   });
 });
 
-describe("Settings Store — Security policy methods (batch 27 — CLOSES govern.security-policy METHOD-COVERAGE)", () => {
+describe('Settings Store — Security policy methods (batch 27 — CLOSES govern.security-policy METHOD-COVERAGE)', () => {
   // Tests for security-policy-specific methods of the settingsStore:
   // updateRolePermissions, updateUser
   // The govern.security-policy capability requires that role permission
   // changes and user updates are RBAC-governed.
 
-  it("denies Viewer updateRolePermissions (user:assign-role)", () => {
+  it('denies Viewer updateRolePermissions (user:assign-role)', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useSettingsStore.getState().updateRolePermissions('admin', ['all'] as never));
+    expectPermissionDenied(() =>
+      useSettingsStore.getState().updateRolePermissions('admin', ['all'] as never)
+    );
   });
 
-  it("Admin updateRolePermissions reaches enforce gate", () => {
+  it('Admin updateRolePermissions reaches enforce gate', () => {
     actAs('Admin');
-    expect(() => useSettingsStore.getState().updateRolePermissions('admin', ['all'] as never)).not.toThrow();
+    expect(() =>
+      useSettingsStore.getState().updateRolePermissions('admin', ['all'] as never)
+    ).not.toThrow();
   });
 
-  it("denies Viewer updateUser (user:update)", () => {
+  it('denies Viewer updateUser (user:update)', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useSettingsStore.getState().updateUser('u1', { name: 'Updated' } as never));
+    expectPermissionDenied(() =>
+      useSettingsStore.getState().updateUser('u1', { name: 'Updated' } as never)
+    );
   });
 
-  it("Admin updateUser reaches enforce gate", () => {
+  it('Admin updateUser reaches enforce gate', () => {
     actAs('Admin');
-    expect(() => useSettingsStore.getState().updateUser('u1', { name: 'Updated' } as never)).not.toThrow();
+    expect(() =>
+      useSettingsStore.getState().updateUser('u1', { name: 'Updated' } as never)
+    ).not.toThrow();
   });
 
-  it("denies Viewer deleteUser (user:delete) — already tested, verifying consistency", () => {
+  it('denies Viewer deleteUser (user:delete) — already tested, verifying consistency', () => {
     actAs('Viewer');
     expectPermissionDenied(() => useSettingsStore.getState().deleteUser('u1' as never));
   });
 
-  it("Admin deleteUser reaches enforce gate", () => {
+  it('Admin deleteUser reaches enforce gate', () => {
     actAs('Admin');
     expect(() => useSettingsStore.getState().deleteUser('u1' as never)).not.toThrow();
   });
 
-  it("denies Viewer addUser (user:create) — already tested, verifying consistency", () => {
+  it('denies Viewer addUser (user:create) — already tested, verifying consistency', () => {
     actAs('Viewer');
-    expectPermissionDenied(() => useSettingsStore.getState().addUser({ name: 'Gov User', email: 'gov@test.com', role: 'Analyst' } as never));
+    expectPermissionDenied(() =>
+      useSettingsStore
+        .getState()
+        .addUser({ name: 'Gov User', email: 'gov@test.com', role: 'Analyst' } as never)
+    );
   });
 
-  it("Admin addUser reaches enforce gate", () => {
+  it('Admin addUser reaches enforce gate', () => {
     actAs('Admin');
-    expect(() => useSettingsStore.getState().addUser({ name: 'Gov User', email: 'gov@test.com', role: 'Analyst' } as never)).not.toThrow();
+    expect(() =>
+      useSettingsStore
+        .getState()
+        .addUser({ name: 'Gov User', email: 'gov@test.com', role: 'Analyst' } as never)
+    ).not.toThrow();
   });
 
-  it("denies Viewer setRoles (user:assign-role) — already tested, verifying consistency", () => {
+  it('denies Viewer setRoles (user:assign-role) — already tested, verifying consistency', () => {
     actAs('Viewer');
     expectPermissionDenied(() => useSettingsStore.getState().setRoles([] as never));
   });
 
-  it("Admin setRoles reaches enforce gate", () => {
+  it('Admin setRoles reaches enforce gate', () => {
     actAs('Admin');
     expect(() => useSettingsStore.getState().setRoles([] as never)).not.toThrow();
   });

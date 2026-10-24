@@ -50,9 +50,7 @@ beforeEach(() => {
 });
 
 describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () => {
-
   describe('1. State management', () => {
-
     it('addTransactions adds transactions', () => {
       IntercompanyMatchingEngine.addTransactions([
         makeTx('t1', 'A', 'B', 50000, '1400'),
@@ -62,9 +60,7 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
     });
 
     it('clear() resets all state', () => {
-      IntercompanyMatchingEngine.addTransactions([
-        makeTx('t1', 'A', 'B', 50000, '1400'),
-      ]);
+      IntercompanyMatchingEngine.addTransactions([makeTx('t1', 'A', 'B', 50000, '1400')]);
       IntercompanyMatchingEngine.clear();
       expect(IntercompanyMatchingEngine.getUnmatched()).toHaveLength(0);
       expect(IntercompanyMatchingEngine.getMatches()).toHaveLength(0);
@@ -73,7 +69,6 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
   });
 
   describe('2. Auto-matching', () => {
-
     it('auto-matches AB/BA pairs with same account code and amount', () => {
       IntercompanyMatchingEngine.addTransactions([
         makeTx('t1', 'A', 'B', 50000, '1400'),
@@ -121,10 +116,7 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
     });
 
     it('sets matched transactions status to matched', () => {
-      const txs = [
-        makeTx('t1', 'A', 'B', 50000, '1400'),
-        makeTx('t2', 'B', 'A', 50000, '1400'),
-      ];
+      const txs = [makeTx('t1', 'A', 'B', 50000, '1400'), makeTx('t2', 'B', 'A', 50000, '1400')];
       IntercompanyMatchingEngine.addTransactions(txs);
       IntercompanyMatchingEngine.autoMatch();
 
@@ -134,7 +126,6 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
   });
 
   describe('3. Manual matching', () => {
-
     it('manualMatch matches two specific transactions', () => {
       IntercompanyMatchingEngine.addTransactions([
         makeTx('t1', 'A', 'B', 50000, '1400'),
@@ -148,9 +139,7 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
     });
 
     it('manualMatch returns null for non-existent transaction', () => {
-      IntercompanyMatchingEngine.addTransactions([
-        makeTx('t1', 'A', 'B', 50000, '1400'),
-      ]);
+      IntercompanyMatchingEngine.addTransactions([makeTx('t1', 'A', 'B', 50000, '1400')]);
       const match = IntercompanyMatchingEngine.manualMatch('t1', 'nonexistent', 'user-1');
 
       expect(match).toBeNull();
@@ -158,7 +147,6 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
   });
 
   describe('4. Elimination creation', () => {
-
     it('createEliminations eliminates matched pairs', () => {
       IntercompanyMatchingEngine.addTransactions([
         makeTx('t1', 'A', 'B', 50000, '1400'),
@@ -174,10 +162,7 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
     });
 
     it('eliminated transactions have status eliminated', () => {
-      const txs = [
-        makeTx('t1', 'A', 'B', 50000, '1400'),
-        makeTx('t2', 'B', 'A', 50000, '1400'),
-      ];
+      const txs = [makeTx('t1', 'A', 'B', 50000, '1400'), makeTx('t2', 'B', 'A', 50000, '1400')];
       IntercompanyMatchingEngine.addTransactions(txs);
       IntercompanyMatchingEngine.autoMatch();
       IntercompanyMatchingEngine.createEliminations('2026-01', 'admin');
@@ -201,7 +186,6 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
   });
 
   describe('5. Net IC balances', () => {
-
     it('nets AB and BA transactions to zero', () => {
       IntercompanyMatchingEngine.addTransactions([
         makeTx('t1', 'A', 'B', 50000, '1400'),
@@ -226,12 +210,14 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
   });
 
   describe('6. IC interest calculation', () => {
-
     it('calculates interest on outstanding IC balance', () => {
-      IntercompanyMatchingEngine.addTransactions([
-        makeTx('t1', 'A', 'B', 100000, '1400'),
-      ]);
-      const { interestAmount, principal } = IntercompanyMatchingEngine.calculateICInterest('A', 'B', 0.05, 30);
+      IntercompanyMatchingEngine.addTransactions([makeTx('t1', 'A', 'B', 100000, '1400')]);
+      const { interestAmount, principal } = IntercompanyMatchingEngine.calculateICInterest(
+        'A',
+        'B',
+        0.05,
+        30
+      );
 
       // Principal = 100000, interest = 100000 * 0.05 * 30/365
       expect(principal).toBe(100000);
@@ -239,7 +225,12 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
     });
 
     it('returns zero interest for zero balance', () => {
-      const { interestAmount, principal } = IntercompanyMatchingEngine.calculateICInterest('A', 'B', 0.05, 30);
+      const { interestAmount, principal } = IntercompanyMatchingEngine.calculateICInterest(
+        'A',
+        'B',
+        0.05,
+        30
+      );
 
       expect(principal).toBe(0);
       expect(interestAmount).toBe(0);
@@ -247,9 +238,14 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
   });
 
   describe('7. IC profit elimination', () => {
-
     it('eliminateICProfit creates an elimination entry', () => {
-      const elim = IntercompanyMatchingEngine.eliminateICProfit('Seller', 'Buyer', 10000, '5000', 'admin');
+      const elim = IntercompanyMatchingEngine.eliminateICProfit(
+        'Seller',
+        'Buyer',
+        10000,
+        '5000',
+        'admin'
+      );
 
       expect(elim.eliminationAmount).toBe(10000);
       expect(elim.debitAccount).toBe('Cost of Goods Sold');
@@ -267,9 +263,9 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
   });
 
   describe('8. Minority interest allocation', () => {
-
     it('parent + minority shares equal total earnings (cent-exact)', () => {
-      const { parentShare, minorityShare, ownershipPct } = IntercompanyMatchingEngine.allocateMinorityInterest(100000, 75, 'P', 'S');
+      const { parentShare, minorityShare, ownershipPct } =
+        IntercompanyMatchingEngine.allocateMinorityInterest(100000, 75, 'P', 'S');
 
       expect(parentShare + minorityShare).toBe(100000);
       expect(ownershipPct).toBe(75);
@@ -278,14 +274,24 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
     });
 
     it('minority interest is zero for 100% ownership', () => {
-      const { parentShare, minorityShare } = IntercompanyMatchingEngine.allocateMinorityInterest(100000, 100, 'P', 'S');
+      const { parentShare, minorityShare } = IntercompanyMatchingEngine.allocateMinorityInterest(
+        100000,
+        100,
+        'P',
+        'S'
+      );
 
       expect(parentShare).toBe(100000);
       expect(minorityShare).toBe(0);
     });
 
     it('parent + minority shares foot for uneven division', () => {
-      const { parentShare, minorityShare } = IntercompanyMatchingEngine.allocateMinorityInterest(99999, 33, 'P', 'S');
+      const { parentShare, minorityShare } = IntercompanyMatchingEngine.allocateMinorityInterest(
+        99999,
+        33,
+        'P',
+        'S'
+      );
 
       // Must foot to total even with uneven division
       expect(parentShare + minorityShare).toBe(99999);
@@ -293,7 +299,6 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
   });
 
   describe('9. IC reconciliation', () => {
-
     it('reconciles matching account balances', () => {
       const result = IntercompanyMatchingEngine.reconcileICAccounts([
         { entityId: 'A', accountCode: '1400', balance: 50000 },
@@ -317,7 +322,6 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
   });
 
   describe('10. Money primitive safety', () => {
-
     it('netICBalances returns exact decimal string', () => {
       IntercompanyMatchingEngine.addTransactions([
         makeTx('t1', 'A', 'B', 0.1, '1400'),
@@ -330,7 +334,12 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
     });
 
     it('minority interest allocation uses exact decimal arithmetic', () => {
-      const { parentShare, minorityShare } = IntercompanyMatchingEngine.allocateMinorityInterest(100000, 33.33, 'P', 'S');
+      const { parentShare, minorityShare } = IntercompanyMatchingEngine.allocateMinorityInterest(
+        100000,
+        33.33,
+        'P',
+        'S'
+      );
 
       // parentShare = 100000 * 0.3333 = 33330, minorityShare = 66670
       // parentShare + minorityShare must equal 100000 exactly
@@ -339,7 +348,6 @@ describe('IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)', () 
   });
 
   describe('11. Determinism', () => {
-
     it('autoMatch produces identical results for identical inputs', () => {
       IntercompanyMatchingEngine.addTransactions([
         makeTx('t1', 'A', 'B', 50000, '1400'),
