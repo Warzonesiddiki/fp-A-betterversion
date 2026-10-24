@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { EncryptionEngine, ENCRYPTION_CONSTANTS } from './EncryptionEngine';
 
-
 /**
  * GOVERNANCE EVIDENCE for cap:govern.encryption
  *
@@ -22,9 +21,7 @@ import { EncryptionEngine, ENCRYPTION_CONSTANTS } from './EncryptionEngine';
  */
 
 describe('EncryptionEngine — GOVERNANCE (govern.encryption)', () => {
-
   describe('1. Password validation', () => {
-
     it('assertStrongPassword accepts passwords meeting minimum length', () => {
       expect(() => EncryptionEngine.assertStrongPassword('Abcdefgh')).not.toThrow();
     });
@@ -52,12 +49,13 @@ describe('EncryptionEngine — GOVERNANCE (govern.encryption)', () => {
   });
 
   describe('2. Encryption/decryption round-trip', () => {
-
     it('encrypt then decrypt returns original plaintext', async () => {
       const password = 'TestPass123';
       const plaintext = 'Sensitive financial data: GL balance 100,000.00';
       const encrypted = await EncryptionEngine.encrypt(plaintext, password);
-      expect(encrypted.ciphertext).toBeDefined(); expect(encrypted.iv).toBeDefined(); expect(encrypted.salt).toBeDefined();
+      expect(encrypted.ciphertext).toBeDefined();
+      expect(encrypted.iv).toBeDefined();
+      expect(encrypted.salt).toBeDefined();
       const decrypted = await EncryptionEngine.decrypt(encrypted, password);
       expect(decrypted).toBe(plaintext);
     });
@@ -118,7 +116,9 @@ describe('EncryptionEngine — GOVERNANCE (govern.encryption)', () => {
     it('encrypt with AAD context produces decryptable ciphertext', async () => {
       const password = 'TestPass123';
       const plaintext = 'Context-bound data';
-      const encrypted = await EncryptionEngine.encrypt(plaintext, password, { aadContext: 'entity:ENT-001' });
+      const encrypted = await EncryptionEngine.encrypt(plaintext, password, {
+        aadContext: 'entity:ENT-001',
+      });
       expect(encrypted.aadContext).toBe('entity:ENT-001');
       const decrypted = await EncryptionEngine.decrypt(encrypted, password);
       expect(decrypted).toBe(plaintext);
@@ -126,7 +126,6 @@ describe('EncryptionEngine — GOVERNANCE (govern.encryption)', () => {
   });
 
   describe('3. Constant-time comparison', () => {
-
     it('constantTimeEqual returns true for equal strings', () => {
       expect(EncryptionEngine.constantTimeEqual('hello', 'hello')).toBe(true);
     });
@@ -151,7 +150,6 @@ describe('EncryptionEngine — GOVERNANCE (govern.encryption)', () => {
   });
 
   describe('4. Zeroization', () => {
-
     it('zeroize clears buffer contents', () => {
       const buffer = new Uint8Array([1, 2, 3, 4, 5]);
       EncryptionEngine.zeroize(buffer);
@@ -177,12 +175,13 @@ describe('EncryptionEngine — GOVERNANCE (govern.encryption)', () => {
   });
 
   describe('5. Key derivation', () => {
-
     it('deriveKey produces a key of correct length', async () => {
       const password = 'TestPass123';
       const salt = new Uint8Array(16);
       const key = await EncryptionEngine.deriveKey(password, salt);
-      expect(key).toBeInstanceOf(CryptoKey); expect(key.type).toBe('secret'); expect(key.algorithm.name).toBe('AES-GCM');
+      expect(key).toBeInstanceOf(CryptoKey);
+      expect(key.type).toBe('secret');
+      expect(key.algorithm.name).toBe('AES-GCM');
       expect(key.algorithm.length).toBeGreaterThan(0);
     });
 
@@ -213,7 +212,6 @@ describe('EncryptionEngine — GOVERNANCE (govern.encryption)', () => {
   });
 
   describe('6. Determinism', () => {
-
     it('encrypt/decrypt round-trip is deterministic', async () => {
       const password = 'TestPass123';
       const plaintext = 'Deterministic test';

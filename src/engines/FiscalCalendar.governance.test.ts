@@ -22,9 +22,7 @@ import type { FiscalYearConfig, FiscalPeriodInput } from './FiscalCalendar';
  */
 
 describe('FiscalCalendar — GOVERNANCE (fiscal.calendar)', () => {
-
   describe('1. Period generation (Standard calendar)', () => {
-
     it('generatePeriods produces 12 monthly periods for Standard calendar', () => {
       const config: FiscalYearConfig = {
         year: 2026,
@@ -82,7 +80,6 @@ describe('FiscalCalendar — GOVERNANCE (fiscal.calendar)', () => {
   });
 
   describe('2. Period generation (4-4-5, 4-5-4, 13-Period)', () => {
-
     it('4-4-5 calendar produces 12 periods', () => {
       const config: FiscalYearConfig = {
         year: 2026,
@@ -131,7 +128,6 @@ describe('FiscalCalendar — GOVERNANCE (fiscal.calendar)', () => {
   });
 
   describe('3. Date-to-period mapping', () => {
-
     it('getPeriodForDate returns correct period for a date', () => {
       const config: FiscalYearConfig = {
         year: 2026,
@@ -185,7 +181,6 @@ describe('FiscalCalendar — GOVERNANCE (fiscal.calendar)', () => {
   });
 
   describe('4. Year-to-date calculation', () => {
-
     it('getYearToDate returns periods through the given month', () => {
       const config: FiscalYearConfig = {
         year: 2026,
@@ -224,7 +219,6 @@ describe('FiscalCalendar — GOVERNANCE (fiscal.calendar)', () => {
   });
 
   describe('5. Quarter calculation', () => {
-
     it('getQuarterPeriods returns 3 periods for Q1', () => {
       const config: FiscalYearConfig = {
         year: 2026,
@@ -252,7 +246,6 @@ describe('FiscalCalendar — GOVERNANCE (fiscal.calendar)', () => {
   });
 
   describe('6. Determinism', () => {
-
     it('generatePeriods is deterministic for same config', () => {
       const config: FiscalYearConfig = {
         year: 2026,

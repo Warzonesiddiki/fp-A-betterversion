@@ -34,32 +34,36 @@ function makeInput(overrides: Partial<TaxProvisionInput> = {}): TaxProvisionInpu
 }
 
 describe('TaxEngine — GOVERNANCE (tax.engine)', () => {
-
   describe('1. Current tax calculation', () => {
-
     it('calculateCurrentTax computes tax expense from pretax income and rate', () => {
-      const result = TaxEngine.calculateCurrentTax(makeInput({ pretaxIncome: 100000, taxRate: 0.25 }));
+      const result = TaxEngine.calculateCurrentTax(
+        makeInput({ pretaxIncome: 100000, taxRate: 0.25 })
+      );
       expect(result.currentTaxExpense).toBeCloseTo(25000, 2);
       expect(result.taxableIncome).toBeCloseTo(100000, 2);
     });
 
     it('calculateCurrentTax applies permanent differences', () => {
-      const result = TaxEngine.calculateCurrentTax(makeInput({
-        pretaxIncome: 100000,
-        permanentDifferences: [{ description: 'Non-deductible expense', amount: 10000 }],
-        taxRate: 0.25,
-      }));
+      const result = TaxEngine.calculateCurrentTax(
+        makeInput({
+          pretaxIncome: 100000,
+          permanentDifferences: [{ description: 'Non-deductible expense', amount: 10000 }],
+          taxRate: 0.25,
+        })
+      );
       // Taxable income = 100000 + 10000 = 110000
       expect(result.taxableIncome).toBeCloseTo(110000, 2);
       expect(result.currentTaxExpense).toBeCloseTo(27500, 2);
     });
 
     it('calculateCurrentTax applies tax credits', () => {
-      const result = TaxEngine.calculateCurrentTax(makeInput({
-        pretaxIncome: 100000,
-        taxCredits: [{ description: 'R&D credit', amount: 5000 }],
-        taxRate: 0.25,
-      }));
+      const result = TaxEngine.calculateCurrentTax(
+        makeInput({
+          pretaxIncome: 100000,
+          taxCredits: [{ description: 'R&D credit', amount: 5000 }],
+          taxRate: 0.25,
+        })
+      );
       // Gross tax = 25000, after credit = 20000
       expect(result.currentTaxExpense).toBeCloseTo(20000, 2);
     });
@@ -76,38 +80,48 @@ describe('TaxEngine — GOVERNANCE (tax.engine)', () => {
   });
 
   describe('2. Deferred tax calculation', () => {
-
     it('calculateDeferredTax computes DTA from temporary differences', () => {
-      const result = TaxEngine.calculateDeferredTax(makeInput({
-        temporaryDifferences: [{ description: 'Warranty accrual', amount: 10000, reversalPeriod: '2027' }],
-        taxRate: 0.25,
-      }));
+      const result = TaxEngine.calculateDeferredTax(
+        makeInput({
+          temporaryDifferences: [
+            { description: 'Warranty accrual', amount: 10000, reversalPeriod: '2027' },
+          ],
+          taxRate: 0.25,
+        })
+      );
       expect(result.deferredTaxAsset).toBeCloseTo(2500, 2);
       expect(result.deferredTaxLiability).toBeCloseTo(0, 2);
     });
 
     it('calculateDeferredTax computes DTL from negative temporary differences', () => {
-      const result = TaxEngine.calculateDeferredTax(makeInput({
-        temporaryDifferences: [{ description: 'Depreciation difference', amount: -10000, reversalPeriod: '2027' }],
-        taxRate: 0.25,
-      }));
+      const result = TaxEngine.calculateDeferredTax(
+        makeInput({
+          temporaryDifferences: [
+            { description: 'Depreciation difference', amount: -10000, reversalPeriod: '2027' },
+          ],
+          taxRate: 0.25,
+        })
+      );
       expect(result.deferredTaxLiability).toBeCloseTo(2500, 2);
       expect(result.deferredTaxAsset).toBeCloseTo(0, 2);
     });
 
     it('calculateDeferredTax applies valuation allowance', () => {
-      const result = TaxEngine.calculateDeferredTax(makeInput({
-        temporaryDifferences: [{ description: 'Warranty', amount: 10000, reversalPeriod: '2027' }],
-        taxRate: 0.25,
-        valuationAllowanceRate: 0.50,
-      }));
+      const result = TaxEngine.calculateDeferredTax(
+        makeInput({
+          temporaryDifferences: [
+            { description: 'Warranty', amount: 10000, reversalPeriod: '2027' },
+          ],
+          taxRate: 0.25,
+          valuationAllowanceRate: 0.5,
+        })
+      );
       expect(result.valuationAllowance).toBeCloseTo(1250, 2);
       expect(result.netDeferredTaxAsset).toBeCloseTo(1250, 2);
     });
   });
 
   describe('3. Effective tax rate', () => {
-
     it('calculateEffectiveRate computes rate from pretax income and tax expense', () => {
       const rate = TaxEngine.calculateEffectiveRate(100000, 25000);
       expect(rate).toBeCloseTo(0.25, 4);
@@ -125,13 +139,16 @@ describe('TaxEngine — GOVERNANCE (tax.engine)', () => {
   });
 
   describe('4. Full provision computation', () => {
-
     it('computeProvision combines current and deferred tax', () => {
-      const result = TaxEngine.computeProvision(makeInput({
-        pretaxIncome: 100000,
-        temporaryDifferences: [{ description: 'Warranty', amount: 10000, reversalPeriod: '2027' }],
-        taxRate: 0.25,
-      }));
+      const result = TaxEngine.computeProvision(
+        makeInput({
+          pretaxIncome: 100000,
+          temporaryDifferences: [
+            { description: 'Warranty', amount: 10000, reversalPeriod: '2027' },
+          ],
+          taxRate: 0.25,
+        })
+      );
       // Taxable income = 100000 + 10000 = 110000, current tax = 27500
       expect(result.currentTaxExpense).toBeCloseTo(27500, 2);
       expect(result.deferredTaxExpense).toBeDefined();
@@ -146,24 +163,27 @@ describe('TaxEngine — GOVERNANCE (tax.engine)', () => {
   });
 
   describe('5. Loss carryforward', () => {
-
     it('calculateCurrentTax applies loss carryforward', () => {
-      const result = TaxEngine.calculateCurrentTax(makeInput({
-        pretaxIncome: 100000,
-        taxRate: 0.25,
-        lossCarryforward: 30000,
-      }));
+      const result = TaxEngine.calculateCurrentTax(
+        makeInput({
+          pretaxIncome: 100000,
+          taxRate: 0.25,
+          lossCarryforward: 30000,
+        })
+      );
       // Taxable income = 100000 - 30000 = 70000
       expect(result.taxableIncome).toBeCloseTo(70000, 2);
       expect(result.lossCarryforwardRemaining).toBeCloseTo(0, 2);
     });
 
     it('calculateCurrentTax partially uses loss carryforward', () => {
-      const result = TaxEngine.calculateCurrentTax(makeInput({
-        pretaxIncome: 100000,
-        taxRate: 0.25,
-        lossCarryforward: 150000,
-      }));
+      const result = TaxEngine.calculateCurrentTax(
+        makeInput({
+          pretaxIncome: 100000,
+          taxRate: 0.25,
+          lossCarryforward: 150000,
+        })
+      );
       // Taxable income = 0 (fully offset)
       expect(result.taxableIncome).toBeCloseTo(0, 2);
       expect(result.lossCarryforwardRemaining).toBeCloseTo(50000, 2);
@@ -171,26 +191,28 @@ describe('TaxEngine — GOVERNANCE (tax.engine)', () => {
   });
 
   describe('6. Money primitive safety', () => {
-
     it('calculateCurrentTax uses decimal arithmetic for large amounts', () => {
-      const result = TaxEngine.calculateCurrentTax(makeInput({
-        pretaxIncome: 999999999999.99,
-        taxRate: 0.25,
-      }));
+      const result = TaxEngine.calculateCurrentTax(
+        makeInput({
+          pretaxIncome: 999999999999.99,
+          taxRate: 0.25,
+        })
+      );
       expect(result.currentTaxExpense).toBeCloseTo(249999999999.9975, 2);
     });
 
     it('calculateCurrentTax handles small fractional amounts', () => {
-      const result = TaxEngine.calculateCurrentTax(makeInput({
-        pretaxIncome: 0.01,
-        taxRate: 0.25,
-      }));
+      const result = TaxEngine.calculateCurrentTax(
+        makeInput({
+          pretaxIncome: 0.01,
+          taxRate: 0.25,
+        })
+      );
       expect(result.currentTaxExpense).toBeCloseTo(0, 2);
     });
   });
 
   describe('7. Determinism', () => {
-
     it('calculateCurrentTax is deterministic', () => {
       const r1 = TaxEngine.calculateCurrentTax(makeInput());
       const r2 = TaxEngine.calculateCurrentTax(makeInput());

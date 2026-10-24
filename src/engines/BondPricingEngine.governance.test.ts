@@ -22,9 +22,7 @@ import { BondPricingEngine } from './BondPricingEngine';
  */
 
 describe('BondPricingEngine — GOVERNANCE (treasury.bond-pricing)', () => {
-
   describe('1. Bond pricing', () => {
-
     it('price returns a positive amount for a par bond', () => {
       const price = BondPricingEngine.price(1000, 0.05, 0.05, 10);
       expect(price).toBeCloseTo(1000, 2);
@@ -53,7 +51,6 @@ describe('BondPricingEngine — GOVERNANCE (treasury.bond-pricing)', () => {
   });
 
   describe('2. Yield to maturity', () => {
-
     it('yieldToMaturity returns YTM close to coupon rate for par bond', () => {
       const ytm = BondPricingEngine.yieldToMaturity(1000, 1000, 0.05, 10);
       expect(ytm).toBeCloseTo(0.05, 4);
@@ -71,7 +68,6 @@ describe('BondPricingEngine — GOVERNANCE (treasury.bond-pricing)', () => {
   });
 
   describe('3. Duration', () => {
-
     it('duration returns Macaulay, modified, and convexity', () => {
       const dur = BondPricingEngine.duration(1000, 0.05, 0.05, 10);
       expect(dur).toBeDefined();
@@ -98,7 +94,6 @@ describe('BondPricingEngine — GOVERNANCE (treasury.bond-pricing)', () => {
   });
 
   describe('4. Accrued interest', () => {
-
     it('accruedInterest computes interest proportional to days', () => {
       const ai = BondPricingEngine.accruedInterest(1000, 0.05, 30, 180);
       expect(ai).toBeCloseTo(8.33, 2);
@@ -116,7 +111,6 @@ describe('BondPricingEngine — GOVERNANCE (treasury.bond-pricing)', () => {
   });
 
   describe('5. Dirty/clean price', () => {
-
     it('dirtyPrice equals cleanPrice plus accrued interest', () => {
       const dp = BondPricingEngine.dirtyPrice(980, 1000, 0.05, 30, 180);
       const ai = BondPricingEngine.accruedInterest(1000, 0.05, 30, 180);
@@ -130,7 +124,6 @@ describe('BondPricingEngine — GOVERNANCE (treasury.bond-pricing)', () => {
   });
 
   describe('6. Money primitive safety', () => {
-
     it('price uses decimal arithmetic for large face values', () => {
       const price = BondPricingEngine.price(999999999, 0.05, 0.05, 10);
       expect(price).toBeGreaterThan(0);
@@ -143,7 +136,6 @@ describe('BondPricingEngine — GOVERNANCE (treasury.bond-pricing)', () => {
   });
 
   describe('7. Determinism', () => {
-
     it('price is deterministic', () => {
       const r1 = BondPricingEngine.price(1000, 0.05, 0.05, 10);
       const r2 = BondPricingEngine.price(1000, 0.05, 0.05, 10);

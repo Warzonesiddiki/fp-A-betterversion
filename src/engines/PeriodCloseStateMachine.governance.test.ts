@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { PeriodCloseStateMachine } from './PeriodCloseStateMachine';
-import type { PeriodCloseState, PeriodCloseTransition, TrialBalanceLine } from './PeriodCloseStateMachine';
+import type {
+  PeriodCloseState,
+  PeriodCloseTransition,
+  TrialBalanceLine,
+} from './PeriodCloseStateMachine';
 
 /**
  * GOVERNANCE EVIDENCE for cap:close.period-close-state-machine
@@ -31,9 +35,7 @@ function makeEntry(state: PeriodCloseState = 'open') {
 }
 
 describe('PeriodCloseStateMachine — GOVERNANCE (close.period-close-state-machine)', () => {
-
   describe('1. State transition validation', () => {
-
     it('canTransition allows open → soft-close', () => {
       expect(PeriodCloseStateMachine.canTransition('open', 'soft-close')).toBe(true);
     });
@@ -76,7 +78,6 @@ describe('PeriodCloseStateMachine — GOVERNANCE (close.period-close-state-machi
   });
 
   describe('2. Valid transitions per state', () => {
-
     it('getValidTransitions returns soft-close for open state', () => {
       const transitions = PeriodCloseStateMachine.getValidTransitions('open');
       expect(transitions).toContain('soft-close');
@@ -102,7 +103,6 @@ describe('PeriodCloseStateMachine — GOVERNANCE (close.period-close-state-machi
   });
 
   describe('3. Posting controls', () => {
-
     it('canPost allows posting in open state', () => {
       const result = PeriodCloseStateMachine.canPost('open');
       expect(result.allowed).toBe(true);
@@ -127,7 +127,6 @@ describe('PeriodCloseStateMachine — GOVERNANCE (close.period-close-state-machi
   });
 
   describe('4. Reversal controls', () => {
-
     it('canReverse allows reversal in open state', () => {
       const result = PeriodCloseStateMachine.canReverse('open');
       expect(result.allowed).toBe(true);
@@ -150,7 +149,6 @@ describe('PeriodCloseStateMachine — GOVERNANCE (close.period-close-state-machi
   });
 
   describe('5. Trial balance checking', () => {
-
     it('checkTrialBalance returns balanced for equal debits and credits', () => {
       const lines: TrialBalanceLine[] = [
         { accountId: '1000', debit: 10000, credit: 0 },
@@ -187,7 +185,6 @@ describe('PeriodCloseStateMachine — GOVERNANCE (close.period-close-state-machi
   });
 
   describe('6. Approval requirements', () => {
-
     it('requiresApproval returns true for reopen', () => {
       expect(PeriodCloseStateMachine.requiresApproval('reopen')).toBe(true);
     });
@@ -222,7 +219,6 @@ describe('PeriodCloseStateMachine — GOVERNANCE (close.period-close-state-machi
   });
 
   describe('7. Audit trail', () => {
-
     it('transition creates an audit event', () => {
       const entry = PeriodCloseStateMachine.createEntry('period-1', 'entity-1');
       const result = PeriodCloseStateMachine.transition(entry, 'soft-close', 'user-1');
@@ -238,7 +234,11 @@ describe('PeriodCloseStateMachine — GOVERNANCE (close.period-close-state-machi
       const softClose = PeriodCloseStateMachine.transition(entry, 'soft-close', 'user-1');
       expect(softClose.success).toBe(true);
       const reopenResult = PeriodCloseStateMachine.transition(
-        { ...entry, state: 'soft-close', auditEvents: softClose.auditEvent ? [softClose.auditEvent] : [] },
+        {
+          ...entry,
+          state: 'soft-close',
+          auditEvents: softClose.auditEvent ? [softClose.auditEvent] : [],
+        },
         'reopen',
         'user-1'
       );
@@ -278,7 +278,6 @@ describe('PeriodCloseStateMachine — GOVERNANCE (close.period-close-state-machi
   });
 
   describe('8. Determinism', () => {
-
     it('canTransition is deterministic', () => {
       expect(PeriodCloseStateMachine.canTransition('open', 'soft-close')).toBe(true);
       expect(PeriodCloseStateMachine.canTransition('open', 'soft-close')).toBe(true);

@@ -23,9 +23,7 @@ import { FXEngine, MissingFXRateError, InvalidFinancialInputError } from './FXEn
  */
 
 describe('FXEngine — GOVERNANCE (fx.engine)', () => {
-
   describe('1. Rate setting and retrieval', () => {
-
     it('setRate then getRate returns the same rate', () => {
       FXEngine.setRate('AUD', 'NZD', 0.92, '2026-01-15', 'manual');
       const rate = FXEngine.getRate('AUD', 'NZD', '2026-01-15');
@@ -37,7 +35,7 @@ describe('FXEngine — GOVERNANCE (fx.engine)', () => {
     });
 
     it('getRate returns latest rate when no date specified', () => {
-      FXEngine.setRate('GBP', 'CHF', 0.90, '2026-01-01', 'manual');
+      FXEngine.setRate('GBP', 'CHF', 0.9, '2026-01-01', 'manual');
       FXEngine.setRate('GBP', 'CHF', 0.92, '2026-02-01', 'manual');
       FXEngine.setRate('GBP', 'CHF', 0.95, '2026-03-01', 'manual');
       const rate = FXEngine.getRate('GBP', 'CHF');
@@ -54,7 +52,6 @@ describe('FXEngine — GOVERNANCE (fx.engine)', () => {
   });
 
   describe('2. Currency conversion accuracy', () => {
-
     it('convert converts between currencies using decimal arithmetic', () => {
       FXEngine.setRate('CAD', 'MXN', 0.92, '2026-01-15', 'manual');
       const result = FXEngine.convert(1000, 'CAD', 'MXN', '2026-01-15');
@@ -81,7 +78,6 @@ describe('FXEngine — GOVERNANCE (fx.engine)', () => {
   });
 
   describe('3. Missing rate error handling', () => {
-
     it('getRate throws MissingFXRateError for unknown pair', () => {
       expect(() => FXEngine.getRate('ZZZ', 'YYY', '2026-01-15')).toThrow(MissingFXRateError);
     });
@@ -106,15 +102,22 @@ describe('FXEngine — GOVERNANCE (fx.engine)', () => {
   });
 
   describe('4. Invalid input rejection', () => {
-
     it('setRate rejects non-positive rates', () => {
-      expect(() => FXEngine.setRate('USD', 'EUR', 0, '2026-01-15', 'manual')).toThrow(InvalidFinancialInputError);
-      expect(() => FXEngine.setRate('USD', 'EUR', -1, '2026-01-15', 'manual')).toThrow(InvalidFinancialInputError);
+      expect(() => FXEngine.setRate('USD', 'EUR', 0, '2026-01-15', 'manual')).toThrow(
+        InvalidFinancialInputError
+      );
+      expect(() => FXEngine.setRate('USD', 'EUR', -1, '2026-01-15', 'manual')).toThrow(
+        InvalidFinancialInputError
+      );
     });
 
     it('setRate rejects non-finite rates', () => {
-      expect(() => FXEngine.setRate('USD', 'EUR', NaN, '2026-01-15', 'manual')).toThrow(InvalidFinancialInputError);
-      expect(() => FXEngine.setRate('USD', 'EUR', Infinity, '2026-01-15', 'manual')).toThrow(InvalidFinancialInputError);
+      expect(() => FXEngine.setRate('USD', 'EUR', NaN, '2026-01-15', 'manual')).toThrow(
+        InvalidFinancialInputError
+      );
+      expect(() => FXEngine.setRate('USD', 'EUR', Infinity, '2026-01-15', 'manual')).toThrow(
+        InvalidFinancialInputError
+      );
     });
 
     it('convert rejects non-finite amounts', () => {
@@ -124,7 +127,6 @@ describe('FXEngine — GOVERNANCE (fx.engine)', () => {
   });
 
   describe('5. Translation for consolidation', () => {
-
     it('translateForConsolidation returns translated amount', () => {
       FXEngine.setRate('INR', 'USD', 0.012, '2026-01-15', 'manual');
       const result = FXEngine.translateForConsolidation({
@@ -150,9 +152,8 @@ describe('FXEngine — GOVERNANCE (fx.engine)', () => {
   });
 
   describe('6. Determinism', () => {
-
     it('convert is deterministic for same inputs', () => {
-      FXEngine.setRate('ZAR', 'AUD', 0.70, '2026-01-15', 'manual');
+      FXEngine.setRate('ZAR', 'AUD', 0.7, '2026-01-15', 'manual');
       const r1 = FXEngine.convert(1000, 'ZAR', 'AUD', '2026-01-15');
       const r2 = FXEngine.convert(1000, 'ZAR', 'AUD', '2026-01-15');
       expect(r1).toBe(r2);

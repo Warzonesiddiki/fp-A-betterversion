@@ -23,9 +23,7 @@ import type { IncomeStatementData, BalanceSheetData, CashFlowData } from './Thre
  */
 
 describe('ThreeStatementEngine — GOVERNANCE (statement.three-statement)', () => {
-
   describe('1. Statement linking', () => {
-
     it('link produces a result for empty statements', () => {
       const is = ThreeStatementEngine.emptyIncomeStatement('2026-01');
       const bs = ThreeStatementEngine.emptyBalanceSheet('2026-01');
@@ -73,7 +71,6 @@ describe('ThreeStatementEngine — GOVERNANCE (statement.three-statement)', () =
   });
 
   describe('2. Balance verification', () => {
-
     it('verifyBalance returns balanced for A = L + E', () => {
       const bs: BalanceSheetData = {
         ...ThreeStatementEngine.emptyBalanceSheet('2026-01'),
@@ -120,7 +117,6 @@ describe('ThreeStatementEngine — GOVERNANCE (statement.three-statement)', () =
   });
 
   describe('3. Account classification', () => {
-
     it('getAccountCategory returns category for known account code', () => {
       const cat = ThreeStatementEngine.getAccountCategory('4000');
       expect(cat).toBeDefined();
@@ -133,7 +129,6 @@ describe('ThreeStatementEngine — GOVERNANCE (statement.three-statement)', () =
   });
 
   describe('4. Statement type mapping', () => {
-
     it('getStatementType returns type for known account code', () => {
       const type = ThreeStatementEngine.getStatementType('4000');
       expect(type).toBeDefined();
@@ -146,7 +141,6 @@ describe('ThreeStatementEngine — GOVERNANCE (statement.three-statement)', () =
   });
 
   describe('5. Empty statement creation', () => {
-
     it('emptyIncomeStatement creates valid empty income statement', () => {
       const is = ThreeStatementEngine.emptyIncomeStatement('2026-01');
       expect(is.period).toBe('2026-01');
@@ -174,7 +168,6 @@ describe('ThreeStatementEngine — GOVERNANCE (statement.three-statement)', () =
   });
 
   describe('6. Money primitive safety', () => {
-
     it('verifyBalance uses decimal arithmetic for large amounts', () => {
       const largeAmount = 999999999999.99;
       const bs: BalanceSheetData = {
@@ -203,7 +196,6 @@ describe('ThreeStatementEngine — GOVERNANCE (statement.three-statement)', () =
   });
 
   describe('7. Determinism', () => {
-
     it('verifyBalance is deterministic', () => {
       const bs: BalanceSheetData = {
         ...ThreeStatementEngine.emptyBalanceSheet('2026-01'),

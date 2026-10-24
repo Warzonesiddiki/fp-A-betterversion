@@ -19,9 +19,7 @@ import { RBACEngine } from './RBACEngine';
  */
 
 describe('RBACEngine — GOVERNANCE (govern.rbac)', () => {
-
   describe('1. Role assignment and revocation', () => {
-
     it('assignRole adds a role to a user', () => {
       const engine = new RBACEngine();
       engine.assignRole('user1', 'analyst', ['ENT-001'], 'admin@finplan.test');
@@ -43,7 +41,7 @@ describe('RBACEngine — GOVERNANCE (govern.rbac)', () => {
       const engine = new RBACEngine();
       engine.assignRole('user1', 'analyst', ['ENT-001'], 'admin@finplan.test');
       engine.assignRole('user1', 'analyst', ['ENT-002'], 'admin@finplan.test');
-      const roles = engine.getUserRoles('user1').filter(r => r.role === 'analyst');
+      const roles = engine.getUserRoles('user1').filter((r) => r.role === 'analyst');
       expect(roles).toHaveLength(1);
       expect(roles[0].entities).toEqual(['ENT-002']);
     });
@@ -72,7 +70,6 @@ describe('RBACEngine — GOVERNANCE (govern.rbac)', () => {
   });
 
   describe('2. Permission checks (deny by default)', () => {
-
     it('hasPermission denies access for unknown user', () => {
       const engine = new RBACEngine();
       expect(engine.hasPermission('unknown', 'data', 'read')).toBe(false);
@@ -126,7 +123,6 @@ describe('RBACEngine — GOVERNANCE (govern.rbac)', () => {
   });
 
   describe('3. Entity-level scoping', () => {
-
     it('hasPermission respects entity scoping — wrong entity denied', () => {
       const engine = new RBACEngine();
       engine.assignRole('user1', 'analyst', ['ENT-001'], 'admin@finplan.test');
@@ -154,7 +150,6 @@ describe('RBACEngine — GOVERNANCE (govern.rbac)', () => {
   });
 
   describe('4. Highest role resolution', () => {
-
     it('getHighestRole returns the highest role for multi-role users', () => {
       const engine = new RBACEngine();
       engine.assignRole('user1', 'viewer', ['ENT-001'], 'admin@finplan.test');
@@ -179,7 +174,6 @@ describe('RBACEngine — GOVERNANCE (govern.rbac)', () => {
   });
 
   describe('5. Determinism', () => {
-
     it('permission checks are deterministic', () => {
       const engine = new RBACEngine();
       engine.assignRole('user1', 'analyst', ['ENT-001'], 'admin@finplan.test');
@@ -193,8 +187,8 @@ describe('RBACEngine — GOVERNANCE (govern.rbac)', () => {
       const engine2 = new RBACEngine();
       engine1.assignRole('user1', 'analyst', ['ENT-001'], 'admin@finplan.test');
       engine2.assignRole('user1', 'analyst', ['ENT-001'], 'admin@finplan.test');
-      expect(engine1.getUserRoles('user1').map(r => r.role)).toEqual(
-        engine2.getUserRoles('user1').map(r => r.role)
+      expect(engine1.getUserRoles('user1').map((r) => r.role)).toEqual(
+        engine2.getUserRoles('user1').map((r) => r.role)
       );
     });
 

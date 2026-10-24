@@ -33,9 +33,7 @@ function makeEntry(overrides: Partial<AuditEntry> = {}) {
 }
 
 describe('AuditLogEngine — GOVERNANCE (govern.audit-log)', () => {
-
   describe('1. Entry logging and retrieval', () => {
-
     it('log creates an entry with id and timestamp', () => {
       const engine = new AuditLogEngine();
       const entry = engine.log(makeEntry());
@@ -90,7 +88,6 @@ describe('AuditLogEngine — GOVERNANCE (govern.audit-log)', () => {
   });
 
   describe('2. Filtering', () => {
-
     it('filter by userId', () => {
       const engine = new AuditLogEngine();
       engine.log(makeEntry({ userId: 'user-1' }));
@@ -134,7 +131,6 @@ describe('AuditLogEngine — GOVERNANCE (govern.audit-log)', () => {
   });
 
   describe('3. Hash chain integrity', () => {
-
     it('logChain creates entries with hash chain', async () => {
       const engine = new AuditLogEngine();
       const e1 = await engine.logChain(makeEntry({ resourceId: 'a' }));
@@ -171,7 +167,6 @@ describe('AuditLogEngine — GOVERNANCE (govern.audit-log)', () => {
   });
 
   describe('4. Serialization/deserialization', () => {
-
     it('serialize produces a JSON string', () => {
       const engine = new AuditLogEngine();
       engine.log(makeEntry());
@@ -193,7 +188,6 @@ describe('AuditLogEngine — GOVERNANCE (govern.audit-log)', () => {
   });
 
   describe('5. Retention and pruning', () => {
-
     it('getRetentionDays returns default 7-year retention', () => {
       const engine = new AuditLogEngine();
       expect(engine.getRetentionDays()).toBe(2555);
@@ -223,7 +217,6 @@ describe('AuditLogEngine — GOVERNANCE (govern.audit-log)', () => {
   });
 
   describe('6. Determinism', () => {
-
     it('log produces deterministic timestamps (ISO format)', () => {
       const engine = new AuditLogEngine();
       const e1 = engine.log(makeEntry());

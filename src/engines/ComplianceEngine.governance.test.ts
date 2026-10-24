@@ -21,9 +21,7 @@ import type { ComplianceCheck } from './ComplianceEngine';
  */
 
 describe('ComplianceEngine — GOVERNANCE (govern.compliance-engine)', () => {
-
   describe('1. Segregation of duties', () => {
-
     it('checkSegregationOfDuties passes for non-conflicting roles', () => {
       const check = ComplianceEngine.checkSegregationOfDuties('user-1', ['requester', 'viewer']);
       expect(check.status).toBe('PASS');
@@ -57,9 +55,13 @@ describe('ComplianceEngine — GOVERNANCE (govern.compliance-engine)', () => {
   });
 
   describe('2. Approval workflow', () => {
-
     it('checkApprovalWorkflow passes for valid approval', () => {
-      const check = ComplianceEngine.checkApprovalWorkflow('approver-1', 'requester-1', 5000, 10000);
+      const check = ComplianceEngine.checkApprovalWorkflow(
+        'approver-1',
+        'requester-1',
+        5000,
+        10000
+      );
       expect(check.status).toBe('PASS');
       expect(check.category).toBe('WORKFLOW');
     });
@@ -70,13 +72,17 @@ describe('ComplianceEngine — GOVERNANCE (govern.compliance-engine)', () => {
     });
 
     it('checkApprovalWorkflow warns for amount exceeding threshold', () => {
-      const check = ComplianceEngine.checkApprovalWorkflow('approver-1', 'requester-1', 15000, 10000);
+      const check = ComplianceEngine.checkApprovalWorkflow(
+        'approver-1',
+        'requester-1',
+        15000,
+        10000
+      );
       expect(check.status).toBe('WARNING');
     });
   });
 
   describe('3. Data retention', () => {
-
     it('checkDataRetention passes for recent records', () => {
       const recordDate = new Date().toISOString();
       const check = ComplianceEngine.checkDataRetention(recordDate, 2555);
@@ -92,7 +98,6 @@ describe('ComplianceEngine — GOVERNANCE (govern.compliance-engine)', () => {
   });
 
   describe('4. Access control validation', () => {
-
     it('validateAccess passes for permitted role', () => {
       const permissions = { admin: ['*'], viewer: ['budget:read'] };
       const check = ComplianceEngine.validateAccess('viewer', 'budget:read', permissions);
@@ -120,7 +125,6 @@ describe('ComplianceEngine — GOVERNANCE (govern.compliance-engine)', () => {
   });
 
   describe('5. Report generation', () => {
-
     it('generateReport computes score from checks', () => {
       const checks: ComplianceCheck[] = [
         { id: '1', name: 'Test', category: 'SOX', status: 'PASS', message: '', timestamp: '' },
@@ -153,7 +157,6 @@ describe('ComplianceEngine — GOVERNANCE (govern.compliance-engine)', () => {
   });
 
   describe('6. Determinism', () => {
-
     it('checkSegregationOfDuties is deterministic', () => {
       const r1 = ComplianceEngine.checkSegregationOfDuties('user-1', ['approver', 'requester']);
       const r2 = ComplianceEngine.checkSegregationOfDuties('user-1', ['approver', 'requester']);

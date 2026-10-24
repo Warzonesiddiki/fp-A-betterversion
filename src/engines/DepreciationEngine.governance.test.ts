@@ -24,9 +24,7 @@ import { DepreciationEngine } from './DepreciationEngine';
  */
 
 describe('DepreciationEngine — GOVERNANCE (fixed-assets.depreciation)', () => {
-
   describe('1. Straight-line depreciation', () => {
-
     it('straightLine computes annual depreciation', () => {
       const dep = DepreciationEngine.straightLine(100000, 10000, 10);
       expect(dep).toBeCloseTo(9000, 2);
@@ -44,7 +42,6 @@ describe('DepreciationEngine — GOVERNANCE (fixed-assets.depreciation)', () => 
   });
 
   describe('2. Declining balance depreciation', () => {
-
     it('decliningBalance produces array of annual depreciation', () => {
       const schedule = DepreciationEngine.decliningBalance(100000, 10000, 5, 2.0);
       expect(schedule).toBeInstanceOf(Array);
@@ -59,7 +56,6 @@ describe('DepreciationEngine — GOVERNANCE (fixed-assets.depreciation)', () => 
   });
 
   describe('3. MACRS depreciation', () => {
-
     it('macrs computes depreciation for a specific year', () => {
       const dep = DepreciationEngine.macrs(100000, 5, 1);
       expect(dep).toBeGreaterThan(0);
@@ -84,7 +80,6 @@ describe('DepreciationEngine — GOVERNANCE (fixed-assets.depreciation)', () => 
   });
 
   describe('4. Sum-of-years-digits depreciation', () => {
-
     it('sumOfYearsDigits computes depreciation for a specific year', () => {
       const dep = DepreciationEngine.sumOfYearsDigits(100000, 10000, 10, 1);
       expect(dep).toBeGreaterThan(0);
@@ -114,7 +109,6 @@ describe('DepreciationEngine — GOVERNANCE (fixed-assets.depreciation)', () => 
   });
 
   describe('5. Units-of-production depreciation', () => {
-
     it('unitsOfProduction computes depreciation proportional to usage', () => {
       const dep = DepreciationEngine.unitsOfProduction(100000, 10000, 1000, 200);
       expect(dep).toBeCloseTo(18000, 2);
@@ -132,7 +126,6 @@ describe('DepreciationEngine — GOVERNANCE (fixed-assets.depreciation)', () => 
   });
 
   describe('6. Asset disposal', () => {
-
     it('assetDisposal computes gain/loss correctly', () => {
       const result = DepreciationEngine.assetDisposal(100000, 40000, 70000);
       expect(result.bookValue).toBeCloseTo(60000, 2);
@@ -149,7 +142,6 @@ describe('DepreciationEngine — GOVERNANCE (fixed-assets.depreciation)', () => 
   });
 
   describe('7. Money primitive safety', () => {
-
     it('straightLine uses decimal arithmetic for large amounts', () => {
       const dep = DepreciationEngine.straightLine(999999999999.99, 0, 10);
       expect(dep).toBeCloseTo(99999999999.999, 2);
@@ -162,7 +154,6 @@ describe('DepreciationEngine — GOVERNANCE (fixed-assets.depreciation)', () => 
   });
 
   describe('8. Determinism', () => {
-
     it('straightLine is deterministic', () => {
       const r1 = DepreciationEngine.straightLine(100000, 10000, 10);
       const r2 = DepreciationEngine.straightLine(100000, 10000, 10);

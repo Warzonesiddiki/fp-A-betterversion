@@ -28,16 +28,16 @@ function makeLease(overrides: Partial<LeaseContract> = {}): LeaseContract {
     assetDescription: 'Office space',
     commencementDate: '2026-01-01',
     leaseTerm: 12,
-    leasePayments: [10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000],
+    leasePayments: [
+      10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+    ],
     discountRate: 0.05,
     ...overrides,
   };
 }
 
 describe('LeaseEngine — GOVERNANCE (treasury.lease-engine)', () => {
-
   describe('1. ROU asset calculation', () => {
-
     it('calculateROUAsset produces schedule with correct number of periods', () => {
       const lease = makeLease({ leaseTerm: 12 });
       const schedule = LeaseEngine.calculateROUAsset(lease);
@@ -65,7 +65,6 @@ describe('LeaseEngine — GOVERNANCE (treasury.lease-engine)', () => {
   });
 
   describe('2. Lease liability calculation', () => {
-
     it('calculateLeaseLiability produces schedule with correct number of periods', () => {
       const lease = makeLease({ leaseTerm: 12 });
       const schedule = LeaseEngine.calculateLeaseLiability(lease);
@@ -95,7 +94,6 @@ describe('LeaseEngine — GOVERNANCE (treasury.lease-engine)', () => {
   });
 
   describe('3. Lease classification', () => {
-
     it('classifyLease returns finance or operating', () => {
       const lease = makeLease();
       const classification = LeaseEngine.classifyLease(lease);
@@ -110,7 +108,6 @@ describe('LeaseEngine — GOVERNANCE (treasury.lease-engine)', () => {
   });
 
   describe('4. Short-term and low-value lease checks', () => {
-
     it('isShortTermLease returns true for short-term leases', () => {
       const lease = makeLease({ isShortTerm: true, leaseTerm: 1 });
       expect(LeaseEngine.isShortTermLease(lease)).toBe(true);
@@ -133,7 +130,6 @@ describe('LeaseEngine — GOVERNANCE (treasury.lease-engine)', () => {
   });
 
   describe('5. Lease modification', () => {
-
     it('extendLease adds months to lease term', () => {
       const lease = makeLease({ leaseTerm: 12 });
       const extended = LeaseEngine.extendLease(lease, 6);
@@ -151,7 +147,6 @@ describe('LeaseEngine — GOVERNANCE (treasury.lease-engine)', () => {
   });
 
   describe('6. Disclosure generation', () => {
-
     it('generateDisclosure produces disclosure object', () => {
       const lease = makeLease();
       const disclosure = LeaseEngine.generateDisclosure(lease);
@@ -160,7 +155,6 @@ describe('LeaseEngine — GOVERNANCE (treasury.lease-engine)', () => {
   });
 
   describe('7. Determinism', () => {
-
     it('calculateROUAsset is deterministic', () => {
       const lease = makeLease();
       const r1 = LeaseEngine.calculateROUAsset(lease);

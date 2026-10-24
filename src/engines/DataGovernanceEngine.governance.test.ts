@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { DataGovernanceEngine } from './DataGovernanceEngine';
-import type { DataAsset, DataLineageNode, DataQualityRule, DataQualityScore, RetentionPolicy } from './DataGovernanceEngine';
+import type {
+  DataAsset,
+  DataLineageNode,
+  DataQualityRule,
+  DataQualityScore,
+  RetentionPolicy,
+} from './DataGovernanceEngine';
 
 /**
  * GOVERNANCE EVIDENCE for cap:govern.data-governance
@@ -36,7 +42,6 @@ function makeAsset(overrides: Partial<DataAsset> = {}): DataAsset {
 }
 
 describe('DataGovernanceEngine — GOVERNANCE (govern.data-governance)', () => {
-
   let engine: DataGovernanceEngine;
 
   beforeEach(() => {
@@ -44,7 +49,6 @@ describe('DataGovernanceEngine — GOVERNANCE (govern.data-governance)', () => {
   });
 
   describe('1. Data catalog', () => {
-
     it('addAsset and getAsset round-trip', () => {
       engine.addAsset(makeAsset());
       const asset = engine.getAsset('asset-1');
@@ -93,7 +97,6 @@ describe('DataGovernanceEngine — GOVERNANCE (govern.data-governance)', () => {
   });
 
   describe('2. Asset classification and tagging', () => {
-
     it('classifyAsset updates sensitivity level', () => {
       engine.addAsset(makeAsset({ sensitivity: 'internal' }));
       const result = engine.classifyAsset('asset-1', 'restricted');
@@ -122,7 +125,6 @@ describe('DataGovernanceEngine — GOVERNANCE (govern.data-governance)', () => {
   });
 
   describe('3. Data lineage', () => {
-
     it('addLineageNode and getLineage round-trip', () => {
       const node: DataLineageNode = {
         id: 'lineage-1',
@@ -137,9 +139,24 @@ describe('DataGovernanceEngine — GOVERNANCE (govern.data-governance)', () => {
     });
 
     it('getUpstream returns upstream dependencies', () => {
-      const source: DataLineageNode = { id: 'src', name: 'Source', type: 'source', children: ['tr1'] };
-      const transform: DataLineageNode = { id: 'tr1', name: 'Transform', type: 'transform', children: ['dest1'] };
-      const dest: DataLineageNode = { id: 'dest1', name: 'Destination', type: 'destination', children: [] };
+      const source: DataLineageNode = {
+        id: 'src',
+        name: 'Source',
+        type: 'source',
+        children: ['tr1'],
+      };
+      const transform: DataLineageNode = {
+        id: 'tr1',
+        name: 'Transform',
+        type: 'transform',
+        children: ['dest1'],
+      };
+      const dest: DataLineageNode = {
+        id: 'dest1',
+        name: 'Destination',
+        type: 'destination',
+        children: [],
+      };
       engine.addLineageNode(source);
       engine.addLineageNode(transform);
       engine.addLineageNode(dest);
@@ -148,8 +165,18 @@ describe('DataGovernanceEngine — GOVERNANCE (govern.data-governance)', () => {
     });
 
     it('getDownstream returns downstream dependencies', () => {
-      const source: DataLineageNode = { id: 'src', name: 'Source', type: 'source', children: ['tr1'] };
-      const transform: DataLineageNode = { id: 'tr1', name: 'Transform', type: 'transform', children: ['dest1'] };
+      const source: DataLineageNode = {
+        id: 'src',
+        name: 'Source',
+        type: 'source',
+        children: ['tr1'],
+      };
+      const transform: DataLineageNode = {
+        id: 'tr1',
+        name: 'Transform',
+        type: 'transform',
+        children: ['dest1'],
+      };
       engine.addLineageNode(source);
       engine.addLineageNode(transform);
       const downstream = engine.getDownstream('src');
@@ -158,7 +185,6 @@ describe('DataGovernanceEngine — GOVERNANCE (govern.data-governance)', () => {
   });
 
   describe('4. Quality rules and scoring', () => {
-
     it('addQualityRule and removeQualityRule round-trip', () => {
       const rule: DataQualityRule = {
         id: 'rule-1',
@@ -188,15 +214,26 @@ describe('DataGovernanceEngine — GOVERNANCE (govern.data-governance)', () => {
     });
 
     it('getOverallQualityScore returns average score', () => {
-      engine.recordQualityScore({ target: 'GL', dimension: 'completeness', score: 90, passed: true, details: '' });
-      engine.recordQualityScore({ target: 'GL', dimension: 'accuracy', score: 95, passed: true, details: '' });
+      engine.recordQualityScore({
+        target: 'GL',
+        dimension: 'completeness',
+        score: 90,
+        passed: true,
+        details: '',
+      });
+      engine.recordQualityScore({
+        target: 'GL',
+        dimension: 'accuracy',
+        score: 95,
+        passed: true,
+        details: '',
+      });
       const overall = engine.getOverallQualityScore('GL');
       expect(overall).toBeCloseTo(92.5, 1);
     });
   });
 
   describe('5. Retention policies', () => {
-
     it('addRetentionPolicy and removeRetentionPolicy round-trip', () => {
       const policy: RetentionPolicy = {
         id: 'policy-1',
@@ -215,7 +252,6 @@ describe('DataGovernanceEngine — GOVERNANCE (govern.data-governance)', () => {
   });
 
   describe('6. Determinism', () => {
-
     it('addAsset and getAsset are deterministic', () => {
       engine.addAsset(makeAsset());
       const r1 = engine.getAsset('asset-1');
