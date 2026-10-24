@@ -49,11 +49,11 @@ function createMockDoc(): any {
       calls.push(`drawColor:${r},${g},${b}`);
       return doc;
     },
-    rect: (...args: any[]) => {
+    rect: (..._args: any[]) => {
       calls.push('rect');
       return doc;
     },
-    line: (...args: any[]) => {
+    line: (..._args: any[]) => {
       calls.push('line');
       return doc;
     },
@@ -69,7 +69,7 @@ function createMockDoc(): any {
       calls.push(`cell:${args[0]}`);
       return doc;
     },
-    setXY: (...args: any[]) => {
+    setXY: (..._args: any[]) => {
       calls.push('setXY');
       return doc;
     },
@@ -77,7 +77,7 @@ function createMockDoc(): any {
       calls.push(`setY:${y}`);
       return doc;
     },
-    splitTextToSize: (text: string, width: number) => {
+    splitTextToSize: (text: string, _width: number) => {
       calls.push(`splitText:${text}`);
       return [text];
     },

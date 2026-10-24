@@ -5,7 +5,7 @@ import {
   type OwnershipStructure,
   type ICPair,
 } from './ConsolidationEngine';
-import { asMoney, toDecimal } from '../utils/money';
+import { asMoney } from '../utils/money';
 import type { GLEntry } from '../types';
 
 /**

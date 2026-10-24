@@ -7,10 +7,6 @@ import {
   buildFormulaPreservingWorkbookBytes,
   inspectFormulaWorkbookBytes,
   type FinancialPackageMetadata,
-  type EditablePptxInspection,
-  type FormulaWorkbookInspection,
-  type PackageSummaryMetrics,
-  type BoardPackRowTieOutResult,
 } from '@/services/export/financialPackageExport';
 import type { ExactConsolidationResult } from '@/engines/ConsolidationEngine';
 
@@ -161,19 +157,6 @@ function makeMetadata(): FinancialPackageMetadata {
     periodLabel: 'FY2026 Q1',
     preparedBy: 'Finance Team',
     generatedAt: '2026-01-15T00:00:00.000Z',
-  };
-}
-
-function makeSummaryMetrics(result: ExactConsolidationResult): PackageSummaryMetrics {
-  return {
-    totalAssets: result.totalAssets,
-    totalLiabilitiesCredit: result.totalLiabilitiesCredit,
-    totalEquity: result.totalEquity,
-    totalCTA: result.totalCTA,
-    totalRevenueCredit: result.totalRevenueCredit,
-    totalExpenses: result.totalExpenses,
-    netIncome: result.netIncome,
-    accountingEquationImbalance: result.accountingEquationImbalance,
   };
 }
 
