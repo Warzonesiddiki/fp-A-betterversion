@@ -195,10 +195,10 @@ export default function VarianceDashboardPage() {
     const revenueRow = rows.find((r) => r.account === 'Revenue');
 
     return {
-      actualRevenue: revenueRow?.actual ?? 0,
-      budgetRevenue: revenueRow?.budget ?? 0,
-      revenueVar: revenueRow?.variance ?? 0,
-      revenueVarPct: revenueRow?.variancePct ?? 0,
+      actualRevenue: revenueRow?.actual ?? 0, // @missing-is-not-zero-allow — display default
+      budgetRevenue: revenueRow?.budget ?? 0, // @missing-is-not-zero-allow — display default
+      revenueVar: revenueRow?.variance ?? null,
+      revenueVarPct: revenueRow?.variancePct ?? null,
       rows,
       totalBudget,
       totalActual,
@@ -266,7 +266,7 @@ export default function VarianceDashboardPage() {
       header: 'Variance',
       align: 'right',
       render: (_value, row) => {
-        const v = Number(row.variance ?? 0);
+        const v = row.variance != null ? Number(row.variance) : 0;
         return (
           <span className={v >= 0 ? 'text-green-400' : 'text-red-400'}>{fmt.currency0(v)}</span>
         );
@@ -278,7 +278,7 @@ export default function VarianceDashboardPage() {
       header: 'Variance %',
       align: 'right',
       render: (_value, row) => {
-        const pct = Number(row.variancePct ?? 0);
+        const pct = row.variancePct != null ? Number(row.variancePct) : 0;
         return (
           <span className={pct >= 0 ? 'text-green-400' : 'text-red-400'}>
             {formatPercent(pct, 1)}
@@ -345,7 +345,7 @@ export default function VarianceDashboardPage() {
           label="Revenue Variance"
           value={fmt.currency0(data.revenueVar)}
           icon={
-            data.revenueVar >= 0 ? (
+            (data.revenueVar ?? 0 >= 0) ? (
               <TrendingUp className="h-4 w-4" />
             ) : (
               <TrendingDown className="h-4 w-4" />
@@ -356,7 +356,7 @@ export default function VarianceDashboardPage() {
           label="Variance %"
           value={`${formatPercent(data.revenueVarPct, 1)}`}
           icon={
-            data.revenueVarPct >= 0 ? (
+            (data.revenueVarPct ?? 0 >= 0) ? (
               <TrendingUp className="h-4 w-4" />
             ) : (
               <TrendingDown className="h-4 w-4" />

@@ -15,9 +15,6 @@ import { lazy, Suspense } from 'react';
 import { Plus, FlaskConical, Lock, Unlock } from 'lucide-react';
 import { formatPercent } from '@/utils/financialFormatting';
 import type { TreemapDataPoint } from '@/components/charts/TreemapChart';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 const TreemapChart = lazy(() =>
   import('@/components/charts/TreemapChart').then((m) => ({ default: m.TreemapChart }))

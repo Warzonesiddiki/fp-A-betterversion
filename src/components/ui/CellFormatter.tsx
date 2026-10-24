@@ -6,9 +6,6 @@ import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input } from './Input';
 import { Select } from './Select';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export type NumberFormat =
   | 'general'

@@ -80,6 +80,7 @@ export default function ChurnAnalysisPage() {
       if (!(e.accountCode ?? '').startsWith('41')) continue;
       const key = e.entityId ?? '—';
       const amt = roundTo(subtractMoney(e.credit, e.debit), 2);
+      // zero is correct — entity with no prior revenue starts at zero
       map.set(key, roundTo(addMoney(map.get(key) ?? 0, amt), 2));
     }
     return [...map.entries()].map(([entityId, revenue]) => ({ entityId, revenue }));
@@ -98,6 +99,7 @@ export default function ChurnAnalysisPage() {
       const month = e.period || (e.date ?? '').slice(0, 7);
       if (!month) continue;
       const amt = roundTo(subtractMoney(e.credit, e.debit), 2);
+      // zero is correct — month with no prior revenue starts at zero
       map.set(month, roundTo(addMoney(map.get(month) ?? 0, amt), 2));
     }
     const sorted = [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
@@ -125,7 +127,7 @@ export default function ChurnAnalysisPage() {
       if ((e.period || (e.date ?? '').slice(0, 7)) !== last.month) continue;
       map.set(
         e.entityId ?? '—',
-        roundTo(addMoney(map.get(e.entityId ?? '—') ?? 0, subtractMoney(e.credit, e.debit)), 2)
+        roundTo(addMoney(map.get(e.entityId ?? '—') ?? 0, subtractMoney(e.credit, e.debit)), 2) // zero is correct — entity with no prior revenue starts at zero
       );
     }
     return roundTo(sumMoney([...map.values()]), 2);
@@ -301,6 +303,7 @@ function KPIValue({
 export function computeSubscriptionMRR(
   entries: Array<{ credit?: number; debit?: number }>
 ): number {
+  // zero is correct — entries without credit/debit contribute zero to the sum
   return roundTo(sumMoney(entries.map((e) => subtractMoney(e.credit ?? 0, e.debit ?? 0))), 2);
 }
 

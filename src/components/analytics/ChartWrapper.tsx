@@ -3,9 +3,6 @@ import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { AlertCircle } from 'lucide-react';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface ChartWrapperProps {
   title: string;

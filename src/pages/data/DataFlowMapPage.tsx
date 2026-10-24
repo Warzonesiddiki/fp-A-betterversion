@@ -1,9 +1,5 @@
-import { useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // Bundle diet: recharts Sankey removed — custom flow list (T019, T526-T534)
 // Previously used Sankey from recharts (heavy), now lightweight div flow
@@ -87,22 +83,7 @@ const links: FlowLink[] = [
   { source: 13, target: 17, value: 60 },
 ];
 
-const nodeColors: Record<string, string> = {
-  source: '#3B82F6',
-  engine: '#10B981',
-  store: '#F59E0B',
-  page: '#8B5CF6',
-};
-
 export default function DataFlowMapPage() {
-  const sankeyData = useMemo(
-    () => ({
-      nodes: nodes.map((n) => ({ ...n, color: nodeColors[n.category] })),
-      links,
-    }),
-    []
-  );
-
   return (
     <div className="p-6 space-y-6">
       <PageHeader
@@ -149,31 +130,44 @@ export default function DataFlowMapPage() {
           <div className="space-y-4" role="img" aria-label="Data flow from sources to pages">
             <div className="flex flex-wrap gap-2">
               {nodes.slice(0, 4).map((n) => (
-                <div key={n.name} className="px-3 py-1 rounded bg-[var(--accent-primary)] text-white text-xs">
+                <div
+                  key={n.name}
+                  className="px-3 py-1 rounded bg-[var(--accent-primary)] text-white text-xs"
+                >
                   {n.name}
                 </div>
               ))}
               <span className="text-[var(--text-muted)]">→</span>
               {nodes.slice(4, 11).map((n) => (
-                <div key={n.name} className="px-3 py-1 rounded bg-[var(--positive)] text-white text-xs">
+                <div
+                  key={n.name}
+                  className="px-3 py-1 rounded bg-[var(--positive)] text-white text-xs"
+                >
                   {n.name}
                 </div>
               ))}
               <span className="text-[var(--text-muted)]">→</span>
               {nodes.slice(11, 17).map((n) => (
-                <div key={n.name} className="px-3 py-1 rounded bg-[var(--financial-pending)] text-black text-xs">
+                <div
+                  key={n.name}
+                  className="px-3 py-1 rounded bg-[var(--financial-pending)] text-black text-xs"
+                >
                   {n.name}
                 </div>
               ))}
               <span className="text-[var(--text-muted)]">→</span>
               {nodes.slice(17, 25).map((n) => (
-                <div key={n.name} className="px-3 py-1 rounded bg-[var(--financial-calculated)] text-white text-xs">
+                <div
+                  key={n.name}
+                  className="px-3 py-1 rounded bg-[var(--financial-calculated)] text-white text-xs"
+                >
                   {n.name}
                 </div>
               ))}
             </div>
             <div className="text-xs text-[var(--text-muted)]">
-              {links.length} flow connections: Sources → ImportEngine → glStore → FormulaEngine → Stores → Pages
+              {links.length} flow connections: Sources → ImportEngine → glStore → FormulaEngine →
+              Stores → Pages
             </div>
           </div>
         </CardContent>

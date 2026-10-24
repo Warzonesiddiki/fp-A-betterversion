@@ -6,9 +6,6 @@ import {
   type CircularGroup,
   DEFAULT_ITERATIVE_CONFIG,
 } from './IterativeCalculationEngine';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export type FormulaNodeType = 'ref' | 'number' | 'op' | 'func' | 'range' | 'string';
 export type FormulaOp = '+' | '-' | '*' | '/' | '=' | '<' | '>' | '<=' | '>=' | '<>';

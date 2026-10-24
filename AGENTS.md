@@ -80,15 +80,32 @@ Full rationale and examples:
     [`docs/discovery/decision-log.md`](docs/discovery/decision-log.md) are the
     owner's. Implement around them, never through them. If blocked, say exactly
     which decision blocks you.
+13. **Measure behaviour, not presence.** A ratchet counts what code _does_ (a
+    call, a computed value), never what it merely _has_ (an import, a
+    declaration, a name). A counter is earned by behaviour; a proxy metric is
+    reported only alongside its behaviour-measured companion, never as the
+    headline alone. (`MI-01`, `MI-06` — see
+    [`docs/agent/11_ANTI_FABRICATION_AND_QUALITY.md`](docs/agent/11_ANTI_FABRICATION_AND_QUALITY.md).)
+14. **No marker, stub, void, or placeholder to trip a gate.** `const
+_xMarker = toDecimal(0)`, `void 0;`, `// Money adoption:` are forbidden,
+    zero-tolerance. A gate that passes by construction is not a gate; every
+    ratchet ships an anti-gaming check. (`MI-02`, `MI-03`, `MI-08` — see
+    [`docs/agent/11_ANTI_FABRICATION_AND_QUALITY.md`](docs/agent/11_ANTI_FABRICATION_AND_QUALITY.md).)
 
 ## 3. Session protocol
 
 ```text
 START   read AGENTS.md → docs/README.md → docs/agent/09_KNOWN_GAPS.md
+        activate the standing skills: ponytail (full level) + consult the skill
+        library (docs/agent/skills/README.md) and apply the row whose "use it
+        when" matches the work — a skill raises rigour, never the claim
         git status; git log --oneline -5; npm ci --ignore-scripts (if node_modules missing)
         npm run tsc && npm run lint        (must be clean before you touch anything)
-WORK    one item per commit; tests first or alongside; run the narrowest relevant
-        test files after each change; run every ratchet you could have moved
+WORK    vision-alignment first for any new surface: name the owner job (J1–J4)
+        and the pillar (DATA/CLOSE/PLAN/ANALYZE/MODEL/REPORT) before a line is
+        written; then one item per commit; tests first or alongside; run the
+        narrowest relevant test files after each change; run every ratchet you
+        could have moved
 END     npm run check (or the subset you can justify) → paste tallies →
         update docs in the same commit → handover per
         docs/agent/HANDOVER_TEMPLATE.md

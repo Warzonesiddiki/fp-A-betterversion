@@ -2,9 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { GridApi } from 'ag-grid-community';
 import { cn } from '@/utils/cn';
 import { Search, Replace, ChevronDown, ChevronUp, X, CaseSensitive, Regex } from 'lucide-react';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface FindReplaceDialogProps {
   gridApi: GridApi | null;

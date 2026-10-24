@@ -33,16 +33,6 @@ import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { deriveTaxProvision, type TaxProvisionLine } from './taxProvisionData';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 interface DisplayLine {
   key: string;
   label: string;
@@ -116,7 +106,7 @@ export default function TaxProvisionPage() {
 
   const bookChart = displayLines
     .filter((line) => line.amount !== null && line.key !== 'netIncome')
-    .map((line) => ({ name: line.label, amount: line.amount ?? 0 }));
+    .map((line) => ({ name: line.label, amount: line.amount ?? 0 })); // zero is correct — filter above guarantees amount !== null; fallback is type-safety only
 
   const trend = data.quarters.map((q) => ({
     quarter: q.quarter,

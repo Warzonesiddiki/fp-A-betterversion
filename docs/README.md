@@ -54,75 +54,76 @@ docs/CAPABILITY_TRUTH_MATRIX.md          per-route/per-module maturity (generate
 
 ### Product and plan — `docs/` + `docs/discovery/`
 
-| File                                  | Owns                                                                  |
-| ------------------------------------- | --------------------------------------------------------------------- |
-| `docs/README.md`                      | This map; the definition of "authoritative".                          |
-| `docs/VISION.md`                      | Product goal, the all-in-one module map, scope, non-goals, success.   |
-| `docs/discovery/requirements-register.md` | FR/NFR/UX requirements with acceptance criteria and evidence status. |
-| `docs/discovery/roadmap.md`           | The gated delivery sequence (Gate 0 → Gate 6).                        |
-| `docs/discovery/decision-log.md`      | DEC-001… every decision, owner, rationale, review trigger.            |
-| `docs/discovery/risk-register.md`     | Risks with likelihood/impact/mitigation.                              |
-| `docs/discovery/current-workflow.md`   | The owner's real monthly workflow and its open questions.            |
-| `docs/discovery/d365-export-contract.md` | Cited D365 GL export contract (expected shape; not verified support). |
-| `docs/AGENT_CONTINUATION_PROMPT.md` | Paste-ready continuation prompt: execution order, decision authority, evidence contract and owner blockers for the working agent. |
+| File                                      | Owns                                                                                                                              |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/README.md`                          | This map; the definition of "authoritative".                                                                                      |
+| `docs/VISION.md`                          | Product goal, the all-in-one module map, scope, non-goals, success.                                                               |
+| `docs/discovery/requirements-register.md` | FR/NFR/UX requirements with acceptance criteria and evidence status.                                                              |
+| `docs/discovery/roadmap.md`               | The gated delivery sequence (Gate 0 → Gate 6).                                                                                    |
+| `docs/discovery/decision-log.md`          | DEC-001… every decision, owner, rationale, review trigger.                                                                        |
+| `docs/discovery/risk-register.md`         | Risks with likelihood/impact/mitigation.                                                                                          |
+| `docs/discovery/current-workflow.md`      | The owner's real monthly workflow and its open questions.                                                                         |
+| `docs/discovery/d365-export-contract.md`  | Cited D365 GL export contract (expected shape; not verified support).                                                             |
+| `docs/AGENT_CONTINUATION_PROMPT.md`       | Paste-ready continuation prompt: execution order, decision authority, evidence contract and owner blockers for the working agent. |
 
 ### Engineering handbook — `docs/agent/`
 
 The handbook is the instruction set for agent sessions. It is deliberately short
 per file and long on precision. See `docs/agent/00_INDEX.md` for the full table.
 
-| File                            | Owns                                                       |
-| ------------------------------- | ---------------------------------------------------------- |
-| `AGENTS.md` (repo root)         | Entry point, non-negotiable rules, session protocol.       |
-| `docs/agent/00_INDEX.md`        | Precedence, source-of-truth matrix, archive boundary.      |
-| `docs/agent/01_PROJECT_BRIEF.md`| Product truth, current state, open decisions.              |
-| `docs/agent/02_ARCHITECTURE.md` | Stack, entry points, layers, runtime gates, config.        |
-| `docs/agent/03_DOMAIN_RULES.md` | Money, double-entry, import, period and exception rules.   |
-| `docs/agent/04_ENGINEERING_RULES.md` | Coding rules with the reason and the gate behind each. |
-| `docs/agent/05_COMMANDS_AND_GATES.md` | Every script, what it measures, CI constraints.       |
-| `docs/agent/06_TESTING.md`      | Test conventions, global mocks, clock pinning, evidence.   |
-| `docs/agent/07_WORKFLOW_AND_DOD.md` | Definition of done, commit format, handover.           |
-| `docs/agent/08_DATA_MODEL.md`   | Core types, persistence truth, schema homes.               |
-| `docs/agent/09_KNOWN_GAPS.md`   | What works / is unwired / is false / is decided.           |
-| `docs/agent/10_GLOSSARY.md`     | Domain and repository vocabulary.                          |
-| `docs/agent/WORKING_AGREEMENT.md` | The owner's stated goal, the done bar, the live queue.    |
-| `docs/agent/HANDOVER_TEMPLATE.md` | End-of-session report format.                            |
+| File                                            | Owns                                                                                                           |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `AGENTS.md` (repo root)                         | Entry point, non-negotiable rules, session protocol.                                                           |
+| `docs/agent/00_INDEX.md`                        | Precedence, source-of-truth matrix, archive boundary.                                                          |
+| `docs/agent/01_PROJECT_BRIEF.md`                | Product truth, current state, open decisions.                                                                  |
+| `docs/agent/02_ARCHITECTURE.md`                 | Stack, entry points, layers, runtime gates, config.                                                            |
+| `docs/agent/03_DOMAIN_RULES.md`                 | Money, double-entry, import, period and exception rules.                                                       |
+| `docs/agent/04_ENGINEERING_RULES.md`            | Coding rules with the reason and the gate behind each.                                                         |
+| `docs/agent/05_COMMANDS_AND_GATES.md`           | Every script, what it measures, CI constraints.                                                                |
+| `docs/agent/06_TESTING.md`                      | Test conventions, global mocks, clock pinning, evidence.                                                       |
+| `docs/agent/07_WORKFLOW_AND_DOD.md`             | Definition of done, commit format, handover.                                                                   |
+| `docs/agent/08_DATA_MODEL.md`                   | Core types, persistence truth, schema homes.                                                                   |
+| `docs/agent/09_KNOWN_GAPS.md`                   | What works / is unwired / is false / is decided.                                                               |
+| `docs/agent/10_GLOSSARY.md`                     | Domain and repository vocabulary.                                                                              |
+| `docs/agent/11_ANTI_FABRICATION_AND_QUALITY.md` | Metric-integrity and work-quality rules; the 2026-10-24 fake-marker incident, the self-check, and the doc map. |
+| `docs/agent/WORKING_AGREEMENT.md`               | The owner's stated goal, the done bar, the live queue.                                                         |
+| `docs/agent/HANDOVER_TEMPLATE.md`               | End-of-session report format.                                                                                  |
 
 ### Squad coordination — `docs/agent-squad/`
 
 The squad (11 Gemini seats, 1 Freebuff partner seat, the lead) coordinates through these files.
 The folder is the message bus; `docs/agent-squad/AGENT_JOIN_GUIDE.md` is its entry point.
 
-| File | Owns |
-| ---- | ---- |
-| `docs/agent-squad/AGENT_JOIN_GUIDE.md` | Entry point for every squad session. |
-| `docs/agent-squad/agents-comms/README.md` | The communication protocol (read first, write always). |
-| `docs/agent-squad/agents-comms/ROSTER.md` | Seat registry and remits. |
-| `docs/agent-squad/agents-comms/STATUS_BOARD.md` | Who is working on what, now. |
-| `docs/agent-squad/agents-comms/COMMS_LOG.md` | Append-only inter-agent messages. |
-| `docs/agent-squad/agents-comms/BLOCKERS.md` | Open blockers and the decision each needs. |
-| `docs/agent-squad/agents-comms/CLAIMS.md` | One-writer-per-file claims. |
-| `docs/agent-squad/SQUAD_STATE.md`, `docs/agent-squad/SQUAD_BACKLOG.md`, `docs/agent-squad/SQUAD_AGREEMENT.md` | Session state, prioritized work, working agreement. |
-| `docs/agent-squad/agent-patches/` | CI/dependency patches for a human to apply. |
+| File                                                                                                          | Owns                                                   |
+| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `docs/agent-squad/AGENT_JOIN_GUIDE.md`                                                                        | Entry point for every squad session.                   |
+| `docs/agent-squad/agents-comms/README.md`                                                                     | The communication protocol (read first, write always). |
+| `docs/agent-squad/agents-comms/ROSTER.md`                                                                     | Seat registry and remits.                              |
+| `docs/agent-squad/agents-comms/STATUS_BOARD.md`                                                               | Who is working on what, now.                           |
+| `docs/agent-squad/agents-comms/COMMS_LOG.md`                                                                  | Append-only inter-agent messages.                      |
+| `docs/agent-squad/agents-comms/BLOCKERS.md`                                                                   | Open blockers and the decision each needs.             |
+| `docs/agent-squad/agents-comms/CLAIMS.md`                                                                     | One-writer-per-file claims.                            |
+| `docs/agent-squad/SQUAD_STATE.md`, `docs/agent-squad/SQUAD_BACKLOG.md`, `docs/agent-squad/SQUAD_AGREEMENT.md` | Session state, prioritized work, working agreement.    |
+| `docs/agent-squad/agent-patches/`                                                                             | CI/dependency patches for a human to apply.            |
 
 ### Reference (governed by scripts)
 
-| File                                          | Owns                                     | Enforced by            |
-| --------------------------------------------- | ---------------------------------------- | ---------------------- |
-| `docs/CAPABILITY_TRUTH_MATRIX.md`             | Per-route/module maturity (generated).   | `capability:inventory` |
-| `docs/product/ROUTE_MAP.md`                   | Route inventory (generated).             | `routemap:check`       |
-| `docs/architecture/PERSISTENCE_MAP.md`        | Persisted store keys + classification.   | `persistence:map`      |
-| `docs/audit/`                                 | The measured audit of this codebase.     | —                      |
-| `docs/adr/`                                   | Architecture decision records.           | —                      |
-| `docs/architecture/`                          | Money, period-close, RBAC, data integrity. | —                    |
-| `docs/security/`, `SECURITY.md`               | Security policy and threat model.        | —                      |
-| `docs/a11y/`, `docs/compliance/`, `docs/testing/`, `docs/design/`, `docs/engines/`, `docs/onboarding/`, `docs/release/` | Domain reference. | —            |
+| File                                                                                                                    | Owns                                       | Enforced by            |
+| ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ---------------------- |
+| `docs/CAPABILITY_TRUTH_MATRIX.md`                                                                                       | Per-route/module maturity (generated).     | `capability:inventory` |
+| `docs/product/ROUTE_MAP.md`                                                                                             | Route inventory (generated).               | `routemap:check`       |
+| `docs/architecture/PERSISTENCE_MAP.md`                                                                                  | Persisted store keys + classification.     | `persistence:map`      |
+| `docs/audit/`                                                                                                           | The measured audit of this codebase.       | —                      |
+| `docs/adr/`                                                                                                             | Architecture decision records.             | —                      |
+| `docs/architecture/`                                                                                                    | Money, period-close, RBAC, data integrity. | —                      |
+| `docs/security/`, `SECURITY.md`                                                                                         | Security policy and threat model.          | —                      |
+| `docs/a11y/`, `docs/compliance/`, `docs/testing/`, `docs/design/`, `docs/engines/`, `docs/onboarding/`, `docs/release/` | Domain reference.                          | —                      |
 
 ### Archived — `docs/archive/`
 
-| Path                            | What                                                                 |
-| ------------------------------- | -------------------------------------------------------------------- |
-| `docs/archive/legacy-2026-10/`  | Retired plans, handovers, audits and prior-iteration corpora (DEC-011). |
+| Path                           | What                                                                    |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| `docs/archive/legacy-2026-10/` | Retired plans, handovers, audits and prior-iteration corpora (DEC-011). |
 
 Archived documents are **records, not instructions**. The docs-link gate exempts
 them by policy, exactly as it exempts `reports/`. Never cite an archived file as
@@ -146,14 +147,15 @@ is a bug: fix it in the same commit.
 
 ## 4. How documentation stays true
 
-| Rule                                             | Gate                                            |
-| ------------------------------------------------ | ----------------------------------------------- |
-| Headline numbers match the tree                  | `npm run docs:verify` (`verify-readme-stats`)   |
-| Persisted stores match the authority registry    | `npm run persistence:map`                       |
-| Route map matches `src/App.tsx`                  | `npm run routemap:check`                        |
-| Engine manifest is current                       | `npm run engines:verify`                        |
-| Every live doc link resolves                     | `node scripts/docs-link-check.mjs`              |
-| No unsupported/unsourced claims in docs          | `npm run fabrication:audit`                     |
+| Rule                                          | Gate                                          |
+| --------------------------------------------- | --------------------------------------------- |
+| Headline numbers match the tree               | `npm run docs:verify` (`verify-readme-stats`) |
+| Persisted stores match the authority registry | `npm run persistence:map`                     |
+| Route map matches `src/App.tsx`               | `npm run routemap:check`                      |
+| Engine manifest is current                    | `npm run engines:verify`                      |
+| Every live doc link resolves                  | `node scripts/docs-link-check.mjs`            |
+| No unsupported/unsourced claims in docs       | `npm run fabrication:audit`                   |
+| No fake markers / void signals in `src`       | `npm run placeholder:audit`                   |
 
 A document that claims something no script can back is a defect. Add the script
 or delete the claim.

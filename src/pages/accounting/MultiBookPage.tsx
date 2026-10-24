@@ -5,9 +5,6 @@ import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { BookOpen, GitCompare, Download, Plus } from 'lucide-react';
 import { MultiBookEngine } from '@/engines/MultiBookEngine';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface AccountingBook {
   id: string;

@@ -57,7 +57,7 @@ export default function ARRDashboard() {
       if (!month) continue;
       byMonth.set(
         month,
-        roundTo(addMoney(byMonth.get(month) ?? 0, subtractMoney(e.credit, e.debit)), 2)
+        roundTo(addMoney(byMonth.get(month) ?? 0, subtractMoney(e.credit, e.debit)), 2) // zero is correct — month with no prior revenue starts at zero
       );
     }
     const months = Array.from(byMonth.entries()).sort(([a], [b]) => a.localeCompare(b));

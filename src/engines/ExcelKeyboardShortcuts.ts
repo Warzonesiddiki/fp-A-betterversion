@@ -1,8 +1,5 @@
 import { storageGet, storageSet } from '@/utils/storageAdapter';
 import { generateId } from '@/utils/deterministicRng';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * ExcelKeyboardShortcuts — Excel-like keyboard shortcut registry

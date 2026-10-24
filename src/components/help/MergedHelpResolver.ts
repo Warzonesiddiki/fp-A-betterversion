@@ -22,9 +22,6 @@
 
 import { PAGE_HELP, type PageHelpDef } from '@/pages/_docs';
 import { getRouteHelpDoc, type RouteHelpDoc } from '@/pages/_routeHelpMap';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface MergedHelp {
   title: string;

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Keyboard, Search, Plus, Trash2 } from 'lucide-react';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
+
 import {
   ExcelKeyboardShortcuts,
   type ShortcutDef,

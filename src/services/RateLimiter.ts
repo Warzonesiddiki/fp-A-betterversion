@@ -1,8 +1,6 @@
 // @money-ast-allow Reason: Backpressure counter: totalBackpressure += state.totalBackpressure is an integer rate-limit metric, not money
 import { randomId } from '@/utils/cryptoId';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
+
 // FinPlan Pro v1.0.0 — Phase 7 PATCH 14 (Hephaestus, 2026-06-16)
 //
 // SECURITY RATIONALE:

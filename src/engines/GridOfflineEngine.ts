@@ -5,9 +5,6 @@
  * PATCH 22 — Veridicus T-FIX-10: localStorage abstracted to storageAdapter
  */
 import { storageGet, storageSet, storageRemove, storageAdapter } from '@/utils/storageAdapter';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface GridState {
   columnWidths: Record<string, number>;

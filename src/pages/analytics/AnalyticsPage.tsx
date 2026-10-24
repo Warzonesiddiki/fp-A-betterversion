@@ -44,7 +44,7 @@ export default function AnalyticsPage() {
       g.total = roundTo(addMoney(g.total, subtractMoney(e.debit, e.credit)));
       byType.set(type, g);
       const month = e.period || e.date.slice(0, 7);
-      byMonth.set(month, (byMonth.get(month) || 0) + 1);
+      byMonth.set(month, (byMonth.get(month) || 0) + 1); // @missing-is-not-zero-allow — count accumulator
     });
     const avgPerMonth = byMonth.size > 0 ? entries.length / byMonth.size : 0;
     const busiestMonth = Array.from(byMonth.entries()).sort((a, b) => b[1] - a[1]!)[0];
@@ -53,7 +53,7 @@ export default function AnalyticsPage() {
       totalEntries: entries.length,
       avgPerMonth: Math.round(avgPerMonth),
       busiestMonth: busiestMonth?.[0] || 'N/A',
-      busiestCount: busiestMonth?.[1] || 0,
+      busiestCount: busiestMonth?.[1] || null,
       totalAccounts: accounts.length,
     };
   }, [entries, accounts]);

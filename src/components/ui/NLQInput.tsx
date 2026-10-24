@@ -6,9 +6,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Search, Sparkles, Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface NLQInputProps {
   onSubmit: (query: string) => void;

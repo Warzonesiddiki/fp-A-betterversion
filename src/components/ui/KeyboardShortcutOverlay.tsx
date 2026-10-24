@@ -4,9 +4,6 @@ import { X, Keyboard, Search, Printer, ChevronDown, ChevronRight } from 'lucide-
 import { cn } from '@/utils/cn';
 import { keyboardShortcuts, formatShortcut } from '@/config/keyboardShortcuts';
 import { ExcelKeyboardShortcuts, type ShortcutCategory } from '@/engines/ExcelKeyboardShortcuts';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // ─── Types ───────────────────────────────────────────────────────────
 

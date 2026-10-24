@@ -19,9 +19,6 @@ import {
 import { ExcelKeyboardEngine } from '@/engines/ExcelKeyboardEngine';
 import { cn } from '@/utils/cn';
 import { useDensity, densityMetrics } from '@/hooks/useDensity';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // Modular registration (P-02-I): register only the modules this grid uses.
 // NOTE: CsvExportModule is REQUIRED here — FinPlanGrid.handleExport calls

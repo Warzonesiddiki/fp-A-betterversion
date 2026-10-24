@@ -1,7 +1,4 @@
 import { WaterfallChart } from '@/components/ui/WaterfallChart';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export function ChurnWaterfall() {
   return (

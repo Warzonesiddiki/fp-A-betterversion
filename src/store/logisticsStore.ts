@@ -7,9 +7,6 @@ import { masterStorage } from '@/utils/masterStorage';
 // retailStore precedent); carrier/route analytics datasets follow the sector
 // metric precedent (DASHBOARD_UPDATE). Loading/error flags stay unguarded.
 import { enforce, Permissions } from '../utils/rbacEnforcer';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface Shipment {
   id: string;

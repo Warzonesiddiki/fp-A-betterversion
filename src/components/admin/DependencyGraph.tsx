@@ -4,9 +4,6 @@ import { Button } from '../ui/Button';
 import { CalculationGraph, CellNode } from '../../engines/CalculationGraph';
 import type { GraphStats, CycleResult } from '../../engines/CalculationGraph';
 import { useUIStore } from '../../store/uiStore';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // Optional: if Tauri is available for a true native window popout
 let WebviewWindow: { new (label: string, options: Record<string, unknown>): unknown } | null = null;

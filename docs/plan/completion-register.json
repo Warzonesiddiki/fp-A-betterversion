@@ -4689,50 +4689,92 @@
     {
       "kind": "route",
       "id": "route:/ai",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/ai",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (AIIntelligencePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/ai/nlq",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/ai/nlq",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (NLQChatPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/analytics",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/analytics",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/analytics/AnalyticsPage.test.tsx",
+            "title": "displays the no data empty state"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /analytics \u2014 analytics:read allows viewing analytics"
+          }
+        ],
+        "tests": [
+          "src/pages/analytics/AnalyticsPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (AnalyticsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/analytics/AnalyticsPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/analytics/benchmarking",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/analytics/benchmarking",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (BenchmarkingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/analytics/dashboard-builder",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/analytics/dashboard-builder",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (DashboardBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4749,32 +4791,65 @@
     {
       "kind": "route",
       "id": "route:/analytics/goal-seek",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/analytics/goal-seek",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (GoalSeekPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/analytics/pivot-explorer",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/analytics/pivot-explorer",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (PivotExplorerPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/audit",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/audit",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/audit/AuditTrailPage.test.tsx",
+            "title": "renders persisted audit entries through the page compatibility adapter"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /audit/sox \u2014 audit:read allows viewing SOX compliance"
+          }
+        ],
+        "tests": [
+          "src/pages/audit/AuditTrailPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "page": "src/pages/audit/AuditTrailPage.tsx"
       },
-      "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/audit/AuditTrailPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -4809,22 +4884,66 @@
     {
       "kind": "route",
       "id": "route:/audit/sox",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/audit/sox",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/audit/SOXCompliancePage.test.tsx",
+            "title": "displays the SOX Compliance heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /audit/sox \u2014 audit:read allows viewing SOX compliance"
+          }
+        ],
+        "tests": [
+          "src/pages/audit/SOXCompliancePage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (SOXCompliancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/audit/SOXCompliancePage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/audit/trail",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/audit/trail",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/audit/AuditTrailPage.test.tsx",
+            "title": "renders persisted audit entries through the page compatibility adapter"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /audit/trail \u2014 audit:read allows viewing audit trail"
+          }
+        ],
+        "tests": [
+          "src/pages/audit/AuditTrailPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (AuditTrailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/audit/AuditTrailPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -4849,60 +4968,90 @@
     {
       "kind": "route",
       "id": "route:/banking/banking",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/banking/banking",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (BankingDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/banking/capital",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/banking/capital",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (CapitalAdequacyPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/banking/loan-loss",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/banking/loan-loss",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (LoanLossPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/banking/nim",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/banking/nim",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (NIMDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/banking/reconciliation",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/banking/reconciliation",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (BankReconciliation); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/banking/statements",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/banking/statements",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (BankStatements); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4915,45 +5064,27 @@
         "disposition": "MIGRATE",
         "connected": [
           {
-            "file": "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
-            "title": "exports the same figures the screen shows, derived from the ledger"
-          },
-          {
-            "file": "src/pages/reports/BoardPackPage.probe.test.tsx",
-            "title": "K30 empty state: No Data CTA before any ledger exists"
-          },
-          {
-            "file": "src/pages/reports/BoardPackPage.probe.test.tsx",
-            "title": "K30 error state: ErrorState when glStore.importError is set"
+            "file": "src/pages/reports/BoardPackPage.test.tsx",
+            "title": "displays expected empty state"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /board-pack \u2014 report:read allows viewing board pack"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /board-pack \u2014 audit trail ties out to ledger figures"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /board-pack \u2014 write guard ensures board pack reflects closed-period state"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
-          "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
-          "src/pages/reports/BoardPackPage.probe.test.tsx"
+          "src/pages/reports/BoardPackPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 3 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
-        "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
-        "src/pages/reports/BoardPackPage.probe.test.tsx"
+        "src/pages/reports/BoardPackPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
       ],
       "gate": "npm run governance:evidence",
       "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
@@ -4987,49 +5118,27 @@
         "disposition": "MIGRATE",
         "connected": [
           {
-            "file": "src/pages/budgets/BudgetListPage.deep.test.tsx",
-            "title": "renders budget list and filters by status"
-          },
-          {
             "file": "src/pages/budgets/BudgetListPage.test.tsx",
             "title": "displays the empty state when no budgets exist"
-          },
-          {
-            "file": "src/pages/budgets/BudgetListPage.test.tsx",
-            "title": "submission failure is surfaced after an asynchronous rejection and Retry can succeed"
-          },
-          {
-            "file": "src/pages/budgets/BudgetListPage.test.tsx",
-            "title": "keeps the page h1 mounted over a hydration skeleton instead of flashing the empty state"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /budgets \u2014 budget:read allows viewing budgets"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /budgets \u2014 audit trail records budget derivation"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /budgets \u2014 write guard blocks budget:approve for Viewer"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
           "src/pages/budgets/BudgetListPage.test.tsx",
-          "src/pages/budgets/BudgetListPage.deep.test.tsx"
+          "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
         "src/pages/budgets/BudgetListPage.test.tsx",
-        "src/pages/budgets/BudgetListPage.deep.test.tsx"
+        "src/__tests__/spineGovernance.test.ts"
       ]
     },
     {
@@ -5045,50 +5154,126 @@
     {
       "kind": "route",
       "id": "route:/budgets/approval",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/budgets/approval",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/budgets/BudgetApproval.deep.test.tsx",
+            "title": "renders empty state and navigates to upload on button click and keyboard interaction"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /budgets/approval \u2014 budget:approve guards the approval path"
+          }
+        ],
+        "tests": [
+          "src/pages/budgets/BudgetApproval.deep.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (BudgetApproval); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/budgets/BudgetApproval.deep.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/budgets/bva",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/budgets/bva",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (BudgetVAReport); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/budgets/create",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/budgets/create",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/budgets/BudgetCreatePage.test.tsx",
+            "title": "displays the no accounts empty state"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /budgets/create \u2014 budget:create guards the creation path"
+          }
+        ],
+        "tests": [
+          "src/pages/budgets/BudgetCreatePage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (BudgetCreatePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/budgets/BudgetCreatePage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/capex",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/capex",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/capex/CapExDashboard.test.tsx",
+            "title": "displays the Capital Expenditures heading (has inline mock data)"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /capex \u2014 capex:read allows viewing CapEx"
+          }
+        ],
+        "tests": [
+          "src/pages/capex/CapExDashboard.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (CapExDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/capex/CapExDashboard.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/capex/depreciation",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/capex/depreciation",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (DepreciationForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5115,74 +5300,87 @@
     {
       "kind": "route",
       "id": "route:/cash/debt",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/cash/debt",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/cash/DebtSchedulePage.test.tsx",
+            "title": "displays the Debt Schedule heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /cash/debt \u2014 report:read allows viewing debt schedule"
+          }
+        ],
+        "tests": [
+          "src/pages/cash/DebtSchedulePage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (DebtSchedulePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/cash/DebtSchedulePage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/cash/forecast",
       "status": "SUPPORTED",
       "evidence": {
+        "gatedBy": "/cash/forecast",
+        "disposition": "MIGRATE",
         "connected": [
           {
-            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
-            "title": "journey: renders cash position with data"
-          },
-          {
-            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
-            "title": "empty: shows No Cash Activity with CTA"
-          },
-          {
-            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
-            "title": "error: shows role=alert with retry"
-          },
-          {
-            "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
-            "title": "loading: shows Skeleton with srLabel and aria-busy"
+            "file": "src/pages/cash/CashForecastPage.test.tsx",
+            "title": "renders the content state from posted cash activity under the page h1"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /cash/forecast \u2014 report:read allows viewing cash forecast"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /cash/forecast \u2014 audit trail records cash derivation"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /cash/forecast \u2014 write guard blocks closed periods from affecting cash"
           }
         ],
-        "disposition": "MIGRATE",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
-        "gate": "governance:evidence",
-        "gatedBy": "/cash/forecast",
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
-          "src/pages/cash/CashForecastPage.interop.test.tsx"
-        ]
+          "src/pages/cash/CashForecastPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
-        "src/pages/cash/CashForecastPage.interop.test.tsx"
+        "src/pages/cash/CashForecastPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
       ]
     },
     {
       "kind": "route",
       "id": "route:/cash/working-capital",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/cash/working-capital",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/cash/working-capital",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (WorkingCapitalPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5207,50 +5405,75 @@
     {
       "kind": "route",
       "id": "route:/collaboration",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/collaboration",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (CollaborationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/collaboration/activity",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/collaboration/activity",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ActivityFeed); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/collaboration/approvals",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/collaboration/approvals",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ApprovalQueuePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/collaboration/shared",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/collaboration/shared",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (SharedReports); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/collaboration/team",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/collaboration/team",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (TeamWorkspace); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5321,40 +5544,94 @@
     {
       "kind": "route",
       "id": "route:/consolidation/detail",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/consolidation/detail",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ConsolidationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/consolidation/ic-eliminations",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/consolidation/ic-eliminations",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/consolidation/ICEliminationPage.test.tsx",
+            "title": "renders reconciliation content from real engine transactions (content state)"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /consolidation/ic-eliminations \u2014 gl:read allows viewing IC eliminations"
+          }
+        ],
+        "tests": [
+          "src/pages/consolidation/ICEliminationPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (ICEliminationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/consolidation/ICEliminationPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/consolidation/ownership",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/consolidation/ownership",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/consolidation/OwnershipTreePage.test.tsx",
+            "title": "displays Ownership Structure heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /consolidation/ownership \u2014 gl:read allows viewing ownership tree"
+          }
+        ],
+        "tests": [
+          "src/pages/consolidation/OwnershipTreePage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (OwnershipTreePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/consolidation/OwnershipTreePage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/construction/dashboard",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/construction/dashboard",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ConstructionDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5371,10 +5648,15 @@
     {
       "kind": "route",
       "id": "route:/construction/project",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/construction/project",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ProjectCostingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5401,42 +5683,113 @@
     {
       "kind": "route",
       "id": "route:/currency/fx-rates",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/currency/fx-rates",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/currency/FXRatesPage.test.tsx",
+            "title": "renders the rate table from real fxRateStore entries (content state)"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /currency/fx-rates \u2014 gl:read allows viewing FX rates"
+          }
+        ],
+        "tests": [
+          "src/pages/currency/FXRatesPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (FXRatesPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/currency/FXRatesPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/currency/hedging",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/currency/hedging",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (HedgeManagementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/currency/translation",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/currency/translation",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/currency/TranslationResultPage.test.tsx",
+            "title": "displays empty state when no data"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /currency/translation \u2014 gl:read allows viewing translation"
+          }
+        ],
+        "tests": [
+          "src/pages/currency/TranslationResultPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (TranslationResultPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/currency/TranslationResultPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/dashboard",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/dashboard",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/dashboard/DashboardPage.test.tsx",
+            "title": "displays the finance-workspace setup state when no data exists"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /dashboard \u2014 dashboard:read allows viewing dashboard"
+          }
+        ],
+        "tests": [
+          "src/pages/dashboard/DashboardPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (DashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/dashboard/DashboardPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5491,20 +5844,30 @@
     {
       "kind": "route",
       "id": "route:/data/chart-of-accounts",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/chart-of-accounts",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ChartOfAccountsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/data/comparison",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/comparison",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ComparisonPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5625,10 +5988,15 @@
     {
       "kind": "route",
       "id": "route:/data/gl-account-analysis",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/gl-account-analysis",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (GLAccountAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5739,10 +6107,15 @@
     {
       "kind": "route",
       "id": "route:/data/gl-reporting",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/gl-reporting",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (GLReportingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5755,51 +6128,27 @@
         "disposition": "MIGRATE",
         "connected": [
           {
-            "file": "src/pages/data/GLTrialBalancePage.interop.test.tsx",
-            "title": "renders the trial balance the real store derives from an imported journal"
-          },
-          {
             "file": "src/pages/data/GLTrialBalancePage.test.tsx",
-            "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
-          },
-          {
-            "file": "src/pages/smoke-data-pages.test.tsx",
-            "title": "displays empty state when no entries"
-          },
-          {
-            "file": "src/pages/data/GLTrialBalancePage.test.tsx",
-            "title": "K30 error state: states the failed import instead of rendering the stale ledger"
+            "title": "displays Trial Balance heading"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /data/gl-trial-balance \u2014 Viewer can read trial balance (import:read)"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-trial-balance \u2014 audit trail records ledger derivation"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-trial-balance \u2014 write guard blocks closed periods from affecting TB"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
-          "src/pages/data/GLTrialBalancePage.interop.test.tsx",
           "src/pages/data/GLTrialBalancePage.test.tsx",
-          "src/pages/smoke-data-pages.test.tsx"
+          "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
-        "src/pages/data/GLTrialBalancePage.interop.test.tsx",
         "src/pages/data/GLTrialBalancePage.test.tsx",
-        "src/pages/smoke-data-pages.test.tsx"
+        "src/__tests__/spineGovernance.test.ts"
       ],
       "gate": "npm run governance:evidence",
       "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
@@ -5871,20 +6220,30 @@
     {
       "kind": "route",
       "id": "route:/data/reconciliation",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/reconciliation",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ReconciliationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/data/version-diff",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/version-diff",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (VersionDiffPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5901,10 +6260,15 @@
     {
       "kind": "route",
       "id": "route:/drill-down",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/drill-down",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (DrillDownWindowPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6035,51 +6399,29 @@
       "evidence": {
         "gatedBy": "/forecasts",
         "disposition": "MIGRATE",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
-        "gate": "governance:evidence",
         "connected": [
           {
-            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-            "title": "renders the forecast journey with rolling horizon and confidence heatmap"
-          },
-          {
-            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-            "title": "shows the empty state when no forecasts exist"
-          },
-          {
-            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-            "title": "shows an error alert when forecasts fail to load and retry succeeds"
-          },
-          {
-            "file": "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-            "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+            "file": "src/pages/forecasts/ForecastListPage.test.tsx",
+            "title": "displays the empty state when no forecasts exist"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /forecasts \u2014 forecast:read allows viewing forecasts"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /forecasts \u2014 audit trail records forecast derivation"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /forecasts \u2014 write guard blocks forecast:create for Viewer"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
-          "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-          "src/pages/forecasts/ForecastListPage.test.tsx"
-        ]
+          "src/pages/forecasts/ForecastListPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 rolling forecast 12-18mo horizon 5-day cycle",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
-        "src/pages/forecasts/ForecastListPage.interop.test.tsx",
-        "src/pages/forecasts/ForecastListPage.test.tsx"
+        "src/pages/forecasts/ForecastListPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
       ]
     },
     {
@@ -6115,40 +6457,111 @@
     {
       "kind": "route",
       "id": "route:/forecasts/create",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/forecasts/create",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/forecasts/ForecastBuilderPage.test.tsx",
+            "title": "displays heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /forecasts/create \u2014 forecast:update guards the setForecasts path"
+          }
+        ],
+        "tests": [
+          "src/pages/forecasts/ForecastBuilderPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (ForecastBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/forecasts/ForecastBuilderPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/forecasts/drivers",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/forecasts/drivers",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/forecasts/DriverPlanningPage.test.tsx",
+            "title": "renders the page title"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /forecasts/drivers \u2014 driver:read allows viewing drivers"
+          }
+        ],
+        "tests": [
+          "src/pages/forecasts/DriverPlanningPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (DriverPlanningPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/forecasts/DriverPlanningPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/forecasts/rolling",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/forecasts/rolling",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/forecasts/RollingForecastPage.money.test.tsx",
+            "title": "does not present posted actuals as a forecast"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /forecasts/rolling \u2014 forecast:read allows viewing rolling forecast"
+          }
+        ],
+        "tests": [
+          "src/pages/forecasts/RollingForecastPage.money.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (RollingForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/forecasts/RollingForecastPage.money.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/forecasts/what-if",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/forecasts/what-if",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (WhatIfPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6325,10 +6738,15 @@
     {
       "kind": "route",
       "id": "route:/lease",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/lease",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (LeaseDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6345,10 +6763,15 @@
     {
       "kind": "route",
       "id": "route:/lease/accounting",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/lease/accounting",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (LeaseAccountingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6395,40 +6818,60 @@
     {
       "kind": "route",
       "id": "route:/manufacturing/cogs",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/manufacturing/cogs",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (COGSVariancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/manufacturing/inventory",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/manufacturing/inventory",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (InventoryPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/manufacturing/overview",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/manufacturing/overview",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ManufacturingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/manufacturing/production",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/manufacturing/production",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ProductionDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6521,49 +6964,27 @@
         "disposition": "MIGRATE",
         "connected": [
           {
-            "file": "src/services/import/monthEndClosePipeline.integration.test.ts",
-            "title": "quarantines messy imports atomically, enforces period-close write guard, promotes exact-decimal USD/EUR batches, consolidates with ASC 830 CTA & ASC 810 IC, and ties out XLSX/PPTX outputs"
-          },
-          {
             "file": "src/pages/periods/PeriodClosePage.test.tsx",
-            "title": "K30: shows the hydrate skeleton while the close workflow initializes"
-          },
-          {
-            "file": "src/pages/periods/PeriodClosePage.test.tsx",
-            "title": "K30: empty state offers a CTA that re-enters the period-close flow"
-          },
-          {
-            "file": "src/pages/periods/PeriodClosePage.test.tsx",
-            "title": "K30: failed transition renders ErrorState (role=alert) whose retry succeeds"
+            "title": "shows a recoverable calendar error instead of reusing a period ID from another year"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /periods/close \u2014 Viewer cannot close, Admin can close (period:close)"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /periods/close \u2014 audit trail records close transitions"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /periods/close \u2014 write guard blocks GL writes in closed periods"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
           "src/pages/periods/PeriodClosePage.test.tsx",
-          "src/services/import/monthEndClosePipeline.integration.test.ts"
+          "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
         "src/pages/periods/PeriodClosePage.test.tsx",
-        "src/services/import/monthEndClosePipeline.integration.test.ts"
+        "src/__tests__/spineGovernance.test.ts"
       ],
       "gate": "npm run governance:evidence",
       "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
@@ -6571,20 +6992,30 @@
     {
       "kind": "route",
       "id": "route:/plugins",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/plugins",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (PluginMarketplacePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/profile",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/profile",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ProfilePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6661,12 +7092,34 @@
     {
       "kind": "route",
       "id": "route:/reports",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/reports",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/reports/ReportsListPage.test.tsx",
+            "title": "displays the empty state when no GL entries exist"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/balance-sheet \u2014 report:read allows viewing balance sheet"
+          }
+        ],
+        "tests": [
+          "src/pages/reports/ReportsListPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (ReportsListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/reports/ReportsListPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -6733,20 +7186,30 @@
     {
       "kind": "route",
       "id": "route:/reports/book-builder",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/reports/book-builder",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ReportBookBuilder); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/reports/budget-vs-actual",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/reports/budget-vs-actual",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (BudgetVsActualPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6805,20 +7268,30 @@
     {
       "kind": "route",
       "id": "route:/reports/designer",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/reports/designer",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ReportDesignerPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/reports/library",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/reports/library",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ReportTemplateLibraryPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6877,10 +7350,15 @@
     {
       "kind": "route",
       "id": "route:/reports/scheduler",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/reports/scheduler",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ReportScheduler); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6897,20 +7375,30 @@
     {
       "kind": "route",
       "id": "route:/reports/templates",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/reports/templates",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (FinancialStatementTemplates); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/reports/three-statement",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/reports/three-statement",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ThreeStatementDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7017,70 +7505,105 @@
     {
       "kind": "route",
       "id": "route:/revenue/deferred",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/revenue/deferred",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (DeferredSchedulePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/revenue/rev-rec",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/revenue/rev-rec",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (RevRecDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/saas/arr",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/saas/arr",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ARRDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/saas/churn",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/saas/churn",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ChurnDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/saas/churn-analysis",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/saas/churn-analysis",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ChurnAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/saas/cohort",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/saas/cohort",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (CohortAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/saas/overview",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/saas/overview",
-        "disposition": "EXPERIMENTAL"
+        "disposition": "EXPERIMENTAL",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (SaaSPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7091,51 +7614,29 @@
       "evidence": {
         "gatedBy": "/scenarios",
         "disposition": "MIGRATE",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
-        "gate": "governance:evidence",
         "connected": [
           {
-            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-            "title": "renders the scenario journey with driver-based cards and probability treemap"
-          },
-          {
-            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-            "title": "shows the empty state when no scenarios exist"
-          },
-          {
-            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-            "title": "shows an error alert when scenarios fail to load and retry succeeds"
-          },
-          {
-            "file": "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-            "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+            "file": "src/pages/scenarios/ScenarioListPage.test.tsx",
+            "title": "displays the empty state when no scenarios exist"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
             "title": "GOVERNED /scenarios \u2014 scenario:read allows viewing scenarios"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /scenarios \u2014 audit trail records scenario derivation"
-          },
-          {
-            "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /scenarios \u2014 write guard blocks scenario:create for Viewer"
           }
         ],
         "tests": [
-          "src/__tests__/spineGovernance.test.ts",
-          "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-          "src/pages/scenarios/ScenarioListPage.test.tsx"
-        ]
+          "src/pages/scenarios/ScenarioListPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 driver-based modeling 5-7 drivers 80% variance",
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
-        "src/__tests__/spineGovernance.test.ts",
-        "src/pages/scenarios/ScenarioListPage.interop.test.tsx",
-        "src/pages/scenarios/ScenarioListPage.test.tsx"
+        "src/pages/scenarios/ScenarioListPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
       ]
     },
     {
@@ -7151,22 +7652,49 @@
     {
       "kind": "route",
       "id": "route:/scenarios/compare",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/scenarios/compare",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (ScenarioComparisonPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/scenarios/create",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/scenarios/create",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/scenarios/ScenarioBuilderPage.test.tsx",
+            "title": "renders the builder from a posted GL base (content state)"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /scenarios/create \u2014 scenario:update guards the setScenarios path"
+          }
+        ],
+        "tests": [
+          "src/pages/scenarios/ScenarioBuilderPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (ScenarioBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/scenarios/ScenarioBuilderPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -7371,20 +7899,47 @@
     {
       "kind": "route",
       "id": "route:/settings",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/settings",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/settings/SettingsPage.test.tsx",
+            "title": "displays the settings heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /settings \u2014 user:read allows viewing user management"
+          }
+        ],
+        "tests": [
+          "src/pages/settings/SettingsPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (SettingsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/settings/SettingsPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/settings/backup",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/settings/backup",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (BackupRestorePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7401,30 +7956,45 @@
     {
       "kind": "route",
       "id": "route:/settings/integrations",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/settings/integrations",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (IntegrationSettingsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/settings/security",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/settings/security",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (SecuritySettingsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/settings/users",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/settings/users",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (UserManagementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7451,20 +8021,30 @@
     {
       "kind": "route",
       "id": "route:/tax/provision",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/tax/provision",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (TaxProvisionPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
     {
       "kind": "route",
       "id": "route:/tax/transfer-pricing",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/tax/transfer-pricing",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (TransferPricingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7501,12 +8081,34 @@
     {
       "kind": "route",
       "id": "route:/treasury",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/treasury",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/treasury/InvestmentPage.test.tsx",
+            "title": "displays no-data state when entries are empty"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /treasury/fx-exposure \u2014 report:read allows viewing FX exposure"
+          }
+        ],
+        "tests": [
+          "src/pages/treasury/InvestmentPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/treasury/InvestmentPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -7563,10 +8165,15 @@
     {
       "kind": "route",
       "id": "route:/treasury/investments",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/treasury/investments",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (InvestmentPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7583,12 +8190,34 @@
     {
       "kind": "route",
       "id": "route:/variance",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/variance",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/variance/__tests__/VarianceDashboardPage.test.tsx",
+            "title": "renders the page heading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /variance \u2014 variance:read allows viewing variance"
+          }
+        ],
+        "tests": [
+          "src/pages/variance/__tests__/VarianceDashboardPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (VarianceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/variance/__tests__/VarianceDashboardPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -7613,10 +8242,15 @@
     {
       "kind": "route",
       "id": "route:/workforce/compensation",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/workforce/compensation",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (CompModelingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -7675,10 +8309,15 @@
     {
       "kind": "route",
       "id": "route:/workforce/payroll",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/workforce/payroll",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (PayrollForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     }

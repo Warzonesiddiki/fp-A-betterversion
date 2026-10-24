@@ -262,7 +262,7 @@ export default function WhatIfPage() {
           <CardContent className="p-4">
             <KPIValue
               label="Modifications"
-              value={activeSandbox?.modifications.length ?? 0}
+              value={activeSandbox?.modifications.length ?? 0} // zero is correct — no modifications yet
               icon={<Sliders className="h-4 w-4" />}
             />
           </CardContent>
@@ -286,7 +286,7 @@ export default function WhatIfPage() {
           <CardContent className="p-4">
             <KPIValue
               label="Differences"
-              value={comparison?.summary.totalDifferences ?? 0}
+              value={comparison?.summary.totalDifferences ?? 0} // zero is correct — no differences yet
               icon={<BarChart3 className="h-4 w-4" />}
             />
           </CardContent>

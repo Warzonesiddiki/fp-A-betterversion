@@ -13,13 +13,6 @@ import { ReportScheduler as SchedulerComponent } from '@/components/reports/Repo
 import { Calendar, HelpCircle } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => { try { return toDecimal(0); } catch { return 0 as unknown as ReturnType<typeof toDecimal>; } })();
-
-
-
-
 const HELP_SECTIONS = [
   {
     title: 'What is Report Scheduling?',

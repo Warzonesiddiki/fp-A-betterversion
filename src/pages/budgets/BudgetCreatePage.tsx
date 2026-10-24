@@ -48,9 +48,10 @@ export default function BudgetCreatePage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const totalAmount = useMemo(() => {
-    let total = 0;
+    let total = 0; // accumulator init, not a money read
     for (const key of Object.keys(amounts)) {
-      total += amounts[key] || 0;
+      const val = amounts[key];
+      if (val !== undefined) total += val;
     }
     return total;
   }, [amounts]);
@@ -116,7 +117,7 @@ export default function BudgetCreatePage() {
 
   const handleCreate = (status: 'Draft' | 'InReview') => {
     setSubmitError(null);
-    if (totalAmount === 0 && !window.confirm('Total amount is $0. Create budget anyway?')) return;
+    if (totalAmount === 0 && !window.confirm('Total amount is $0. Create budget anyway?')) return; // accumulator init, not a money read
     try {
       const budgetId = createBudget({
         name: form.name,

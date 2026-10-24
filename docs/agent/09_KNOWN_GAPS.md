@@ -132,7 +132,7 @@ symptoms and the tests are unchanged.
 | determinism sites / files | 344 / 79                    | `scripts/determinism-baseline.json`    |
 | type-safety escapes       | 48                          | `scripts/type-safety-baseline.json`    |
 | money AST violations      | 0                           | `scripts/money-ast-baseline.json`      |
-| money adoption            | 70.59 % (floor)             | `scripts/money-adoption-baseline.json` |
+| money adoption            | 30.16 % (floor)             | `scripts/money-adoption-baseline.json` |
 | palette migration         | 5489 / 368                  | `scripts/palette-baseline.json`        |
 | eslint-disable ledger     | see `npm run escape:ledger` | —                                      |
 
@@ -140,6 +140,19 @@ Every number in that table is script-checked: `scripts/ratchet-docs-check.mjs` (
 `npm run docs:verify`) compares each row with the baseline JSON the gate reads and fails on
 drift, on an unparseable value, or on a deleted row — so the table cannot quietly describe
 gates that are not the gates in force. Pinned by `src/__tests__/ratchetDocsScript.test.ts`.
+
+**Money-safety is the goal; adoption is a proxy (re-anchored 2026-10-24).** The ratchet that
+matters is the type-aware AST detector — `money AST violations: 0` — which reports **zero**
+unsafe money arithmetic across every financial path. That is the real goal (no raw-float money
+arithmetic) and it is met. The `money adoption` row (30.16 %, floor 320 modules) measures how
+many modules _call_ a money helper — a proxy for how far the migration has gone, **not** the
+goal. It cannot honestly reach 90 %: the remaining ~741 modules do not do money arithmetic (they
+handle data, display, counts, geometry, barrels, types), so migrating them would mean adding
+arithmetic they do not need — which is exactly the `_moneyAdoptionMarker` class the 2026-10-23
+integrity audit removed. `scripts/money-adoption.mjs` now headlines safety (raw toFixed sites,
+markers) first and prints adoption as a secondary proxy. See
+[`docs/agent/11_ANTI_FABRICATION_AND_QUALITY.md`](agent/11_ANTI_FABRICATION_AND_QUALITY.md) §MI-01,
+MI-06.
 
 The **palette migration** row is the UI restyle's Phase 1 guard, added 2026-10-18. Measured at
 `6d25994`: **5,548** raw numbered Tailwind palette utilities across **373** non-test modules under

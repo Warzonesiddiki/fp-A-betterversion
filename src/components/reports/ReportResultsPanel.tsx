@@ -2,9 +2,6 @@ import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import type { GeneratedReport, BoardPackSection } from '@/engines/ReportBookEngine';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // ---------------------------------------------------------------------------
 // Sub-components

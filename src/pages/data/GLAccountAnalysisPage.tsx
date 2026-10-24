@@ -14,16 +14,6 @@ import { BarChart3, Search } from 'lucide-react';
 import { computeRunningBalance, getAccountSummary } from '@/utils/glAnalysis';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 export default function GLAccountAnalysisPage() {
   const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);

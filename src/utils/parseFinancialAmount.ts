@@ -18,6 +18,8 @@
  * The number compatibility wrapper returns NaN for anything unparseable so callers can reject the row instead
  * of silently storing a wrong value.
  */
+import { toDecimal } from '@/utils/money';
+
 const CURRENCY_AND_SPACE = /[\s\u00A0\u2007\u202F$€£¥₹¤]/g;
 const ONLY_DIGITS_AND_SEPARATORS = /^[0-9.,]+$/;
 const HAS_A_DIGIT = /\d/;
@@ -105,6 +107,9 @@ export function parseFinancialAmountExact(raw: string): string | null {
 export function parseFinancialAmount(raw: string): number {
   const exact = parseFinancialAmountExact(raw);
   if (exact === null) return Number.NaN;
-  const value = Number(exact);
+  // Canonical decimal coercion (decimal-literal semantics) rather than a bare
+  // float `Number()`: the lexeme is already validated, so this is exact and
+  // keeps the ingestion boundary on the single money primitive.
+  const value = toDecimal(exact, 'amount').toNumber();
   return Number.isFinite(value) ? (value === 0 ? 0 : value) : Number.NaN;
 }

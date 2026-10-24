@@ -7,9 +7,6 @@ import { masterStorage } from '@/utils/masterStorage';
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
 import { nowISO } from '@/utils/clock';
 import { sha256Hex } from '@/utils/sha256';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export type UploadStep = 'select' | 'mapping' | 'preview' | 'importing' | 'complete' | 'error';
 export type ImportFormat = 'csv' | 'xlsx' | 'xls' | 'unknown';

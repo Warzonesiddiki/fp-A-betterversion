@@ -74,7 +74,7 @@ describe('CashForecastPage — 4-state interop (T036-T040)', () => {
   });
 
   it('journey: renders cash position with data', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       if (typeof selector === 'function') {
         return selector({
@@ -95,7 +95,7 @@ describe('CashForecastPage — 4-state interop (T036-T040)', () => {
   });
 
   it('empty: shows No Cash Activity with CTA', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = { entries: [], isLoading: false, importError: null };
       return typeof selector === 'function' ? selector(state) : state;
@@ -108,7 +108,7 @@ describe('CashForecastPage — 4-state interop (T036-T040)', () => {
   });
 
   it('error: shows role=alert with retry', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = { entries: [], isLoading: false, importError: 'Failed to load GL' };
       return typeof selector === 'function' ? selector(state) : state;
@@ -122,7 +122,7 @@ describe('CashForecastPage — 4-state interop (T036-T040)', () => {
   });
 
   it('loading: shows Skeleton with srLabel and aria-busy', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = { entries: [], isLoading: true, importError: null };
       return typeof selector === 'function' ? selector(state) : state;

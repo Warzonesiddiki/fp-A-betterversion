@@ -2,9 +2,6 @@ import { FileDropZone } from '@/components/ui/FileDropZone';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Alert';
 import { ArrowLeftRight } from 'lucide-react';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface ReconciliationPanelProps {
   recFile: File | null;

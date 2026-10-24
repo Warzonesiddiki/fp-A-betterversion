@@ -99,6 +99,7 @@ export default function DeferredSchedulePage() {
       const month = e.period || (e.date ?? '').slice(0, 7);
       if (!month) continue;
       const d = roundTo(subtractMoney(e.credit, e.debit), 2);
+      // zero is correct — month with no prior deferred balance starts at zero
       const prior = map.get(month) ?? 0;
       map.set(month, roundTo(prior + d, 2));
     }

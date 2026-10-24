@@ -5,9 +5,6 @@ import { activateOnKey } from '@/utils/a11yActivate';
 import { cn } from '@/utils/cn';
 
 import { Skeleton } from './Skeleton';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface Column<T extends object = Record<string, unknown>> {
   key: string;

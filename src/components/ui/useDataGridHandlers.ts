@@ -1,9 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { AgGridReact } from 'ag-grid-react';
 import type { DataGridColumn, SelectionStats } from './DataGrid.types';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

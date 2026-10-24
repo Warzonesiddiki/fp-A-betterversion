@@ -1,9 +1,6 @@
 import { ImportEngine, type ImportProgress } from '@/engines/ImportEngine';
 import type { ImportFormat } from '@/store/glUploadStore';
 import { ExcelImportEngine, type AutoColumnMapping } from '@/engines/ExcelImportEngine';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export type ImportStage =
   | 'detect'

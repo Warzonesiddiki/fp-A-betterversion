@@ -9,9 +9,6 @@ import { useFxRateStore } from '@/store/fxRateStore';
 import { Plus, TrendingUp, TrendingDown, History, Trash2 } from 'lucide-react';
 import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { CURRENCIES, SOURCE_LABEL, SOURCE_VARIANT } from './constants';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface RateForm {
   fromCurrency: string;

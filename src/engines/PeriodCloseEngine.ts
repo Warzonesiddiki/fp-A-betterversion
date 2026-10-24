@@ -4,9 +4,6 @@
 // format ISO string (no 'Z' suffix). Audit: docs/engines/TEMPORAL_ENGINE_CORRECTNESS.md
 import { parseToUTCEpoch } from './temporal';
 import { nowISO } from '@/utils/clock';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface CloseTask {
   id: string;

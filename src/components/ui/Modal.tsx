@@ -2,9 +2,6 @@ import { forwardRef, HTMLAttributes, useCallback, useEffect, useId, useRef } fro
 import { cn } from '../../utils/cn';
 import { X } from 'lucide-react';
 import { isTopDialogLayer, popDialogLayer, pushDialogLayer } from './dialogLayers';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';

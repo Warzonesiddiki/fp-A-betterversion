@@ -10,9 +10,6 @@
  */
 import type { GLEntry } from '@/types';
 import { roundTo, sumMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Standard-costing variances settle against the GL, so every figure here is

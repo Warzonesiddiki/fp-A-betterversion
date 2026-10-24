@@ -1,8 +1,8 @@
 // framer-motion removed for bundle diet — replaced with CSS equivalents (T011-T013)
 // Original Variants/Transition types replaced with plain objects for compatibility
 
-type Variants = Record<string, any>;
-type Transition = Record<string, any>;
+type Variants = Record<string, unknown>;
+type Transition = Record<string, unknown>;
 
 const defaultTransition: Transition = {
   type: 'spring',

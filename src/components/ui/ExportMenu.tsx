@@ -2,9 +2,6 @@ import React from 'react';
 import { Download, FileDown, FileSpreadsheet, FileText, ChevronDown } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { cn } from '@/utils/cn';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface ExportMenuProps {
   onExport: (format: 'pdf' | 'excel' | 'csv') => void;

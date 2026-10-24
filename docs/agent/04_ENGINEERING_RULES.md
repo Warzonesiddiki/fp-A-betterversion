@@ -118,3 +118,36 @@ adding one is a valid, welcome unit of work.
 8. Changing the spec/doc to match a code defect instead of fixing the code.
 9. Starting new surface while a prior gate is red.
 10. Resolving an owner decision (DEC-xxx) implicitly in code.
+11. Introducing a marker, stub, void const, or placeholder whose only purpose is
+    to satisfy a counter — `_xMarker = toDecimal(0)`, `void 0;`,
+    `// Money adoption:` (see §M).
+12. Reporting a proxy metric (an import, a declaration, a file count) as the
+    headline without its behaviour-measured companion (see §M).
+13. Adding a skill step that exists only to trip a gate, or teaching a
+    gate-gaming technique as a technique (see §M).
+14. Reporting a ratchet value that no named command reproduces on the committed
+    tree (see §M).
+
+## M. Metric integrity and anti-fabrication (2026-10-24)
+
+The 2026-10-24 money-adoption incident was a **metric-design and enforcement**
+failure, not a missing rule: the ratchet counted _imports_ (a proxy), a skill
+_taught_ the marker, and no gate detected it. The full rule set — MI-01 … MI-10
+(metric integrity), WQ-01 … WQ-07 (work quality), the incident case study, the
+self-check, and the doc map — is owned by
+[`docs/agent/11_ANTI_FABRICATION_AND_QUALITY.md`](11_ANTI_FABRICATION_AND_QUALITY.md).
+This section is the pointer; it does not duplicate those rules.
+
+**Enforcement gates** (all in `npm run check`):
+
+| Gate                   | Command                     | Tolerance            | What it proves                                         |
+| ---------------------- | --------------------------- | -------------------- | ------------------------------------------------------ |
+| Fake-signal audit      | `npm run placeholder:audit` | **zero**             | no marker/stub/void/placeholder in `src`               |
+| Money-adoption ratchet | `npm run money:adoption`    | ratchet              | genuine money-fn usage ≥ baseline; fails on any marker |
+| Money-AST audit        | `npm run money:ast`         | 0 unsafe (ratcheted) | no raw-float money arithmetic                          |
+| Fabrication audit      | `npm run fabrication:audit` | ratcheted            | no hand-typed financial literals / demo entities       |
+
+**Design rule for any ratchet:** before trusting a ratchet, write the check that
+fails on the exact fake that would game it, and run it in `check` (MI-03). A ratchet
+with no anti-gaming check is unfalsifiable. A ratchet that jumps without a behaviour
+change is an alarm, not a win (MI-09).

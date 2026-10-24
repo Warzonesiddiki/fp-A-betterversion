@@ -1,8 +1,5 @@
 import { type ReactNode, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface ChartCardProps {
   title: string;
