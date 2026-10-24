@@ -2831,6 +2831,36 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:analyze.exception-rules \u2014 exception rules guarded by exception:configure, audit trail",
         "proves": "Exception rules require exception:configure; disposition requires exception:dispose; Viewer denied."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.exception-rules \u2014 registerRule with duplicate ruleId+version throws validation error",
+        "proves": "exceptionRuleCatalogueStore.registerRule throws on duplicate ruleId+version; EXCEPTION_CONFIGURE permission passes for Admin"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.exception-rules \u2014 registerRule with valid input succeeds",
+        "proves": "exceptionRuleCatalogueStore.registerRule succeeds with valid input for Admin; rule stored with correct ruleId"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.exception-rules \u2014 supersedeRule with unknown ruleId throws validation error",
+        "proves": "exceptionRuleCatalogueStore.supersedeRule throws on unknown ruleId; validation enforces rule existence"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.exception-rules \u2014 supersedeRule creates new version, retires old",
+        "proves": "exceptionRuleCatalogueStore.supersedeRule creates v2, retires v1 (status=RETIRED, supersededBy set); versioning enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.exception-rules \u2014 updateRuleStatus transitions rule status",
+        "proves": "exceptionRuleCatalogueStore.updateRuleStatus transitions rule status to ACTIVE; EXCEPTION_CONFIGURE permission passes for Admin"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.exception-rules \u2014 EXCEPTION_CONFIGURE denies Viewer for registerRule",
+        "proves": "exceptionRuleCatalogueStore.registerRule throws PermissionError for Viewer; EXCEPTION_CONFIGURE only for Admin"
       }
     ],
     "analyze.findings-disposition": [

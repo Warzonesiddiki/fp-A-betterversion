@@ -512,3 +512,40 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 |
 | Remaining EXPERIMENTAL | 25 (engine/AI features) |
 | All gates PASS | ✓ |
+
+## Phase 14 — Exception Rule Catalogue Validation Guard Tests (2026-10-24)
+
+**Objective:** Test exceptionRuleCatalogueStore validation guards — rule versioning system with duplicate prevention and supersede logic.
+
+**Store tested:** exceptionRuleCatalogueStore
+
+**Tests added:** 6 (batch 18)
+
+| # | Test | Claim |
+|---|------|-------|
+| 1 | registerRule with duplicate ruleId+version throws | stateClaim |
+| 2 | registerRule with valid input succeeds | stateClaim |
+| 3 | supersedeRule with unknown ruleId throws | stateClaim |
+| 4 | supersedeRule creates new version, retires old | stateClaim |
+| 5 | updateRuleStatus transitions rule status | stateClaim |
+| 6 | EXCEPTION_CONFIGURE denies Viewer for registerRule | stateClaim |
+
+**Capability claims:** 6 new under analyze.exception-rules (44 capabilities, 188 total claims).
+
+**Key learning:** exceptionRuleCatalogueStore implements a rule versioning system: `registerRule` prevents duplicate registrations (same ruleId + version), `supersedeRule` creates a new version (v+1), retires the old version (status=RETIRED, supersededBy set), and `updateRuleStatus` transitions rule lifecycle status. Only Admin has EXCEPTION_CONFIGURE permission. The versioning system ensures audit trail of rule changes — superseded rules are not deleted, they're marked RETIRED with a reference to the new version.
+
+**Test count:** 643 total. All passing.
+
+**Register SUPPORTED:** 146 (unchanged).
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 643 |
+| Routes governed | 104 |
+| Capability claims | 188 (44 capabilities) |
+| Register SUPPORTED | 146 |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL | 25 (engine/AI features) |
+| All gates PASS | ✓ |

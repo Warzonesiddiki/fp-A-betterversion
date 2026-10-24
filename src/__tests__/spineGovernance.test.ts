@@ -34,6 +34,7 @@ import { useFxRateStore } from '@/store/fxRateStore';
 import { useCubeStore } from '@/store/cubeStore';
 import { useDocumentStore } from '@/store/documentStore';
 import { useTPBenchmarkStore } from '@/store/tpBenchmarkStore';
+import { useExceptionRuleCatalogueStore } from '@/store/exceptionRuleCatalogue';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useIntegrationStore } from '@/store/integrationStore';
 import { useConstructionStore } from '@/store/constructionStore';
@@ -5608,5 +5609,104 @@ describe('GOVERNED capability-level — documentStore validation guard tests (ba
     expect(doc).toBeDefined();
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
+  });
+});
+
+describe('GOVERNED capability-level — exceptionRuleCatalogue validation guard tests (batch 18)', () => {
+  it('GOVERNED cap:analyze.exception-rules — registerRule with duplicate ruleId+version throws validation error', () => {
+    actAs('Admin');
+    const rule = {
+      ruleId: 'RULE-1',
+      version: 1,
+      name: 'Test Rule',
+      description: 'test',
+      severity: 'HIGH',
+      condition: { type: 'THRESHOLD', threshold: 100 },
+      action: 'FLAG',
+    };
+    useExceptionRuleCatalogueStore.getState().registerRule(rule as never);
+    expect(() =>
+      useExceptionRuleCatalogueStore.getState().registerRule(rule as never)
+    ).toThrow(/Rule RULE-1 v1 already exists/);
+  });
+
+  it('GOVERNED cap:analyze.exception-rules — registerRule with valid input succeeds', () => {
+    actAs('Admin');
+    const rule = useExceptionRuleCatalogueStore.getState().registerRule({
+      ruleId: 'RULE-2',
+      version: 1,
+      name: 'New Rule',
+      description: 'test',
+      severity: 'MEDIUM',
+      condition: { type: 'THRESHOLD', threshold: 50 },
+      action: 'FLAG',
+    } as never);
+    expect(rule).toBeDefined();
+    expect(rule.ruleId).toBe('RULE-2');
+  });
+
+  it('GOVERNED cap:analyze.exception-rules — supersedeRule with unknown ruleId throws validation error', () => {
+    actAs('Admin');
+    expect(() =>
+      useExceptionRuleCatalogueStore.getState().supersedeRule('UNKNOWN-RULE', {
+        name: 'Updated',
+      } as never, 'admin-1')
+    ).toThrow(/Rule UNKNOWN-RULE not found/);
+  });
+
+  it('GOVERNED cap:analyze.exception-rules — supersedeRule creates new version, retires old', () => {
+    actAs('Admin');
+    useExceptionRuleCatalogueStore.getState().registerRule({
+      ruleId: 'RULE-3',
+      version: 1,
+      name: 'Original Rule',
+      description: 'test',
+      severity: 'HIGH',
+      condition: { type: 'THRESHOLD', threshold: 100 },
+      action: 'FLAG',
+    } as never);
+    const next = useExceptionRuleCatalogueStore.getState().supersedeRule('RULE-3', {
+      name: 'Updated Rule',
+    } as never, 'admin-1');
+    expect(next.version).toBe(2);
+    expect(next.name).toBe('Updated Rule');
+    const old = useExceptionRuleCatalogueStore.getState().rules.find(
+      (r) => r.ruleId === 'RULE-3' && r.version === 1
+    );
+    expect(old!.status).toBe('RETIRED');
+    expect(old!.supersededBy).toBe('RULE-3:v2');
+  });
+
+  it('GOVERNED cap:analyze.exception-rules — updateRuleStatus transitions rule status', () => {
+    actAs('Admin');
+    useExceptionRuleCatalogueStore.getState().registerRule({
+      ruleId: 'RULE-4',
+      version: 1,
+      name: 'Test Rule',
+      description: 'test',
+      severity: 'HIGH',
+      condition: { type: 'THRESHOLD', threshold: 100 },
+      action: 'FLAG',
+    } as never);
+    useExceptionRuleCatalogueStore.getState().updateRuleStatus('RULE-4', 'ACTIVE', 1);
+    const rule = useExceptionRuleCatalogueStore.getState().rules.find(
+      (r) => r.ruleId === 'RULE-4' && r.version === 1
+    );
+    expect(rule!.status).toBe('ACTIVE');
+  });
+
+  it('GOVERNED cap:analyze.exception-rules — EXCEPTION_CONFIGURE denies Viewer for registerRule', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() =>
+      useExceptionRuleCatalogueStore.getState().registerRule({
+        ruleId: 'RULE-5',
+        version: 1,
+        name: 'Test',
+        description: 'test',
+        severity: 'HIGH',
+        condition: { type: 'THRESHOLD', threshold: 100 },
+        action: 'FLAG',
+      } as never)
+    );
   });
 });
