@@ -298,3 +298,22 @@ After covering all 39 stores with enforce() calls, added tests for additional un
 | Stores with enforce() covered | 39/39 |
 | Remaining EXPERIMENTAL capabilities | 18 (engine/AI features without store-level enforce()) |
 | All gates PASS | ✓ |
+
+## Phase 8 — Audit Trail Store Tests (Batch 10): 2026-10-24
+
+Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (AUDIT_DELETE) — the most critical governance surface (audit chain integrity). revertToState appends a new chained entry rather than rewriting history (DEC-038).
+
+**Capability key fix:** Batch 10 tests initially used `cap:govern.auditability` but the register has `cap:wf.auditability`. Fixed test titles and evidence.json. Restored 2 batch 9 notificationStore claims that were overwritten during the rename.
+
+### Final Metrics (after batch 10)
+
+| Metric | Value |
+| --- | --- |
+| Governance tests | 597 (470 base + 127 additional across 10 batches) |
+| GOVERNED routes | 104 (312 state claims) |
+| GOVERNED capabilities | 42 (142 capability claims) |
+| Census claims | 2 (0 ungated) |
+| Register SUPPORTED | 146 (64 routes + 20 capabilities promoted) |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL capabilities | 25 (engine/AI features without store-level enforce()) |
+| All gates PASS | ✓ |
