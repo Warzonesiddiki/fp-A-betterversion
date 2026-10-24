@@ -2773,3 +2773,151 @@ describe('GOVERNED /data/version-diff — Version diff analysis surface', () => 
     expect(useAuthStore.getState().activeEntityId).toBe('');
   });
 });
+
+// ---------------------------------------------------------------------------
+// /reports/book-builder — Report book builder surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /reports/book-builder — Report book builder surface', () => {
+  it('GOVERNED /reports/book-builder — report:create guards report creation for book builder', () => {
+    const error = expectPermissionDenied(() =>
+      useReportStore.getState().createReport({ name: 'Gov Book Builder Rpt' } as never)
+    );
+    expect(error.message).toContain('report:create');
+  });
+
+  it('GOVERNED /reports/book-builder — audit trail records book builder report write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'report:write',
+      entity: 'report',
+      entityId: 'gov-book-1',
+      payload: { name: 'Gov Book Builder Rpt', book: 'annual' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /reports/book-builder — write guard requires report:delete on report removal', () => {
+    const error = expectPermissionDenied(() =>
+      useReportStore.getState().deleteReport('gov-book-1')
+    );
+    expect(error.message).toContain('report:delete');
+  });
+
+  it('GOVERNED /reports/book-builder — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /workforce/payroll — Payroll forecast surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /workforce/payroll — Payroll forecast surface', () => {
+  it('GOVERNED /workforce/payroll — entity:create guards employee creation for payroll', () => {
+    const error = expectPermissionDenied(() =>
+      useWorkforceStore.getState().addEmployee({ name: 'Gov Payroll Emp' } as never)
+    );
+    expect(error.message).toContain('entity:create');
+  });
+
+  it('GOVERNED /workforce/payroll — audit trail records payroll employee write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'employee:write',
+      entity: 'employee',
+      entityId: 'gov-payroll-1',
+      payload: { name: 'Gov Payroll Emp', department: 'finance' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /workforce/payroll — write guard requires entity:update on employee update', () => {
+    const error = expectPermissionDenied(() =>
+      useWorkforceStore.getState().updateEmployee('gov-payroll-1', { salary: 100000 } as never)
+    );
+    expect(error.message).toContain('entity:update');
+  });
+
+  it('GOVERNED /workforce/payroll — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /collaboration/approvals — Approval queue surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /collaboration/approvals — Approval queue surface', () => {
+  it('GOVERNED /collaboration/approvals — collab:update guards comment posting in approval queue', () => {
+    const error = expectPermissionDenied(() =>
+      useCollaborationStore.getState().addComment({ content: 'Gov approval comment' } as never)
+    );
+    expect(error.message).toContain('collab:update');
+  });
+
+  it('GOVERNED /collaboration/approvals — audit trail records approval queue collaboration write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'collab:write',
+      entity: 'approval',
+      entityId: 'gov-appr-1',
+      payload: { content: 'Gov approval comment', queue: 'budget' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /collaboration/approvals — write guard requires workflow:approve on approvals', () => {
+    const error = expectPermissionDenied(() =>
+      useCollaborationStore.getState().setApprovals([])
+    );
+    expect(error.message).toContain('workflow:approve');
+  });
+
+  it('GOVERNED /collaboration/approvals — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /analytics/benchmarking — Benchmarking analysis surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /analytics/benchmarking — Benchmarking analysis surface', () => {
+  it('GOVERNED /analytics/benchmarking — import:create guards benchmarking entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-bench-1', accountId: '4000', amount: 5000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+
+  it('GOVERNED /analytics/benchmarking — audit trail records benchmarking write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'benchmark:write',
+      entity: 'benchmark',
+      entityId: 'gov-bench-1',
+      payload: { accountId: '4000', amount: 5000, benchmark: 'industry' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /analytics/benchmarking — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().clearData()
+    );
+    expect(error.message).toContain('import:delete');
+  });
+
+  it('GOVERNED /analytics/benchmarking — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
