@@ -29,9 +29,7 @@ import {
  */
 
 describe('LLM Egress Chokepoint — AI EXPLICIT INVOCATION (ai.explicit-invocation)', () => {
-
   describe('1. Kill switch', () => {
-
     it('isEgressEnabled returns false by default (test environment)', () => {
       // In the test environment, VITE_LLM_EGRESS_ENABLED is not set to 'true'.
       // The kill switch must be off by default — AI features are local-only.
@@ -47,10 +45,10 @@ describe('LLM Egress Chokepoint — AI EXPLICIT INVOCATION (ai.explicit-invocati
   });
 
   describe('2. Fail-closed endpoint gating', () => {
-
     it('assertEndpointAllowed throws LlmEgressBlockedError when egress disabled', () => {
-      expect(() => assertEndpointAllowed('https://api.openai.com/v1/chat/completions'))
-        .toThrow(LlmEgressBlockedError);
+      expect(() => assertEndpointAllowed('https://api.openai.com/v1/chat/completions')).toThrow(
+        LlmEgressBlockedError
+      );
     });
 
     it('assertEndpointAllowed throws with correct blocked code', () => {
@@ -64,13 +62,13 @@ describe('LLM Egress Chokepoint — AI EXPLICIT INVOCATION (ai.explicit-invocati
 
     it('assertEndpointAllowed blocks all endpoints when egress disabled', () => {
       // Even allowlisted hosts must be blocked when the kill switch is off.
-      expect(() => assertEndpointAllowed('https://api.nvidia.com/v1/chat/completions'))
-        .toThrow(LlmEgressBlockedError);
+      expect(() => assertEndpointAllowed('https://api.nvidia.com/v1/chat/completions')).toThrow(
+        LlmEgressBlockedError
+      );
     });
   });
 
   describe('3. Error type and code', () => {
-
     it('LlmEgressBlockedError has LLM-EGRESS-BLOCKED code', () => {
       const error = new LlmEgressBlockedError('egress-disabled', 'https://test.com');
       expect(error.code).toBe('LLM-EGRESS-BLOCKED');
@@ -88,7 +86,6 @@ describe('LLM Egress Chokepoint — AI EXPLICIT INVOCATION (ai.explicit-invocati
   });
 
   describe('4. Redaction', () => {
-
     it('redactPromptText redacts email addresses', () => {
       const result = redactPromptText('Contact user@company.com for details');
       expect(result.text).not.toContain('user@company.com');
@@ -126,7 +123,6 @@ describe('LLM Egress Chokepoint — AI EXPLICIT INVOCATION (ai.explicit-invocati
   });
 
   describe('5. Message redaction', () => {
-
     it('redactMessages redacts emails in all message roles', () => {
       const messages: LlmMessage[] = [
         { role: 'system', content: 'System: contact admin@test.com' },
@@ -157,7 +153,6 @@ describe('LLM Egress Chokepoint — AI EXPLICIT INVOCATION (ai.explicit-invocati
   });
 
   describe('6. Local-only processing', () => {
-
     it('no egress occurs in test environment (kill switch off)', () => {
       // The kill switch must be off — proving AI features are local-only
       // unless explicitly enabled via environment configuration.

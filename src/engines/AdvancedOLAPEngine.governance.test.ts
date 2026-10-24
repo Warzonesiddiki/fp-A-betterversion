@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { AdvancedOLAPEngine, type OLAPMember, type OLAPHierarchy, type MDXQuery } from './AdvancedOLAPEngine';
+import {
+  AdvancedOLAPEngine,
+  type OLAPMember,
+  type OLAPHierarchy,
+  type MDXQuery,
+} from './AdvancedOLAPEngine';
 
 /**
  * GOVERNANCE EVIDENCE for cap:analyze.drill-to-source
@@ -32,7 +37,12 @@ function makeMember(
   return { id, name, dimensionId, parentId, level, properties: {} };
 }
 
-function makeHierarchy(id: string, name: string, dimensionId: string, levels: string[]): OLAPHierarchy {
+function makeHierarchy(
+  id: string,
+  name: string,
+  dimensionId: string,
+  levels: string[]
+): OLAPHierarchy {
   return { id, name, dimensionId, type: 'balanced', levels };
 }
 
@@ -41,9 +51,7 @@ beforeEach(() => {
 });
 
 describe('AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)', () => {
-
   describe('1. Member management', () => {
-
     it('addMember adds a member', () => {
       const engine = new AdvancedOLAPEngine();
       engine.addMember(makeMember('m1', 'Revenue', 'Financials', null, 0));
@@ -70,7 +78,6 @@ describe('AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)', () => {
   });
 
   describe('2. Hierarchy navigation (drill-down / drill-up)', () => {
-
     it('getDescendants returns all descendants of a member', () => {
       const engine = new AdvancedOLAPEngine();
       engine.addMember(makeMember('parent', 'Parent', 'Dim', null, 0));
@@ -107,7 +114,9 @@ describe('AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)', () => {
 
     it('getMembersAtLevel returns members at a specific level', () => {
       const engine = new AdvancedOLAPEngine();
-      engine.addHierarchy(makeHierarchy('h1', 'Hierarchy', 'Dim', ['Level 0', 'Level 1', 'Level 2']));
+      engine.addHierarchy(
+        makeHierarchy('h1', 'Hierarchy', 'Dim', ['Level 0', 'Level 1', 'Level 2'])
+      );
       engine.addMember(makeMember('m0', 'Root', 'Dim', null, 0));
       engine.addMember(makeMember('m1', 'Leaf', 'Dim', 'm0', 1));
       engine.addMember(makeMember('m2', 'Leaf 2', 'Dim', 'm0', 1));
@@ -118,7 +127,6 @@ describe('AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)', () => {
   });
 
   describe('3. Cell security (RBAC at cell level)', () => {
-
     it('checkAccess returns read by default', () => {
       const engine = new AdvancedOLAPEngine();
       expect(engine.checkAccess('user1', 'Financials:Revenue')).toBe('read');
@@ -152,7 +160,6 @@ describe('AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)', () => {
   });
 
   describe('4. Writeback audit trail', () => {
-
     it('writeback logs old and new values', () => {
       const engine = new AdvancedOLAPEngine();
       engine.setCellValue('Financials:Revenue|Time:Q1', 100000);
@@ -195,7 +202,6 @@ describe('AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)', () => {
   });
 
   describe('5. Query execution', () => {
-
     it('executeQuery returns results for valid query', () => {
       const engine = new AdvancedOLAPEngine();
       engine.addMember(makeMember('revenue', 'Revenue', 'Financials', null, 0));
@@ -228,15 +234,12 @@ describe('AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)', () => {
   });
 
   describe('6. What-if scenario isolation', () => {
-
     it('whatIfScenario does not affect original cell values', () => {
       const engine = new AdvancedOLAPEngine();
       engine.setCellValue('cell1', 100);
       engine.setCellValue('cell2', 200);
 
-      engine.whatIfScenario([
-        { cellKey: 'cell1', newValue: 150 },
-      ]);
+      engine.whatIfScenario([{ cellKey: 'cell1', newValue: 150 }]);
 
       // Originals are restored after scenario evaluation
       expect(engine.getCellValue('cell1')).toBe(100);
@@ -248,9 +251,7 @@ describe('AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)', () => {
       engine.setCellValue('cell1', 100);
       engine.setCellValue('cell2', 200);
 
-      const scenario = engine.whatIfScenario([
-        { cellKey: 'cell1', newValue: 150 },
-      ]);
+      const scenario = engine.whatIfScenario([{ cellKey: 'cell1', newValue: 150 }]);
 
       // After restoration, the map contains original values
       expect(scenario.get('cell1')).toBe(100);
@@ -259,7 +260,6 @@ describe('AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)', () => {
   });
 
   describe('7. Serialization', () => {
-
     it('serialize produces valid JSON', () => {
       const engine = new AdvancedOLAPEngine();
       engine.addMember(makeMember('m1', 'Revenue', 'Dim', null, 0));
@@ -284,7 +284,6 @@ describe('AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)', () => {
   });
 
   describe('8. Determinism', () => {
-
     it('executeQuery produces identical results for identical state', () => {
       const engine1 = new AdvancedOLAPEngine();
       engine1.addMember(makeMember('revenue', 'Revenue', 'Financials', null, 0));
@@ -308,7 +307,9 @@ describe('AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)', () => {
       const engine2 = new AdvancedOLAPEngine();
       engine2.addCellSecurity({ userId: 'u1', cellPattern: 'Financials:*', access: 'write' });
 
-      expect(engine1.checkAccess('u1', 'Financials:Revenue')).toBe(engine2.checkAccess('u1', 'Financials:Revenue'));
+      expect(engine1.checkAccess('u1', 'Financials:Revenue')).toBe(
+        engine2.checkAccess('u1', 'Financials:Revenue')
+      );
     });
   });
 });

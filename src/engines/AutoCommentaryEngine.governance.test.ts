@@ -22,24 +22,14 @@ import { AutoCommentaryEngine, type LineItem } from './AutoCommentaryEngine';
  * 7. Determinism
  */
 
-function makeLineItems(
-  name: string,
-  actual: number,
-  budget: number,
-  priorYear?: number
-): LineItem {
+function makeLineItems(name: string, actual: number, budget: number, priorYear?: number): LineItem {
   return { name, actual, budget, priorYear };
 }
 
 describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
-
   describe('1. Narrative gating', () => {
-
     it('generateSectionNarrative gates computed numbers not in verified facts', () => {
-      const items = [
-        makeLineItems('Revenue', 120000, 100000),
-        makeLineItems('COGS', 60000, 50000),
-      ];
+      const items = [makeLineItems('Revenue', 120000, 100000), makeLineItems('COGS', 60000, 50000)];
       const narrative = AutoCommentaryEngine.generateSectionNarrative('Revenue', items, '2026-Q1');
 
       expect(narrative).toBeTruthy();
@@ -54,9 +44,7 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
     });
 
     it('generateSectionNarrative includes total actual in narrative', () => {
-      const items = [
-        makeLineItems('Revenue', 120000, 100000),
-      ];
+      const items = [makeLineItems('Revenue', 120000, 100000)];
       const narrative = AutoCommentaryEngine.generateSectionNarrative('Revenue', items, '2026-Q1');
 
       expect(narrative).toContain('$120,000');
@@ -64,10 +52,12 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
   });
 
   describe('2. Money primitive safety', () => {
-
     it('generateVarianceCommentary uses decimal arithmetic for variance', () => {
       const commentary = AutoCommentaryEngine.generateVarianceCommentary(
-        100000.1, 100000, 'Revenue', '2026-Q1'
+        100000.1,
+        100000,
+        'Revenue',
+        '2026-Q1'
       );
 
       // fmtCurrency uses maxDecimals: 0 — rounds to nearest dollar
@@ -77,7 +67,10 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
 
     it('generateVarianceCommentary handles large numbers without float drift', () => {
       const commentary = AutoCommentaryEngine.generateVarianceCommentary(
-        1000000000.5, 1000000000, 'Revenue', '2026-Q1'
+        1000000000.5,
+        1000000000,
+        'Revenue',
+        '2026-Q1'
       );
 
       // 1000000000.5 rounds to $1,000,000,001 (maxDecimals: 0)
@@ -86,10 +79,12 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
   });
 
   describe('3. Zero-budget handling', () => {
-
     it('generateVarianceCommentary omits variance percentage when budget is zero', () => {
       const commentary = AutoCommentaryEngine.generateVarianceCommentary(
-        100000, 0, 'Revenue', '2026-Q1'
+        100000,
+        0,
+        'Revenue',
+        '2026-Q1'
       );
 
       expect(commentary).toContain('budget is zero');
@@ -97,9 +92,7 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
     });
 
     it('generateSectionNarrative omits variance percentage when budget is zero', () => {
-      const items = [
-        makeLineItems('Revenue', 100000, 0),
-      ];
+      const items = [makeLineItems('Revenue', 100000, 0)];
       const narrative = AutoCommentaryEngine.generateSectionNarrative('Revenue', items, '2026-Q1');
 
       expect(narrative).toContain('budget is zero');
@@ -107,7 +100,11 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
 
     it('generateVarianceCommentary omits YoY percentage when prior year is zero', () => {
       const commentary = AutoCommentaryEngine.generateVarianceCommentary(
-        100000, 90000, 'Revenue', '2026-Q1', { priorYear: 0 }
+        100000,
+        90000,
+        'Revenue',
+        '2026-Q1',
+        { priorYear: 0 }
       );
 
       expect(commentary).toContain('prior-year base is zero');
@@ -115,10 +112,12 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
   });
 
   describe('4. Variance direction', () => {
-
     it('generateVarianceCommentary uses "above budget" for positive variance', () => {
       const commentary = AutoCommentaryEngine.generateVarianceCommentary(
-        120000, 100000, 'Revenue', '2026-Q1'
+        120000,
+        100000,
+        'Revenue',
+        '2026-Q1'
       );
 
       expect(commentary).toContain('above budget');
@@ -126,25 +125,35 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
 
     it('generateVarianceCommentary uses "below budget" for negative variance', () => {
       const commentary = AutoCommentaryEngine.generateVarianceCommentary(
-        80000, 100000, 'Revenue', '2026-Q1'
+        80000,
+        100000,
+        'Revenue',
+        '2026-Q1'
       );
 
       expect(commentary).toContain('below budget');
     });
 
     it('generateVarianceCommentary never uses "favorable" or "unfavorable"', () => {
-      const aboveBudget = AutoCommentaryEngine.generateVarianceCommentary(120000, 100000, 'Revenue', '2026-Q1');
-      const belowBudget = AutoCommentaryEngine.generateVarianceCommentary(80000, 100000, 'Revenue', '2026-Q1');
+      const aboveBudget = AutoCommentaryEngine.generateVarianceCommentary(
+        120000,
+        100000,
+        'Revenue',
+        '2026-Q1'
+      );
+      const belowBudget = AutoCommentaryEngine.generateVarianceCommentary(
+        80000,
+        100000,
+        'Revenue',
+        '2026-Q1'
+      );
 
       expect(aboveBudget).not.toMatch(/favorable|unfavorable/i);
       expect(belowBudget).not.toMatch(/favorable|unfavorable/i);
     });
 
     it('generateSectionNarrative never uses "favorable" or "unfavorable"', () => {
-      const items = [
-        makeLineItems('Revenue', 120000, 100000),
-        makeLineItems('COGS', 60000, 50000),
-      ];
+      const items = [makeLineItems('Revenue', 120000, 100000), makeLineItems('COGS', 60000, 50000)];
       const narrative = AutoCommentaryEngine.generateSectionNarrative('Revenue', items, '2026-Q1');
 
       expect(narrative).not.toMatch(/favorable|unfavorable/i);
@@ -152,10 +161,12 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
   });
 
   describe('5. Significance threshold', () => {
-
     it('generateVarianceCommentary notes "broadly in line" for small variances', () => {
       const commentary = AutoCommentaryEngine.generateVarianceCommentary(
-        101000, 100000, 'Revenue', '2026-Q1'
+        101000,
+        100000,
+        'Revenue',
+        '2026-Q1'
       );
 
       // 1% variance < 5% threshold
@@ -164,7 +175,10 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
 
     it('generateVarianceCommentary notes significant variance for large variances', () => {
       const commentary = AutoCommentaryEngine.generateVarianceCommentary(
-        120000, 100000, 'Revenue', '2026-Q1'
+        120000,
+        100000,
+        'Revenue',
+        '2026-Q1'
       );
 
       // 20% variance > 5% threshold
@@ -174,7 +188,6 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
   });
 
   describe('6. Template interpolation', () => {
-
     it('interpolate formats money keys as currency', () => {
       const result = AutoCommentaryEngine.interpolate('Revenue: [amount]', { amount: 123456.78 });
 
@@ -208,10 +221,19 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
   });
 
   describe('7. Determinism', () => {
-
     it('generateVarianceCommentary produces identical output for identical inputs', () => {
-      const c1 = AutoCommentaryEngine.generateVarianceCommentary(120000, 100000, 'Revenue', '2026-Q1');
-      const c2 = AutoCommentaryEngine.generateVarianceCommentary(120000, 100000, 'Revenue', '2026-Q1');
+      const c1 = AutoCommentaryEngine.generateVarianceCommentary(
+        120000,
+        100000,
+        'Revenue',
+        '2026-Q1'
+      );
+      const c2 = AutoCommentaryEngine.generateVarianceCommentary(
+        120000,
+        100000,
+        'Revenue',
+        '2026-Q1'
+      );
 
       expect(c1).toBe(c2);
     });
@@ -229,10 +251,13 @@ describe('AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)', () => {
   });
 
   describe('8. Year-over-year comparison', () => {
-
     it('generateVarianceCommentary includes YoY comparison when priorYear provided', () => {
       const commentary = AutoCommentaryEngine.generateVarianceCommentary(
-        120000, 100000, 'Revenue', '2026-Q1', { priorYear: 110000 }
+        120000,
+        100000,
+        'Revenue',
+        '2026-Q1',
+        { priorYear: 110000 }
       );
 
       expect(commentary).toContain('prior year');

@@ -23,13 +23,9 @@ import type { LineItem } from './AutoCommentaryEngine';
  */
 
 describe('AutoCommentaryEngine — EXPLANATIONS (analyze.explanations)', () => {
-
   describe('1. Source attribution', () => {
-
     it('generateSectionNarrativeEnhanced returns source: local when egress disabled', async () => {
-      const items: LineItem[] = [
-        { name: 'Revenue', actual: 100000, budget: 90000 },
-      ];
+      const items: LineItem[] = [{ name: 'Revenue', actual: 100000, budget: 90000 }];
       const result = await AutoCommentaryEngine.generateSectionNarrativeEnhanced(
         'P&L',
         items,
@@ -41,9 +37,7 @@ describe('AutoCommentaryEngine — EXPLANATIONS (analyze.explanations)', () => {
     });
 
     it('NarrativeResult has text and source fields', async () => {
-      const items: LineItem[] = [
-        { name: 'Revenue', actual: 100000, budget: 90000 },
-      ];
+      const items: LineItem[] = [{ name: 'Revenue', actual: 100000, budget: 90000 }];
       const result = await AutoCommentaryEngine.generateSectionNarrativeEnhanced(
         'P&L',
         items,
@@ -71,11 +65,8 @@ describe('AutoCommentaryEngine — EXPLANATIONS (analyze.explanations)', () => {
   });
 
   describe('2. Local narrative determinism', () => {
-
     it('generateSectionNarrative produces identical output for identical inputs', () => {
-      const items: LineItem[] = [
-        { name: 'Revenue', actual: 100000, budget: 90000 },
-      ];
+      const items: LineItem[] = [{ name: 'Revenue', actual: 100000, budget: 90000 }];
       const r1 = AutoCommentaryEngine.generateSectionNarrative('P&L', items, 'Q1 2026');
       const r2 = AutoCommentaryEngine.generateSectionNarrative('P&L', items, 'Q1 2026');
       expect(r1).toBe(r2);
@@ -89,21 +80,23 @@ describe('AutoCommentaryEngine — EXPLANATIONS (analyze.explanations)', () => {
   });
 
   describe('3. Empty line items handling', () => {
-
     it('generateSectionNarrative handles empty line items', () => {
       const result = AutoCommentaryEngine.generateSectionNarrative('P&L', [], 'Q1 2026');
       expect(result).toContain('No data available');
     });
 
     it('generateSectionNarrativeEnhanced handles empty line items', async () => {
-      const result = await AutoCommentaryEngine.generateSectionNarrativeEnhanced('P&L', [], 'Q1 2026');
+      const result = await AutoCommentaryEngine.generateSectionNarrativeEnhanced(
+        'P&L',
+        [],
+        'Q1 2026'
+      );
       expect(result.source).toBe('local');
       expect(result.text).toContain('No data available');
     });
   });
 
   describe('4. Multiple line items aggregation', () => {
-
     it('generateSectionNarrative aggregates multiple line items', () => {
       const items: LineItem[] = [
         { name: 'Revenue', actual: 100000, budget: 90000 },
@@ -116,9 +109,7 @@ describe('AutoCommentaryEngine — EXPLANATIONS (analyze.explanations)', () => {
     });
 
     it('generateSectionNarrative handles single line item', () => {
-      const items: LineItem[] = [
-        { name: 'Revenue', actual: 100000, budget: 90000 },
-      ];
+      const items: LineItem[] = [{ name: 'Revenue', actual: 100000, budget: 90000 }];
       const result = AutoCommentaryEngine.generateSectionNarrative('P&L', items, 'Q1 2026');
       expect(result).toContain('Revenue');
       expect(result).toContain('Q1 2026');
@@ -126,14 +117,23 @@ describe('AutoCommentaryEngine — EXPLANATIONS (analyze.explanations)', () => {
   });
 
   describe('5. Variance direction in narrative', () => {
-
     it('generateVarianceCommentary reports above budget for positive variance', () => {
-      const result = AutoCommentaryEngine.generateVarianceCommentary(110000, 100000, 'Revenue', 'Q1');
+      const result = AutoCommentaryEngine.generateVarianceCommentary(
+        110000,
+        100000,
+        'Revenue',
+        'Q1'
+      );
       expect(result).toContain('above');
     });
 
     it('generateVarianceCommentary reports below budget for negative variance', () => {
-      const result = AutoCommentaryEngine.generateVarianceCommentary(90000, 100000, 'Revenue', 'Q1');
+      const result = AutoCommentaryEngine.generateVarianceCommentary(
+        90000,
+        100000,
+        'Revenue',
+        'Q1'
+      );
       expect(result).toContain('below');
     });
 
@@ -143,7 +143,12 @@ describe('AutoCommentaryEngine — EXPLANATIONS (analyze.explanations)', () => {
     });
 
     it('generateVarianceCommentary never uses favorable/unfavorable language', () => {
-      const above = AutoCommentaryEngine.generateVarianceCommentary(110000, 100000, 'Revenue', 'Q1');
+      const above = AutoCommentaryEngine.generateVarianceCommentary(
+        110000,
+        100000,
+        'Revenue',
+        'Q1'
+      );
       const below = AutoCommentaryEngine.generateVarianceCommentary(90000, 100000, 'Revenue', 'Q1');
       expect(above.toLowerCase()).not.toContain('favorable');
       expect(above.toLowerCase()).not.toContain('unfavorable');
@@ -153,14 +158,21 @@ describe('AutoCommentaryEngine — EXPLANATIONS (analyze.explanations)', () => {
   });
 
   describe('6. Explanation attribution consistency', () => {
-
     it('generateSectionNarrativeEnhanced is consistent across multiple calls', async () => {
       const items: LineItem[] = [
         { name: 'Revenue', actual: 100000, budget: 90000 },
         { name: 'Costs', actual: 60000, budget: 55000 },
       ];
-      const r1 = await AutoCommentaryEngine.generateSectionNarrativeEnhanced('P&L', items, 'Q1 2026');
-      const r2 = await AutoCommentaryEngine.generateSectionNarrativeEnhanced('P&L', items, 'Q1 2026');
+      const r1 = await AutoCommentaryEngine.generateSectionNarrativeEnhanced(
+        'P&L',
+        items,
+        'Q1 2026'
+      );
+      const r2 = await AutoCommentaryEngine.generateSectionNarrativeEnhanced(
+        'P&L',
+        items,
+        'Q1 2026'
+      );
       expect(r1.source).toBe(r2.source);
       expect(r1.text).toBe(r2.text);
     });
@@ -168,10 +180,12 @@ describe('AutoCommentaryEngine — EXPLANATIONS (analyze.explanations)', () => {
     it('source attribution distinguishes local from LLM paths', async () => {
       // In test environment, source must be 'local'
       // This proves the attribution mechanism distinguishes paths
-      const items: LineItem[] = [
-        { name: 'Revenue', actual: 100000, budget: 90000 },
-      ];
-      const result = await AutoCommentaryEngine.generateSectionNarrativeEnhanced('P&L', items, 'Q1 2026');
+      const items: LineItem[] = [{ name: 'Revenue', actual: 100000, budget: 90000 }];
+      const result = await AutoCommentaryEngine.generateSectionNarrativeEnhanced(
+        'P&L',
+        items,
+        'Q1 2026'
+      );
       expect(result.source).toBe('local');
       // If source were 'llm', that would mean egress was enabled in test env
       // which would be a governance violation (unconfigured NIM)

@@ -20,7 +20,6 @@ import { MultiBookEngine } from './MultiBookEngine';
  */
 
 describe('MultiBookEngine — GOVERNANCE (model.multi-book)', () => {
-
   beforeEach(() => {
     // Clear static state between tests
     const books = (MultiBookEngine as unknown as { books: Map<string, unknown> }).books;
@@ -30,16 +29,25 @@ describe('MultiBookEngine — GOVERNANCE (model.multi-book)', () => {
   });
 
   describe('1. Period closing immutability', () => {
-
     it('postEntry throws when period is closed', () => {
       const book = MultiBookEngine.createBook('US GAAP Book', 'us-gaap', 'USD', 'entity-1');
       MultiBookEngine.postEntry(book.id, {
-        accountId: '1000', debit: 100, credit: 0, description: 'Test', period: '2026-01', userId: 'analyst@finplan.test',
+        accountId: '1000',
+        debit: 100,
+        credit: 0,
+        description: 'Test',
+        period: '2026-01',
+        userId: 'analyst@finplan.test',
       });
       MultiBookEngine.closeBook(book.id, '2026-01');
       expect(() =>
         MultiBookEngine.postEntry(book.id, {
-          accountId: '1000', debit: 200, credit: 0, description: 'After close', period: '2026-01', userId: 'analyst@finplan.test',
+          accountId: '1000',
+          debit: 200,
+          credit: 0,
+          description: 'After close',
+          period: '2026-01',
+          userId: 'analyst@finplan.test',
         })
       ).toThrow();
     });
@@ -55,21 +63,32 @@ describe('MultiBookEngine — GOVERNANCE (model.multi-book)', () => {
       MultiBookEngine.closeBook(book.id, '2026-01');
       MultiBookEngine.reopenBook(book.id, '2026-01', 'admin@finplan.test');
       const entry = MultiBookEngine.postEntry(book.id, {
-        accountId: '1000', debit: 100, credit: 0, description: 'After reopen', period: '2026-01', userId: 'analyst@finplan.test',
+        accountId: '1000',
+        debit: 100,
+        credit: 0,
+        description: 'After reopen',
+        period: '2026-01',
+        userId: 'analyst@finplan.test',
       });
       expect(entry).toBeDefined();
     });
   });
 
   describe('2. Adjustment chain', () => {
-
     it('adjustEntry creates adjusted entry with adjustmentOf reference', () => {
       const book = MultiBookEngine.createBook('US GAAP Book', 'us-gaap', 'USD', 'entity-1');
       const original = MultiBookEngine.postEntry(book.id, {
-        accountId: '1000', debit: 100, credit: 0, description: 'Original', period: '2026-01', userId: 'analyst@finplan.test',
+        accountId: '1000',
+        debit: 100,
+        credit: 0,
+        description: 'Original',
+        period: '2026-01',
+        userId: 'analyst@finplan.test',
       });
       const adjusted = MultiBookEngine.adjustEntry(book.id, original.id, {
-        debit: 150, description: 'Adjustment', userId: 'admin@finplan.test',
+        debit: 150,
+        description: 'Adjustment',
+        userId: 'admin@finplan.test',
       });
       expect(adjusted.adjusted).toBe(true);
       expect(adjusted.adjustmentOf).toBe(original.id);
@@ -80,7 +99,9 @@ describe('MultiBookEngine — GOVERNANCE (model.multi-book)', () => {
       const book = MultiBookEngine.createBook('US GAAP Book', 'us-gaap', 'USD', 'entity-1');
       expect(() =>
         MultiBookEngine.adjustEntry(book.id, 'nonexistent', {
-          debit: 100, description: 'Adjustment', userId: 'admin@finplan.test',
+          debit: 100,
+          description: 'Adjustment',
+          userId: 'admin@finplan.test',
         })
       ).toThrow();
     });
@@ -88,25 +109,45 @@ describe('MultiBookEngine — GOVERNANCE (model.multi-book)', () => {
     it('original entry remains unchanged after adjustment', () => {
       const book = MultiBookEngine.createBook('US GAAP Book', 'us-gaap', 'USD', 'entity-1');
       const original = MultiBookEngine.postEntry(book.id, {
-        accountId: '1000', debit: 100, credit: 0, description: 'Original', period: '2026-01', userId: 'analyst@finplan.test',
+        accountId: '1000',
+        debit: 100,
+        credit: 0,
+        description: 'Original',
+        period: '2026-01',
+        userId: 'analyst@finplan.test',
       });
       MultiBookEngine.adjustEntry(book.id, original.id, {
-        debit: 150, description: 'Adjustment', userId: 'admin@finplan.test',
+        debit: 150,
+        description: 'Adjustment',
+        userId: 'admin@finplan.test',
       });
       const entries = MultiBookEngine.getEntries(book.id);
-      const orig = entries.find(e => e.id === original.id);
+      const orig = entries.find((e) => e.id === original.id);
       expect(orig!.debit).toBe(100);
       expect(orig!.adjusted).toBe(false);
     });
   });
 
   describe('3. Book consolidation correctness', () => {
-
     it('consolidateBooks aggregates entries across books', () => {
       const b1 = MultiBookEngine.createBook('US GAAP', 'us-gaap', 'USD', 'entity-1');
       const b2 = MultiBookEngine.createBook('IFRS', 'ifrs', 'USD', 'entity-1');
-      MultiBookEngine.postEntry(b1.id, { accountId: '1000', debit: 100, credit: 0, description: 'A', period: '2026-01', userId: 'u1' });
-      MultiBookEngine.postEntry(b2.id, { accountId: '1000', debit: 200, credit: 0, description: 'B', period: '2026-01', userId: 'u2' });
+      MultiBookEngine.postEntry(b1.id, {
+        accountId: '1000',
+        debit: 100,
+        credit: 0,
+        description: 'A',
+        period: '2026-01',
+        userId: 'u1',
+      });
+      MultiBookEngine.postEntry(b2.id, {
+        accountId: '1000',
+        debit: 200,
+        credit: 0,
+        description: 'B',
+        period: '2026-01',
+        userId: 'u2',
+      });
 
       const consolidated = MultiBookEngine.consolidateBooks([b1.id, b2.id]);
       expect(consolidated).toHaveLength(1);
@@ -116,8 +157,22 @@ describe('MultiBookEngine — GOVERNANCE (model.multi-book)', () => {
 
     it('consolidateBooks handles multiple accounts', () => {
       const b1 = MultiBookEngine.createBook('US GAAP', 'us-gaap', 'USD', 'entity-1');
-      MultiBookEngine.postEntry(b1.id, { accountId: '1000', debit: 100, credit: 0, description: 'A', period: '2026-01', userId: 'u1' });
-      MultiBookEngine.postEntry(b1.id, { accountId: '2000', debit: 50, credit: 0, description: 'B', period: '2026-01', userId: 'u1' });
+      MultiBookEngine.postEntry(b1.id, {
+        accountId: '1000',
+        debit: 100,
+        credit: 0,
+        description: 'A',
+        period: '2026-01',
+        userId: 'u1',
+      });
+      MultiBookEngine.postEntry(b1.id, {
+        accountId: '2000',
+        debit: 50,
+        credit: 0,
+        description: 'B',
+        period: '2026-01',
+        userId: 'u1',
+      });
 
       const consolidated = MultiBookEngine.consolidateBooks([b1.id]);
       expect(consolidated).toHaveLength(2);
@@ -125,12 +180,25 @@ describe('MultiBookEngine — GOVERNANCE (model.multi-book)', () => {
   });
 
   describe('4. Book comparison correctness', () => {
-
     it('compareBooks identifies differences between books', () => {
       const b1 = MultiBookEngine.createBook('US GAAP', 'us-gaap', 'USD', 'entity-1');
       const b2 = MultiBookEngine.createBook('IFRS', 'ifrs', 'USD', 'entity-1');
-      MultiBookEngine.postEntry(b1.id, { accountId: '1000', debit: 100, credit: 0, description: 'A', period: '2026-01', userId: 'u1' });
-      MultiBookEngine.postEntry(b2.id, { accountId: '1000', debit: 200, credit: 0, description: 'B', period: '2026-01', userId: 'u2' });
+      MultiBookEngine.postEntry(b1.id, {
+        accountId: '1000',
+        debit: 100,
+        credit: 0,
+        description: 'A',
+        period: '2026-01',
+        userId: 'u1',
+      });
+      MultiBookEngine.postEntry(b2.id, {
+        accountId: '1000',
+        debit: 200,
+        credit: 0,
+        description: 'B',
+        period: '2026-01',
+        userId: 'u2',
+      });
 
       const comparison = MultiBookEngine.compareBooks([b1.id, b2.id]);
       expect(comparison).toHaveLength(1);
@@ -141,11 +209,15 @@ describe('MultiBookEngine — GOVERNANCE (model.multi-book)', () => {
   });
 
   describe('5. Money primitive safety', () => {
-
     it('postEntry rounds debit and credit to 2 decimal places', () => {
       const book = MultiBookEngine.createBook('US GAAP', 'us-gaap', 'USD', 'entity-1');
       const entry = MultiBookEngine.postEntry(book.id, {
-        accountId: '1000', debit: 100.123456, credit: 0, description: 'Rounding test', period: '2026-01', userId: 'u1',
+        accountId: '1000',
+        debit: 100.123456,
+        credit: 0,
+        description: 'Rounding test',
+        period: '2026-01',
+        userId: 'u1',
       });
       expect(entry.debit).toBe(100.12);
     });
@@ -153,24 +225,42 @@ describe('MultiBookEngine — GOVERNANCE (model.multi-book)', () => {
     it('adjustEntry rounds adjustment values', () => {
       const book = MultiBookEngine.createBook('US GAAP', 'us-gaap', 'USD', 'entity-1');
       const original = MultiBookEngine.postEntry(book.id, {
-        accountId: '1000', debit: 100, credit: 0, description: 'A', period: '2026-01', userId: 'u1',
+        accountId: '1000',
+        debit: 100,
+        credit: 0,
+        description: 'A',
+        period: '2026-01',
+        userId: 'u1',
       });
       const adjusted = MultiBookEngine.adjustEntry(book.id, original.id, {
-        debit: 150.9999, description: 'Adjustment', userId: 'admin@finplan.test',
+        debit: 150.9999,
+        description: 'Adjustment',
+        userId: 'admin@finplan.test',
       });
       expect(adjusted.debit).toBe(151);
     });
   });
 
   describe('6. Book status lifecycle', () => {
-
     it('postEntry throws after period close (lifecycle enforcement)', () => {
       const book = MultiBookEngine.createBook('US GAAP', 'us-gaap', 'USD', 'entity-1');
-      MultiBookEngine.postEntry(book.id, { accountId: '1000', debit: 100, credit: 0, description: 'A', period: '2026-01', userId: 'u1' });
+      MultiBookEngine.postEntry(book.id, {
+        accountId: '1000',
+        debit: 100,
+        credit: 0,
+        description: 'A',
+        period: '2026-01',
+        userId: 'u1',
+      });
       MultiBookEngine.closeBook(book.id, '2026-01');
       expect(() =>
         MultiBookEngine.postEntry(book.id, {
-          accountId: '1000', debit: 200, credit: 0, description: 'B', period: '2026-01', userId: 'u1',
+          accountId: '1000',
+          debit: 200,
+          credit: 0,
+          description: 'B',
+          period: '2026-01',
+          userId: 'u1',
         })
       ).toThrow();
     });

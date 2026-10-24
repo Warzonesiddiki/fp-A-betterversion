@@ -178,9 +178,7 @@ function makeSummaryMetrics(result: ExactConsolidationResult): PackageSummaryMet
 }
 
 describe('financialPackageExport — GOVERNANCE (report.pptx-editable)', () => {
-
   describe('1. PPTX generation', () => {
-
     it('buildEditableBoardPackPptxBytes produces a valid byte archive', () => {
       const result = makeConsolidationResult();
       const metadata = makeMetadata();
@@ -209,7 +207,6 @@ describe('financialPackageExport — GOVERNANCE (report.pptx-editable)', () => {
   });
 
   describe('2. PPTX round-trip', () => {
-
     it('parseEditablePptxBytes extracts slide content correctly', () => {
       const result = makeConsolidationResult();
       const metadata = makeMetadata();
@@ -244,7 +241,6 @@ describe('financialPackageExport — GOVERNANCE (report.pptx-editable)', () => {
   });
 
   describe('3. Formula safety', () => {
-
     it('assertSafeSpreadsheetFormula allows SUM formula', () => {
       const formula = 'SUM(A1:A10)';
       const result = assertSafeSpreadsheetFormula(formula);
@@ -321,7 +317,6 @@ describe('financialPackageExport — GOVERNANCE (report.pptx-editable)', () => {
   });
 
   describe('4. Tie-out verification', () => {
-
     it('verifyBoardPackRowTieOut reports match when XLSX and PPTX agree', async () => {
       const result = makeConsolidationResult();
       const metadata = makeMetadata();
@@ -362,7 +357,6 @@ describe('financialPackageExport — GOVERNANCE (report.pptx-editable)', () => {
   });
 
   describe('5. Money primitive safety', () => {
-
     it('PPTX contains exact decimal strings (no float coercion)', () => {
       const result = makeConsolidationResult();
       const metadata = makeMetadata();
@@ -396,7 +390,6 @@ describe('financialPackageExport — GOVERNANCE (report.pptx-editable)', () => {
   });
 
   describe('6. Determinism', () => {
-
     it('buildEditableBoardPackPptxBytes produces identical output for identical inputs', () => {
       const result = makeConsolidationResult();
       const metadata = makeMetadata();
