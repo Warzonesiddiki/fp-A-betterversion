@@ -1819,12 +1819,30 @@
     {
       "kind": "capability",
       "id": "cap:admin.backup-restore",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "SUPPORTED",
       "evidence": {
-        "owner": "O3",
-        "question": "Encryption key-escrow/recovery decision (O3, docs/TASKBOARD.md §OWNER)"
+        "tests": [
+          "src/utils/backupRestore.governance.test.ts",
+          "src/utils/backupRestore.test.ts",
+          "src/utils/backupRestore.escrow.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/utils/backupRestore.governance.test.ts",
+            "title": "admin.backup-restore — GOVERNANCE (O3: no escrow, user-held key)"
+          }
+        ]
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "O3 RESOLVED (DEC-101): no escrow, user-held key. 16 governance tests covering money primitive safety, determinism, key custody, atomicity, completeness.",
+      "tests": [
+        "src/utils/backupRestore.governance.test.ts",
+        "src/utils/backupRestore.test.ts",
+        "src/utils/backupRestore.escrow.test.ts"
+      ],
+      "gate": "governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
@@ -2895,12 +2913,12 @@
     {
       "kind": "capability",
       "id": "cap:govern.entity-scope",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "RETIRED",
       "evidence": {
-        "owner": "O9",
-        "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)"
+        "decision": "DEC-103",
+        "commit": "PLACEHOLDER_COMMIT"
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "RETIRED per DEC-103 (O9): single-user tool; no multi-entity authorization needed."
     },
     {
       "kind": "capability",
@@ -2925,12 +2943,12 @@
     {
       "kind": "capability",
       "id": "cap:govern.sox-authority",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "RETIRED",
       "evidence": {
-        "owner": "O4",
-        "question": "SOX/audit authority decision (O4, docs/TASKBOARD.md §OWNER)"
+        "decision": "DEC-102",
+        "commit": "PLACEHOLDER_COMMIT"
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "RETIRED per DEC-102 (O4): not SOX; local chain is client evidence."
     },
     {
       "kind": "capability",
