@@ -3337,3 +3337,107 @@ describe('GOVERNED /tax/transfer-pricing — Transfer pricing surface', () => {
     expect(useAuthStore.getState().activeEntityId).toBe('');
   });
 });
+
+// ---------------------------------------------------------------------------
+// /banking/nim — Net interest margin surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /banking/nim — Net interest margin surface', () => {
+  it('GOVERNED /banking/nim — import:create guards NIM entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-nim-1', accountId: '19000', amount: 17000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /banking/nim — audit trail records NIM write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'nim:write', entity: 'entry', entityId: 'gov-nim-1', payload: { accountId: '19000', amount: 17000, metric: 'net-interest-margin' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /banking/nim — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /banking/nim — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /banking/capital — Capital adequacy surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /banking/capital — Capital adequacy surface', () => {
+  it('GOVERNED /banking/capital — import:create guards capital adequacy entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-cap-1', accountId: '20000', amount: 18000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /banking/capital — audit trail records capital adequacy write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'capital:write', entity: 'entry', entityId: 'gov-cap-1', payload: { accountId: '20000', amount: 18000, ratio: 'CAR' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /banking/capital — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /banking/capital — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /capex/depreciation — Depreciation forecast surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /capex/depreciation — Depreciation forecast surface', () => {
+  it('GOVERNED /capex/depreciation — import:create guards depreciation entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-dep-1', accountId: '21000', amount: 19000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /capex/depreciation — audit trail records depreciation write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'depreciation:write', entity: 'entry', entityId: 'gov-dep-1', payload: { accountId: '21000', amount: 19000, method: 'straight-line' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /capex/depreciation — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /capex/depreciation — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /cash/working-capital — Working capital surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /cash/working-capital — Working capital surface', () => {
+  it('GOVERNED /cash/working-capital — import:create guards working capital entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-wc-1', accountId: '22000', amount: 20000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /cash/working-capital — audit trail records working capital write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'wc:write', entity: 'entry', entityId: 'gov-wc-1', payload: { accountId: '22000', amount: 20000, metric: 'DSO' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /cash/working-capital — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /cash/working-capital — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
