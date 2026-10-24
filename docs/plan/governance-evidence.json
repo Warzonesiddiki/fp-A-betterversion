@@ -2715,6 +2715,21 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 recordImport with Admin succeeds, audit chain intact",
         "proves": "glStore.recordImport succeeds for Admin; import history recorded; audit chain verifies"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 undoLastImport denies Viewer (IMPORT_DELETE required)",
+        "proves": "glStore.undoLastImport requires import:delete; Viewer denied; IMPORT_DELETE permission enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 undoLastImport with Admin and no imports succeeds (no-op)",
+        "proves": "glStore.undoLastImport succeeds for Admin with no imports; no entries affected; blockPeriodWrite guard passes"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 undoLastImport with Admin and draft entries succeeds",
+        "proves": "glStore.undoLastImport succeeds for Admin with draft entries; entries removed; blockPeriodWrite guard passes; audit chain verifies"
       }
     ],
     "data.mapping": [

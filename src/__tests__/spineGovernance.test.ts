@@ -5988,3 +5988,31 @@ describe('GOVERNED capability-level — periodCloseStore initialize validation t
     );
   });
 });
+
+describe('GOVERNED capability-level — glStore undoLastImport tests (batch 23)', () => {
+  it('GOVERNED cap:data.csv-xlsx-intake — undoLastImport denies Viewer (IMPORT_DELETE required)', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useGLStore.getState().undoLastImport());
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — undoLastImport with Admin and no imports succeeds (no-op)', async () => {
+    actAs('Admin');
+    useGLStore.setState({ entries: [], lastImportEntryIds: [] } as never);
+    const result = await useGLStore.getState().undoLastImport();
+    expect(result).toBeUndefined();
+    expect(useGLStore.getState().entries).toHaveLength(0);
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — undoLastImport with Admin and draft entries succeeds', async () => {
+    actAs('Admin');
+    useGLStore.setState({
+      entries: [{ id: 'e1', accountCode: 'A', debit: 100, credit: 0, postDate: '2024-01-01' } as never],
+      lastImportEntryIds: ['e1'],
+      entrySyncState: { e1: 'draft' },
+    } as never);
+    await useGLStore.getState().undoLastImport();
+    expect(useGLStore.getState().entries).toHaveLength(0);
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+});

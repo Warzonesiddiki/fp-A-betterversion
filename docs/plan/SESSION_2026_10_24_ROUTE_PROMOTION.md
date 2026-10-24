@@ -745,3 +745,37 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 |
 | Governance dimensions | 7 |
 | All gates PASS | ✓ |
+
+## Phase 20 — GL Store Undo Last Import Tests (2026-10-24)
+
+**Objective:** Test glStore.undoLastImport — import undo with blockPeriodWrite validation guard.
+
+**Store tested:** glStore
+
+**Tests added:** 3 (batch 23)
+
+| # | Test | Claim |
+|---|------|-------|
+| 1 | undoLastImport denies Viewer (IMPORT_DELETE) | stateClaim |
+| 2 | undoLastImport with Admin and no imports succeeds (no-op) | stateClaim |
+| 3 | undoLastImport with Admin and draft entries succeeds | stateClaim |
+
+**Capability claims:** 3 new under data.csv-xlsx-intake (44 capabilities, 215 total claims).
+
+**Key learning:** glStore.undoLastImport is an async IMPORT_DELETE method with `blockPeriodWrite` validation. It tombstones committed entries server-side first, then runs local undo. Draft/pending/failed rows never reached the server and are skipped. A batch with zero committed ids stays synchronous. The `blockPeriodWrite` guard prevents undoing imports that would resurrect changes in closed periods.
+
+**Test count:** 670 total. All passing.
+
+**Register SUPPORTED:** 148 (unchanged).
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 670 |
+| Routes governed | 104 |
+| Capability claims | 215 (44 capabilities) |
+| Register SUPPORTED | 148 |
+| Stores with enforce() covered | 39/39 |
+| Governance dimensions | 7 |
+| All gates PASS | ✓ |
