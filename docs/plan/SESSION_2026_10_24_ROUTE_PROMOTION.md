@@ -901,3 +901,14 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 **Register:** 155 SUPPORTED (was 154), 312 EXPERIMENTAL (was 313)
 **Governance evidence:** 51 capabilities (was 50), 222 claims (was 221)
 **Spine tests:** 684 → 696
+
+## Phase 29 — Audit Trail Human Attribution Tests (2026-10-24)
+
+**Gap:** wf.human-attribution capability — attribution-specific features of auditTrailStore not yet tested.
+
+**Tests added:** 8 spine tests (batch 26) in `src/__tests__/spineGovernance.test.ts`
+**Dimensions tested:** Human attribution (recordUpdate/recordDelete/recordRead, recordBulk transactionId grouping, approvalUserId/approvalStatus/approvalTimestamp, exportToCSV/exportToJSON PII masking, audit chain integrity)
+**Capability promoted:** wf.human-attribution EXPERIMENTAL → SUPPORTED
+**Register:** 156 SUPPORTED (was 155), 311 EXPERIMENTAL (was 312)
+**Governance evidence:** 52 capabilities (was 51), 223 claims (was 222)
+**Spine tests:** 696 → 704

@@ -3821,6 +3821,13 @@
         "title": "Workflow Store \u2014 Review workflow methods (batch 25 \u2014 CLOSES wf.reviews ENFORCE-METHOD-COVERAGE)",
         "proves": "workflowStore review workflow methods: submitRequest (workflow:update), approveRequest (workflow:approve), rejectRequest (workflow:approve), delegateRequest (workflow:update), bulkApprove (workflow:approve). Viewer denied all; Admin reaches enforce gate. All RBAC guards enforced."
       }
+    ],
+    "wf.human-attribution": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "Audit Trail Store \u2014 Human attribution (batch 26 \u2014 CLOSES wf.human-attribution ATTRIBUTION-COVERAGE)",
+        "proves": "auditTrailStore human attribution: recordUpdate/recordDelete/recordRead create entries with userId. recordBulk groups entries by transactionId. approvalUserId/approvalStatus/approvalTimestamp recorded when provided. exportToCSV/exportToJSON mask email-formatted userIds (PII protection). Audit chain integrity verified after all operations."
+      }
     ]
   },
   "census": {
@@ -3845,5 +3852,5 @@
       "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
     }
   },
-  "totalCapabilityClaims": 222
+  "totalCapabilityClaims": 223
 }

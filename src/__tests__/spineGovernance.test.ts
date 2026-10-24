@@ -6186,3 +6186,158 @@ describe("Workflow Store — Review workflow methods (batch 25 — CLOSES wf.rev
     expect(() => useWorkflowStore.getState().deleteWorkflow('wf-1' as never)).not.toThrow();
   });
 });
+
+describe("Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-attribution ATTRIBUTION-COVERAGE)", () => {
+  // Tests for attribution-specific features of the auditTrailStore:
+  // recordUpdate, recordDelete, recordRead, recordBulk, revertToState,
+  // exportToCSV, exportToJSON (PII masking), approvalUserId
+  // The wf.human-attribution capability requires that every action is
+  // attributed to a human and that exports mask PII.
+
+  it("recordUpdate creates entry with userId attribution", () => {
+    actAs('Admin');
+    const id = useAuditTrailStore.getState().recordUpdate({
+      cellId: { sheetId: 'test', row: 1, col: 1 },
+      userId: 'analyst@finplan.test',
+      operation: 'update',
+      dataType: 'gl_entry',
+      previousValue: 100,
+      newValue: 200,
+    });
+    const entries = useAuditTrailStore.getState().entries;
+    const entry = entries.find(e => e.id === id);
+    expect(entry).toBeDefined();
+    expect(entry!.userId).toBe('analyst@finplan.test');
+    expect(entry!.operation).toBe('update');
+  });
+
+  it("recordDelete creates entry with userId attribution", () => {
+    actAs('Admin');
+    const id = useAuditTrailStore.getState().recordDelete({
+      cellId: { sheetId: 'test', row: 1, col: 1 },
+      userId: 'analyst@finplan.test',
+      operation: 'delete',
+      dataType: 'gl_entry',
+      previousValue: 100,
+      newValue: null,
+    });
+    const entries = useAuditTrailStore.getState().entries;
+    const entry = entries.find(e => e.id === id);
+    expect(entry).toBeDefined();
+    expect(entry!.userId).toBe('analyst@finplan.test');
+    expect(entry!.operation).toBe('delete');
+  });
+
+  it("recordRead creates entry with userId attribution", () => {
+    actAs('Admin');
+    const id = useAuditTrailStore.getState().recordRead({
+      cellId: { sheetId: 'test', row: 1, col: 1 },
+      userId: 'analyst@finplan.test',
+      operation: 'read',
+      dataType: 'gl_entry',
+      newValue: 100,
+    });
+    const entries = useAuditTrailStore.getState().entries;
+    const entry = entries.find(e => e.id === id);
+    expect(entry).toBeDefined();
+    expect(entry!.userId).toBe('analyst@finplan.test');
+    expect(entry!.operation).toBe('read');
+  });
+
+  it("recordBulk creates entries with transactionId grouping", () => {
+    actAs('Admin');
+    const ids = useAuditTrailStore.getState().recordBulk([
+      {
+        cellId: { sheetId: 'test', row: 1, col: 1 },
+        userId: 'analyst@finplan.test',
+        operation: 'write',
+        dataType: 'gl_entry',
+        newValue: 100,
+      },
+      {
+        cellId: { sheetId: 'test', row: 2, col: 1 },
+        userId: 'analyst@finplan.test',
+        operation: 'write',
+        dataType: 'gl_entry',
+        newValue: 200,
+      },
+    ]);
+    expect(ids).toHaveLength(2);
+    const entries = useAuditTrailStore.getState().entries;
+    const bulkEntries = entries.filter(e => ids.includes(e.id));
+    expect(bulkEntries).toHaveLength(2);
+    // All bulk entries share the same transactionId
+    expect(bulkEntries[0].transactionId).toBe(bulkEntries[1].transactionId);
+    expect(bulkEntries[0].transactionId).toBeTruthy();
+  });
+
+  it("approvalUserId is recorded when provided", () => {
+    actAs('Admin');
+    const id = useAuditTrailStore.getState().recordWrite({
+      cellId: { sheetId: 'test', row: 1, col: 1 },
+      userId: 'analyst@finplan.test',
+      operation: 'write',
+      dataType: 'budget',
+      newValue: 1000,
+      approvalUserId: 'approver@finplan.test',
+      approvalStatus: 'approved',
+    });
+    const entries = useAuditTrailStore.getState().entries;
+    const entry = entries.find(e => e.id === id);
+    expect(entry).toBeDefined();
+    expect(entry!.approvalUserId).toBe('approver@finplan.test');
+    expect(entry!.approvalStatus).toBe('approved');
+    expect(entry!.approvalTimestamp).toBeTruthy();
+  });
+
+  it("exportToCSV masks email-formatted userIds", () => {
+    actAs('Admin');
+    useAuditTrailStore.getState().recordWrite({
+      cellId: { sheetId: 'test', row: 1, col: 1 },
+      userId: 'analyst@finplan.test',
+      operation: 'write',
+      dataType: 'gl_entry',
+      newValue: 100,
+    });
+    const csv = useAuditTrailStore.getState().exportToCSV();
+    expect(csv).toContain('userId');
+    // Email-formatted userId should be masked (not appear in full)
+    expect(csv).not.toContain('analyst@finplan.test');
+  });
+
+  it("exportToJSON masks email-formatted userIds", () => {
+    actAs('Admin');
+    useAuditTrailStore.getState().recordWrite({
+      cellId: { sheetId: 'test', row: 1, col: 1 },
+      userId: 'analyst@finplan.test',
+      operation: 'write',
+      dataType: 'gl_entry',
+      newValue: 100,
+    });
+    const json = useAuditTrailStore.getState().exportToJSON();
+    expect(json).toContain('userId');
+    // Email-formatted userId should be masked
+    expect(json).not.toContain('analyst@finplan.test');
+  });
+
+  it("audit chain integrity verified after all operations", () => {
+    actAs('Admin');
+    useAuditTrailStore.getState().recordWrite({
+      cellId: { sheetId: 'test', row: 1, col: 1 },
+      userId: 'analyst@finplan.test',
+      operation: 'write',
+      dataType: 'gl_entry',
+      newValue: 100,
+    });
+    useAuditTrailStore.getState().recordUpdate({
+      cellId: { sheetId: 'test', row: 1, col: 1 },
+      userId: 'analyst@finplan.test',
+      operation: 'update',
+      dataType: 'gl_entry',
+      previousValue: 100,
+      newValue: 200,
+    });
+    const verification = useAuditTrailStore.getState().verifyIntegrity();
+    expect(verification.valid).toBe(true);
+  });
+});

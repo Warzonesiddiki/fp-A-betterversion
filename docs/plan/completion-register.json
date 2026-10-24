@@ -3568,11 +3568,22 @@
     {
       "kind": "capability",
       "id": "cap:wf.human-attribution",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/audit/trail"
+        "gatedBy": "/audit-trail",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "Audit Trail Store \u2014 Human attribution (batch 26 \u2014 CLOSES wf.human-attribution ATTRIBUTION-COVERAGE)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 auditTrailStore human attribution verified by 8 spine governance tests covering recordUpdate/recordDelete/recordRead attribution, recordBulk transactionId grouping, approvalUserId/approvalStatus/approvalTimestamp recording, exportToCSV/exportToJSON PII masking, and audit chain integrity."
     },
     {
       "kind": "capability",
