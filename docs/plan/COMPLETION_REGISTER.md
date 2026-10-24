@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 150 |
-| EXPERIMENTAL | 317 |
+| SUPPORTED | 151 |
+| EXPERIMENTAL | 316 |
 | BLOCKED-ON-OWNER | 6 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -726,7 +726,7 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:govern.sox-authority` | BLOCKED-ON-OWNER | owner=O4; question=SOX/audit authority decision (O4, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
 | `cap:model.consolidation` | SUPPORTED | gatedBy=/consolidation; tests=src/engines/ConsolidationEngine.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/ConsolidationEngine.governance.test.ts] | SUPPORTED — ConsolidationEngine ASC 810 compliance verified by 21 engine-level governance tests covering input validation, IC elimination, minority interest, balance check, money primitive safety, failed result safety, cent-exact tolerance, and determinism. Promoted per DEC-100. |
 | `cap:model.fx-translation` | SUPPORTED | gatedBy=/currency/translation; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
-| `cap:model.ic-elimination` | EXPERIMENTAL | gatedBy=/consolidation/ic-eliminations | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:model.ic-elimination` | SUPPORTED | gatedBy=/consolidation; tests=src/engines/IntercompanyMatchingEngine.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/IntercompanyMatchingEngine.governance.test.ts] | SUPPORTED — IntercompanyMatchingEngine ASC 810 IC matching and elimination verified by 26 engine-level governance tests covering auto-matching, manual matching, elimination creation, net IC balances, IC interest, profit elimination, minority interest allocation, reconciliation, money primitive safety, and determinism. |
 | `cap:model.leases` | SUPPORTED | gatedBy=/lease; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:model.multi-book` | EXPERIMENTAL | gatedBy=/accounting | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:model.revenue-recognition` | SUPPORTED | gatedBy=/revenue-recognition; tests=src/engines/RevRecEngine.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/RevRecEngine.governance.test.ts] | SUPPORTED — RevRecEngine ASC 606 compliance verified by 24 engine-level governance tests covering input validation, transaction price allocation, revenue schedule footing, over-time and point-in-time recognition, contract modification, variable consideration constraint, contract asset/liability, deferred revenue, money primitive safety, and determinism. |
