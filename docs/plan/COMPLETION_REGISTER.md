@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 149 |
-| EXPERIMENTAL | 318 |
+| SUPPORTED | 150 |
+| EXPERIMENTAL | 317 |
 | BLOCKED-ON-OWNER | 6 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -729,7 +729,7 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:model.ic-elimination` | EXPERIMENTAL | gatedBy=/consolidation/ic-eliminations | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:model.leases` | SUPPORTED | gatedBy=/lease; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:model.multi-book` | EXPERIMENTAL | gatedBy=/accounting | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:model.revenue-recognition` | EXPERIMENTAL | gatedBy=/revenue | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:model.revenue-recognition` | SUPPORTED | gatedBy=/revenue-recognition; tests=src/engines/RevRecEngine.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/RevRecEngine.governance.test.ts] | SUPPORTED — RevRecEngine ASC 606 compliance verified by 24 engine-level governance tests covering input validation, transaction price allocation, revenue schedule footing, over-time and point-in-time recognition, contract modification, variable consideration constraint, contract asset/liability, deferred revenue, money primitive safety, and determinism. |
 | `cap:model.tax` | SUPPORTED | gatedBy=/tax; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=6 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | tpBenchmarkStore validation guard tests added (batch 16). 6 GOVERNED claims recorded. Only Admin has tax:update permission. |
 | `cap:ops.capex` | SUPPORTED | gatedBy=/capex; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=4 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (4 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:ops.cash-planning` | SUPPORTED | gatedBy=/cash/forecast; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
