@@ -5917,3 +5917,74 @@ describe('GOVERNED capability-level — periodCloseStore transition tests (batch
     expect(result.success).toBe(true);
   });
 });
+
+describe('GOVERNED capability-level — periodCloseStore initialize validation tests (batch 22)', () => {
+  const makePeriod = (overrides: Record<string, unknown> = {}) => ({
+    id: 'PERIOD-001',
+    year: 2024,
+    periodNumber: 1,
+    name: 'Jan 2024',
+    startDate: '2024-01-01',
+    endDate: '2024-01-31',
+    periodType: 'standard',
+    isAdjustingPeriod: false,
+    isClosed: false,
+    closedAt: null,
+    closedBy: null,
+    ...overrides,
+  });
+
+  it('GOVERNED cap:close.tie-out — initialize with duplicate period IDs throws', () => {
+    actAs('Admin');
+    usePeriodCloseStore.setState({ entries: {}, checklists: {}, initialized: false } as never);
+    expect(() =>
+      usePeriodCloseStore.getState().initialize(
+        [makePeriod(), makePeriod({ id: 'PERIOD-001' })] as never,
+        'IN'
+      )
+    ).toThrow(/Invalid or duplicate fiscal period ID/);
+  });
+
+  it('GOVERNED cap:close.tie-out — initialize with empty period ID throws', () => {
+    actAs('Admin');
+    usePeriodCloseStore.setState({ entries: {}, checklists: {}, initialized: false } as never);
+    expect(() =>
+      usePeriodCloseStore.getState().initialize(
+        [makePeriod({ id: '' })] as never,
+        'IN'
+      )
+    ).toThrow(/Invalid or duplicate fiscal period ID/);
+  });
+
+  it('GOVERNED cap:close.tie-out — initialize with startDate > endDate throws', () => {
+    actAs('Admin');
+    usePeriodCloseStore.setState({ entries: {}, checklists: {}, initialized: false } as never);
+    expect(() =>
+      usePeriodCloseStore.getState().initialize(
+        [makePeriod({ startDate: '2024-02-01', endDate: '2024-01-31' })] as never,
+        'IN'
+      )
+    ).toThrow(/Invalid fiscal date range/);
+  });
+
+  it('GOVERNED cap:close.tie-out — initialize with valid periods succeeds', () => {
+    actAs('Admin');
+    usePeriodCloseStore.setState({ entries: {}, checklists: {}, initialized: false } as never);
+    expect(() =>
+      usePeriodCloseStore.getState().initialize(
+        [makePeriod()] as never,
+        'IN'
+      )
+    ).not.toThrow();
+  });
+
+  it('GOVERNED cap:close.tie-out — initialize denies Viewer (PERIOD_CLOSE required)', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() =>
+      usePeriodCloseStore.getState().initialize(
+        [makePeriod()] as never,
+        'IN'
+      )
+    );
+  });
+});

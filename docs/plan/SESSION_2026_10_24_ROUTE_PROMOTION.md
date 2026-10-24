@@ -669,3 +669,48 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 4. Rule versioning validation (exceptionRuleCatalogue)
 5. Cross-store integration guards (glStore cube sync)
 6. Period close state machine integration (periodCloseStore transition)
+
+## Phase 18 — Period Close Store Initialize Validation Tests (2026-10-24)
+
+**Objective:** Test periodCloseStore.initialize() fiscal calendar validation guards — period ID, date range, and scope matching.
+
+**Store tested:** periodCloseStore
+
+**Tests added:** 5 (batch 22)
+
+| # | Test | Claim |
+|---|------|-------|
+| 1 | initialize with duplicate period IDs throws | stateClaim |
+| 2 | initialize with empty period ID throws | stateClaim |
+| 3 | initialize with startDate > endDate throws | stateClaim |
+| 4 | initialize with valid periods succeeds | stateClaim |
+| 5 | initialize denies Viewer (PERIOD_CLOSE required) | stateClaim |
+
+**Capability claims:** 5 new under close.tie-out (44 capabilities, 212 total claims).
+
+**Key learning:** periodCloseStore.initialize() has fiscal calendar validation guards: period IDs must be non-empty and unique, date ranges must be valid (startDate <= endDate), and scope matching prevents re-binding a period to a different entity or calendar. The `parseImportDate` function validates ISO date format. This is the 7th governance dimension: fiscal calendar validation. The preflight check validates the entire calendar before any mutation — no partial initialization is allowed.
+
+**Test count:** 667 total. All passing.
+
+**Register SUPPORTED:** 146 (unchanged).
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 667 |
+| Routes governed | 104 |
+| Capability claims | 212 (44 capabilities) |
+| Register SUPPORTED | 146 |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL | 25 (engine/AI features) |
+| All gates PASS | ✓ |
+
+**Governance dimensions covered (7):**
+1. RBAC permission guards (enforce/assertPermission)
+2. Lifecycle state machine guards (assertBudgetTransition, LEGAL correction state machine)
+3. Input validation guards (forecastStore, tpBenchmarkStore, documentStore)
+4. Rule versioning validation (exceptionRuleCatalogue)
+5. Cross-store integration guards (glStore cube sync)
+6. Period close state machine integration (periodCloseStore transition)
+7. Fiscal calendar validation (periodCloseStore initialize)

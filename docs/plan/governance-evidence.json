@@ -2860,6 +2860,31 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:close.tie-out \u2014 force-reopen transition succeeds for Admin (locked \u2192 open)",
         "proves": "periodCloseStore.transition force-reopen succeeds for Admin; FORCE_REOPEN_APPROVAL_ROLES (admin only) enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 initialize with duplicate period IDs throws",
+        "proves": "periodCloseStore.initialize throws on duplicate period IDs; fiscal calendar validation enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 initialize with empty period ID throws",
+        "proves": "periodCloseStore.initialize throws on empty period ID; fiscal calendar validation enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 initialize with startDate > endDate throws",
+        "proves": "periodCloseStore.initialize throws on invalid fiscal date range; date validation enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 initialize with valid periods succeeds",
+        "proves": "periodCloseStore.initialize succeeds with valid fiscal periods; PERIOD_CLOSE permission passes for Admin"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 initialize denies Viewer (PERIOD_CLOSE required)",
+        "proves": "periodCloseStore.initialize requires period:close; Viewer denied; PERIOD_CLOSE permission enforced"
       }
     ],
     "close.audit-chain": [
