@@ -16,7 +16,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { actAs, signOut, expectPermissionDenied } from '@/test/rbacFixtures';
+import { actAs, actAsRoleWithout, signOut, expectPermissionDenied } from '@/test/rbacFixtures';
 import { useGLStore } from '@/store/glStore';
 import { usePeriodCloseStore } from '@/store/periodCloseStore';
 import { useExceptionDispositionStore } from '@/store/exceptionDispositionStore';
@@ -37,7 +37,17 @@ import { useDashboardStore } from '@/store/dashboardStore';
 import { useIntegrationStore } from '@/store/integrationStore';
 import { useConstructionStore } from '@/store/constructionStore';
 import { useEntityStore } from '@/store/entityStore';
-import { resetEngine } from '@/store/driverStore';
+import { resetEngine, useDriverStore } from '@/store/driverStore';
+import { useWorkflowStore } from '@/store/workflowStore';
+import { useGLTrialBalanceStore } from '@/store/glTrialBalanceStore';
+import { useDataStore } from '@/store/dataStore';
+import { useGLUploadStore } from '@/store/glUploadStore';
+import { useVarianceStore } from '@/store/varianceStore';
+import { useAnalyticsStore } from '@/store/analyticsStore';
+import { useNotificationStore } from '@/store/notificationStore';
+import { useUIStore } from '@/store/uiStore';
+import { useTourStore } from '@/store/tourStore';
+import { useCellLineageStore } from '@/store/cellLineageStore';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -107,6 +117,16 @@ function resetAll() {
   useIntegrationStore.setState({ connections: {} } as never);
   useConstructionStore.setState({ changeOrders: [], costBreakdown: [], costLedger: [] } as never);
   useEntityStore.setState({ entities: [] } as never);
+  useWorkflowStore.setState({ workflows: [], stats: { total: 0, pending: 0, inProgress: 0, completed: 0 }, isLoading: false, error: null } as never);
+  useGLTrialBalanceStore.setState({ rows: [], loading: false, error: null, filters: [], sort: null, selectedRowId: null, pageSize: 20, currentPage: 0 } as never);
+  useDataStore.setState({ accounts: [], activeAccountId: null, loading: false, error: null } as never);
+  useGLUploadStore.setState({ fileInfo: null, step: 0, mappings: {}, progress: 0, autoMapping: false, errors: [], csvColumns: [] } as never);
+  useVarianceStore.setState({ analyses: [], loading: false, error: null } as never);
+  useAnalyticsStore.setState({ charts: [], loading: false, error: null } as never);
+  useNotificationStore.setState({ notifications: [], unreadCount: 0 } as never);
+  useUIStore.setState({ theme: 'system', toasts: [] } as never);
+  useTourStore.setState({ activeTour: null, completedTours: [] } as never);
+  useCellLineageStore.setState({ chains: new Map() } as never);
 }
 
 beforeEach(() => {
@@ -4149,5 +4169,159 @@ describe('GOVERNED positive-path — Admin write actions (batch 16)', () => {
   it('GOVERNED /manufacturing/inventory — Admin addEntry reaches the enforce gate', () => {
     actAs('Admin');
     expect(() => useGLStore.getState().addEntry({ id: 'gov-inv-pos', accountId: '33000', amount: 31000 } as never)).not.toThrow();
+  });
+});
+
+describe('GOVERNED capability-level — stores with enforce() but no page route', () => {
+  it('GOVERNED cap:wf.rbac — workflow:create guards createWorkflow, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().createWorkflow({ id: 'wf-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:wf.rbac — workflow:delete guards deleteWorkflow, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().deleteWorkflow('wf-test' as never));
+    actAs('Admin');
+    expect(() => useWorkflowStore.getState().deleteWorkflow('wf-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:close.trial-balance — import:update guards setRows, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useGLTrialBalanceStore.getState().setRows([] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:close.trial-balance — ui:update guards setLoading, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLTrialBalanceStore.getState().setLoading(true as never));
+    actAs('Admin');
+    expect(() => useGLTrialBalanceStore.getState().setLoading(true as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:plan.drivers-cascades — driver:create guards addDriver, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDriverStore.getState().addDriver({ id: 'drv-test', name: 'Test', value: 100 } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.drivers-cascades — driver:delete guards removeDriver, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDriverStore.getState().removeDriver('drv-test' as never));
+    actAs('Admin');
+    expect(() => useDriverStore.getState().removeDriver('drv-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:admin.data-management — import:update guards setAccounts, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDataStore.getState().setAccounts([] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:admin.data-management — import:create guards addAccount, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDataStore.getState().addAccount({ id: 'acc-test', code: '1000', name: 'Test' } as never));
+    actAs('Admin');
+    expect(() => useDataStore.getState().addAccount({ id: 'acc-test', code: '1000', name: 'Test' } as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — import:create guards setFile, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useGLUploadStore.getState().setFile({ name: 'test.csv', size: 100 } as never, [] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — ui:update guards setStep, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLUploadStore.getState().setStep(1 as never));
+    actAs('Admin');
+    expect(() => useGLUploadStore.getState().setStep(1 as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:analyze.variance-decomposition — variance:create guards addAnalysis, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useVarianceStore.getState().addAnalysis({ id: 'var-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:analyze.variance-decomposition — variance:delete guards deleteAnalysis, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useVarianceStore.getState().deleteAnalysis('var-test' as never));
+    actAs('Admin');
+    expect(() => useVarianceStore.getState().deleteAnalysis('var-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:analyze.statements — dashboard:create guards addChart, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useAnalyticsStore.getState().addChart({ id: 'chart-test', type: 'bar' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:analyze.statements — dashboard:update guards updateChart, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useAnalyticsStore.getState().updateChart('chart-test' as never, { type: 'line' } as never));
+    actAs('Admin');
+    expect(() => useAnalyticsStore.getState().updateChart('chart-test' as never, { type: 'line' } as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:wf.auditability — notification:update guards markAsRead, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useNotificationStore.getState().markAsRead('notif-test' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:wf.auditability — notification:delete guards clearNotifications, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useNotificationStore.getState().clearNotifications());
+    actAs('Admin');
+    expect(() => useNotificationStore.getState().clearNotifications()).not.toThrow();
+  });
+
+  it('GOVERNED cap:admin.settings — ui:update guards setTheme, audit chain intact', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useUIStore.getState().setTheme('dark' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:admin.settings — ui:update guards addToast, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useUIStore.getState().addToast({ id: 'toast-test', message: 'Test' } as never));
+    actAs('Admin');
+    expect(() => useUIStore.getState().addToast({ id: 'toast-test', message: 'Test' } as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:admin.settings — ui:update guards startTour, audit chain intact', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useTourStore.getState().startTour('tour-test' as never, [] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:admin.settings — ui:update guards completeTour, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useTourStore.getState().completeTour('tour-test' as never));
+    actAs('Admin');
+    expect(() => useTourStore.getState().completeTour('tour-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:data.lineage — audit:create guards recordChange, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useCellLineageStore.getState().recordChange('cell-test' as never, 0, 1, 'actor' as never, 'reason' as never, 'manual' as never, '1.0.0' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:data.lineage — Admin recordChange reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useCellLineageStore.getState().recordChange('cell-test' as never, 0, 1, 'actor' as never, 'reason' as never, 'manual' as never, '1.0.0' as never)).not.toThrow();
   });
 });
