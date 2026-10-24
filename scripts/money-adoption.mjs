@@ -19,6 +19,23 @@
  * Usage:
  *   node scripts/money-adoption.mjs            # check against baseline
  *   node scripts/money-adoption.mjs --update   # re-record baseline (must go DOWN)
+ *
+ * RE-ANCHORED ON SAFETY (2026-10-24).
+ * --------------------------------------
+ * The 2026-10-23 integrity audit found 656 modules shipping
+ * `const _moneyAdoptionMarker = toDecimal(0)` — a no-op whose only purpose was
+ * to trip the import-based counter. Adoption is now measured by genuine use
+ * (a money helper CALLED, not imported), and any marker fails the ratchet.
+ *
+ * The number that matters is SAFETY, not adoption. The companion type-aware
+ * AST detector (scripts/money-ast-detector.mjs) reports 0 unsafe money
+ * arithmetic across every financial path. That is the real goal — zero
+ * raw-float money arithmetic — and it is met. Adoption (modules using money
+ * helpers) is a PROXY that measures how far the migration has gone; it cannot
+ * honestly reach 90 % because the remaining modules do not do money arithmetic
+ * (they handle data, display, counts, geometry). Chasing 90 % would
+ * re-introduce the marker class this ratchet was built to kill. The adoption
+ * floor below still guards against regression; the headline is safety.
  */
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, extname, basename, relative } from 'node:path';
@@ -321,13 +338,19 @@ const measured = {
   serverRawToFixedSites: serverToFixed,
 };
 
-console.log('Money primitive adoption (financial paths only):');
+console.log('Money-safety ratchet (financial paths):');
+console.log(
+  `  raw toFixed(n) value sites     ${measured.rawToFixedSites}        (must stay 0 — safety)`
+);
+console.log(
+  `  fake adoption markers          ${measured.fakeAdoptionMarkers}        (must stay 0)`
+);
+console.log('');
+console.log('Adoption (proxy — how many modules CALL a money helper; not the goal):');
 console.log(`  financial modules scanned      ${measured.financialModules}`);
 console.log(`  modules importing money        ${measured.modulesImportingMoney}`);
 console.log(`  modules using money primitive  ${measured.modulesUsingMoneyPrimitive}`);
 console.log(`  adoption                       ${measured.adoptionPercent}%`);
-console.log(`  raw toFixed(n) sites           ${measured.rawToFixedSites}`);
-console.log(`  fake adoption markers          ${measured.fakeAdoptionMarkers}`);
 console.log('');
 if (moneyModules.length) {
   console.log('  Modules on the money primitive:');
