@@ -3129,3 +3129,107 @@ describe('GOVERNED /data/gl-account-analysis — GL account analysis surface', (
     expect(useAuthStore.getState().activeEntityId).toBe('');
   });
 });
+
+// ---------------------------------------------------------------------------
+// /ai/nlq — AI natural language query surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /ai/nlq — AI natural language query surface', () => {
+  it('GOVERNED /ai/nlq — import:create guards NLQ entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-nlq-1', accountId: '12000', amount: 9000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /ai/nlq — audit trail records NLQ write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'nlq:write', entity: 'entry', entityId: 'gov-nlq-1', payload: { accountId: '12000', amount: 9000, query: 'revenue by quarter' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /ai/nlq — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /ai/nlq — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /banking/banking — Banking dashboard surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /banking/banking — Banking dashboard surface', () => {
+  it('GOVERNED /banking/banking — import:create guards banking entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-bank-1', accountId: '13000', amount: 11000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /banking/banking — audit trail records banking write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'bank:write', entity: 'entry', entityId: 'gov-bank-1', payload: { accountId: '13000', amount: 11000, type: 'deposit' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /banking/banking — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /banking/banking — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /banking/reconciliation — Bank reconciliation surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /banking/reconciliation — Bank reconciliation surface', () => {
+  it('GOVERNED /banking/reconciliation — import:create guards bank reconciliation entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-bkrecon-1', accountId: '14000', amount: 12000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /banking/reconciliation — audit trail records bank reconciliation write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'bkrecon:write', entity: 'entry', entityId: 'gov-bkrecon-1', payload: { accountId: '14000', amount: 12000, matched: true } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /banking/reconciliation — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /banking/reconciliation — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /construction/project — Construction project costing surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /construction/project — Construction project costing surface', () => {
+  it('GOVERNED /construction/project — import:create guards project costing entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-proj-1', accountId: '15000', amount: 13000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /construction/project — audit trail records project costing write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'project:write', entity: 'entry', entityId: 'gov-proj-1', payload: { accountId: '15000', amount: 13000, project: 'Building A' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /construction/project — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /construction/project — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
