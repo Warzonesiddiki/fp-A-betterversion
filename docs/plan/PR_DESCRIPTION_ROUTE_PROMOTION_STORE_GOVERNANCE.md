@@ -1,4 +1,4 @@
-# PR Description — Route Promotion + Store-Level Governance (81 commits)
+# PR Description — Route Promotion + Store-Level + Engine-Level Governance (86+ commits)
 
 > **Branch:** `arena/02c267fa-fp-a-betterversion`
 > **Base:** `main` (de26d0a)
@@ -14,9 +14,13 @@ This PR covers two major work streams:
 
 1. **Route Promotion (PR #94 continuation)** — 16 batches, 64 routes promoted to GOVERNED, bringing total from 40 to **104 governed routes** with 409 governance tests and 312 state claims.
 
-2. **Store-Level Governance Testing (this session)** — 23 batches, **670 total tests**, covering **7 governance dimensions** across all 39 stores with enforce() calls. **44 capabilities** with **215 total claims**, all SUPPORTED. **148 register SUPPORTED** (up from 128).
+2. **Store-Level Governance Testing** — 24 batches, **684 spine tests**, covering **7 governance dimensions** across all 39 stores with enforce() calls. All 39 stores fully covered (glStore 18/18 enforce methods tested).
 
-Plus: **O2 resolution** (REPLACE semantics), **2 capability promotions**, and **VISION alignment audit**.
+3. **Engine-Level Governance Testing (new)** — 5 engine test files, **95 engine tests**, covering **financial correctness** across MODEL, AI, and ANALYZE pillars. 5 capabilities promoted to SUPPORTED via engine-level testing.
+
+**Combined:** 49 capabilities with 220 total claims. **153 register SUPPORTED** (up from 128). **779 total governance tests** (684 spine + 95 engine).
+
+Plus: **O2 resolution** (REPLACE semantics), **7 capability promotions** (2 store-level + 5 engine-level), **VISION alignment audit**, and **engine-level governance testing plan**.
 
 ---
 
@@ -205,3 +209,75 @@ node scripts/completion-register.mjs
 - `one-stop-completion` — one-stop acceptance verification
 - `owner-pack-completion` — owner decision packet completion
 - `connector-driven-documentation` — connector-side documentation (not yet applied — pending owner request)
+
+
+---
+
+## 3. Engine-Level Governance Testing (5 engine test files, 95 tests)
+
+New governance dimension: **financial correctness** at the engine level. Store-level tests verify access control (who can call). Engine-level tests verify financial correctness (what the engine produces). Both are governance dimensions.
+
+### 3.1 MODEL Pillar — Financial Engine Correctness
+
+| Engine | Tests | Dimensions | Capability Promoted |
+|--------|-------|------------|-------------------|
+| ConsolidationEngine | 21 | Input validation, IC elimination, minority interest, balance check, money primitive safety, failed result safety (F-0003), cent-exact tolerance (F-0009), determinism | model.consolidation |
+| RevRecEngine | 24 | Input validation, transaction price allocation, revenue schedule footing, over-time recognition, point-in-time recognition, contract modification, variable consideration, contract asset/liability, deferred revenue, money primitive safety, determinism | model.revenue-recognition |
+| IntercompanyMatchingEngine | 26 | State management, auto-matching, manual matching, elimination creation, net IC balances, IC interest, profit elimination, minority interest allocation, reconciliation, money primitive safety, determinism | model.ic-elimination |
+
+### 3.2 AI Pillar — Safety Gates
+
+| Engine | Tests | Dimensions | Capability Promoted |
+|--------|-------|------------|-------------------|
+| AutoCommentaryEngine | 24 | Narrative gating (blocks computed numbers), money primitive safety, zero-budget handling, variance direction (above/below, never favorable/unfavorable), significance threshold, template interpolation, YoY comparison, determinism | ai.verified-facts-gate |
+
+### 3.3 ANALYZE Pillar — Traceability
+
+| Engine | Tests | Dimensions | Capability Promoted |
+|--------|-------|------------|-------------------|
+| AdvancedOLAPEngine | 25 | Member management, hierarchy navigation (drill-down/up), cell security (RBAC), writeback audit trail, query execution, what-if scenario isolation, serialization, determinism | analyze.drill-to-source |
+
+### 3.4 DEC-100: Engine correctness tests are governance evidence
+
+The engine is the financial authority. If the engine produces wrong numbers, every downstream report is wrong. Correctness tests are the governance evidence that the financial engine is trustworthy. This is consistent with the VISION's zero-compromise commitment: "no wrong numbers."
+
+### 3.5 Remaining EXPERIMENTAL (14)
+
+| Pillar | Capabilities |
+|--------|-------------|
+| AI | ai.explicit-invocation, ai.local-only |
+| ANALYZE | analyze.explanations |
+| GOVERN | govern.security-policy |
+| MODEL | model.multi-book |
+| REPORT | report.pdf, report.pptx-editable, report.xlsx-formula |
+| WF | wf.human-attribution, wf.reviews |
+
+### 3.6 Remaining BLOCKED-ON-OWNER (6)
+
+| Capability | Owner |
+|-----------|-------|
+| admin.backup-restore | O3 (encryption) |
+| data.d365-bc-gl | O1 (D365 sample) |
+| data.d365-fo-gl | O1 (D365 sample) |
+| data.d365-journal | O1 (D365 sample) |
+| govern.entity-scope | O9 (entity set) |
+| govern.sox-authority | O4 (SOX authority) |
+
+---
+
+## Updated Metrics Summary
+
+| Metric | Previous | Current |
+|--------|----------|---------|
+| Spine governance tests | 670 | 684 |
+| Engine governance tests | 0 | 95 |
+| Total governance tests | 670 | 779 |
+| GOVERNED routes | 104 | 104 |
+| Governance-evidence capabilities | 44 | 49 |
+| Governance-evidence claims | 215 | 220 |
+| Register SUPPORTED | 148 | 153 |
+| Stores with enforce() covered | 39/39 | 39/39 |
+| glStore enforce methods tested | 15/18 | 18/18 |
+| Governance dimensions (store) | 7 | 7 |
+| Governance dimensions (engine) | 0 | 8 (financial correctness) |
+| All gates PASS | ✓ | ✓ |
