@@ -16,11 +16,11 @@ This PR covers two major work streams:
 
 2. **Store-Level Governance Testing** — 24 batches, **684 spine tests**, covering **7 governance dimensions** across all 39 stores with enforce() calls. All 39 stores fully covered (glStore 18/18 enforce methods tested).
 
-3. **Engine-Level Governance Testing (new)** — 5 engine test files, **95 engine tests**, covering **financial correctness** across MODEL, AI, and ANALYZE pillars. 5 capabilities promoted to SUPPORTED via engine-level testing.
+3. **Engine-Level Governance Testing (new)** — 10 engine test files, **212 engine tests**, covering **financial correctness** across MODEL, AI, ANALYZE, REPORT, and governance pillars. 14 capabilities promoted to SUPPORTED via engine-level testing.
 
-**Combined:** 49 capabilities with 220 total claims. **153 register SUPPORTED** (up from 128). **779 total governance tests** (684 spine + 95 engine).
+**Combined:** 58 capabilities with 229 total claims. **162 register SUPPORTED** (up from 128). **926 total governance tests** (714 spine + 212 engine).
 
-Plus: **O2 resolution** (REPLACE semantics), **7 capability promotions** (2 store-level + 5 engine-level), **VISION alignment audit**, and **engine-level governance testing plan**.
+Plus: **O2 resolution** (REPLACE semantics), **16 capability promotions** (2 store-level + 14 engine-level), **VISION alignment audit**, and **engine-level governance testing plan**.
 
 ---
 
