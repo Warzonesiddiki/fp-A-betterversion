@@ -4487,3 +4487,96 @@ describe('GOVERNED capability-level — sector stores with enforce() citing gove
     expect(() => useInsuranceStore.getState().updateRateFiling('filing-test' as never, { name: 'Updated' } as never)).not.toThrow();
   });
 });
+
+describe('GOVERNED capability-level — additional store method tests (batch 3)', () => {
+  it('GOVERNED cap:close.trial-balance — ui:update guards setSort, audit chain intact', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLTrialBalanceStore.getState().setSort('accountCode' as never, 'asc' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:close.trial-balance — ui:update guards addFilter, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLTrialBalanceStore.getState().addFilter({ type: 'accountCode', value: '1000' } as never));
+    actAs('Admin');
+    expect(() => useGLTrialBalanceStore.getState().addFilter({ type: 'accountCode', value: '1000' } as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:close.trial-balance — ui:update guards refresh, audit chain intact', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLTrialBalanceStore.getState().refresh());
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:close.trial-balance — ui:update guards reset, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLTrialBalanceStore.getState().reset());
+    actAs('Admin');
+    expect(() => useGLTrialBalanceStore.getState().reset()).not.toThrow();
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — import:update guards setMappings, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useGLUploadStore.getState().setMappings({} as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — ui:update guards setProgress, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLUploadStore.getState().setProgress(50 as never));
+    actAs('Admin');
+    expect(() => useGLUploadStore.getState().setProgress(50 as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — import:update guards setAutoMapping, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useGLUploadStore.getState().setAutoMapping(true as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — retailStore inventory:update guards updateProduct, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useRetailStore.getState().updateProduct('prod-test' as never, { name: 'Updated' } as never));
+    actAs('Admin');
+    expect(() => useRetailStore.getState().updateProduct('prod-test' as never, { name: 'Updated' } as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — retailStore entity:update guards setStores, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useRetailStore.getState().setStores([] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.drivers-cascades — driver:create guards addRule, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDriverStore.getState().addRule({ id: 'rule-test', formula: 'x+y' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.drivers-cascades — driver:delete guards removeRule, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDriverStore.getState().removeRule('rule-test' as never));
+    actAs('Admin');
+    expect(() => useDriverStore.getState().removeRule('rule-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:plan.drivers-cascades — driver:update guards applyCascade, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDriverStore.getState().applyCascade({} as never, (() => {}) as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.drivers-cascades — driver:delete guards reset, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDriverStore.getState().reset());
+    actAs('Admin');
+    expect(() => useDriverStore.getState().reset()).not.toThrow();
+  });
+});

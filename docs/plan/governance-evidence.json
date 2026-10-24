@@ -2620,6 +2620,21 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 ui:update guards setStep, Admin reaches enforce gate",
         "proves": "glUploadStore.setStep requires ui:update (stripped for negative test); Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards setMappings, audit chain intact",
+        "proves": "glUploadStore.setMappings requires import:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 ui:update guards setProgress, Admin reaches enforce gate",
+        "proves": "glUploadStore.setProgress requires ui:update (stripped for negative test); Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards setAutoMapping, audit chain intact",
+        "proves": "glUploadStore.setAutoMapping requires import:update; Viewer denied; audit chain verified."
       }
     ],
     "data.mapping": [
@@ -2693,6 +2708,26 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards setLoading, Admin reaches enforce gate",
         "proves": "glTrialBalanceStore.setLoading requires ui:update (stripped for negative test); Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards setSort, audit chain intact",
+        "proves": "glTrialBalanceStore.setSort requires ui:update (stripped for negative test); audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards addFilter, Admin reaches enforce gate",
+        "proves": "glTrialBalanceStore.addFilter requires ui:update (stripped for negative test); Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards refresh, audit chain intact",
+        "proves": "glTrialBalanceStore.refresh requires ui:update (stripped for negative test); audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards reset, Admin reaches enforce gate",
+        "proves": "glTrialBalanceStore.reset requires ui:update (stripped for negative test); Admin reaches enforce gate."
       }
     ],
     "close.tie-out": [
@@ -2771,6 +2806,26 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:delete guards removeDriver, Admin reaches enforce gate",
         "proves": "driverStore.removeDriver requires driver:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:create guards addRule, audit chain intact",
+        "proves": "driverStore.addRule requires driver:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:delete guards removeRule, Admin reaches enforce gate",
+        "proves": "driverStore.removeRule requires driver:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:update guards applyCascade, audit chain intact",
+        "proves": "driverStore.applyCascade requires driver:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:delete guards reset, Admin reaches enforce gate",
+        "proves": "driverStore.reset requires driver:delete; Viewer denied, Admin reaches enforce gate."
       }
     ],
     "admin.data-management": [
@@ -2943,6 +2998,16 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:govern.authorization \u2014 insuranceStore budget:update guards updateRateFiling, Admin reaches enforce gate",
         "proves": "insuranceStore.updateRateFiling requires budget:update; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 retailStore inventory:update guards updateProduct, Admin reaches enforce gate",
+        "proves": "retailStore.updateProduct requires inventory:update; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 retailStore entity:update guards setStores, audit chain intact",
+        "proves": "retailStore.setStores requires entity:update; Viewer denied; audit chain verified."
       }
     ]
   },
