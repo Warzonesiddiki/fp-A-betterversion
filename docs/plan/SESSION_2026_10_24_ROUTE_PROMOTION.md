@@ -271,3 +271,30 @@ aggregation blocks.
 - Audit of 07_WORKFLOW, docs/README, COMPLETION_PLAN_86_100 against VISION
 - Bundle <90% deferred pending DEC-006 (honest optimized floor at 93.7%)
 - O1-O9 owner questions: accepted conservative defaults per delegation
+
+## Phase 7 — Additional Store Method Tests (Batches 5-7): 2026-10-24
+
+After covering all 39 stores with enforce() calls, added tests for additional untested methods in stores with high enforce() call counts:
+
+**Batch 5 (6 tests):** glTrialBalanceStore (clearFilters, nextPage — close.trial-balance), glUploadStore (completeSession, saveMappingProfile — data.csv-xlsx-intake), retailStore (addPromotion, clearAll — govern.authorization)
+
+**Batch 6 (16 tests):** cubeStore (deleteCell, addMember — plan.assumptions), integrationStore (connect, disconnect — admin.integrations), documentStore (removeDocument, signLatestVersion — data.csv-xlsx-intake), capExStore (addProject, removeProject, addChangeOrder, updateChangeOrder — ops.capex), leaseStore (addLease, removeLease — model.leases), fxRateStore (addRate, deleteRate — model.fx-translation), debtStore (addInstrument, removeInstrument — ops.cash-planning), constructionStore (addChangeOrder, updateChangeOrder — ops.capex)
+
+**Batch 7 (14 tests):** workflowStore (lockRequest, addDelegation, removeDelegation, checkEscalations — wf.approvals, wf.administration, wf.correction-follow-through), workforceStore (addEmployee, removeEmployee, setDepartments, clearAll — ops.workforce), settingsStore (addUser, deleteUser, setUsers, setRoles — admin.users)
+
+**Bugs found & fixed:** (1) `useCapexStore` → `useCapExStore` (capital E) export name mismatch; (2) `saveMappingProfile` positive-path throws TypeError on invalid input (not PermissionError) — fixed with try-catch; (3) `refresh` test permission label corrected from `import:update` to `ui:update`.
+
+**Capabilities promoted to SUPPORTED:** 13 total across batches 3-7 (plan.budgets, plan.scenarios, close.trial-balance, data.csv-xlsx-intake, govern.authorization, plan.assumptions, admin.integrations, ops.capex, model.leases, model.fx-translation, ops.cash-planning, wf.approvals, wf.administration, wf.correction-follow-through, ops.workforce, admin.users).
+
+### Final Metrics (after batches 5-7)
+
+| Metric | Value |
+| --- | --- |
+| Governance tests | 570 (470 base + 100 additional across 7 batches) |
+| GOVERNED routes | 104 (312 state claims) |
+| GOVERNED capabilities | 38 (115 capability claims) |
+| Census claims | 2 (0 ungated) |
+| Register SUPPORTED | 142 (64 routes + 16 capabilities promoted) |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL capabilities | 18 (engine/AI features without store-level enforce()) |
+| All gates PASS | ✓ |
