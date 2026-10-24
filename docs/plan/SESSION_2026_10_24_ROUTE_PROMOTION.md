@@ -912,3 +912,13 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 **Register:** 156 SUPPORTED (was 155), 311 EXPERIMENTAL (was 312)
 **Governance evidence:** 52 capabilities (was 51), 223 claims (was 222)
 **Spine tests:** 696 → 704
+
+## Phase 30 — AutoCommentaryEngine Explanations Tests (2026-10-24)
+
+**Gap:** Phase 3 of engine-level testing plan — AI/ANALYZE pillar. Explanation attribution.
+
+**Tests added:** 15 engine-level governance tests in `src/engines/AutoCommentaryEngine.explanations.governance.test.ts`
+**Dimensions tested:** 6 (source attribution, local narrative determinism, empty/multi-item handling, variance direction, attribution consistency, explanation attribution)
+**Capability promoted:** analyze.explanations EXPERIMENTAL → SUPPORTED
+**Register:** 157 SUPPORTED (was 156), 310 EXPERIMENTAL (was 311)
+**Governance evidence:** 53 capabilities (was 52), 224 claims (was 223)

@@ -3828,6 +3828,13 @@
         "title": "Audit Trail Store \u2014 Human attribution (batch 26 \u2014 CLOSES wf.human-attribution ATTRIBUTION-COVERAGE)",
         "proves": "auditTrailStore human attribution: recordUpdate/recordDelete/recordRead create entries with userId. recordBulk groups entries by transactionId. approvalUserId/approvalStatus/approvalTimestamp recorded when provided. exportToCSV/exportToJSON mask email-formatted userIds (PII protection). Audit chain integrity verified after all operations."
       }
+    ],
+    "analyze.explanations": [
+      {
+        "file": "src/engines/AutoCommentaryEngine.explanations.governance.test.ts",
+        "title": "AutoCommentaryEngine \u2014 EXPLANATIONS (analyze.explanations)",
+        "proves": "AutoCommentaryEngine explanation attribution: generateSectionNarrativeEnhanced returns NarrativeResult with source: local when egress disabled. Source attribution distinguishes local from LLM paths. Local narrative determinism verified. Empty line items handled. Multiple line items aggregated. Variance direction (above/below, never favorable/unfavorable). Explanation attribution consistency across calls. Zero-budget variance handled."
+      }
     ]
   },
   "census": {
@@ -3852,5 +3859,5 @@
       "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
     }
   },
-  "totalCapabilityClaims": 223
+  "totalCapabilityClaims": 224
 }

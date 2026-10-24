@@ -2080,11 +2080,22 @@
     {
       "kind": "capability",
       "id": "cap:analyze.explanations",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/variance"
+        "gatedBy": "/analyze",
+        "tests": [
+          "src/engines/AutoCommentaryEngine.explanations.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/engines/AutoCommentaryEngine.explanations.governance.test.ts",
+            "title": "AutoCommentaryEngine \u2014 EXPLANATIONS (analyze.explanations)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 AutoCommentaryEngine explanation attribution verified by 15 engine-level governance tests covering source attribution (local vs LLM), narrative determinism, empty/multi-item handling, variance direction, and attribution consistency."
     },
     {
       "kind": "capability",
