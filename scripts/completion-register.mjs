@@ -123,6 +123,7 @@ export const CAPABILITIES = [
   'analyze.exception-rules',
   'analyze.findings-disposition',
   'analyze.explanations',
+  'analyze.dashboards',
   // OPERATIONAL PLANNING
   'ops.cash-planning',
   'ops.workforce',
@@ -135,6 +136,7 @@ export const CAPABILITIES = [
   'wf.auditability',
   'wf.administration',
   'wf.human-attribution',
+  'collab.comments',
   // REPORT & COMMUNICATE
   'report.statements',
   'report.board-pack',
@@ -202,6 +204,7 @@ const CAPABILITY_SEED = {
   'analyze.exception-rules': { route: '/data/exceptions' },
   'analyze.findings-disposition': { route: '/data/exceptions' },
   'analyze.explanations': { route: '/variance' },
+  'analyze.dashboards': { route: '/dashboard' },
   'ops.cash-planning': { route: '/cash/forecast' },
   'ops.workforce': { route: '/workforce' },
   'ops.capex': { route: '/capex' },
@@ -212,6 +215,7 @@ const CAPABILITY_SEED = {
   'wf.auditability': { route: '/audit/trail' },
   'wf.administration': { route: '/admin' },
   'wf.human-attribution': { route: '/audit/trail' },
+  'collab.comments': { route: '/collaboration' },
   'report.statements': { route: '/reports/three-statement' },
   'report.board-pack': { route: '/board-pack' },
   'report.xlsx-formula': { route: '/reports' },

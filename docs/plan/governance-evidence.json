@@ -3310,7 +3310,39 @@
         "proves": "scenarioStore.setScenarios requires scenario:update; Viewer denied, Admin reaches enforce gate."
       }
     ],
-    "collab": [
+    "analyze.dashboards": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards setDashboards, audit chain intact",
+        "proves": "dashboardStore.setDashboards requires dashboard:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:create guards addDashboard, Admin reaches enforce gate",
+        "proves": "dashboardStore.addDashboard requires dashboard:create; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards updateDashboard, audit chain intact",
+        "proves": "dashboardStore.updateDashboard requires dashboard:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:delete guards deleteDashboard, Admin reaches enforce gate",
+        "proves": "dashboardStore.deleteDashboard requires dashboard:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:create guards addWidget, audit chain intact",
+        "proves": "dashboardStore.addWidget requires dashboard:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards addFilter, Admin reaches enforce gate",
+        "proves": "dashboardStore.addFilter requires dashboard:update; Viewer denied, Admin reaches enforce gate."
+      }
+    ],
+    "collab.comments": [
       {
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:collab \u2014 collab:update guards setTasks, audit chain intact",
@@ -3350,38 +3382,6 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:collab \u2014 notification:delete guards clearNotifications, audit chain intact",
         "proves": "notificationStore.clearNotifications requires notification:delete; Viewer denied; audit chain verified."
-      }
-    ],
-    "analyze.dashboards": [
-      {
-        "file": "src/__tests__/spineGovernance.test.ts",
-        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards setDashboards, audit chain intact",
-        "proves": "dashboardStore.setDashboards requires dashboard:update; Viewer denied; audit chain verified."
-      },
-      {
-        "file": "src/__tests__/spineGovernance.test.ts",
-        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:create guards addDashboard, Admin reaches enforce gate",
-        "proves": "dashboardStore.addDashboard requires dashboard:create; Viewer denied, Admin reaches enforce gate."
-      },
-      {
-        "file": "src/__tests__/spineGovernance.test.ts",
-        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards updateDashboard, audit chain intact",
-        "proves": "dashboardStore.updateDashboard requires dashboard:update; Viewer denied; audit chain verified."
-      },
-      {
-        "file": "src/__tests__/spineGovernance.test.ts",
-        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:delete guards deleteDashboard, Admin reaches enforce gate",
-        "proves": "dashboardStore.deleteDashboard requires dashboard:delete; Viewer denied, Admin reaches enforce gate."
-      },
-      {
-        "file": "src/__tests__/spineGovernance.test.ts",
-        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:create guards addWidget, audit chain intact",
-        "proves": "dashboardStore.addWidget requires dashboard:create; Viewer denied; audit chain verified."
-      },
-      {
-        "file": "src/__tests__/spineGovernance.test.ts",
-        "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards addFilter, Admin reaches enforce gate",
-        "proves": "dashboardStore.addFilter requires dashboard:update; Viewer denied, Admin reaches enforce gate."
       }
     ]
   },

@@ -13,7 +13,7 @@
     "engines": 180,
     "requirements": 19,
     "annex": 200,
-    "capabilities": 65
+    "capabilities": 67
   },
   "rows": [
     {
@@ -1836,9 +1836,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.data-management \u2014 import:update guards setAccounts, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.data-management \u2014 import:create guards addAccount, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -1850,9 +1860,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.integrations \u2014 import:create guards connect, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.integrations \u2014 import:update guards disconnect, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -1864,9 +1884,27 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.settings \u2014 ui:update guards setTheme, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.settings \u2014 ui:update guards addToast, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.settings \u2014 ui:update guards startTour, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.settings \u2014 ui:update guards completeTour, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (4 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -1878,9 +1916,27 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.users \u2014 user:create guards addUser, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.users \u2014 user:delete guards deleteUser, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.users \u2014 user:update guards setUsers, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:admin.users \u2014 user:assign-role guards setRoles, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (4 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -1917,6 +1973,46 @@
         "gatedBy": "/ai"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:analyze.dashboards",
+      "status": "SUPPORTED",
+      "evidence": {
+        "gatedBy": "/dashboard",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards setDashboards, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:create guards addDashboard, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards updateDashboard, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:delete guards deleteDashboard, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:create guards addWidget, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards addFilter, Admin reaches enforce gate"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+      },
+      "note": "GOVERNED evidence recorded (6 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2010,9 +2106,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.statements \u2014 dashboard:create guards addChart, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.statements \u2014 dashboard:update guards updateChart, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2024,9 +2130,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.variance-decomposition \u2014 variance:create guards addAnalysis, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.variance-decomposition \u2014 variance:delete guards deleteAnalysis, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2208,7 +2324,35 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.trial-balance \u2014 trial balance read allowed for Viewer, audit chain intact"
+            "title": "GOVERNED cap:close.trial-balance \u2014 import:update guards setRows, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards setLoading, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards setSort, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards addFilter, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards refresh, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards reset, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards clearFilters, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards nextPage, Admin reaches enforce gate"
           }
         ],
         "tests": [
@@ -2218,7 +2362,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (8 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/GLTrialBalancePage.interop.test.tsx"
@@ -2257,6 +2401,54 @@
       ],
       "gate": "npm run governance:evidence",
       "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+    },
+    {
+      "kind": "capability",
+      "id": "cap:collab.comments",
+      "status": "SUPPORTED",
+      "evidence": {
+        "gatedBy": "/collaboration",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:collab \u2014 collab:update guards setTasks, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:collab \u2014 collab:update guards addTask, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:collab \u2014 collab:update guards updateTaskStatus, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:collab \u2014 collab:update guards setActivityLog, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:collab \u2014 collab:update guards addActivity, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:collab \u2014 notification:update guards markAsRead, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:collab \u2014 notification:update guards markAllAsRead, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:collab \u2014 notification:delete guards clearNotifications, audit chain intact"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+      },
+      "note": "GOVERNED evidence recorded (8 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2304,7 +2496,39 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:create guards intake, audit records provenance"
+            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:create guards setFile, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 ui:update guards setStep, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards setMappings, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 ui:update guards setProgress, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards setAutoMapping, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:create guards completeSession, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards saveMappingProfile, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:delete guards removeDocument, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards signLatestVersion, Admin reaches enforce gate"
           }
         ],
         "tests": [
@@ -2314,7 +2538,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (9 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/services/import/glCsvTokenizer.test.ts"
@@ -2366,7 +2590,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.lineage \u2014 lineage carries provenance, audit records lineage changes"
+            "title": "GOVERNED cap:data.lineage \u2014 audit:create guards recordChange, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.lineage \u2014 Admin recordChange reaches the enforce gate"
           }
         ],
         "tests": [
@@ -2376,7 +2604,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/services/import/parseGLRows.test.ts"
@@ -2490,9 +2718,119 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 retailStore inventory:create guards addProduct, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 retailStore inventory:delete guards removeProduct, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 telecomStore inventory:create guards addSubscriber, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 telecomStore inventory:delete guards removeSubscriber, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 healthcareStore budget:create guards addProgram, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 healthcareStore budget:update guards updateProgram, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 governmentStore budget:create guards addFund, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 governmentStore budget:delete guards removeFund, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 logisticsStore inventory:create guards addShipment, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 logisticsStore inventory:delete guards removeShipment, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 esgStore analytics:create guards addMetric, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 esgStore analytics:delete guards removeMetric, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 educationStore entity:create guards addProgram, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 educationStore entity:delete guards removeProgram, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 realEstateStore entity:create guards addFacility, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 realEstateStore entity:delete guards removeFacility, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 energyStore entity:create guards addAsset, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 energyStore entity:delete guards removeAsset, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 insuranceStore budget:create guards addRateFiling, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 insuranceStore budget:update guards updateRateFiling, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 retailStore inventory:update guards updateProduct, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 retailStore entity:update guards setStores, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 entity:update guards setEntities, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 entity:update guards updateEntity, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 entity:delete guards deleteEntity, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 retailStore entity:create guards addPromotion, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:govern.authorization \u2014 retailStore inventory:delete guards clearAll, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (27 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2542,9 +2880,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:model.fx-translation \u2014 forecast:create guards addRate, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:model.fx-translation \u2014 forecast:delete guards deleteRate, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2565,9 +2913,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:model.leases \u2014 budget:create guards addLease, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:model.leases \u2014 budget:delete guards removeLease, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2606,9 +2964,27 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:ops.capex \u2014 capex:create guards addProject, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:ops.capex \u2014 capex:delete guards removeProject, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:ops.capex \u2014 budget:create guards addChangeOrder, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:ops.capex \u2014 budget:update guards updateChangeOrder, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (4 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2620,9 +2996,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:ops.cash-planning \u2014 budget:create guards addInstrument, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:ops.cash-planning \u2014 budget:delete guards removeInstrument, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2634,9 +3020,27 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:ops.workforce \u2014 entity:create guards addEmployee, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:ops.workforce \u2014 entity:delete guards removeEmployee, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:ops.workforce \u2014 entity:update guards setDepartments, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:ops.workforce \u2014 entity:delete guards clearAll, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (4 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2648,9 +3052,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.assumptions \u2014 cube:delete guards deleteCell, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.assumptions \u2014 cube:admin guards addMember, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2662,9 +3076,27 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.budgets \u2014 budget:update guards setBudgets, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.budgets \u2014 budget:update guards updateLineItem, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.budgets \u2014 budget:approve guards approveBudget, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.budgets \u2014 budget:delete guards deleteBudget, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (4 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2676,9 +3108,35 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:create guards addDriver, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:delete guards removeDriver, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:create guards addRule, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:delete guards removeRule, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:update guards applyCascade, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:delete guards reset, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (6 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2709,9 +3167,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.scenarios \u2014 forecast:update guards setForecasts, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.scenarios \u2014 forecast:create guards createForecast, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2723,9 +3191,23 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.versions \u2014 scenario:lock guards lockScenario, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.versions \u2014 scenario:lock guards unlockScenario, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.versions \u2014 scenario:update guards setScenarios, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (3 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2787,9 +3269,31 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:report.statements \u2014 report:schedule guards toggleScheduledReport, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:report.statements \u2014 report:schedule guards toggleScheduledReport, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:report.statements \u2014 report:schedule guards deleteScheduledReport, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:report.statements \u2014 report:schedule guards recordScheduleRun, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:report.statements \u2014 report:update guards setReports, audit chain intact"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (5 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2842,9 +3346,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:wf.administration \u2014 workflow:update guards addDelegation, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:wf.administration \u2014 workflow:delete guards removeDelegation, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2856,9 +3370,23 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:wf.approvals \u2014 workflow:approve guards lockRequest, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:wf.approvals \u2014 workflow:approve guards lockRequest, Admin reaches enforce gate"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:wf.approvals \u2014 workflow:approve guards setApprovals, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (3 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2870,9 +3398,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:wf.auditability \u2014 notification:update guards markAsRead, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:wf.auditability \u2014 notification:delete guards clearNotifications, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2884,9 +3422,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:wf.correction-follow-through \u2014 workflow:update guards checkEscalations, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:wf.correction-follow-through \u2014 workflow:update guards checkEscalations, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
@@ -2907,9 +3455,19 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:wf.rbac \u2014 workflow:create guards createWorkflow, audit chain intact"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:wf.rbac \u2014 workflow:delete guards deleteWorkflow, Admin reaches enforce gate"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated."
     },
     {
       "kind": "capability",
