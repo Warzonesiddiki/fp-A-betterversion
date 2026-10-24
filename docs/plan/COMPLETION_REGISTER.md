@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 161 |
-| EXPERIMENTAL | 306 |
+| SUPPORTED | 162 |
+| EXPERIMENTAL | 305 |
 | BLOCKED-ON-OWNER | 6 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -742,7 +742,7 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:plan.scenarios` | SUPPORTED | gatedBy=/scenarios; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:plan.versions` | SUPPORTED | gatedBy=/budgets/bva; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (3 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:report.board-pack` | SUPPORTED | connected=1 [src/pages/reports/BoardPackPage.exportTieOut.test.tsx]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/BoardPackPage.exportTieOut.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
-| `cap:report.pdf` | EXPERIMENTAL | gatedBy=/reports | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:report.pdf` | SUPPORTED | gatedBy=/reports; tests=src/engines/AdvancedPDFEngine.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/AdvancedPDFEngine.governance.test.ts] | SUPPORTED — AdvancedPDFEngine PDF report generation verified by 14 engine-level governance tests covering TOC, watermark, header/footer, page break, financial table, money primitive safety, document export, and determinism. |
 | `cap:report.pptx-editable` | EXPERIMENTAL | gatedBy=/board-pack | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:report.statements` | SUPPORTED | gatedBy=/reports/three-statement; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=5 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (5 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:report.tie-back` | SUPPORTED | connected=1 [src/pages/reports/BoardPackPage.exportTieOut.test.tsx]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/BoardPackPage.exportTieOut.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
