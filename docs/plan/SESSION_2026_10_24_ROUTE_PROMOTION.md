@@ -803,3 +803,27 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | glStore enforce methods tested | 18/18 (ALL COMPLETE) |
 | Governance dimensions | 7 |
 | All gates PASS | ✓ |
+
+## Phase 22 — Engine-Level Governance Testing: ConsolidationEngine (2026-10-24)
+
+**Gap:** 15 EXPERIMENTAL capabilities require engine-level testing. Phase 1 of the engine-level testing plan targets the MODEL pillar — financial engine correctness. The ConsolidationEngine is the financial authority (ASC 810). If it produces wrong numbers, every downstream report is wrong.
+
+**Tests added:** 21 engine-level governance tests in `src/engines/ConsolidationEngine.governance.test.ts`
+**Dimensions tested:** 8 (input validation, IC elimination, minority interest, balance check, money primitive safety, failed result safety F-0003, cent-exact tolerance F-0009, determinism)
+**Capability promoted:** model.consolidation EXPERIMENTAL → SUPPORTED (DEC-100)
+**Register:** 149 SUPPORTED (was 148), 318 EXPERIMENTAL (was 319)
+**Governance evidence:** 45 capabilities (was 44), 216 claims (was 215)
+**Spine tests:** 684 (unchanged — engine tests are separate file)
+
+### Metrics after Phase 22
+
+| Metric | Value |
+|--------|-------|
+| Spine governance tests | 684 |
+| Engine governance tests | 21 |
+| GOVERNED routes | 104 |
+| Governance-evidence capability claims | 216 (45 capabilities) |
+| Register SUPPORTED | 149 |
+| Stores with enforce() covered | 39/39 (ALL COMPLETE) |
+| Engine governance dimensions | 8 (financial correctness) |
+| All gates PASS | ✓ |

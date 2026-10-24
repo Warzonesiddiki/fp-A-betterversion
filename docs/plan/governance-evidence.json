@@ -3772,6 +3772,13 @@
         "title": "GOVERNED cap:model.tax \u2014 removeBenchmark with TAX_UPDATE permission succeeds",
         "proves": "tpBenchmarkStore.removeBenchmark succeeds for Admin with TAX_UPDATE; benchmark removed"
       }
+    ],
+    "model.consolidation": [
+      {
+        "file": "src/engines/ConsolidationEngine.governance.test.ts",
+        "title": "ConsolidationEngine \u2014 GOVERNANCE (model.consolidation)",
+        "proves": "ConsolidationEngine.consolidate() validates input (empty/invalid/non-array), eliminates intercompany pairs (AB/BA), calculates minority interest (full method, 75% ownership), checks balance (assets = liabilities + equity), uses Money primitive (safe integer cents), returns failed status for empty entities (F-0003), discloses cent-exact tolerance (F-0009), and is deterministic for identical inputs."
+      }
     ]
   },
   "census": {
@@ -3795,5 +3802,6 @@
       "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md \u00a7OWNER)",
       "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
     }
-  }
+  },
+  "totalCapabilityClaims": 216
 }

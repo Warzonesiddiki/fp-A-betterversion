@@ -2864,11 +2864,22 @@
     {
       "kind": "capability",
       "id": "cap:model.consolidation",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/consolidation"
+        "gatedBy": "/consolidation",
+        "tests": [
+          "src/engines/ConsolidationEngine.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/engines/ConsolidationEngine.governance.test.ts",
+            "title": "ConsolidationEngine \u2014 GOVERNANCE (model.consolidation)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 ConsolidationEngine ASC 810 compliance verified by 21 engine-level governance tests covering input validation, IC elimination, minority interest, balance check, money primitive safety, failed result safety, cent-exact tolerance, and determinism. Promoted per DEC-100."
     },
     {
       "kind": "capability",
