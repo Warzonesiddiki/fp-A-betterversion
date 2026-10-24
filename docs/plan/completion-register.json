@@ -3018,11 +3018,22 @@
     {
       "kind": "capability",
       "id": "cap:model.multi-book",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/accounting"
+        "gatedBy": "/accounting/books",
+        "tests": [
+          "src/engines/MultiBookEngine.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/engines/MultiBookEngine.governance.test.ts",
+            "title": "MultiBookEngine \u2014 GOVERNANCE (model.multi-book)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 MultiBookEngine multi-book accounting verified by 14 engine-level governance tests covering period closing immutability, adjustment chain, book consolidation, book comparison, money primitive safety, and book lifecycle."
     },
     {
       "kind": "capability",

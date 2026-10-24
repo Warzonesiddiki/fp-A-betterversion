@@ -3856,6 +3856,13 @@
         "title": "LLM Egress Chokepoint \u2014 AI EXPLICIT INVOCATION (ai.explicit-invocation)",
         "proves": "LlmEgressChokepoint explicit invocation and local-only: isEgressEnabled returns false by default (kill switch). assertEndpointAllowed throws LlmEgressBlockedError with LLM-EGRESS-BLOCKED code when egress disabled \u2014 all endpoints blocked. redactPromptText redacts emails, secrets, IBANs, GL accounts, money. redactMessages redacts all message roles. complete() fail-closes when egress disabled. No egress occurs in test environment \u2014 AI features are local-only unless explicitly enabled."
       }
+    ],
+    "model.multi-book": [
+      {
+        "file": "src/engines/MultiBookEngine.governance.test.ts",
+        "title": "MultiBookEngine \u2014 GOVERNANCE (model.multi-book)",
+        "proves": "MultiBookEngine multi-book accounting correctness: period closing immutability (postEntry throws after close, closeBook throws on double-close, reopenBook allows posting). Adjustment chain (adjusted entries reference originals via adjustmentOf, originals remain unchanged). Book consolidation correctness (cross-book aggregation). Book comparison correctness (cross-book differences). Money primitive safety (debit/credit rounding to 2 decimal places). Book lifecycle (delete, nonexistent)."
+      }
     ]
   },
   "census": {
@@ -3880,5 +3887,5 @@
       "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
     }
   },
-  "totalCapabilityClaims": 227
+  "totalCapabilityClaims": 228
 }

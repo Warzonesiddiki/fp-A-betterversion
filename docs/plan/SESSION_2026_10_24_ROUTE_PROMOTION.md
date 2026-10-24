@@ -943,3 +943,13 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 **Capabilities promoted:** ai.explicit-invocation, ai.local-only EXPERIMENTAL → SUPPORTED
 **Register:** 160 SUPPORTED (was 158), 307 EXPERIMENTAL (was 309)
 **Governance evidence:** 56 capabilities (was 54), 227 claims (was 225)
+
+## Phase 33 — MultiBookEngine Governance Tests (2026-10-24)
+
+**Gap:** Phase 5 of engine-level testing plan — MODEL pillar. Multi-book accounting correctness.
+
+**Tests added:** 14 engine-level governance tests in `src/engines/MultiBookEngine.governance.test.ts`
+**Dimensions tested:** 6 (period closing immutability, adjustment chain, book consolidation, book comparison, money primitive safety, book lifecycle)
+**Capability promoted:** model.multi-book EXPERIMENTAL → SUPPORTED
+**Register:** 161 SUPPORTED (was 160), 306 EXPERIMENTAL (was 307)
+**Governance evidence:** 57 capabilities (was 56), 228 claims (was 227)
