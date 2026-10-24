@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 121 |
-| EXPERIMENTAL | 343 |
+| SUPPORTED | 128 |
+| EXPERIMENTAL | 336 |
 | BLOCKED-ON-OWNER | 7 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -688,9 +688,9 @@ question that stops it. Nothing here is promoted by prose.
 | Id | Status | Evidence | Note |
 | --- | --- | --- | --- |
 | `cap:admin.backup-restore` | BLOCKED-ON-OWNER | owner=O3; question=Encryption key-escrow/recovery decision (O3, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
-| `cap:admin.data-management` | EXPERIMENTAL | gatedBy=/data | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:admin.data-management` | SUPPORTED | gatedBy=/data; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:admin.integrations` | EXPERIMENTAL | gatedBy=/settings/integrations | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:admin.settings` | EXPERIMENTAL | gatedBy=/settings | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:admin.settings` | SUPPORTED | gatedBy=/settings; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:admin.users` | EXPERIMENTAL | gatedBy=/admin | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:ai.explicit-invocation` | EXPERIMENTAL | gatedBy=/ai | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:ai.local-only` | EXPERIMENTAL | gatedBy=/ai | A routed screen hosts this capability; no support claim yet (see plan §5). |
@@ -700,8 +700,8 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:analyze.exception-rules` | SUPPORTED | connected=1 [src/pages/data/ExceptionQueuePage.test.tsx]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/data/ExceptionQueuePage.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:analyze.explanations` | EXPERIMENTAL | gatedBy=/variance | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:analyze.findings-disposition` | SUPPORTED | connected=1 [src/store/exceptionDispositionStore.lifecycle.test.ts]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/store/exceptionDispositionStore.lifecycle.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
-| `cap:analyze.statements` | EXPERIMENTAL | gatedBy=/reports/three-statement | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:analyze.variance-decomposition` | EXPERIMENTAL | gatedBy=/variance | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:analyze.statements` | SUPPORTED | gatedBy=/reports/three-statement; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:analyze.variance-decomposition` | SUPPORTED | gatedBy=/variance; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:close.audit-chain` | SUPPORTED | connected=1 [src/store/auditTrailIntegrity.test.ts]; governed=2 [src/__tests__/spineGovernance.test.ts src/services/audit/auditChainCensus.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/services/audit/auditChainCensus.test.ts src/store/auditTrailIntegrity.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:close.corrections` | SUPPORTED | connected=1 [src/pages/data/CorrectionsPage.test.tsx]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/data/CorrectionsPage.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:close.period-entity-scope` | SUPPORTED | connected=1 [src/services/import/glPeriodWriteGuard.test.ts]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/services/import/glPeriodWriteGuard.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
@@ -734,7 +734,7 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:ops.workforce` | EXPERIMENTAL | gatedBy=/workforce | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:plan.assumptions` | EXPERIMENTAL | gatedBy=/forecasts/drivers | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:plan.budgets` | EXPERIMENTAL | gatedBy=/budgets | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:plan.drivers-cascades` | EXPERIMENTAL | gatedBy=/forecasts/drivers | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:plan.drivers-cascades` | SUPPORTED | gatedBy=/forecasts/drivers; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:plan.operational-plans` | NOT_BUILT | namedBy=docs/plan/COMPLETION_PLAN_86_100.md | Identified in plan §4; nothing claims it yet. |
 | `cap:plan.rolling-forecast` | BLOCKED-ON-OWNER | owner=O2; question=Roll semantics: replace vs blend, which months roll, approval interplay (O2, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
 | `cap:plan.scenarios` | EXPERIMENTAL | gatedBy=/scenarios | A routed screen hosts this capability; no support claim yet (see plan §5). |
@@ -747,10 +747,10 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:report.xlsx-formula` | EXPERIMENTAL | gatedBy=/reports | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:wf.administration` | EXPERIMENTAL | gatedBy=/admin | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:wf.approvals` | EXPERIMENTAL | gatedBy=/budgets/approval | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:wf.auditability` | EXPERIMENTAL | gatedBy=/audit/trail | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:wf.auditability` | SUPPORTED | gatedBy=/audit/trail; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:wf.correction-follow-through` | EXPERIMENTAL | gatedBy=/data/corrections | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:wf.human-attribution` | EXPERIMENTAL | gatedBy=/audit/trail | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:wf.rbac` | EXPERIMENTAL | gatedBy=/settings/security | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:wf.rbac` | SUPPORTED | gatedBy=/settings/security; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:wf.reviews` | EXPERIMENTAL | gatedBy=/budgets/approval | A routed screen hosts this capability; no support claim yet (see plan §5). |
 
 <!-- REGISTER:END -->

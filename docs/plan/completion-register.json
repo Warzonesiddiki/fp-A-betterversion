@@ -1829,9 +1829,14 @@
     {
       "kind": "capability",
       "id": "cap:admin.data-management",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data"
+        "gatedBy": "/data",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -1847,9 +1852,14 @@
     {
       "kind": "capability",
       "id": "cap:admin.settings",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/settings"
+        "gatedBy": "/settings",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -1983,18 +1993,28 @@
     {
       "kind": "capability",
       "id": "cap:analyze.statements",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/reports/three-statement"
+        "gatedBy": "/reports/three-statement",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
       "id": "cap:analyze.variance-decomposition",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/variance"
+        "gatedBy": "/variance",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -2599,9 +2619,14 @@
     {
       "kind": "capability",
       "id": "cap:plan.drivers-cascades",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/forecasts/drivers"
+        "gatedBy": "/forecasts/drivers",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -2763,9 +2788,14 @@
     {
       "kind": "capability",
       "id": "cap:wf.auditability",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/audit/trail"
+        "gatedBy": "/audit/trail",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -2790,9 +2820,14 @@
     {
       "kind": "capability",
       "id": "cap:wf.rbac",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/settings/security"
+        "gatedBy": "/settings/security",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
