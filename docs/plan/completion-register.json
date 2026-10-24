@@ -3417,11 +3417,22 @@
     {
       "kind": "capability",
       "id": "cap:report.pdf",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/reports"
+        "gatedBy": "/reports",
+        "tests": [
+          "src/engines/AdvancedPDFEngine.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/engines/AdvancedPDFEngine.governance.test.ts",
+            "title": "AdvancedPDFEngine \u2014 GOVERNANCE (report.pdf)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 AdvancedPDFEngine PDF report generation verified by 14 engine-level governance tests covering TOC, watermark, header/footer, page break, financial table, money primitive safety, document export, and determinism."
     },
     {
       "kind": "capability",
