@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 158 |
-| EXPERIMENTAL | 309 |
+| SUPPORTED | 160 |
+| EXPERIMENTAL | 307 |
 | BLOCKED-ON-OWNER | 6 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -692,8 +692,8 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:admin.integrations` | SUPPORTED | gatedBy=/settings/integrations; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:admin.settings` | SUPPORTED | gatedBy=/settings; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=4 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (4 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:admin.users` | SUPPORTED | gatedBy=/admin; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=4 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (4 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
-| `cap:ai.explicit-invocation` | EXPERIMENTAL | gatedBy=/ai | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:ai.local-only` | EXPERIMENTAL | gatedBy=/ai | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:ai.explicit-invocation` | SUPPORTED | gatedBy=/settings/ai; tests=src/services/llm/llmEgress.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/services/llm/llmEgress.governance.test.ts] | SUPPORTED — LlmEgressChokepoint explicit invocation and local-only verified by 19 engine-level governance tests covering kill switch, fail-closed endpoint gating, error types, redaction (emails/secrets/IBANs/GL accounts/money), message redaction, and local-only processing. |
+| `cap:ai.local-only` | SUPPORTED | gatedBy=/settings/ai; tests=src/services/llm/llmEgress.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/services/llm/llmEgress.governance.test.ts] | SUPPORTED — LlmEgressChokepoint explicit invocation and local-only verified by 19 engine-level governance tests covering kill switch, fail-closed endpoint gating, error types, redaction (emails/secrets/IBANs/GL accounts/money), message redaction, and local-only processing. |
 | `cap:ai.no-egress` | NOT_BUILT | namedBy=docs/plan/COMPLETION_PLAN_86_100.md | no egress path is proven; DEC-022 is policy, not a tested control |
 | `cap:ai.verified-facts-gate` | SUPPORTED | gatedBy=/ai; tests=src/engines/AutoCommentaryEngine.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/AutoCommentaryEngine.governance.test.ts] | SUPPORTED — AutoCommentaryEngine narrative gate (verifyNarrative) blocks computed numbers not in verified facts. 24 engine-level governance tests covering narrative gating, money primitive safety, zero-budget handling, variance direction (above/below, never favorable/unfavorable), significance threshold, template interpolation, YoY comparison, and determinism. |
 | `cap:analyze.dashboards` | SUPPORTED | gatedBy=/dashboard; governed=6 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | GOVERNED evidence recorded (6 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
