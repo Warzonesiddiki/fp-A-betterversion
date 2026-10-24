@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 156 |
-| EXPERIMENTAL | 311 |
+| SUPPORTED | 157 |
+| EXPERIMENTAL | 310 |
 | BLOCKED-ON-OWNER | 6 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -699,7 +699,7 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:analyze.dashboards` | SUPPORTED | gatedBy=/dashboard; governed=6 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | GOVERNED evidence recorded (6 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:analyze.drill-to-source` | SUPPORTED | gatedBy=/analyze; tests=src/engines/AdvancedOLAPEngine.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/AdvancedOLAPEngine.governance.test.ts] | SUPPORTED — AdvancedOLAPEngine drill-to-source traceability verified by 25 engine-level governance tests covering member management, hierarchy navigation (drill-down/up), cell security (RBAC), writeback audit trail, query execution, what-if scenario isolation, serialization, and determinism. |
 | `cap:analyze.exception-rules` | SUPPORTED | connected=1 [src/pages/data/ExceptionQueuePage.test.tsx]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/data/ExceptionQueuePage.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
-| `cap:analyze.explanations` | EXPERIMENTAL | gatedBy=/variance | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:analyze.explanations` | SUPPORTED | gatedBy=/analyze; tests=src/engines/AutoCommentaryEngine.explanations.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/AutoCommentaryEngine.explanations.governance.test.ts] | SUPPORTED — AutoCommentaryEngine explanation attribution verified by 15 engine-level governance tests covering source attribution (local vs LLM), narrative determinism, empty/multi-item handling, variance direction, and attribution consistency. |
 | `cap:analyze.findings-disposition` | SUPPORTED | connected=1 [src/store/exceptionDispositionStore.lifecycle.test.ts]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/store/exceptionDispositionStore.lifecycle.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:analyze.statements` | SUPPORTED | gatedBy=/reports/three-statement; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:analyze.variance-decomposition` | SUPPORTED | gatedBy=/variance; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
