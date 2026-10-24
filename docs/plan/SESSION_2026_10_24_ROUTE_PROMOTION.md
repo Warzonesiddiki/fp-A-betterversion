@@ -393,3 +393,42 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 |
 | Remaining EXPERIMENTAL | 25 (engine/AI features) |
 | All gates PASS | ✓ |
+
+## Phase 11 — Exception Disposition Lifecycle Expanded Tests (2026-10-24)
+
+**Objective:** Expand exceptionDispositionStore lifecycle coverage — test all state machine transitions and terminal states.
+
+**Store tested:** exceptionDispositionStore
+
+**Tests added:** 8 (batch 14)
+
+| # | Test | Claim |
+|---|------|-------|
+| 1 | REQUESTED → WITHDRAWN is a valid transition, audit trail intact | stateClaim |
+| 2 | APPLIED → REVERIFIED is a valid transition, audit trail intact | stateClaim |
+| 3 | APPLIED → WITHDRAWN is a valid transition | stateClaim |
+| 4 | APPLIED → REQUESTED is an illegal transition, throws | stateClaim |
+| 5 | REVERIFIED is terminal, cannot transition to APPLIED | stateClaim |
+| 6 | WITHDRAWN is terminal, cannot transition to APPLIED | stateClaim |
+| 7 | requestCorrection with empty instruction throws validation error | stateClaim |
+| 8 | requestCorrection with empty assignee throws validation error | stateClaim |
+
+**Capability claims:** 8 new under close.corrections (42 capabilities, 164 total claims).
+
+**Key learning:** The exceptionDispositionStore correction state machine (REQUESTED → APPLIED → REVERIFIED, with WITHDRAWN as alternative) has two terminal states (REVERIFIED, WITHDRAWN). Once a correction reaches a terminal state, no further transitions are allowed — the correction must be re-requested to start a new cycle. The `requireText` validation guards enforce that correction instructions and assignees are non-empty strings.
+
+**Test count:** 619 total (597 base + 6 batch 12 + 8 batch 13 + 8 batch 14). All passing.
+
+**Register SUPPORTED:** 146 (unchanged — close.corrections already SUPPORTED).
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 619 |
+| Routes governed | 104 |
+| Capability claims | 164 (42 capabilities) |
+| Register SUPPORTED | 146 |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL | 25 (engine/AI features) |
+| All gates PASS | ✓ |

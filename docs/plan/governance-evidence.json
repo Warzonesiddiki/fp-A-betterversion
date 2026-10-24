@@ -2784,6 +2784,46 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:close.corrections \u2014 corrections are tracked with audit trail",
         "proves": "Corrections are created from findings and tracked with append-only audit trail."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.corrections \u2014 REQUESTED \u2192 WITHDRAWN is a valid transition, audit trail intact",
+        "proves": "exceptionDispositionStore.updateCorrectionStatus transitions REQUESTED \u2192 WITHDRAWN via LEGAL state machine; audit trail has 2 entries"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.corrections \u2014 APPLIED \u2192 REVERIFIED is a valid transition, audit trail intact",
+        "proves": "exceptionDispositionStore.updateCorrectionStatus transitions APPLIED \u2192 REVERIFIED via LEGAL state machine; audit trail has 3 entries"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.corrections \u2014 APPLIED \u2192 WITHDRAWN is a valid transition",
+        "proves": "exceptionDispositionStore.updateCorrectionStatus transitions APPLIED \u2192 WITHDRAWN via LEGAL state machine; audit trail confirms"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.corrections \u2014 APPLIED \u2192 REQUESTED is an illegal transition, throws",
+        "proves": "exceptionDispositionStore.updateCorrectionStatus throws on APPLIED \u2192 REQUESTED (illegal transition); LEGAL state machine enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.corrections \u2014 REVERIFIED is terminal, cannot transition to APPLIED",
+        "proves": "exceptionDispositionStore.updateCorrectionStatus throws on REVERIFIED \u2192 APPLIED (terminal state); LEGAL state machine enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.corrections \u2014 WITHDRAWN is terminal, cannot transition to APPLIED",
+        "proves": "exceptionDispositionStore.updateCorrectionStatus throws on WITHDRAWN \u2192 APPLIED (terminal state); LEGAL state machine enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.corrections \u2014 requestCorrection with empty instruction throws validation error",
+        "proves": "exceptionDispositionStore.requestCorrection throws on empty instruction via requireText validation"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.corrections \u2014 requestCorrection with empty assignee throws validation error",
+        "proves": "exceptionDispositionStore.requestCorrection throws on empty assignee via requireText validation"
       }
     ],
     "analyze.exception-rules": [

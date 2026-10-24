@@ -5330,3 +5330,108 @@ describe('GOVERNED capability-level — budget lifecycle expanded tests (batch 1
     expect(useBudgetStore.getState().budgets[0]!.name).toBe('Renamed Budget');
   });
 });
+
+describe('GOVERNED capability-level — exceptionDispositionStore lifecycle expanded tests (batch 14)', () => {
+  it('GOVERNED cap:close.corrections — REQUESTED → WITHDRAWN is a valid transition, audit trail intact', () => {
+    actAs('Analyst');
+    useExceptionDispositionStore.getState().requestCorrection({
+      exceptionId: 'EXC-LIFE-1',
+      instruction: 'Fix entry',
+      assignee: 'team',
+    });
+    useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-1', 'WITHDRAWN');
+    const trail = useExceptionDispositionStore.getState().getCorrectionHistory('EXC-LIFE-1');
+    expect(trail.length).toBe(2);
+    expect(trail[0]!.status).toBe('REQUESTED');
+    expect(trail[1]!.status).toBe('WITHDRAWN');
+  });
+
+  it('GOVERNED cap:close.corrections — APPLIED → REVERIFIED is a valid transition, audit trail intact', () => {
+    actAs('Analyst');
+    useExceptionDispositionStore.getState().requestCorrection({
+      exceptionId: 'EXC-LIFE-2',
+      instruction: 'Fix ledger',
+      assignee: 'team',
+    });
+    useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-2', 'APPLIED');
+    useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-2', 'REVERIFIED');
+    const trail = useExceptionDispositionStore.getState().getCorrectionHistory('EXC-LIFE-2');
+    expect(trail.length).toBe(3);
+    expect(trail[2]!.status).toBe('REVERIFIED');
+  });
+
+  it('GOVERNED cap:close.corrections — APPLIED → WITHDRAWN is a valid transition', () => {
+    actAs('Analyst');
+    useExceptionDispositionStore.getState().requestCorrection({
+      exceptionId: 'EXC-LIFE-3',
+      instruction: 'Fix',
+      assignee: 'team',
+    });
+    useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-3', 'APPLIED');
+    useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-3', 'WITHDRAWN');
+    const trail = useExceptionDispositionStore.getState().getCorrectionHistory('EXC-LIFE-3');
+    expect(trail[2]!.status).toBe('WITHDRAWN');
+  });
+
+  it('GOVERNED cap:close.corrections — APPLIED → REQUESTED is an illegal transition, throws', () => {
+    actAs('Analyst');
+    useExceptionDispositionStore.getState().requestCorrection({
+      exceptionId: 'EXC-LIFE-4',
+      instruction: 'Fix',
+      assignee: 'team',
+    });
+    useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-4', 'APPLIED');
+    expect(() =>
+      useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-4', 'REQUESTED')
+    ).toThrow(/cannot move correction.*APPLIED.*REQUESTED|lifecycle/);
+  });
+
+  it('GOVERNED cap:close.corrections — REVERIFIED is terminal, cannot transition to APPLIED', () => {
+    actAs('Analyst');
+    useExceptionDispositionStore.getState().requestCorrection({
+      exceptionId: 'EXC-LIFE-5',
+      instruction: 'Fix',
+      assignee: 'team',
+    });
+    useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-5', 'APPLIED');
+    useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-5', 'REVERIFIED');
+    expect(() =>
+      useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-5', 'APPLIED')
+    ).toThrow(/terminal|REVERIFIED/);
+  });
+
+  it('GOVERNED cap:close.corrections — WITHDRAWN is terminal, cannot transition to APPLIED', () => {
+    actAs('Analyst');
+    useExceptionDispositionStore.getState().requestCorrection({
+      exceptionId: 'EXC-LIFE-6',
+      instruction: 'Fix',
+      assignee: 'team',
+    });
+    useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-6', 'WITHDRAWN');
+    expect(() =>
+      useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-LIFE-6', 'APPLIED')
+    ).toThrow(/terminal|WITHDRAWN/);
+  });
+
+  it('GOVERNED cap:close.corrections — requestCorrection with empty instruction throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useExceptionDispositionStore.getState().requestCorrection({
+        exceptionId: 'EXC-LIFE-7',
+        instruction: '',
+        assignee: 'team',
+      })
+    ).toThrow(/instruction.*required/);
+  });
+
+  it('GOVERNED cap:close.corrections — requestCorrection with empty assignee throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useExceptionDispositionStore.getState().requestCorrection({
+        exceptionId: 'EXC-LIFE-8',
+        instruction: 'Fix',
+        assignee: '',
+      })
+    ).toThrow(/assignee.*required/);
+  });
+});
