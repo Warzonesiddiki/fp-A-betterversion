@@ -1507,6 +1507,106 @@
           "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
         }
       }
+    },
+    "/reports/budget-vs-actual": {
+      "page": "src/pages/reports/BudgetVsActualPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/budget-vs-actual — budget:create guards budget creation for BVA",
+          "proves": "Budget creation for BVA requires budget:create permission; the enforce() wrapper on createBudget throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/budget-vs-actual — audit trail records BVA budget write",
+          "proves": "BVA budget write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/budget-vs-actual — write guard requires budget:delete on budget removal",
+          "proves": "Budget removal (deleteBudget) is wrapped in enforce(BUDGET_DELETE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/collaboration/shared": {
+      "page": "src/pages/collaboration/SharedReports.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /collaboration/shared — collab:update guards comment posting on shared reports",
+          "proves": "Comment posting on shared reports requires collab:update permission; the enforce() wrapper on addComment throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /collaboration/shared — audit trail records shared report collaboration write",
+          "proves": "Shared report collaboration write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /collaboration/shared — write guard requires workflow:approve on approvals",
+          "proves": "Approval changes (setApprovals) are wrapped in enforce(WORKFLOW_APPROVE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/settings/backup": {
+      "page": "src/pages/settings/BackupRestorePage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /settings/backup — settings:update guards organization changes",
+          "proves": "Organization changes require settings:update permission; the enforce() wrapper on updateOrganization throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /settings/backup — audit trail records backup/restore write",
+          "proves": "Backup/restore write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /settings/backup — write guard requires ui:update on preference changes",
+          "proves": "Preference changes (updatePreferences) are wrapped in enforce(UI_UPDATE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/reports/three-statement": {
+      "page": "src/pages/reports/ThreeStatementDashboardPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/three-statement — report:create guards report creation for 3-statement",
+          "proves": "Report creation for three-statement model requires report:create permission; the enforce() wrapper on createReport throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/three-statement — audit trail records three-statement report write",
+          "proves": "Three-statement report write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/three-statement — write guard requires report:delete on report removal",
+          "proves": "Report removal (deleteReport) is wrapped in enforce(REPORT_DELETE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
     }
   },
   "capabilities": {
