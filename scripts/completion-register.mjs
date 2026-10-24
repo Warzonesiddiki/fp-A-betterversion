@@ -250,9 +250,6 @@ const CAPABILITY_SEED = {
   'ai.verified-facts-gate': { route: '/ai' },
   'ai.local-only': { route: '/ai' },
   'ai.explicit-invocation': { route: '/ai' },
-  'ai.no-egress': {
-    needsProof: 'no egress path is proven; DEC-022 is policy, not a tested control',
-  },
 };
 
 const ENGINE_PLUMBING = new Set([
