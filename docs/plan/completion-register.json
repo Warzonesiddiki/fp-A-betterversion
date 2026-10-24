@@ -2473,9 +2473,14 @@
     {
       "kind": "capability",
       "id": "cap:govern.authorization",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/settings/security"
+        "gatedBy": "/settings/security",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },

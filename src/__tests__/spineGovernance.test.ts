@@ -48,6 +48,16 @@ import { useNotificationStore } from '@/store/notificationStore';
 import { useUIStore } from '@/store/uiStore';
 import { useTourStore } from '@/store/tourStore';
 import { useCellLineageStore } from '@/store/cellLineageStore';
+import { useRetailStore } from '@/store/retailStore';
+import { useTelecomStore } from '@/store/telecomStore';
+import { useHealthcareStore } from '@/store/healthcareStore';
+import { useGovernmentStore } from '@/store/governmentStore';
+import { useLogisticsStore } from '@/store/logisticsStore';
+import { useESGStore } from '@/store/esgStore';
+import { useEducationStore } from '@/store/educationStore';
+import { useRealEstateStore } from '@/store/realEstateStore';
+import { useEnergyStore } from '@/store/energyStore';
+import { useInsuranceStore } from '@/store/insuranceStore';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -127,6 +137,16 @@ function resetAll() {
   useUIStore.setState({ theme: 'system', toasts: [] } as never);
   useTourStore.setState({ activeTour: null, completedTours: [] } as never);
   useCellLineageStore.setState({ chains: new Map() } as never);
+  useRetailStore.setState({ products: [], stores: [] } as never);
+  useTelecomStore.setState({ subscribers: [], networkMetrics: {} } as never);
+  useHealthcareStore.setState({ qualityMetrics: {}, savingsData: {}, programs: [], clinicalTrials: [] } as never);
+  useGovernmentStore.setState({ funds: [], compliance: [] } as never);
+  useLogisticsStore.setState({ shipments: [], routeCosts: {} } as never);
+  useESGStore.setState({ metrics: [], initiatives: [] } as never);
+  useEducationStore.setState({ programs: [], scholarships: {} } as never);
+  useRealEstateStore.setState({ facilities: [], maintenanceTrend: {} } as never);
+  useEnergyStore.setState({ assets: [], generationTrend: {}, capacityMix: {} } as never);
+  useInsuranceStore.setState({ rateAdequacy: {}, lossPicks: {}, rateFilings: [] } as never);
 }
 
 beforeEach(() => {
@@ -4323,5 +4343,147 @@ describe('GOVERNED capability-level — stores with enforce() but no page route'
   it('GOVERNED cap:data.lineage — Admin recordChange reaches the enforce gate', () => {
     actAs('Admin');
     expect(() => useCellLineageStore.getState().recordChange('cell-test' as never, 0, 1, 'actor' as never, 'reason' as never, 'manual' as never, '1.0.0' as never)).not.toThrow();
+  });
+});
+
+describe('GOVERNED capability-level — sector stores with enforce() citing govern.authorization', () => {
+  it('GOVERNED cap:govern.authorization — retailStore inventory:create guards addProduct, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useRetailStore.getState().addProduct({ id: 'prod-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — retailStore inventory:delete guards removeProduct, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useRetailStore.getState().removeProduct('prod-test' as never));
+    actAs('Admin');
+    expect(() => useRetailStore.getState().removeProduct('prod-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — telecomStore inventory:create guards addSubscriber, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useTelecomStore.getState().addSubscriber({ id: 'sub-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — telecomStore inventory:delete guards removeSubscriber, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useTelecomStore.getState().removeSubscriber('sub-test' as never));
+    actAs('Admin');
+    expect(() => useTelecomStore.getState().removeSubscriber('sub-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — healthcareStore budget:create guards addProgram, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useHealthcareStore.getState().addProgram({ id: 'prog-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — healthcareStore budget:update guards updateProgram, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useHealthcareStore.getState().updateProgram('prog-test' as never, { name: 'Updated' } as never));
+    actAs('Admin');
+    expect(() => useHealthcareStore.getState().updateProgram('prog-test' as never, { name: 'Updated' } as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — governmentStore budget:create guards addFund, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useGovernmentStore.getState().addFund({ id: 'fund-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — governmentStore budget:delete guards removeFund, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useGovernmentStore.getState().removeFund('fund-test' as never));
+    actAs('Admin');
+    expect(() => useGovernmentStore.getState().removeFund('fund-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — logisticsStore inventory:create guards addShipment, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useLogisticsStore.getState().addShipment({ id: 'ship-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — logisticsStore inventory:delete guards removeShipment, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useLogisticsStore.getState().removeShipment('ship-test' as never));
+    actAs('Admin');
+    expect(() => useLogisticsStore.getState().removeShipment('ship-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — esgStore analytics:create guards addMetric, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useESGStore.getState().addMetric({ id: 'metric-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — esgStore analytics:delete guards removeMetric, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useESGStore.getState().removeMetric('metric-test' as never));
+    actAs('Admin');
+    expect(() => useESGStore.getState().removeMetric('metric-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — educationStore entity:create guards addProgram, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useEducationStore.getState().addProgram({ id: 'edu-prog', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — educationStore entity:delete guards removeProgram, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useEducationStore.getState().removeProgram('edu-prog' as never));
+    actAs('Admin');
+    expect(() => useEducationStore.getState().removeProgram('edu-prog' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — realEstateStore entity:create guards addFacility, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useRealEstateStore.getState().addFacility({ id: 'fac-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — realEstateStore entity:delete guards removeFacility, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useRealEstateStore.getState().removeFacility('fac-test' as never));
+    actAs('Admin');
+    expect(() => useRealEstateStore.getState().removeFacility('fac-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — energyStore entity:create guards addAsset, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useEnergyStore.getState().addAsset({ id: 'asset-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — energyStore entity:delete guards removeAsset, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useEnergyStore.getState().removeAsset('asset-test' as never));
+    actAs('Admin');
+    expect(() => useEnergyStore.getState().removeAsset('asset-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — insuranceStore budget:create guards addRateFiling, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useInsuranceStore.getState().addRateFiling({ id: 'filing-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — insuranceStore budget:update guards updateRateFiling, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useInsuranceStore.getState().updateRateFiling('filing-test' as never, { name: 'Updated' } as never));
+    actAs('Admin');
+    expect(() => useInsuranceStore.getState().updateRateFiling('filing-test' as never, { name: 'Updated' } as never)).not.toThrow();
   });
 });

@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 128 |
-| EXPERIMENTAL | 336 |
+| SUPPORTED | 129 |
+| EXPERIMENTAL | 335 |
 | BLOCKED-ON-OWNER | 7 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -718,7 +718,7 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:data.mapping` | SUPPORTED | connected=1 [src/services/import/spineAcceptance.d365.integration.test.ts]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/services/import/spineAcceptance.d365.integration.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:data.quarantine` | SUPPORTED | connected=1 [src/services/import/glStagingCoordinator.test.ts]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/services/import/glStagingCoordinator.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:data.validation` | SUPPORTED | connected=1 [src/services/import/spineAcceptance.d365.integration.test.ts]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/services/import/spineAcceptance.d365.integration.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
-| `cap:govern.authorization` | EXPERIMENTAL | gatedBy=/settings/security | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:govern.authorization` | SUPPORTED | gatedBy=/settings/security; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:govern.entity-scope` | BLOCKED-ON-OWNER | owner=O9; question=Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
 | `cap:govern.security-policy` | EXPERIMENTAL | gatedBy=/settings/security | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:govern.sox-authority` | BLOCKED-ON-OWNER | owner=O4; question=SOX/audit authority decision (O4, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |

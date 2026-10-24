@@ -2842,6 +2842,108 @@
         "title": "GOVERNED cap:admin.settings \u2014 ui:update guards completeTour, Admin reaches enforce gate",
         "proves": "tourStore.completeTour requires ui:update (stripped for negative test); Admin reaches enforce gate."
       }
+    ],
+    "govern.authorization": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 retailStore inventory:create guards addProduct, audit chain intact",
+        "proves": "retailStore.addProduct requires inventory:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 retailStore inventory:delete guards removeProduct, Admin reaches enforce gate",
+        "proves": "retailStore.removeProduct requires inventory:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 telecomStore inventory:create guards addSubscriber, audit chain intact",
+        "proves": "telecomStore.addSubscriber requires inventory:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 telecomStore inventory:delete guards removeSubscriber, Admin reaches enforce gate",
+        "proves": "telecomStore.removeSubscriber requires inventory:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 healthcareStore budget:create guards addProgram, audit chain intact",
+        "proves": "healthcareStore.addProgram requires budget:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 healthcareStore budget:update guards updateProgram, Admin reaches enforce gate",
+        "proves": "healthcareStore.updateProgram requires budget:update; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 governmentStore budget:create guards addFund, audit chain intact",
+        "proves": "governmentStore.addFund requires budget:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 governmentStore budget:delete guards removeFund, Admin reaches enforce gate",
+        "proves": "governmentStore.removeFund requires budget:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 logisticsStore inventory:create guards addShipment, audit chain intact",
+        "proves": "logisticsStore.addShipment requires inventory:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 logisticsStore inventory:delete guards removeShipment, Admin reaches enforce gate",
+        "proves": "logisticsStore.removeShipment requires inventory:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 esgStore analytics:create guards addMetric, audit chain intact",
+        "proves": "esgStore.addMetric requires analytics:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 esgStore analytics:delete guards removeMetric, Admin reaches enforce gate",
+        "proves": "esgStore.removeMetric requires analytics:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 educationStore entity:create guards addProgram, audit chain intact",
+        "proves": "educationStore.addProgram requires entity:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 educationStore entity:delete guards removeProgram, Admin reaches enforce gate",
+        "proves": "educationStore.removeProgram requires entity:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 realEstateStore entity:create guards addFacility, audit chain intact",
+        "proves": "realEstateStore.addFacility requires entity:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 realEstateStore entity:delete guards removeFacility, Admin reaches enforce gate",
+        "proves": "realEstateStore.removeFacility requires entity:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 energyStore entity:create guards addAsset, audit chain intact",
+        "proves": "energyStore.addAsset requires entity:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 energyStore entity:delete guards removeAsset, Admin reaches enforce gate",
+        "proves": "energyStore.removeAsset requires entity:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 insuranceStore budget:create guards addRateFiling, audit chain intact",
+        "proves": "insuranceStore.addRateFiling requires budget:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 insuranceStore budget:update guards updateRateFiling, Admin reaches enforce gate",
+        "proves": "insuranceStore.updateRateFiling requires budget:update; Viewer denied, Admin reaches enforce gate."
+      }
     ]
   },
   "census": {
