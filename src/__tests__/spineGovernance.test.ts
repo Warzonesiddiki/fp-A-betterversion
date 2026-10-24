@@ -4965,3 +4965,110 @@ describe('GOVERNED capability-level — report and scenario store tests (batch 8
     expect(() => useScenarioStore.getState().setScenarios([{ id: 's1', name: 'Test' }] as never)).not.toThrow();
   });
 });
+
+describe('GOVERNED capability-level — collab, dashboard, notification store tests (batch 9)', () => {
+  it('GOVERNED cap:collab — collab:update guards setTasks, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useCollaborationStore.getState().setTasks([{ id: 't1', title: 'Test' }] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:collab — collab:update guards addTask, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useCollaborationStore.getState().addTask({ id: 't1', title: 'Test' } as never));
+    actAs('Admin');
+    expect(() => useCollaborationStore.getState().addTask({ id: 't1', title: 'Test' } as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:collab — collab:update guards updateTaskStatus, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useCollaborationStore.getState().updateTaskStatus('t1' as never, 'done' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:collab — collab:update guards setActivityLog, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useCollaborationStore.getState().setActivityLog([{ id: 'a1', message: 'Test' }] as never));
+    actAs('Admin');
+    expect(() => useCollaborationStore.getState().setActivityLog([{ id: 'a1', message: 'Test' }] as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:collab — collab:update guards addActivity, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useCollaborationStore.getState().addActivity({ id: 'a1', message: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:wf.approvals — workflow:approve guards setApprovals, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'workflow:approve');
+    expectPermissionDenied(() => useCollaborationStore.getState().setApprovals([{ id: 'ap1', status: 'approved' }] as never));
+    actAs('Admin');
+    expect(() => useCollaborationStore.getState().setApprovals([{ id: 'ap1', status: 'approved' }] as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:analyze.dashboards — dashboard:update guards setDashboards, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDashboardStore.getState().setDashboards([{ id: 'd1', name: 'Test' }] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:analyze.dashboards — dashboard:create guards addDashboard, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDashboardStore.getState().addDashboard({ id: 'd1', name: 'Test' } as never));
+    actAs('Admin');
+    try { useDashboardStore.getState().addDashboard({ id: 'd1', name: 'Test' } as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+  });
+
+  it('GOVERNED cap:analyze.dashboards — dashboard:update guards updateDashboard, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDashboardStore.getState().updateDashboard('d1' as never, { name: 'Updated' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:analyze.dashboards — dashboard:delete guards deleteDashboard, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDashboardStore.getState().deleteDashboard('d1' as never));
+    actAs('Admin');
+    expect(() => useDashboardStore.getState().deleteDashboard('d1' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:analyze.dashboards — dashboard:create guards addWidget, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDashboardStore.getState().addWidget('d1' as never, { id: 'w1' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:analyze.dashboards — dashboard:update guards addFilter, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDashboardStore.getState().addFilter('d1' as never, { id: 'f1' } as never));
+    actAs('Admin');
+    try { useDashboardStore.getState().addFilter('d1' as never, { id: 'f1' } as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+  });
+
+  it('GOVERNED cap:collab — notification:update guards markAsRead, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useNotificationStore.getState().markAsRead('n1' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:collab — notification:update guards markAllAsRead, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useNotificationStore.getState().markAllAsRead());
+    actAs('Admin');
+    expect(() => useNotificationStore.getState().markAllAsRead()).not.toThrow();
+  });
+
+  it('GOVERNED cap:collab — notification:delete guards clearNotifications, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useNotificationStore.getState().clearNotifications());
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+});
