@@ -2028,11 +2028,22 @@
     {
       "kind": "capability",
       "id": "cap:analyze.drill-to-source",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/gl-explorer"
+        "gatedBy": "/analyze",
+        "tests": [
+          "src/engines/AdvancedOLAPEngine.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/engines/AdvancedOLAPEngine.governance.test.ts",
+            "title": "AdvancedOLAPEngine \u2014 GOVERNANCE (analyze.drill-to-source)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 AdvancedOLAPEngine drill-to-source traceability verified by 25 engine-level governance tests covering member management, hierarchy navigation (drill-down/up), cell security (RBAC), writeback audit trail, query execution, what-if scenario isolation, serialization, and determinism."
     },
     {
       "kind": "capability",

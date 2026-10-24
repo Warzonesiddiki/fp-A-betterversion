@@ -3800,6 +3800,13 @@
         "title": "AutoCommentaryEngine \u2014 GOVERNANCE (ai.verified-facts-gate)",
         "proves": "AutoCommentaryEngine gateNarrative blocks computed numbers not in verified facts (variance %, individual variances). generateVarianceCommentary uses decimal arithmetic (no float drift), handles zero-budget (omits variance %), uses above/below (never favorable/unfavorable), applies significance threshold (broadly in line for <5%). interpolate formats money keys as currency (maxDecimals: 0), does NOT format non-money keys. YoY comparison included when all items have priorYear. Determinism verified."
       }
+    ],
+    "analyze.drill-to-source": [
+      {
+        "file": "src/engines/AdvancedOLAPEngine.governance.test.ts",
+        "title": "AdvancedOLAPEngine \u2014 GOVERNANCE (analyze.drill-to-source)",
+        "proves": "AdvancedOLAPEngine member management (add/get/remove), hierarchy navigation (drill-down via getDescendants, drill-up via getAncestors, getChildren, getMembersAtLevel), cell security (RBAC at cell level with pattern matching), writeback audit trail (old/new values, user, timestamp, comment), query execution (MDX-like query \u2192 correct cell values), what-if scenario isolation (originals restored), serialization (JSON round-trip), determinism."
+      }
     ]
   },
   "census": {
@@ -3824,5 +3831,5 @@
       "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
     }
   },
-  "totalCapabilityClaims": 219
+  "totalCapabilityClaims": 220
 }

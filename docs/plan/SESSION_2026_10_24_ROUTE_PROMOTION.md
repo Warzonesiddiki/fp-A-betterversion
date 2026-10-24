@@ -870,3 +870,13 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 **Capability promoted:** ai.verified-facts-gate EXPERIMENTAL → SUPPORTED
 **Register:** 152 SUPPORTED (was 151), 315 EXPERIMENTAL (was 316)
 **Governance evidence:** 48 capabilities (was 47), 219 claims (was 218)
+
+## Phase 26 — Engine-Level Governance Testing: AdvancedOLAPEngine (2026-10-24)
+
+**Gap:** Phase 4 of engine-level testing plan — OLAP drill-to-source traceability.
+
+**Tests added:** 25 engine-level governance tests in `src/engines/AdvancedOLAPEngine.governance.test.ts`
+**Dimensions tested:** 8 (member management, hierarchy navigation, cell security, writeback audit trail, query execution, what-if scenario isolation, serialization, determinism)
+**Capability promoted:** analyze.drill-to-source EXPERIMENTAL → SUPPORTED
+**Register:** 153 SUPPORTED (was 152), 314 EXPERIMENTAL (was 315)
+**Governance evidence:** 49 capabilities (was 48), 220 claims (was 219)
