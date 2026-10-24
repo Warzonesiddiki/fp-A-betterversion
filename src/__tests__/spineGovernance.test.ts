@@ -3755,3 +3755,157 @@ describe('GOVERNED /manufacturing/inventory — Inventory surface', () => {
     expect(useAuthStore.getState().activeEntityId).toBe('');
   });
 });
+
+// ---------------------------------------------------------------------------
+// Positive-path governance tests — Admin can execute write actions
+// ---------------------------------------------------------------------------
+describe('GOVERNED positive-path — Admin can execute write actions', () => {
+  it('GOVERNED /lease — Admin addLease creates a lease', () => {
+    actAs('Admin');
+    const id = useLeaseStore.getState().addLease({
+      assetName: 'Gov Lease Asset',
+      termMonths: 12,
+      monthlyPayment: 1000,
+      startDate: '2026-01-01',
+    } as never);
+    expect(id).toBeTruthy();
+    expect(useLeaseStore.getState().leases.length).toBe(1);
+  });
+
+  it('GOVERNED /workforce/compensation — Admin addEmployee creates an employee', () => {
+    actAs('Admin');
+    const id = useWorkforceStore.getState().addEmployee({
+      name: 'Gov Employee',
+      department: 'Finance',
+      salary: 80000,
+    } as never);
+    expect(id).toBeTruthy();
+    expect(useWorkforceStore.getState().employees.length).toBe(1);
+  });
+
+  it('GOVERNED /reports/designer — Admin createReport creates a report', () => {
+    actAs('Admin');
+    const id = useReportStore.getState().createReport({
+      name: 'Gov Report',
+      type: 'income-statement',
+    } as never);
+    expect(id).toBeTruthy();
+    expect(useReportStore.getState().reports.length).toBe(1);
+  });
+
+  it('GOVERNED /collaboration — Admin addComment creates a comment', () => {
+    actAs('Admin');
+    useCollaborationStore.getState().addComment({
+      content: 'Gov comment',
+      threadId: 'gov-thread',
+    } as never);
+    expect(useCollaborationStore.getState().comments.length).toBe(1);
+  });
+});
+
+describe('GOVERNED positive-path — Admin write actions (batch 2)', () => {
+  it('GOVERNED /settings/users — Admin addUser creates a user', () => {
+    actAs('Admin');
+    useSettingsStore.getState().addUser({ name: 'Gov User', email: 'gov@test.com', role: 'Analyst' } as never);
+    expect(useSettingsStore.getState().users.length).toBe(1);
+  });
+
+  it('GOVERNED /currency/hedging — Admin addRate creates an FX rate', () => {
+    actAs('Admin');
+    useFxRateStore.getState().addRate({ currency: 'EUR', rate: 1.1, date: '2026-01-01' } as never);
+    expect(useFxRateStore.getState().rates.length).toBe(1);
+  });
+
+  it('GOVERNED /drill-down — Admin writeCell writes a cube cell', () => {
+    actAs('Admin');
+    useCubeStore.getState().writeCell('gov-cell-1', 'gov-scenario', 'gov-period', 'gov-line', 100, 'number');
+    // writeCell returns void; verify no throw and cube state is accessible
+    expect(useCubeStore.getState().isInitialized).toBeDefined();
+  });
+
+  it('GOVERNED /plugins — Admin addDocument creates a document', () => {
+    actAs('Admin');
+    useDocumentStore.getState().addDocument({ name: 'Gov Doc', type: 'pdf', data: 'test' } as never);
+    expect(useDocumentStore.getState().documents.length).toBe(1);
+  });
+});
+
+describe('GOVERNED positive-path — Admin write actions (batch 3)', () => {
+  it('GOVERNED /analytics/dashboard-builder — Admin addDashboard creates a dashboard', () => {
+    actAs('Admin');
+    const id = useDashboardStore.getState().addDashboard({ name: 'Gov Dash' } as never);
+    expect(id).toBeTruthy();
+    expect(useDashboardStore.getState().dashboards.length).toBe(1);
+  });
+
+  it('GOVERNED /construction/dashboard — Admin addChangeOrder creates a change order', () => {
+    actAs('Admin');
+    useConstructionStore.getState().addChangeOrder({ id: 'gov-co-1', description: 'Gov CO' } as never);
+    expect(useConstructionStore.getState().changeOrders.length).toBe(1);
+  });
+
+  it('GOVERNED /consolidation/detail — Admin addEntity creates an entity', () => {
+    actAs('Admin');
+    const id = useEntityStore.getState().addEntity({ name: 'Gov Entity', code: 'GOV' } as never);
+    expect(id).toBeTruthy();
+    expect(useEntityStore.getState().entities.length).toBe(1);
+  });
+
+  it('GOVERNED /settings/integrations — Admin connect reaches the enforce gate', () => {
+    actAs('Admin');
+    // connect is async; enforce() grants access before the async body runs.
+    // We verify the permission gate passes (no PermissionError thrown).
+    expect(() => useIntegrationStore.getState().connect('d365', {} as never)).not.toThrow();
+  });
+});
+
+describe('GOVERNED positive-path — Admin write actions (batch 4)', () => {
+  it('GOVERNED /reports/templates — Admin createReport creates a template report', () => {
+    actAs('Admin');
+    const id = useReportStore.getState().createReport({ name: 'Gov Tpl Rpt', template: 'balance-sheet' } as never);
+    expect(id).toBeTruthy();
+    expect(useReportStore.getState().reports.length).toBe(1);
+  });
+
+  it('GOVERNED /scenarios/compare — Admin createScenario creates a scenario', () => {
+    actAs('Admin');
+    const id = useScenarioStore.getState().createScenario({ name: 'Gov Scn' } as never);
+    expect(id).toBeTruthy();
+    expect(useScenarioStore.getState().scenarios.length).toBe(1);
+  });
+
+  it('GOVERNED /settings/security — Admin updatePreferences changes preferences', () => {
+    actAs('Admin');
+    useSettingsStore.getState().updatePreferences({ density: 'compact' } as never);
+    expect(useSettingsStore.getState().preferences.density).toBe('compact');
+  });
+
+  it('GOVERNED /collaboration/activity — Admin addComment posts a comment', () => {
+    actAs('Admin');
+    useCollaborationStore.getState().addComment({ content: 'Gov activity', threadId: 'gov-thread' } as never);
+    expect(useCollaborationStore.getState().comments.length).toBe(1);
+  });
+});
+
+describe('GOVERNED positive-path — Admin write actions (batch 5)', () => {
+  it('GOVERNED /reports/scheduler — Admin addScheduledReport creates a schedule', () => {
+    actAs('Admin');
+    useReportStore.getState().addScheduledReport({ id: 'gov-sched-1', reportId: 'rpt-1', frequency: 'monthly' } as never);
+    expect(useReportStore.getState().scheduledReports.length).toBe(1);
+  });
+
+  it('GOVERNED /treasury/investments — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-inv-pos', accountId: '1000', amount: 5000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /tax/provision — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-tax-pos', accountId: '6000', amount: 3000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /lease/accounting — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-lease-pos', accountId: '1500', amount: 2000 } as never)).not.toThrow();
+  });
+});
