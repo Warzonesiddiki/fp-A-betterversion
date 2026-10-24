@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ThreeStatementEngine } from './ThreeStatementEngine';
-import type { IncomeStatementData, BalanceSheetData, CashFlowData } from './ThreeStatementEngine';
+import type { IncomeStatementData, BalanceSheetData } from './ThreeStatementEngine';
 
 /**
  * GOVERNANCE EVIDENCE for cap:statement.three-statement

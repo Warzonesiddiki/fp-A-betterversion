@@ -201,7 +201,7 @@ describe('AuditLogEngine — GOVERNANCE (govern.audit-log)', () => {
     it('prune removes old entries', () => {
       const engine = new AuditLogEngine({ maxEntries: 100, retentionDays: 365 });
       for (let i = 0; i < 50; i++) engine.log(makeEntry({ resourceId: `r-${i}` }));
-      const pruned = engine.prune();
+      engine.prune();
       // Prune should not remove recent entries
       expect(engine.getEntries().length).toBe(50);
     });

@@ -1,10 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { PeriodCloseStateMachine } from './PeriodCloseStateMachine';
-import type {
-  PeriodCloseState,
-  PeriodCloseTransition,
-  TrialBalanceLine,
-} from './PeriodCloseStateMachine';
+import type { TrialBalanceLine } from './PeriodCloseStateMachine';
 
 /**
  * GOVERNANCE EVIDENCE for cap:close.period-close-state-machine
@@ -27,12 +23,6 @@ import type {
  * 7. Audit trail
  * 8. Determinism
  */
-
-function makeEntry(state: PeriodCloseState = 'open') {
-  return PeriodCloseStateMachine.createEntry('period-1', 'entity-1')
-    ? { ...PeriodCloseStateMachine.createEntry('period-1', 'entity-1'), state }
-    : PeriodCloseStateMachine.createEntry('period-1', 'entity-1');
-}
 
 describe('PeriodCloseStateMachine — GOVERNANCE (close.period-close-state-machine)', () => {
   describe('1. State transition validation', () => {

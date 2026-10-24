@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ReconciliationEngine } from './ReconciliationEngine';
-import type { DataRow, MatchedPair, Discrepancy } from './ReconciliationEngine';
+import type { DataRow, Discrepancy } from './ReconciliationEngine';
 
 /**
  * GOVERNANCE EVIDENCE for cap:close.reconciliation-engine

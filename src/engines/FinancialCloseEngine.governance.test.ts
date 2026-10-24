@@ -113,7 +113,7 @@ describe('FinancialCloseEngine — GOVERNANCE (close.financial-close-engine)', (
 
     it('validatePlan returns warnings for regulatory tasks', () => {
       const plan = makePlan();
-      const result = FinancialCloseEngine.validatePlan(plan);
+      FinancialCloseEngine.validatePlan(plan);
       // The plan has a regulatory task (SOX Sign-off)
       const hasRegulatoryTask = plan.tasks.some((t) => t.regulatoryFlag);
       expect(hasRegulatoryTask).toBe(true);

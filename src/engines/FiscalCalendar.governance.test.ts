@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { FiscalCalendar } from './FiscalCalendar';
-import type { FiscalYearConfig, FiscalPeriodInput } from './FiscalCalendar';
+import type { FiscalYearConfig } from './FiscalCalendar';
 
 /**
  * GOVERNANCE EVIDENCE for cap:fiscal.calendar
