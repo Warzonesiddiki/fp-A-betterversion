@@ -6341,3 +6341,60 @@ describe("Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-
     expect(verification.valid).toBe(true);
   });
 });
+
+describe("Settings Store — Security policy methods (batch 27 — CLOSES govern.security-policy METHOD-COVERAGE)", () => {
+  // Tests for security-policy-specific methods of the settingsStore:
+  // updateRolePermissions, updateUser
+  // The govern.security-policy capability requires that role permission
+  // changes and user updates are RBAC-governed.
+
+  it("denies Viewer updateRolePermissions (user:assign-role)", () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useSettingsStore.getState().updateRolePermissions('admin', ['all'] as never));
+  });
+
+  it("Admin updateRolePermissions reaches enforce gate", () => {
+    actAs('Admin');
+    expect(() => useSettingsStore.getState().updateRolePermissions('admin', ['all'] as never)).not.toThrow();
+  });
+
+  it("denies Viewer updateUser (user:update)", () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useSettingsStore.getState().updateUser('u1', { name: 'Updated' } as never));
+  });
+
+  it("Admin updateUser reaches enforce gate", () => {
+    actAs('Admin');
+    expect(() => useSettingsStore.getState().updateUser('u1', { name: 'Updated' } as never)).not.toThrow();
+  });
+
+  it("denies Viewer deleteUser (user:delete) — already tested, verifying consistency", () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useSettingsStore.getState().deleteUser('u1' as never));
+  });
+
+  it("Admin deleteUser reaches enforce gate", () => {
+    actAs('Admin');
+    expect(() => useSettingsStore.getState().deleteUser('u1' as never)).not.toThrow();
+  });
+
+  it("denies Viewer addUser (user:create) — already tested, verifying consistency", () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useSettingsStore.getState().addUser({ name: 'Gov User', email: 'gov@test.com', role: 'Analyst' } as never));
+  });
+
+  it("Admin addUser reaches enforce gate", () => {
+    actAs('Admin');
+    expect(() => useSettingsStore.getState().addUser({ name: 'Gov User', email: 'gov@test.com', role: 'Analyst' } as never)).not.toThrow();
+  });
+
+  it("denies Viewer setRoles (user:assign-role) — already tested, verifying consistency", () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useSettingsStore.getState().setRoles([] as never));
+  });
+
+  it("Admin setRoles reaches enforce gate", () => {
+    actAs('Admin');
+    expect(() => useSettingsStore.getState().setRoles([] as never)).not.toThrow();
+  });
+});

@@ -922,3 +922,14 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 **Capability promoted:** analyze.explanations EXPERIMENTAL → SUPPORTED
 **Register:** 157 SUPPORTED (was 156), 310 EXPERIMENTAL (was 311)
 **Governance evidence:** 53 capabilities (was 52), 224 claims (was 223)
+
+## Phase 31 — Settings Store Security Policy Tests (2026-10-24)
+
+**Gap:** govern.security-policy capability — security policy methods (updateRolePermissions, updateUser) not yet tested in spine.
+
+**Tests added:** 10 spine tests (batch 27) in `src/__tests__/spineGovernance.test.ts`
+**Dimensions tested:** RBAC authorization for security policy methods
+**Capability promoted:** govern.security-policy EXPERIMENTAL → SUPPORTED
+**Register:** 158 SUPPORTED (was 157), 309 EXPERIMENTAL (was 310)
+**Governance evidence:** 54 capabilities (was 53), 225 claims (was 224)
+**Spine tests:** 704 → 714

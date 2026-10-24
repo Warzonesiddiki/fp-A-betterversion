@@ -2878,11 +2878,22 @@
     {
       "kind": "capability",
       "id": "cap:govern.security-policy",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/settings/security"
+        "gatedBy": "/settings/security",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "Settings Store \u2014 Security policy methods (batch 27 \u2014 CLOSES govern.security-policy METHOD-COVERAGE)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 settingsStore security policy methods (updateRolePermissions, updateUser, deleteUser, addUser, setRoles) verified by 10 spine governance tests covering RBAC authorization for all security policy methods. Viewer denied all; Admin reaches enforce gate."
     },
     {
       "kind": "capability",
