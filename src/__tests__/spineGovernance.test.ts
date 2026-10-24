@@ -33,6 +33,10 @@ import { useSettingsStore } from '@/store/settingsStore';
 import { useFxRateStore } from '@/store/fxRateStore';
 import { useCubeStore } from '@/store/cubeStore';
 import { useDocumentStore } from '@/store/documentStore';
+import { useDashboardStore } from '@/store/dashboardStore';
+import { useIntegrationStore } from '@/store/integrationStore';
+import { useConstructionStore } from '@/store/constructionStore';
+import { useEntityStore } from '@/store/entityStore';
 import { resetEngine } from '@/store/driverStore';
 
 // ---------------------------------------------------------------------------
@@ -99,6 +103,10 @@ function resetAll() {
   useFxRateStore.setState({ rates: [] } as never);
   useCubeStore.setState({ isInitialized: false, cellCount: 0, historyCount: 0, snapshots: [] } as never);
   useDocumentStore.setState({ documents: [] } as never);
+  useDashboardStore.setState({ dashboards: [] } as never);
+  useIntegrationStore.setState({ connections: {} } as never);
+  useConstructionStore.setState({ changeOrders: [], costBreakdown: [], costLedger: [] } as never);
+  useEntityStore.setState({ entities: [] } as never);
 }
 
 beforeEach(() => {
@@ -2021,6 +2029,154 @@ describe('GOVERNED /plugins — Plugin marketplace surface', () => {
   });
 
   it('GOVERNED /plugins — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /analytics/dashboard-builder — Dashboard construction surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /analytics/dashboard-builder — Dashboard construction surface', () => {
+  it('GOVERNED /analytics/dashboard-builder — dashboard:create guards dashboard creation', () => {
+    const error = expectPermissionDenied(() =>
+      useDashboardStore.getState().addDashboard({ name: 'Gov Dashboard' } as never)
+    );
+    expect(error.message).toContain('dashboard:create');
+  });
+
+  it('GOVERNED /analytics/dashboard-builder — audit trail records dashboard write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'dashboard:write',
+      entity: 'dashboard',
+      entityId: 'gov-dash-1',
+      payload: { name: 'Gov Dashboard', widgets: 3 },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /analytics/dashboard-builder — write guard requires dashboard:delete on removal', () => {
+    const error = expectPermissionDenied(() =>
+      useDashboardStore.getState().deleteDashboard('gov-dash-1')
+    );
+    expect(error.message).toContain('dashboard:delete');
+  });
+
+  it('GOVERNED /analytics/dashboard-builder — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /settings/integrations — Integration connector surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /settings/integrations — Integration connector surface', () => {
+  it('GOVERNED /settings/integrations — import:create guards connector connection', () => {
+    const error = expectPermissionDenied(() =>
+      useIntegrationStore.getState().connect('d365', {} as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+
+  it('GOVERNED /settings/integrations — audit trail records integration write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'integration:write',
+      entity: 'connection',
+      entityId: 'gov-conn-1',
+      payload: { provider: 'd365', status: 'connected' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /settings/integrations — write guard requires import:update on disconnect', () => {
+    const error = expectPermissionDenied(() =>
+      useIntegrationStore.getState().disconnect('d365')
+    );
+    expect(error.message).toContain('import:update');
+  });
+
+  it('GOVERNED /settings/integrations — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /construction/dashboard — Construction change-order surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /construction/dashboard — Construction change-order surface', () => {
+  it('GOVERNED /construction/dashboard — budget:create guards change-order creation', () => {
+    const error = expectPermissionDenied(() =>
+      useConstructionStore.getState().addChangeOrder({ id: 'co-1', description: 'Gov CO' } as never)
+    );
+    expect(error.message).toContain('budget:create');
+  });
+
+  it('GOVERNED /construction/dashboard — audit trail records construction write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'construction:write',
+      entity: 'changeOrder',
+      entityId: 'gov-co-1',
+      payload: { description: 'Gov Change Order', amount: 5000 },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /construction/dashboard — write guard requires budget:update on cost breakdown', () => {
+    const error = expectPermissionDenied(() =>
+      useConstructionStore.getState().setCostBreakdown([])
+    );
+    expect(error.message).toContain('budget:update');
+  });
+
+  it('GOVERNED /construction/dashboard — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /consolidation/detail — Entity management surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /consolidation/detail — Entity management surface', () => {
+  it('GOVERNED /consolidation/detail — entity:create guards entity creation', () => {
+    const error = expectPermissionDenied(() =>
+      useEntityStore.getState().addEntity({ name: 'Gov Entity', code: 'GOV' } as never)
+    );
+    expect(error.message).toContain('entity:create');
+  });
+
+  it('GOVERNED /consolidation/detail — audit trail records entity write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'entity:write',
+      entity: 'entity',
+      entityId: 'gov-ent-1',
+      payload: { name: 'Gov Entity', code: 'GOV' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /consolidation/detail — write guard requires entity:delete on removal', () => {
+    const error = expectPermissionDenied(() =>
+      useEntityStore.getState().deleteEntity('gov-ent-1')
+    );
+    expect(error.message).toContain('entity:delete');
+  });
+
+  it('GOVERNED /consolidation/detail — entity-scope remains BLOCKED-ON-OWNER O9', () => {
     actAs('Admin');
     expect(useAuthStore.getState().activeEntityId).toBe('');
   });
