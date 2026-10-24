@@ -860,3 +860,13 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 (ALL COMPLETE) |
 | Engine governance dimensions | 8 (financial correctness) |
 | All gates PASS | ✓ |
+
+## Phase 25 — Engine-Level Governance Testing: AutoCommentaryEngine (2026-10-24)
+
+**Gap:** Phase 3 of engine-level testing plan — AI safety gates. The AutoCommentaryEngine's narrative gate (verifyNarrative) blocks computed numbers not in verified facts.
+
+**Tests added:** 24 engine-level governance tests in `src/engines/AutoCommentaryEngine.governance.test.ts`
+**Dimensions tested:** 8 (narrative gating, money primitive safety, zero-budget handling, variance direction, significance threshold, template interpolation, YoY comparison, determinism)
+**Capability promoted:** ai.verified-facts-gate EXPERIMENTAL → SUPPORTED
+**Register:** 152 SUPPORTED (was 151), 315 EXPERIMENTAL (was 316)
+**Governance evidence:** 48 capabilities (was 47), 219 claims (was 218)

@@ -1968,11 +1968,22 @@
     {
       "kind": "capability",
       "id": "cap:ai.verified-facts-gate",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/ai"
+        "gatedBy": "/ai",
+        "tests": [
+          "src/engines/AutoCommentaryEngine.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/engines/AutoCommentaryEngine.governance.test.ts",
+            "title": "AutoCommentaryEngine \u2014 GOVERNANCE (ai.verified-facts-gate)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 AutoCommentaryEngine narrative gate (verifyNarrative) blocks computed numbers not in verified facts. 24 engine-level governance tests covering narrative gating, money primitive safety, zero-budget handling, variance direction (above/below, never favorable/unfavorable), significance threshold, template interpolation, YoY comparison, and determinism."
     },
     {
       "kind": "capability",
