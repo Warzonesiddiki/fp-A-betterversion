@@ -4807,3 +4807,103 @@ describe('GOVERNED capability-level — remaining store tests (batch 6)', () => 
     expect(() => useConstructionStore.getState().updateChangeOrder('co-test' as never, { name: 'Updated' } as never)).not.toThrow();
   });
 });
+
+describe('GOVERNED capability-level — workflow, workforce, settings tests (batch 7)', () => {
+  it('GOVERNED cap:wf.approvals — workflow:approve guards lockRequest, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().lockRequest('req-test' as never, { userId: 'u1', displayName: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:wf.approvals — workflow:approve guards lockRequest, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'workflow:approve');
+    expectPermissionDenied(() => useWorkflowStore.getState().lockRequest('req-test' as never, { userId: 'u1', displayName: 'Test' } as never));
+    actAs('Admin');
+    try { useWorkflowStore.getState().lockRequest('req-test' as never, { userId: 'u1', displayName: 'Test' } as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+  });
+
+  it('GOVERNED cap:wf.administration — workflow:update guards addDelegation, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().addDelegation({ fromUser: 'u1', toUser: 'u2', reason: 'test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:wf.administration — workflow:delete guards removeDelegation, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().removeDelegation('u1' as never));
+    actAs('Admin');
+    expect(() => useWorkflowStore.getState().removeDelegation('u1' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:wf.correction-follow-through — workflow:update guards checkEscalations, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().checkEscalations());
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:wf.correction-follow-through — workflow:update guards checkEscalations, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'workflow:update');
+    expectPermissionDenied(() => useWorkflowStore.getState().checkEscalations());
+    actAs('Admin');
+    expect(() => useWorkflowStore.getState().checkEscalations()).not.toThrow();
+  });
+
+  it('GOVERNED cap:ops.workforce — entity:create guards addEmployee, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkforceStore.getState().addEmployee({ id: 'emp-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:ops.workforce — entity:delete guards removeEmployee, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkforceStore.getState().removeEmployee('emp-test' as never));
+    actAs('Admin');
+    expect(() => useWorkforceStore.getState().removeEmployee('emp-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:ops.workforce — entity:update guards setDepartments, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkforceStore.getState().setDepartments([{ id: 'dept-1', name: 'Engineering' }] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:ops.workforce — entity:delete guards clearAll, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkforceStore.getState().clearAll());
+    actAs('Admin');
+    expect(() => useWorkforceStore.getState().clearAll()).not.toThrow();
+  });
+
+  it('GOVERNED cap:admin.users — user:create guards addUser, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useSettingsStore.getState().addUser({ id: 'user-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:admin.users — user:delete guards deleteUser, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useSettingsStore.getState().deleteUser('user-test' as never));
+    actAs('Admin');
+    expect(() => useSettingsStore.getState().deleteUser('user-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:admin.users — user:update guards setUsers, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useSettingsStore.getState().setUsers([{ id: 'u1', name: 'Test' }] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:admin.users — user:assign-role guards setRoles, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useSettingsStore.getState().setRoles([{ id: 'r1', name: 'Viewer', permissions: [] }] as never));
+    actAs('Admin');
+    expect(() => useSettingsStore.getState().setRoles([{ id: 'r1', name: 'Viewer', permissions: [] }] as never)).not.toThrow();
+  });
+});

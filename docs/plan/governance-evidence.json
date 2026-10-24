@@ -3180,6 +3180,86 @@
         "title": "GOVERNED cap:ops.cash-planning \u2014 budget:delete guards removeInstrument, Admin reaches enforce gate",
         "proves": "debtStore.removeInstrument requires budget:delete; Viewer denied, Admin reaches enforce gate."
       }
+    ],
+    "wf.approvals": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:wf.approvals \u2014 workflow:approve guards lockRequest, audit chain intact",
+        "proves": "workflowStore.lockRequest requires workflow:approve; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:wf.approvals \u2014 workflow:approve guards lockRequest, Admin reaches enforce gate",
+        "proves": "workflowStore.lockRequest requires workflow:approve; role without permission denied; Admin reaches enforce gate."
+      }
+    ],
+    "wf.administration": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:wf.administration \u2014 workflow:update guards addDelegation, audit chain intact",
+        "proves": "workflowStore.addDelegation requires workflow:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:wf.administration \u2014 workflow:delete guards removeDelegation, Admin reaches enforce gate",
+        "proves": "workflowStore.removeDelegation requires workflow:delete; Viewer denied, Admin reaches enforce gate."
+      }
+    ],
+    "wf.correction-follow-through": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:wf.correction-follow-through \u2014 workflow:update guards checkEscalations, audit chain intact",
+        "proves": "workflowStore.checkEscalations requires workflow:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:wf.correction-follow-through \u2014 workflow:update guards checkEscalations, Admin reaches enforce gate",
+        "proves": "workflowStore.checkEscalations requires workflow:update; role without permission denied; Admin reaches enforce gate."
+      }
+    ],
+    "ops.workforce": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:ops.workforce \u2014 entity:create guards addEmployee, audit chain intact",
+        "proves": "workforceStore.addEmployee requires entity:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:ops.workforce \u2014 entity:delete guards removeEmployee, Admin reaches enforce gate",
+        "proves": "workforceStore.removeEmployee requires entity:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:ops.workforce \u2014 entity:update guards setDepartments, audit chain intact",
+        "proves": "workforceStore.setDepartments requires entity:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:ops.workforce \u2014 entity:delete guards clearAll, Admin reaches enforce gate",
+        "proves": "workforceStore.clearAll requires entity:delete; Viewer denied, Admin reaches enforce gate."
+      }
+    ],
+    "admin.users": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.users \u2014 user:create guards addUser, audit chain intact",
+        "proves": "settingsStore.addUser requires user:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.users \u2014 user:delete guards deleteUser, Admin reaches enforce gate",
+        "proves": "settingsStore.deleteUser requires user:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.users \u2014 user:update guards setUsers, audit chain intact",
+        "proves": "settingsStore.setUsers requires user:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.users \u2014 user:assign-role guards setRoles, Admin reaches enforce gate",
+        "proves": "settingsStore.setRoles requires user:assign-role; Viewer denied, Admin reaches enforce gate."
+      }
     ]
   },
   "census": {

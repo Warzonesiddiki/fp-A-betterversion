@@ -1871,9 +1871,14 @@
     {
       "kind": "capability",
       "id": "cap:admin.users",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/admin"
+        "gatedBy": "/admin",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -2622,9 +2627,14 @@
     {
       "kind": "capability",
       "id": "cap:ops.workforce",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/workforce"
+        "gatedBy": "/workforce",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -2815,18 +2825,28 @@
     {
       "kind": "capability",
       "id": "cap:wf.administration",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/admin"
+        "gatedBy": "/admin",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
       "id": "cap:wf.approvals",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/budgets/approval"
+        "gatedBy": "/budgets/approval",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -2847,9 +2867,14 @@
     {
       "kind": "capability",
       "id": "cap:wf.correction-follow-through",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/corrections"
+        "gatedBy": "/data/corrections",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
