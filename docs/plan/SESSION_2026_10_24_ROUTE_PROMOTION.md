@@ -880,3 +880,13 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 **Capability promoted:** analyze.drill-to-source EXPERIMENTAL → SUPPORTED
 **Register:** 153 SUPPORTED (was 152), 314 EXPERIMENTAL (was 315)
 **Governance evidence:** 49 capabilities (was 48), 220 claims (was 219)
+
+## Phase 27 — Engine-Level Governance Testing: report-builder-formulas (2026-10-24)
+
+**Gap:** Phase 2 of engine-level testing plan — REPORT pillar. Formula evaluation safety.
+
+**Tests added:** 30 engine-level governance tests in `src/engines/report-builder-formulas.governance.test.ts`
+**Dimensions tested:** 8 (formula parsing, formula evaluation, safe evaluation, missing cell detection, non-finite detection, column conversion, circular reference detection, determinism)
+**Capability promoted:** report.xlsx-formula EXPERIMENTAL → SUPPORTED
+**Register:** 154 SUPPORTED (was 153), 313 EXPERIMENTAL (was 314)
+**Governance evidence:** 50 capabilities (was 49), 221 claims (was 220)

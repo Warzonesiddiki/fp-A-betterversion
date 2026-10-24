@@ -3448,11 +3448,22 @@
     {
       "kind": "capability",
       "id": "cap:report.xlsx-formula",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/reports"
+        "gatedBy": "/reports",
+        "tests": [
+          "src/engines/report-builder-formulas.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/engines/report-builder-formulas.governance.test.ts",
+            "title": "report-builder-formulas \u2014 GOVERNANCE (report.xlsx-formula)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 report-builder-formulas engine formula evaluation safety verified by 30 engine-level governance tests covering formula parsing, evaluation, safe evaluation (no code injection), missing/non-finite cell detection, column conversion, circular reference detection, and determinism."
     },
     {
       "kind": "capability",
