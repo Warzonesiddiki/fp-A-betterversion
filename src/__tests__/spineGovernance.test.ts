@@ -29,6 +29,10 @@ import { useLeaseStore } from '@/store/leaseStore';
 import { useWorkforceStore } from '@/store/workforceStore';
 import { useReportStore } from '@/store/reportStore';
 import { useCollaborationStore } from '@/store/collaborationStore';
+import { useSettingsStore } from '@/store/settingsStore';
+import { useFxRateStore } from '@/store/fxRateStore';
+import { useCubeStore } from '@/store/cubeStore';
+import { useDocumentStore } from '@/store/documentStore';
 import { resetEngine } from '@/store/driverStore';
 
 // ---------------------------------------------------------------------------
@@ -84,6 +88,17 @@ function resetAll() {
     isLoading: false,
     error: null,
   } as never);
+  useSettingsStore.setState({
+    organization: { name: '', fiscalYear: 2026, fiscalYearStart: '2024-01-01', calendarType: 'Standard', baseCurrency: 'USD', timezone: 'UTC', dateFormat: 'MM/DD/YYYY', decimalPlaces: 2 },
+    users: [],
+    roles: [],
+    preferences: { activeSector: 'technology', density: 'standard' },
+    isLoading: false,
+    error: null,
+  } as never);
+  useFxRateStore.setState({ rates: [] } as never);
+  useCubeStore.setState({ isInitialized: false, cellCount: 0, historyCount: 0, snapshots: [] } as never);
+  useDocumentStore.setState({ documents: [] } as never);
 }
 
 beforeEach(() => {
@@ -1845,6 +1860,167 @@ describe('GOVERNED /collaboration — Collaboration surface', () => {
   });
 
   it('GOVERNED /collaboration — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /settings/users — User management surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /settings/users — User management surface', () => {
+  it('GOVERNED /settings/users — user:create guards user creation', () => {
+    const error = expectPermissionDenied(() =>
+      useSettingsStore.getState().addUser({
+        id: 'gov-user-1',
+        name: 'Test User',
+        email: 'test@finplan.test',
+        role: 'Analyst',
+      } as never)
+    );
+    expect(error.message).toContain('user:create');
+  });
+
+  it('GOVERNED /settings/users — audit trail records user management write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'settings:write',
+      entity: 'user',
+      entityId: 'gov-user-1',
+      payload: { name: 'Test User', role: 'Analyst' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /settings/users — write guard requires user:delete on user removal', () => {
+    const error = expectPermissionDenied(() =>
+      useSettingsStore.getState().deleteUser('gov-user-1')
+    );
+    expect(error.message).toContain('user:delete');
+  });
+
+  it('GOVERNED /settings/users — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /currency/hedging — Currency hedging surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /currency/hedging — Currency hedging surface', () => {
+  it('GOVERNED /currency/hedging — forecast:create guards rate creation', () => {
+    const error = expectPermissionDenied(() =>
+      useFxRateStore.getState().addRate({
+        id: 'gov-rate-1',
+        from: 'USD',
+        to: 'EUR',
+        rate: 0.92,
+      } as never)
+    );
+    expect(error.message).toContain('forecast:create');
+  });
+
+  it('GOVERNED /currency/hedging — audit trail records FX rate write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'fx:write',
+      entity: 'rate',
+      entityId: 'gov-rate-1',
+      payload: { from: 'USD', to: 'EUR', rate: 0.92 },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /currency/hedging — write guard requires forecast:delete on rate removal', () => {
+    const error = expectPermissionDenied(() =>
+      useFxRateStore.getState().deleteRate('gov-rate-1')
+    );
+    expect(error.message).toContain('forecast:delete');
+  });
+
+  it('GOVERNED /currency/hedging — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /drill-down — Drill-down window surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /drill-down — Drill-down window surface', () => {
+  it('GOVERNED /drill-down — cube:write guards cube cell writes', () => {
+    const error = expectPermissionDenied(() =>
+      useCubeStore.getState().writeCell('gov-cube', { entity: 'gov' }, 'value', 100)
+    );
+    expect(error.message).toContain('cube:write');
+  });
+
+  it('GOVERNED /drill-down — audit trail records cube write provenance', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'cube:write',
+      entity: 'cell',
+      entityId: 'gov-cell-1',
+      payload: { cube: 'gov-cube', measure: 'value', value: 100 },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /drill-down — write guard requires cube:delete on cell removal', () => {
+    const error = expectPermissionDenied(() =>
+      useCubeStore.getState().deleteCell('gov-cube', { entity: 'gov' }, 'value')
+    );
+    expect(error.message).toContain('cube:delete');
+  });
+
+  it('GOVERNED /drill-down — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /plugins — Plugin marketplace surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /plugins — Plugin marketplace surface', () => {
+  it('GOVERNED /plugins — import:create guards document creation', () => {
+    const error = expectPermissionDenied(() =>
+      useDocumentStore.getState().addDocument({
+        name: 'Gov Plugin Doc',
+        type: 'pdf',
+      } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+
+  it('GOVERNED /plugins — audit trail records document write provenance', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'document:write',
+      entity: 'document',
+      entityId: 'gov-doc-1',
+      payload: { name: 'Gov Plugin Doc', type: 'pdf' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /plugins — write guard requires import:delete on document removal', () => {
+    const error = expectPermissionDenied(() =>
+      useDocumentStore.getState().removeDocument('gov-doc-1')
+    );
+    expect(error.message).toContain('import:delete');
+  });
+
+  it('GOVERNED /plugins — entity-scope remains BLOCKED-ON-OWNER O9', () => {
     actAs('Admin');
     expect(useAuthStore.getState().activeEntityId).toBe('');
   });
