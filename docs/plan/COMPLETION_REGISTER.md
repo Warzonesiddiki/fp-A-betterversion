@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 129 |
-| EXPERIMENTAL | 335 |
+| SUPPORTED | 131 |
+| EXPERIMENTAL | 333 |
 | BLOCKED-ON-OWNER | 7 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -733,11 +733,11 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:ops.cash-planning` | EXPERIMENTAL | gatedBy=/cash/forecast | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:ops.workforce` | EXPERIMENTAL | gatedBy=/workforce | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:plan.assumptions` | EXPERIMENTAL | gatedBy=/forecasts/drivers | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:plan.budgets` | EXPERIMENTAL | gatedBy=/budgets | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:plan.budgets` | SUPPORTED | gatedBy=/budgets; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:plan.drivers-cascades` | SUPPORTED | gatedBy=/forecasts/drivers; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:plan.operational-plans` | NOT_BUILT | namedBy=docs/plan/COMPLETION_PLAN_86_100.md | Identified in plan §4; nothing claims it yet. |
 | `cap:plan.rolling-forecast` | BLOCKED-ON-OWNER | owner=O2; question=Roll semantics: replace vs blend, which months roll, approval interplay (O2, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
-| `cap:plan.scenarios` | EXPERIMENTAL | gatedBy=/scenarios | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:plan.scenarios` | SUPPORTED | gatedBy=/scenarios; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:plan.versions` | EXPERIMENTAL | gatedBy=/budgets/bva | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:report.board-pack` | SUPPORTED | connected=1 [src/pages/reports/BoardPackPage.exportTieOut.test.tsx]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/BoardPackPage.exportTieOut.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:report.pdf` | EXPERIMENTAL | gatedBy=/reports | A routed screen hosts this capability; no support claim yet (see plan §5). |

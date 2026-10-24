@@ -3008,6 +3008,55 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:govern.authorization \u2014 retailStore entity:update guards setStores, audit chain intact",
         "proves": "retailStore.setStores requires entity:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 entity:update guards setEntities, audit chain intact",
+        "proves": "entityStore.setEntities requires entity:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 entity:update guards updateEntity, Admin reaches enforce gate",
+        "proves": "entityStore.updateEntity requires entity:update; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:govern.authorization \u2014 entity:delete guards deleteEntity, audit chain intact",
+        "proves": "entityStore.deleteEntity requires entity:delete; Viewer denied; audit chain verified."
+      }
+    ],
+    "plan.budgets": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 budget:update guards setBudgets, audit chain intact",
+        "proves": "budgetStore.setBudgets requires budget:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 budget:update guards updateLineItem, Admin reaches enforce gate",
+        "proves": "budgetStore.updateLineItem requires budget:update; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 budget:approve guards approveBudget, audit chain intact",
+        "proves": "budgetStore.approveBudget requires budget:approve; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 budget:delete guards deleteBudget, Admin reaches enforce gate",
+        "proves": "budgetStore.deleteBudget requires budget:delete; Viewer denied, Admin reaches enforce gate."
+      }
+    ],
+    "plan.scenarios": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.scenarios \u2014 forecast:update guards setForecasts, audit chain intact",
+        "proves": "forecastStore.setForecasts requires forecast:update; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.scenarios \u2014 forecast:create guards createForecast, Admin reaches enforce gate",
+        "proves": "forecastStore.createForecast requires forecast:create; Viewer denied, Admin reaches enforce gate."
       }
     ]
   },

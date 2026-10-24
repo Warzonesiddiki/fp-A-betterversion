@@ -4580,3 +4580,68 @@ describe('GOVERNED capability-level — additional store method tests (batch 3)'
     expect(() => useDriverStore.getState().reset()).not.toThrow();
   });
 });
+
+describe('GOVERNED capability-level — additional store method tests (batch 4)', () => {
+  it('GOVERNED cap:plan.budgets — budget:update guards setBudgets, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useBudgetStore.getState().setBudgets([] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.budgets — budget:update guards updateLineItem, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useBudgetStore.getState().updateLineItem('li-test' as never, { amount: 100 } as never));
+    actAs('Admin');
+    expect(() => useBudgetStore.getState().updateLineItem('li-test' as never, { amount: 100 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:plan.budgets — budget:approve guards approveBudget, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useBudgetStore.getState().approveBudget('bud-test' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.budgets — budget:delete guards deleteBudget, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useBudgetStore.getState().deleteBudget('bud-test' as never));
+    actAs('Admin');
+    expect(() => useBudgetStore.getState().deleteBudget('bud-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:plan.scenarios — forecast:update guards setForecasts, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useForecastStore.getState().setForecasts([] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.scenarios — forecast:create guards createForecast, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useForecastStore.getState().createForecast({ id: 'fc-test', name: 'Test' } as never));
+    actAs('Admin');
+    expect(() => useForecastStore.getState().createForecast({ id: 'fc-test', name: 'Test' } as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — entity:update guards setEntities, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useEntityStore.getState().setEntities([] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — entity:update guards updateEntity, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useEntityStore.getState().updateEntity('ent-test' as never, { name: 'Updated' } as never));
+    actAs('Admin');
+    expect(() => useEntityStore.getState().updateEntity('ent-test' as never, { name: 'Updated' } as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:govern.authorization — entity:delete guards deleteEntity, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useEntityStore.getState().deleteEntity('ent-test' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+});
