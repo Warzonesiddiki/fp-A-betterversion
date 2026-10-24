@@ -3135,6 +3135,46 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:plan.budgets \u2014 deleteBudget on Draft budget succeeds, audit chain intact",
         "proves": "budgetStore.deleteBudget succeeds on Draft budget; assertEditableBudget allows; audit chain verifies"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 rejectBudget transitions InReview \u2192 Rejected, audit chain intact",
+        "proves": "budgetStore.rejectBudget transitions InReview \u2192 Rejected via assertBudgetTransition; Admin succeeds; audit chain verifies"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 rejectBudget on Draft budget throws lifecycle error",
+        "proves": "budgetStore.rejectBudget throws on Draft budget (lifecycle violation); assertBudgetTransition enforces state machine"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 lockBudget transitions Approved \u2192 Locked, audit chain intact",
+        "proves": "budgetStore.lockBudget transitions Approved \u2192 Locked via assertBudgetTransition; Admin succeeds; audit chain verifies"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 lockBudget on InReview budget throws lifecycle error",
+        "proves": "budgetStore.lockBudget throws on InReview budget (lifecycle violation); assertBudgetTransition enforces state machine"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 unlockBudget transitions Locked \u2192 Approved, audit chain intact",
+        "proves": "budgetStore.unlockBudget transitions Locked \u2192 Approved via assertBudgetTransition; Admin succeeds; audit chain verifies"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 unlockBudget on Draft budget throws lifecycle error",
+        "proves": "budgetStore.unlockBudget throws on Draft budget (lifecycle violation); assertBudgetTransition enforces state machine"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 updateBudget cannot change workflow fields directly",
+        "proves": "budgetStore.updateBudget throws when attempting to change workflow fields (status) directly; WORKFLOW_FIELDS guard enforces lifecycle separation"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 updateBudget can change non-workflow fields in Draft budget",
+        "proves": "budgetStore.updateBudget succeeds when changing non-workflow fields (name) in Draft budget; WORKFLOW_FIELDS guard permits safe edits"
       }
     ],
     "plan.scenarios": [

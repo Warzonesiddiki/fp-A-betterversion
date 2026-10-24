@@ -354,3 +354,42 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 |
 | Remaining EXPERIMENTAL | 25 (engine/AI features) |
 | All gates PASS | ✓ |
+
+## Phase 10 — Budget Lifecycle Expanded Tests (2026-10-24)
+
+**Objective:** Complete budgetStore lifecycle coverage — test reject/lock/unlock transitions and updateBudget workflow field guard.
+
+**Store tested:** budgetStore
+
+**Tests added:** 8 (batch 13)
+
+| # | Test | Claim |
+|---|------|-------|
+| 1 | rejectBudget transitions InReview → Rejected, audit chain intact | stateClaim |
+| 2 | rejectBudget on Draft budget throws lifecycle error | stateClaim |
+| 3 | lockBudget transitions Approved → Locked, audit chain intact | stateClaim |
+| 4 | lockBudget on InReview budget throws lifecycle error | stateClaim |
+| 5 | unlockBudget transitions Locked → Approved, audit chain intact | stateClaim |
+| 6 | unlockBudget on Draft budget throws lifecycle error | stateClaim |
+| 7 | updateBudget cannot change workflow fields directly | stateClaim |
+| 8 | updateBudget can change non-workflow fields in Draft budget | stateClaim |
+
+**Capability claims:** 8 new under plan.budgets (42 capabilities, 156 total claims).
+
+**Key learning:** The budget lifecycle state machine (Draft → InReview → Approved → Locked, with Rejected and WITHDRAWN as alternative paths) is now fully tested. The `updateBudget` WORKFLOW_FIELDS guard prevents direct status changes — workflow transitions must go through the lifecycle actions (submit/approve/reject/lock/unlock). This enforces the separation between content editing and lifecycle management.
+
+**Test count:** 611 total (597 base + 6 batch 12 + 8 batch 13). All passing.
+
+**Register SUPPORTED:** 146 (unchanged — plan.budgets already SUPPORTED).
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 611 |
+| Routes governed | 104 |
+| Capability claims | 156 (42 capabilities) |
+| Register SUPPORTED | 146 |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL | 25 (engine/AI features) |
+| All gates PASS | ✓ |

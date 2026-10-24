@@ -5200,3 +5200,133 @@ describe('GOVERNED capability-level — budget lifecycle validation tests (batch
     expect(v.valid).toBe(true);
   });
 });
+
+describe('GOVERNED capability-level — budget lifecycle expanded tests (batch 13)', () => {
+  it('GOVERNED cap:plan.budgets — rejectBudget transitions InReview → Rejected, audit chain intact', async () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Expanded Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    await useBudgetStore.getState().submitBudget(budgetId);
+    useBudgetStore.getState().rejectBudget(budgetId);
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('Rejected');
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.budgets — rejectBudget on Draft budget throws lifecycle error', () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Expanded Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('Draft');
+    expect(() => useBudgetStore.getState().rejectBudget(budgetId)).toThrow(/Cannot reject.*Draft/);
+  });
+
+  it('GOVERNED cap:plan.budgets — lockBudget transitions Approved → Locked, audit chain intact', async () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Expanded Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    await useBudgetStore.getState().submitBudget(budgetId);
+    useBudgetStore.getState().approveBudget(budgetId);
+    useBudgetStore.getState().lockBudget(budgetId);
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('Locked');
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.budgets — lockBudget on InReview budget throws lifecycle error', async () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Expanded Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    await useBudgetStore.getState().submitBudget(budgetId);
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('InReview');
+    expect(() => useBudgetStore.getState().lockBudget(budgetId)).toThrow(/Cannot lock.*InReview/);
+  });
+
+  it('GOVERNED cap:plan.budgets — unlockBudget transitions Locked → Approved, audit chain intact', async () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Expanded Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    await useBudgetStore.getState().submitBudget(budgetId);
+    useBudgetStore.getState().approveBudget(budgetId);
+    useBudgetStore.getState().lockBudget(budgetId);
+    useBudgetStore.getState().unlockBudget(budgetId);
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('Approved');
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.budgets — unlockBudget on Draft budget throws lifecycle error', () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Expanded Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('Draft');
+    expect(() => useBudgetStore.getState().unlockBudget(budgetId)).toThrow(/Cannot unlock.*Draft/);
+  });
+
+  it('GOVERNED cap:plan.budgets — updateBudget cannot change workflow fields directly', () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Expanded Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    expect(() =>
+      useBudgetStore.getState().updateBudget(budgetId, { status: 'InReview' } as never)
+    ).toThrow(/cannot change workflow field/i);
+  });
+
+  it('GOVERNED cap:plan.budgets — updateBudget can change non-workflow fields in Draft budget', () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Expanded Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    expect(() =>
+      useBudgetStore.getState().updateBudget(budgetId, { name: 'Renamed Budget' } as never)
+    ).not.toThrow();
+    expect(useBudgetStore.getState().budgets[0]!.name).toBe('Renamed Budget');
+  });
+});
