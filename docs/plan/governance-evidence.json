@@ -2897,6 +2897,26 @@
     "wf.auditability": [
       {
         "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:wf.auditability \u2014 audit:create guards recordBulk, audit chain intact",
+        "proves": "auditTrailStore.recordBulk requires audit:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:wf.auditability \u2014 audit:create guards recordBulk, Admin reaches enforce gate",
+        "proves": "auditTrailStore.recordBulk requires audit:create; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:wf.auditability \u2014 audit:delete guards revertToState, audit chain intact",
+        "proves": "auditTrailStore.revertToState requires audit:delete; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:wf.auditability \u2014 audit:delete guards revertToState, Admin reaches enforce gate",
+        "proves": "auditTrailStore.revertToState requires audit:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:wf.auditability \u2014 notification:update guards markAsRead, audit chain intact",
         "proves": "notificationStore.markAsRead requires notification:update; Viewer denied; audit chain verified."
       },
@@ -3382,28 +3402,6 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:collab \u2014 notification:delete guards clearNotifications, audit chain intact",
         "proves": "notificationStore.clearNotifications requires notification:delete; Viewer denied; audit chain verified."
-      }
-    ],
-    "govern.auditability": [
-      {
-        "file": "src/__tests__/spineGovernance.test.ts",
-        "title": "GOVERNED cap:govern.auditability \u2014 audit:create guards recordBulk, audit chain intact",
-        "proves": "auditTrailStore.recordBulk requires audit:create; Viewer denied; audit chain verified."
-      },
-      {
-        "file": "src/__tests__/spineGovernance.test.ts",
-        "title": "GOVERNED cap:govern.auditability \u2014 audit:create guards recordBulk, Admin reaches enforce gate",
-        "proves": "auditTrailStore.recordBulk requires audit:create; Viewer denied, Admin reaches enforce gate."
-      },
-      {
-        "file": "src/__tests__/spineGovernance.test.ts",
-        "title": "GOVERNED cap:govern.auditability \u2014 audit:delete guards revertToState, audit chain intact",
-        "proves": "auditTrailStore.revertToState requires audit:delete; Viewer denied; audit chain verified."
-      },
-      {
-        "file": "src/__tests__/spineGovernance.test.ts",
-        "title": "GOVERNED cap:govern.auditability \u2014 audit:delete guards revertToState, Admin reaches enforce gate",
-        "proves": "auditTrailStore.revertToState requires audit:delete; Viewer denied, Admin reaches enforce gate."
       }
     ]
   },
