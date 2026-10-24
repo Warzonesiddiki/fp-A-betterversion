@@ -3870,6 +3870,13 @@
         "title": "AdvancedPDFEngine \u2014 GOVERNANCE (report.pdf)",
         "proves": "AdvancedPDFEngine PDF report generation correctness: addTableOfContents renders all section titles with page numbers. addWatermark applies to all pages with custom font size and color. addHeaderFooter renders header title and footer with page numbers. addPageBreak adds new page. addFinancialTable renders table headers and data. Money primitive safety: currency formatting ($100,000.00) and percent formatting (15.0%). exportToPDF uses correct filename. Determinism verified for TOC and watermark."
       }
+    ],
+    "report.pptx-editable": [
+      {
+        "file": "src/services/export/financialPackageExport.governance.test.ts",
+        "title": "financialPackageExport \u2014 GOVERNANCE (report.pptx-editable)",
+        "proves": "financialPackageExport PPTX board pack generation: buildEditableBoardPackPptxBytes produces valid byte archive with correct slide count. parseEditablePptxBytes round-trips slide content and summary metrics. assertSafeSpreadsheetFormula blocks injection (pipes, quotes, backticks, backslash, <>, cmd, powershell, hyperlink, webservice, filterxml) and allows safe formulas (SUM, ROUND, ABS, cell refs, sheet-qualified refs). verifyBoardPackRowTieOut reports match when XLSX and PPTX agree, and discrepancy when XLSX has wrong value. Money primitive safety: exact decimal strings, zero float coercion. Determinism verified."
+      }
     ]
   },
   "census": {
@@ -3894,5 +3901,5 @@
       "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
     }
   },
-  "totalCapabilityClaims": 229
+  "totalCapabilityClaims": 230
 }
