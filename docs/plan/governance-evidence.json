@@ -3260,6 +3260,50 @@
         "title": "GOVERNED cap:admin.users \u2014 user:assign-role guards setRoles, Admin reaches enforce gate",
         "proves": "settingsStore.setRoles requires user:assign-role; Viewer denied, Admin reaches enforce gate."
       }
+    ],
+    "report.statements": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:report.statements \u2014 report:schedule guards toggleScheduledReport, audit chain intact",
+        "proves": "reportStore.toggleScheduledReport requires report:schedule; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:report.statements \u2014 report:schedule guards toggleScheduledReport, Admin reaches enforce gate",
+        "proves": "reportStore.toggleScheduledReport requires report:schedule; role without permission denied; Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:report.statements \u2014 report:schedule guards deleteScheduledReport, audit chain intact",
+        "proves": "reportStore.deleteScheduledReport requires report:schedule; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:report.statements \u2014 report:schedule guards recordScheduleRun, Admin reaches enforce gate",
+        "proves": "reportStore.recordScheduleRun requires report:schedule; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:report.statements \u2014 report:update guards setReports, audit chain intact",
+        "proves": "reportStore.setReports requires report:update; Viewer denied; audit chain verified."
+      }
+    ],
+    "plan.versions": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.versions \u2014 scenario:lock guards lockScenario, Admin reaches enforce gate",
+        "proves": "scenarioStore.lockScenario requires scenario:lock; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.versions \u2014 scenario:lock guards unlockScenario, audit chain intact",
+        "proves": "scenarioStore.unlockScenario requires scenario:lock; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.versions \u2014 scenario:update guards setScenarios, Admin reaches enforce gate",
+        "proves": "scenarioStore.setScenarios requires scenario:update; Viewer denied, Admin reaches enforce gate."
+      }
     ]
   },
   "census": {

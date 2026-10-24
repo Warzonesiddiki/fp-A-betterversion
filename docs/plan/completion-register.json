@@ -2716,9 +2716,14 @@
     {
       "kind": "capability",
       "id": "cap:plan.versions",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/budgets/bva"
+        "gatedBy": "/budgets/bva",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -2775,9 +2780,14 @@
     {
       "kind": "capability",
       "id": "cap:report.statements",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/reports/three-statement"
+        "gatedBy": "/reports/three-statement",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },

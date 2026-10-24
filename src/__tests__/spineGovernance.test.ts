@@ -4907,3 +4907,61 @@ describe('GOVERNED capability-level — workflow, workforce, settings tests (bat
     expect(() => useSettingsStore.getState().setRoles([{ id: 'r1', name: 'Viewer', permissions: [] }] as never)).not.toThrow();
   });
 });
+
+describe('GOVERNED capability-level — report and scenario store tests (batch 8)', () => {
+  it('GOVERNED cap:report.statements — report:schedule guards toggleScheduledReport, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useReportStore.getState().toggleScheduledReport('rpt-test' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:report.statements — report:schedule guards toggleScheduledReport, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'report:schedule');
+    expectPermissionDenied(() => useReportStore.getState().toggleScheduledReport('rpt-test' as never));
+    actAs('Admin');
+    expect(() => useReportStore.getState().toggleScheduledReport('rpt-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:report.statements — report:schedule guards deleteScheduledReport, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useReportStore.getState().deleteScheduledReport('rpt-test' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:report.statements — report:schedule guards recordScheduleRun, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useReportStore.getState().recordScheduleRun('rpt-test' as never, 'success' as never));
+    actAs('Admin');
+    expect(() => useReportStore.getState().recordScheduleRun('rpt-test' as never, 'success' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:report.statements — report:update guards setReports, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useReportStore.getState().setReports([{ id: 'rpt-1', name: 'Test' }] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.versions — scenario:lock guards lockScenario, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useScenarioStore.getState().lockScenario('scen-test' as never));
+    actAs('Admin');
+    try { useScenarioStore.getState().lockScenario('scen-test' as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+  });
+
+  it('GOVERNED cap:plan.versions — scenario:lock guards unlockScenario, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useScenarioStore.getState().unlockScenario('scen-test' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.versions — scenario:update guards setScenarios, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useScenarioStore.getState().setScenarios([{ id: 's1', name: 'Test' }] as never));
+    actAs('Admin');
+    expect(() => useScenarioStore.getState().setScenarios([{ id: 's1', name: 'Test' }] as never)).not.toThrow();
+  });
+});
