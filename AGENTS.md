@@ -96,10 +96,16 @@ _xMarker = toDecimal(0)`, `void 0;`, `// Money adoption:` are forbidden,
 
 ```text
 START   read AGENTS.md → docs/README.md → docs/agent/09_KNOWN_GAPS.md
+        activate the standing skills: ponytail (full level) + consult the skill
+        library (docs/agent/skills/README.md) and apply the row whose "use it
+        when" matches the work — a skill raises rigour, never the claim
         git status; git log --oneline -5; npm ci --ignore-scripts (if node_modules missing)
         npm run tsc && npm run lint        (must be clean before you touch anything)
-WORK    one item per commit; tests first or alongside; run the narrowest relevant
-        test files after each change; run every ratchet you could have moved
+WORK    vision-alignment first for any new surface: name the owner job (J1–J4)
+        and the pillar (DATA/CLOSE/PLAN/ANALYZE/MODEL/REPORT) before a line is
+        written; then one item per commit; tests first or alongside; run the
+        narrowest relevant test files after each change; run every ratchet you
+        could have moved
 END     npm run check (or the subset you can justify) → paste tallies →
         update docs in the same commit → handover per
         docs/agent/HANDOVER_TEMPLATE.md

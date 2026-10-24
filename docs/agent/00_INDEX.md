@@ -78,20 +78,28 @@ applied, not extra process, and they are indexed in
 - **Consult the library before starting.** Find the row whose "use it when" line
   matches the work and follow it. When two skills apply, the narrower one wins;
   when a skill and a gate disagree, the gate is right and the skill gets fixed.
-- **Discipline** (13) — brainstorming, plans, TDD, systematic debugging,
+- **Discipline** (16) — brainstorming, plans, TDD, systematic debugging,
   verification before completion, giving and receiving review, finishing a
-  branch, onboarding, research and sourcing, bulk refactors, local preview.
-- **Finance** (8) — money and decimals, financial domain modelling, import and
+  branch, onboarding, research and sourcing, bulk refactors, local preview,
+  **vision alignment** (map any new surface to the owner's jobs J1–J4 and a
+  pillar before building).
+- **Finance** (13) — money and decimals, financial domain modelling, import and
   mapping, reconciliation and tie-out, period close, audit trail and lineage,
-  no invented data, determinism.
-- **Engineering** (13) — TypeScript strictness, stores and state, persistence
+  no invented data, determinism, driver-based scenarios, rolling forecast,
+  **one-stop completion** (a supported workflow is completable in-app, no
+  mandatory external step).
+- **Engineering** (15) — TypeScript strictness, stores and state, persistence
   integrity, testing strategy, gates and ratchets, architecture boundaries,
   security and secrets, SQLite/server, observability, dependencies and licences,
   release, incidents, the desktop shell.
-- **Product and UI** (7) — accessibility, performance and bundle, visual design,
-  charts, forms, exports, AI safety.
-- **Meta** (3) — documentation and decisions, requirements traceability, skill
-  authoring.
+- **Product and UI** (14) — accessibility, performance and bundle, visual design,
+  charts, forms, exports, AI safety, **board-output tie-out** (an export's
+  number must tie back to the screen, verified by a failing-first test).
+- **Meta** (8) — documentation and decisions, requirements traceability, skill
+  authoring, evidence-chain verification, owner-pack completion, zero-compromise
+  audit, **connector utilization** (publish repo → connector),
+  **connector-driven documentation** (connector content re-derived from the
+  repo, kept truthful).
 - **Owner set** (6) — the Ponytail skills themselves, reproduced verbatim.
 
 The library is generated and checked: `npm run skills:verify` fails if a skill

@@ -1,50 +1,77 @@
 ---
 name: connector-utilization
-description: Use when documentation, decisions, or release artifacts need to be shared with external systems. Maps repo artifacts to Notion, Google Docs, Google Drive, and other connectors.
+description: >
+  Use when a repo artifact (completion report, decision log, release snapshot,
+  skill, register) must be published to an external system. Loads the connector
+  tools, maps the artifact to the right connector, executes, and records the
+  action so the repo stays the source of truth.
 group: meta
 ---
 
-# Connector Utilization
+# Connector utilization (publish repo → connector)
 
-**Use it when:** sharing completion reports, decision logs, or release snapshots with external systems via available connectors.
+**Use when:** sharing a repo artifact with an external system via a connected
+app — Notion, Google Docs, Google Sheets, Google Drive, Google Slides, Gmail,
+Supabase, Vercel.
 
-## Available Connectors
+## Why this exists
 
-- **Notion** — create pages, update databases, append blocks
-- **Google Docs** — create documents, insert text, format tables
-- **Google Drive** — upload files, manage folders
-- **Google Sheets** — create spreadsheets, update cells
-- **Google Slides** — create presentations
-- **Gmail** — send emails with attachments
-- **Supabase** — database operations, edge functions
-- **Vercel** — deployments, environment variables
-
-## Mapping
-
-| Repo Artifact | Connector | Action |
-|---------------|-----------|--------|
-| `docs/plan/RELEASE_SNAPSHOT.md` | Notion | Create page with summary table |
-| `docs/discovery/decision-log.md` | Google Sheets | Upload as spreadsheet |
-| `docs/agent/skills/*.md` | Google Drive | Upload as folder |
-| `docs/plan/completion-register.json` | Google Sheets | Import as data table |
-| `docs/discovery/OWNER_DECISION_PACKET*.md` | Gmail | Attach to owner email |
+The repository is the source of truth. A connector is a **mirror**, not a
+second home: every artifact published to a connector is re-derived from the repo
+and cites the command that produced it. Nothing is hand-typed into a connector
+that the repo already measures. The reverse direction — a connector document
+that must stay truthful to the repo — is `connector-driven-documentation`.
 
 ## Method
 
-1. **Identify the artifact:** What file needs to be shared?
-2. **Choose the connector:** Match the artifact type to the appropriate connector.
-3. **Prepare the content:** Convert markdown to the target format (e.g., Notion blocks, Google Docs text).
-4. **Execute:** Use the connector tool to create/update the external resource.
-5. **Record:** Log the connector action in the decision log or completion register.
+1. **Load the connector tools first.** Call `list_connector_tools` for the
+   connector slug before using any of its tools. A load applies only to the
+   current reply; re-load before each use.
+2. **Identify the artifact and its owner.** What file is being published, and
+   which repo document owns the fact it contains? Cite the repo path.
+3. **Choose the connector.** Match the artifact to the connector that fits:
 
-## What this prevents
+   | Repo artifact                                | Connector     | Action                                  |
+   | -------------------------------------------- | ------------- | --------------------------------------- |
+   | `docs/plan/COMPLETION_SUMMARY_2026_10_23.md` | Notion        | Create page with summary table          |
+   | `docs/plan/RELEASE_SNAPSHOT.md`              | Notion        | Create page with measured statistics    |
+   | `docs/plan/RC_HARDENING_ROLLBACK.md`         | Google Docs   | Create document with rollback scenarios |
+   | `docs/discovery/decision-log.md`             | Google Sheets | Upload as spreadsheet                   |
+   | `docs/plan/completion-register.json`         | Google Sheets | Import as data table                    |
+   | `docs/agent/skills/*.md`                     | Google Drive  | Upload as folder                        |
+   | `docs/discovery/OWNER_DECISION_PACKET*.md`   | Gmail         | Attach to owner email                   |
 
-- Duplicating information across systems without tracking
-- Losing context when moving artifacts between repos and external systems
-- Missing owner decisions because they were not shared
+4. **Prepare the content.** Convert markdown to the target format (Notion
+   blocks, Google Docs text, Sheets rows). Numbers come from the repo command
+   output, not from memory.
+5. **Execute.** Use the connector tool to create/update the external resource.
+   One artifact per action; do not batch unrelated artifacts into one connector
+   write.
+6. **Record.** Log the connector action in `docs/discovery/decision-log.md` or
+   `docs/plan/completion-register.json` — what was published, where, when, from
+   which commit. The repo stays the index of what was mirrored.
 
-## Related
+## In this repo
 
-- `docs-and-decisions` — how documentation is maintained
-- `release-engineering` — release preparation
-- `owner-pack-completion` — owner decision tracking
+- The connected apps for this session are listed in the system context; load
+  `google_drive`, `notion`, `google_docs`, `google_sheets`, `google_slides`,
+  `gmail`, `supabase`, `vercel` as needed.
+- The source artifacts: `docs/plan/`, `docs/discovery/`, `docs/agent/skills/`.
+- The record of publish actions: `docs/discovery/decision-log.md`,
+  `docs/plan/completion-register.json`.
+
+## Red flags
+
+- Publishing a number the repo cannot reproduce (the connector has a number the
+  script never printed).
+- Hand-typing connector content instead of converting repo output.
+- Publishing without recording the action — the repo loses track of what was
+  mirrored.
+- Using a connector tool without loading it first.
+- Treating a connector copy as the source of truth.
+
+**Proves itself with:** a recorded publish action (repo path, connector,
+commit) for every external artifact, with the number traceable to a command.
+
+**Source:** original to FinPlan Pro, consolidated from the former
+`connector-utilization` and `connector-driven-documentation` skills.

@@ -1,51 +1,72 @@
 ---
 name: connector-driven-documentation
-description: Use when documentation needs to be shared across connectors. Maps repo artifacts to Notion, Google Docs, Google Sheets, and Gmail for owner communication.
+description: >
+  Use when a document lives in a connector (Google Docs, Notion, Sheets) and
+  must stay truthful to this repository. Re-derives connector content from the
+  repo, cites the command that produced it, and never lets a hand-edited number
+  drift from the measured one.
 group: meta
 ---
 
-# Connector-Driven Documentation
+# Connector-driven documentation (connector → repo truth)
 
-**Use it when:** sharing completion reports, decision logs, or release snapshots with external systems via available connectors.
+**Use when:** a document already lives in a connector and must reflect the
+measured state of this repo — a status page, a decision summary, a release
+note, a skill reference. This is the **reverse** of
+[`connector-utilization`](connector-utilization.md), which publishes repo
+artifacts outward.
 
-## Available Connectors
+## Why this exists
 
-- **Notion** — create pages, update databases, append blocks
-- **Google Docs** — create documents, insert text, format tables
-- **Google Drive** — upload files, manage folders
-- **Google Sheets** — create spreadsheets, update cells
-- **Google Slides** — create presentations
-- **Gmail** — send emails with attachments
-- **Supabase** — database operations, edge functions
-- **Vercel** — deployments, environment variables
-
-## Mapping
-
-| Repo Artifact | Connector | Action |
-|---------------|-----------|--------|
-| `docs/plan/COMPLETION_SUMMARY_2026_10_23.md` | Notion | Create page with summary table |
-| `docs/discovery/OWNER_DECISION_PACKET_COMPLETION.md` | Gmail | Attach to owner email |
-| `docs/plan/RELEASE_SNAPSHOT.md` | Notion | Create page with measured statistics |
-| `docs/plan/RC_HARDENING_ROLLBACK.md` | Google Docs | Create document with rollback scenarios |
-| `docs/agent/skills/*.md` | Google Drive | Upload as folder |
-| `docs/plan/completion-register.json` | Google Sheets | Import as data table |
+A connector document that drifts from the repo is worse than no document: the
+owner acts on a number the repo no longer produces. The repo is the source of
+truth; connector content is a **view** of it. Every number in a connector
+document must be re-derivable from a command in this tree.
 
 ## Method
 
-1. **Identify the artifact:** What file needs to be shared?
-2. **Choose the connector:** Match the artifact type to the appropriate connector.
-3. **Prepare the content:** Convert markdown to the target format (e.g., Notion blocks, Google Docs text).
-4. **Execute:** Use the connector tool to create/update the external resource.
-5. **Record:** Log the connector action in the decision log or completion register.
+1. **Load the connector tools.** Call `list_connector_tools` for the connector
+   slug before reading or editing connector content.
+2. **Identify the connector document and its repo source.** Which connector
+   document is being checked, and which repo document owns the facts it states?
+   If there is no repo source, the connector document is unsourced — flag it.
+3. **Re-derive, do not hand-edit.** For every number in the connector document,
+   run the repo command that produces it and compare. Update the connector from
+   the command output, not from memory or from a previous copy.
+4. **Cite the source.** Each connector section states the repo path and the
+   command that produced its numbers (e.g. "from `npm run money:adoption`,
+   commit `b180fa7`").
+5. **Mark stale, never silently correct.** If a connector number no longer
+   matches, mark the section stale and re-derive it. Do not quietly overwrite a
+   figure the owner may have already read.
+6. **Record the sync.** Log the sync in `docs/discovery/decision-log.md` or the
+   completion register: which connector document was re-derived, from which
+   commit, with which command output.
+7. **Missing is not zero.** A fact the repo cannot produce renders as
+   unavailable with a reason in the connector document, never as `0`.
 
-## What this prevents
+## In this repo
 
-- Duplicating information across systems without tracking
-- Losing context when moving artifacts between repos and external systems
-- Missing owner decisions because they were not shared
+- The source-of-truth matrix: [`docs/agent/00_INDEX.md`](../00_INDEX.md) — which
+  document owns which fact.
+- The measured state: [`docs/agent/09_KNOWN_GAPS.md`](../09_KNOWN_GAPS.md);
+  generated matrices: `docs/CAPABILITY_TRUTH_MATRIX.md`,
+  `docs/product/ROUTE_MAP.md`.
+- The commands: [`docs/agent/05_COMMANDS_AND_GATES.md`](../05_COMMANDS_AND_GATES.md).
+- The publish record: `docs/discovery/decision-log.md`,
+  `docs/plan/completion-register.json`.
 
-## Related
+## Red flags
 
-- `docs-and-decisions` — how documentation is maintained
-- `release-engineering` — release preparation
-- `owner-pack-completion` — owner decision tracking
+- A connector number that no repo command reproduces.
+- Hand-editing a connector number instead of re-deriving it.
+- A connector document with no repo source — unsourced content acting as truth.
+- Quietly overwriting a figure instead of marking it stale and re-deriving.
+- Treating the connector copy as the source of truth over the repo.
+
+**Proves itself with:** a sync record (connector document, repo commit, command
+output) for every re-derivation, and zero connector numbers that a repo command
+cannot reproduce.
+
+**Source:** original to FinPlan Pro, split from the former duplicate of
+`connector-utilization` to cover the reverse (connector → repo) direction.
