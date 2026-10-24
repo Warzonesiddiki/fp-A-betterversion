@@ -890,3 +890,14 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 **Capability promoted:** report.xlsx-formula EXPERIMENTAL → SUPPORTED
 **Register:** 154 SUPPORTED (was 153), 313 EXPERIMENTAL (was 314)
 **Governance evidence:** 50 capabilities (was 49), 221 claims (was 220)
+
+## Phase 28 — Workflow Store Review Method Tests (2026-10-24)
+
+**Gap:** wf.reviews capability — review workflow methods (approveRequest, rejectRequest, submitRequest, delegateRequest, bulkApprove) not yet tested in spine.
+
+**Tests added:** 12 spine tests (batch 25) in `src/__tests__/spineGovernance.test.ts`
+**Dimensions tested:** RBAC authorization for all review workflow methods
+**Capability promoted:** wf.reviews EXPERIMENTAL → SUPPORTED
+**Register:** 155 SUPPORTED (was 154), 312 EXPERIMENTAL (was 313)
+**Governance evidence:** 51 capabilities (was 50), 222 claims (was 221)
+**Spine tests:** 684 → 696

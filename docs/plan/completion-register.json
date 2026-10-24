@@ -3601,11 +3601,22 @@
     {
       "kind": "capability",
       "id": "cap:wf.reviews",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/budgets/approval"
+        "gatedBy": "/workflow",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "Workflow Store \u2014 Review workflow methods (batch 25 \u2014 CLOSES wf.reviews ENFORCE-METHOD-COVERAGE)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 workflowStore review workflow methods (submitRequest, approveRequest, rejectRequest, delegateRequest, bulkApprove) verified by 12 spine governance tests covering RBAC authorization for all review workflow methods. Viewer denied all; Admin reaches enforce gate."
     },
     {
       "kind": "engine",

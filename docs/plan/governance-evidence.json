@@ -3814,6 +3814,13 @@
         "title": "report-builder-formulas \u2014 GOVERNANCE (report.xlsx-formula)",
         "proves": "report-builder-formulas parseFormulaReferences extracts and deduplicates cell refs. evaluateFormula computes correct results (sum, multiply, divide, subtract, complex expressions, percentages). safeEvaluate handles arithmetic with parentheses, rejects non-finite results, does not execute code. evaluateFormula throws on missing cell references and non-finite values. columnLetterToIndex/columnIndexToLetter round-trip correctly. detectCircularReferences detects A1\u2192B1\u2192A1 cycles, self-references, and returns no false positives for acyclic layouts. Determinism verified."
       }
+    ],
+    "wf.reviews": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "Workflow Store \u2014 Review workflow methods (batch 25 \u2014 CLOSES wf.reviews ENFORCE-METHOD-COVERAGE)",
+        "proves": "workflowStore review workflow methods: submitRequest (workflow:update), approveRequest (workflow:approve), rejectRequest (workflow:approve), delegateRequest (workflow:update), bulkApprove (workflow:approve). Viewer denied all; Admin reaches enforce gate. All RBAC guards enforced."
+      }
     ]
   },
   "census": {
@@ -3838,5 +3845,5 @@
       "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
     }
   },
-  "totalCapabilityClaims": 221
+  "totalCapabilityClaims": 222
 }

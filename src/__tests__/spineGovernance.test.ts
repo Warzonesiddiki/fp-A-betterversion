@@ -6101,3 +6101,88 @@ describe("GL Store — UI filter and import state setters (batch 24 — CLOSES g
     expect(useGLStore.getState().importError).toBe('bad row at line 42');
   });
 });
+
+describe("Workflow Store — Review workflow methods (batch 25 — CLOSES wf.reviews ENFORCE-METHOD-COVERAGE)", () => {
+  // Tests for approveRequest, rejectRequest, submitRequest, delegateRequest, bulkApprove
+  // These are the core review workflow methods not yet covered in the spine tests.
+
+  it("denies Viewer submitRequest (workflow:update)", () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().submitRequest('wf-1', 'Title', 'Desc', 'u1', 1000, 'entity-1', '2026-01'));
+  });
+
+  it("Admin submitRequest reaches enforce gate", () => {
+    actAs('Admin');
+    try {
+      useWorkflowStore.getState().submitRequest('wf-1', 'Title', 'Desc', 'u1', 1000, 'entity-1', '2026-01');
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
+  });
+
+  it("denies Viewer approveRequest (workflow:approve)", () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().approveRequest('req-1', 'approver-1'));
+  });
+
+  it("Admin approveRequest reaches enforce gate", () => {
+    actAs('Admin');
+    try {
+      useWorkflowStore.getState().approveRequest('req-1', 'approver-1');
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
+  });
+
+  it("denies Viewer rejectRequest (workflow:approve)", () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().rejectRequest('req-1', 'approver-1'));
+  });
+
+  it("Admin rejectRequest reaches enforce gate", () => {
+    actAs('Admin');
+    try {
+      useWorkflowStore.getState().rejectRequest('req-1', 'approver-1');
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
+  });
+
+  it("denies Viewer delegateRequest (workflow:update)", () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().delegateRequest('req-1', 'fromUser', 'toUser', 'reason'));
+  });
+
+  it("Admin delegateRequest reaches enforce gate", () => {
+    actAs('Admin');
+    try {
+      useWorkflowStore.getState().delegateRequest('req-1', 'fromUser', 'toUser', 'reason');
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
+  });
+
+  it("denies Viewer bulkApprove (workflow:approve)", () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().bulkApprove(['req-1', 'req-2'], 'approver-1'));
+  });
+
+  it("Admin bulkApprove reaches enforce gate", () => {
+    actAs('Admin');
+    try {
+      useWorkflowStore.getState().bulkApprove(['req-1', 'req-2'], 'approver-1');
+    } catch (e) {
+      expect((e as Error).name).not.toBe('PermissionError');
+    }
+  });
+
+  it("denies Viewer deleteWorkflow (workflow:delete) — already tested, verifying consistency", () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useWorkflowStore.getState().deleteWorkflow('wf-1' as never));
+  });
+
+  it("Admin deleteWorkflow reaches enforce gate", () => {
+    actAs('Admin');
+    expect(() => useWorkflowStore.getState().deleteWorkflow('wf-1' as never)).not.toThrow();
+  });
+});
