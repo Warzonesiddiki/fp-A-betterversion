@@ -3909,3 +3909,66 @@ describe('GOVERNED positive-path — Admin write actions (batch 5)', () => {
     expect(() => useGLStore.getState().addEntry({ id: 'gov-lease-pos', accountId: '1500', amount: 2000 } as never)).not.toThrow();
   });
 });
+
+describe('GOVERNED positive-path — Admin write actions (batch 6)', () => {
+  it('GOVERNED /collaboration/shared — Admin addComment posts on shared reports', () => {
+    actAs('Admin');
+    useCollaborationStore.getState().addComment({ content: 'Gov shared', threadId: 'gov-thread' } as never);
+    expect(useCollaborationStore.getState().comments.length).toBe(1);
+  });
+
+  it('GOVERNED /settings/backup — Admin updateOrganization changes org settings', () => {
+    actAs('Admin');
+    useSettingsStore.getState().updateOrganization({ name: 'Gov Org' } as never);
+    expect(useSettingsStore.getState().organization.name).toBe('Gov Org');
+  });
+
+  it('GOVERNED /reports/three-statement — Admin createReport creates a 3-statement report', () => {
+    actAs('Admin');
+    const id = useReportStore.getState().createReport({ name: 'Gov 3-Statement', type: 'balance-sheet' } as never);
+    expect(id).toBeTruthy();
+    expect(useReportStore.getState().reports.length).toBe(1);
+  });
+});
+
+describe('GOVERNED positive-path — Admin write actions (batch 7)', () => {
+  it('GOVERNED /forecasts/what-if — Admin createForecast creates a what-if forecast', () => {
+    actAs('Admin');
+    const id = useForecastStore.getState().createForecast({ name: 'Gov What-If', scenario: 'bull' } as never);
+    expect(id).toBeTruthy();
+    expect(useForecastStore.getState().forecasts.length).toBe(1);
+  });
+
+  it('GOVERNED /collaboration/team — Admin addComment posts in team workspace', () => {
+    actAs('Admin');
+    useCollaborationStore.getState().addComment({ content: 'Gov team', threadId: 'gov-thread' } as never);
+    expect(useCollaborationStore.getState().comments.length).toBe(1);
+  });
+
+});
+
+describe('GOVERNED positive-path — Admin write actions (batch 8)', () => {
+  it('GOVERNED /reports/book-builder — Admin createReport creates a book builder report', () => {
+    actAs('Admin');
+    const id = useReportStore.getState().createReport({ name: 'Gov Book', book: 'annual' } as never);
+    expect(id).toBeTruthy();
+    expect(useReportStore.getState().reports.length).toBe(1);
+  });
+
+  it('GOVERNED /workforce/payroll — Admin addEmployee creates a payroll employee', () => {
+    actAs('Admin');
+    useWorkforceStore.getState().addEmployee({ name: 'Gov Payroll Emp', department: 'Finance', salary: 80000 } as never);
+    expect(useWorkforceStore.getState().employees.length).toBe(1);
+  });
+
+  it('GOVERNED /collaboration/approvals — Admin addComment posts in approval queue', () => {
+    actAs('Admin');
+    useCollaborationStore.getState().addComment({ content: 'Gov approval', threadId: 'gov-thread' } as never);
+    expect(useCollaborationStore.getState().comments.length).toBe(1);
+  });
+
+  it('GOVERNED /analytics/benchmarking — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-bench-pos', accountId: '4000', amount: 5000 } as never)).not.toThrow();
+  });
+});
