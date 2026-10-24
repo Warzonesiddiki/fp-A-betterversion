@@ -432,3 +432,40 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 |
 | Remaining EXPERIMENTAL | 25 (engine/AI features) |
 | All gates PASS | ✓ |
+
+## Phase 12 — Forecast Store Validation Guard Tests (2026-10-24)
+
+**Objective:** Test forecastStore.createForecast input validation guards — a new governance dimension of input validation beyond RBAC and lifecycle.
+
+**Store tested:** forecastStore
+
+**Tests added:** 6 (batch 15)
+
+| # | Test | Claim |
+|---|------|-------|
+| 1 | createForecast with empty name throws validation error | stateClaim |
+| 2 | createForecast with whitespace-only name throws validation error | stateClaim |
+| 3 | createForecast with name > 200 chars throws validation error | stateClaim |
+| 4 | createForecast with non-string name throws validation error | stateClaim |
+| 5 | createForecast with null forecast throws validation error | stateClaim |
+| 6 | createForecast with valid name succeeds, audit chain intact | stateClaim |
+
+**Capability claims:** 6 new under plan.rolling-forecast (43 capabilities, 170 total claims).
+
+**Key learning:** forecastStore.createForecast has input validation guards (forecast must be object, name must be non-empty string ≤ 200 chars). These guards throw Error (not PermissionError) — they are validation, not authorization. Testing them proves the validation is enforced, not just that permissions are checked. This is the third governance dimension: RBAC permissions → lifecycle state machine → input validation.
+
+**Test count:** 625 total (597 base + 6 batch 12 + 8 batch 13 + 8 batch 14 + 6 batch 15). All passing.
+
+**Register SUPPORTED:** 146 (unchanged — plan.rolling-forecast already SUPPORTED).
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 625 |
+| Routes governed | 104 |
+| Capability claims | 170 (43 capabilities) |
+| Register SUPPORTED | 146 |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL | 25 (engine/AI features) |
+| All gates PASS | ✓ |

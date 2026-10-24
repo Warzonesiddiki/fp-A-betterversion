@@ -3513,6 +3513,38 @@
         "title": "GOVERNED cap:collab \u2014 notification:delete guards clearNotifications, audit chain intact",
         "proves": "notificationStore.clearNotifications requires notification:delete; Viewer denied; audit chain verified."
       }
+    ],
+    "plan.rolling-forecast": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with empty name throws validation error",
+        "proves": "forecastStore.createForecast throws on empty name via requireText validation; FORECAST_CREATE permission passes for Analyst"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with whitespace-only name throws validation error",
+        "proves": "forecastStore.createForecast throws on whitespace-only name via trim() validation"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with name > 200 chars throws validation error",
+        "proves": "forecastStore.createForecast throws on name > 200 chars via length validation"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with non-string name throws validation error",
+        "proves": "forecastStore.createForecast throws on non-string name via typeof validation"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with null forecast throws validation error",
+        "proves": "forecastStore.createForecast throws on null forecast via object type validation"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with valid name succeeds, audit chain intact",
+        "proves": "forecastStore.createForecast succeeds with valid input for Analyst; forecast stored; audit chain verifies"
+      }
     ]
   },
   "census": {

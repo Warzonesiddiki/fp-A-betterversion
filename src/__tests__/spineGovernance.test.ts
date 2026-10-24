@@ -5435,3 +5435,54 @@ describe('GOVERNED capability-level — exceptionDispositionStore lifecycle expa
     ).toThrow(/assignee.*required/);
   });
 });
+
+describe('GOVERNED capability-level — forecastStore validation guard tests (batch 15)', () => {
+  it('GOVERNED cap:plan.rolling-forecast — createForecast with empty name throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useForecastStore.getState().createForecast({ name: '' } as never)
+    ).toThrow(/forecast name must be a non-empty string/);
+  });
+
+  it('GOVERNED cap:plan.rolling-forecast — createForecast with whitespace-only name throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useForecastStore.getState().createForecast({ name: '   ' } as never)
+    ).toThrow(/forecast name must be a non-empty string/);
+  });
+
+  it('GOVERNED cap:plan.rolling-forecast — createForecast with name > 200 chars throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useForecastStore.getState().createForecast({ name: 'x'.repeat(201) } as never)
+    ).toThrow(/forecast name must be 200 characters or less/);
+  });
+
+  it('GOVERNED cap:plan.rolling-forecast — createForecast with non-string name throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useForecastStore.getState().createForecast({ name: 123 as never } as never)
+    ).toThrow(/forecast name must be a non-empty string/);
+  });
+
+  it('GOVERNED cap:plan.rolling-forecast — createForecast with null forecast throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useForecastStore.getState().createForecast(null as never)
+    ).toThrow(/forecast must be an object/);
+  });
+
+  it('GOVERNED cap:plan.rolling-forecast — createForecast with valid name succeeds, audit chain intact', () => {
+    actAs('Analyst');
+    const id = useForecastStore.getState().createForecast({
+      name: 'Validation Test Forecast',
+      description: 'test',
+      type: 'Rolling',
+      status: 'Draft',
+    } as never);
+    expect(id).toBeTruthy();
+    expect(useForecastStore.getState().forecasts).toHaveLength(1);
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+});
