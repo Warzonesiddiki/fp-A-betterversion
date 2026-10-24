@@ -1941,20 +1941,42 @@
     {
       "kind": "capability",
       "id": "cap:ai.explicit-invocation",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/ai"
+        "gatedBy": "/settings/ai",
+        "tests": [
+          "src/services/llm/llmEgress.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/services/llm/llmEgress.governance.test.ts",
+            "title": "LLM Egress Chokepoint \u2014 AI EXPLICIT INVOCATION (ai.explicit-invocation)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 LlmEgressChokepoint explicit invocation and local-only verified by 19 engine-level governance tests covering kill switch, fail-closed endpoint gating, error types, redaction (emails/secrets/IBANs/GL accounts/money), message redaction, and local-only processing."
     },
     {
       "kind": "capability",
       "id": "cap:ai.local-only",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/ai"
+        "gatedBy": "/settings/ai",
+        "tests": [
+          "src/services/llm/llmEgress.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/services/llm/llmEgress.governance.test.ts",
+            "title": "LLM Egress Chokepoint \u2014 AI EXPLICIT INVOCATION (ai.explicit-invocation)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 LlmEgressChokepoint explicit invocation and local-only verified by 19 engine-level governance tests covering kill switch, fail-closed endpoint gating, error types, redaction (emails/secrets/IBANs/GL accounts/money), message redaction, and local-only processing."
     },
     {
       "kind": "capability",

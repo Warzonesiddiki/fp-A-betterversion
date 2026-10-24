@@ -933,3 +933,13 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 **Register:** 158 SUPPORTED (was 157), 309 EXPERIMENTAL (was 310)
 **Governance evidence:** 54 capabilities (was 53), 225 claims (was 224)
 **Spine tests:** 704 → 714
+
+## Phase 32 — LLM Egress Chokepoint AI Governance Tests (2026-10-24)
+
+**Gap:** Phase 4 of engine-level testing plan — AI pillar. Explicit invocation and local-only processing.
+
+**Tests added:** 19 engine-level governance tests in `src/services/llm/llmEgress.governance.test.ts`
+**Dimensions tested:** 7 (kill switch, fail-closed endpoint gating, error types, redaction, message redaction, local-only processing, explicit invocation)
+**Capabilities promoted:** ai.explicit-invocation, ai.local-only EXPERIMENTAL → SUPPORTED
+**Register:** 160 SUPPORTED (was 158), 307 EXPERIMENTAL (was 309)
+**Governance evidence:** 56 capabilities (was 54), 227 claims (was 225)
