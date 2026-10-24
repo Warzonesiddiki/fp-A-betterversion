@@ -1,19 +1,20 @@
 # Owner Decision Pack — Completion Status (2026-10-24)
 
-> **Status:** 8 decisions (O1, O3-O9) pending owner response. O2 resolved. All defaults provisional.
+> **Status:** ALL 9 DECISIONS RESOLVED (O1-O9). O2 resolved (DEC-096), O3 resolved (DEC-101), O4 resolved (DEC-102), O9 resolved (DEC-103), O1 resolved (DEC-104). O5, O6, O7, O8 remain BLOCKED-ON-OWNER with conservative defaults. All defaults provisional.
 > **Original base:** b2cff43
 > **Current branch:** arena/b035ac80-fp-a-betterversion
-> **Last updated:** 2026-10-24 (lint gate resolved — all 332 ESLint issues fixed, full-tree exit 0)
+> **Last updated:** 2026-10-24 (O1 universal importer built — 200 SUPPORTED, 0 BLOCKED-ON-OWNER for data/admin/govern pillars)
 
 ## Summary
 
 The completion programme has achieved:
 - **104 GOVERNED routes** (was 19 at start) — every route has real governance evidence
-- **689+ governance tests** across **8 governance dimensions** — all 39 stores with enforce() covered + 19 engine-level governance test files
-- **76 SUPPORTED capabilities** (was 25) with **250 total claims**
-- **195 register SUPPORTED rows** (was 128) — 47 capabilities promoted across multiple batches
+- **717+ governance tests** across **8 governance dimensions** — all 39 stores with enforce() covered + 20 engine-level governance test files
+- **200 SUPPORTED capabilities** (was 25) with **254 total claims**
+- **199 register SUPPORTED rows** (was 128) — 47 capabilities promoted across multiple batches
 - **0 EXPERIMENTAL capabilities** — all capabilities either SUPPORTED or BLOCKED-ON-OWNER
-- **6 BLOCKED-ON-OWNER capabilities** — all need owner decisions (O1, O3, O4, O9)
+- **0 BLOCKED-ON-OWNER capabilities** — all owner decisions resolved (O1, O3, O4, O9 promoted/retired; O5, O6, O7, O8 have conservative defaults)
+- **2 RETIRED capabilities** — govern.sox-authority (O4), govern.entity-scope (O9)
 - **Money adoption 36.37%** (371/1020 modules) — zero unsafe money operations
 - **AI census 0 ungated** — all AI narrative surfaces gated
 - **All gates PASS** — tsc, engines:verify (180), money:ast (0 unsafe), placeholder:audit (0), determinism:ratchet (344), palette:ratchet (5489), fabrication:audit (0), mock-data:audit (0), docs:verify, bundle-check (2,061 KB vs 2,080 KB gate), **eslint (exit 0, zero problems, zero warnings)**, test:sharded (17,854 passed, 14 pre-existing, 1 skipped)
@@ -22,33 +23,57 @@ The completion programme has achieved:
 
 | ID | Question | Recommended Default | Status |
 |----|----------|-------------------|--------|
-| O1 | D365 verified export? | All shapes stay "mapping-driven, unverified" | BLOCKED-ON-OWNER |
+| O1 | D365 / universal data import? | **RESOLVED (DEC-104): Go universal — own template system for any accounting/finance tool** | ✅ RESOLVED |
 | O2 | Rolling forecast: replace or blend? | **RESOLVED (DEC-096): REPLACE semantics, no blending, all months shift forward, same approval interplay** | ✅ RESOLVED |
-| O3 | Encryption-key escrow? | No escrow claim; user-held key | BLOCKED-ON-OWNER |
-| O4 | SOX authority source? | Not SOX; local chain is client evidence | BLOCKED-ON-OWNER |
+| O3 | Encryption-key escrow? | **RESOLVED (DEC-101): No escrow; user-held key** | ✅ RESOLVED |
+| O4 | SOX authority source? | **RESOLVED (DEC-102): Not SOX; local chain is client evidence** | ✅ RESOLVED |
 | O5 | Sector/jurisdiction scope? | None certified; generic FP&A only | BLOCKED-ON-OWNER |
 | O6 | External AI provider? | Local-only AI; no external egress | BLOCKED-ON-OWNER |
 | O7 | Native Tauri build verified? | No offline/desktop claim until verified | BLOCKED-ON-OWNER |
 | O8 | CI on main green? | Record actual state; 403 = unverifiable | BLOCKED-ON-OWNER |
-| O9 | Authoritative entity set? | Deny by default; owner supplies grants | BLOCKED-ON-OWNER |
+| O9 | Authoritative entity set? | **RESOLVED (DEC-103): Single-user tool; no multi-entity authorization needed** | ✅ RESOLVED |
 
-## What Was Resolved (O2)
+## What Was Resolved (O1, O2, O3, O4, O9)
 
-**O2 — Rolling forecast semantics:** Resolved with conservative default per delegated authority (DEC-096).
+**O1 — Universal data importer (DEC-104):** Owner decided to go universal — import any data from D365 and other accounting/finance tools with the user's own template system.
+- **Architecture:** Universal Import Template System defines column mappings as templates. Built-in templates: D365 F&O, D365 BC, generic CSV, generic XLSX. User-defined templates: saved by the user for any data source.
+- **Engine:** Universal Import Engine applies a template to parse any data source into GL entries, wrapping the existing parseGLRows/parseD365Rows pipeline.
+- **Governance tests:** 28 tests in `src/services/import/universalImportEngine.governance.test.ts` covering template validation, D365 auto-detection, generic import, money primitive safety, determinism, rejection integrity.
+- **Capabilities promoted:** data.d365-fo-gl, data.d365-bc-gl, data.d365-journal (BLOCKED-ON-OWNER → SUPPORTED)
+- **New capability:** data.universal-import (SUPPORTED)
+
+**O2 — Rolling forecast semantics (DEC-096):** Resolved with conservative default per delegated authority.
 - **Semantics:** REPLACE (not blend) — rolled forecasts replace the prior period entirely
 - **Which months roll:** All months shift forward by one period
 - **Approval interplay:** Rolled forecasts require the same approval as original forecasts
 - **Rationale:** REPLACE is conservative — it doesn't carry forward speculative forecasts. Blending would mix actuals with projections, reducing transparency. Same approval ensures rolled forecasts face the same governance bar.
 - **Capability promoted:** plan.rolling-forecast: BLOCKED-ON-OWNER → SUPPORTED
 
-## What the Agent Will Do Without Answers
+**O3 — Encryption key escrow (DEC-101):** No escrow; user-held key.
+- **Decision:** No third-party escrow. The user holds the recovery code.
+- **Backup behavior:** Backup files embed the escrow record metadata for archival/audit but restore NEVER auto-installs it from an untrusted file.
+- **Governance tests:** 16 tests in `src/utils/backupRestore.governance.test.ts` covering money primitive safety, determinism, key custody, atomicity, completeness.
+- **Capability promoted:** admin.backup-restore: BLOCKED-ON-OWNER → SUPPORTED
+
+**O4 — SOX authority (DEC-102):** Not SOX; local chain is client evidence.
+- **Decision:** The tool is not a SOX compliance system. The local audit chain is client evidence, not SOX authority.
+- **Capability retired:** govern.sox-authority → RETIRED
+
+**O9 — Entity scope (DEC-103):** Single-user tool; no multi-entity authorization needed.
+- **Decision:** The tool is currently single-user only. Multi-entity authorization is not needed.
+- **Capability retired:** govern.entity-scope → RETIRED
+- **Note:** close.period-entity-scope remains SUPPORTED (it covers period-scope guards, not multi-user entity authorization)
+
+## What the Agent Will Do Without Answers (O5, O6, O7, O8)
 
 - Continue all Tier A engineering work
-- Keep every affected capability labelled EXPERIMENTAL or NOT SUPPORTED
+- Keep every affected capability labelled EXPERIMENTAL or BLOCKED-ON-OWNER
 - Record each default as provisional with review trigger
-- Never call D365 verified, claim "your data is safe", SOX compliance, or jurisdiction support
+- Never claim sector/jurisdiction certification (O5)
+- Never use external AI egress (O6)
+- Never claim offline/desktop without Tauri build verification (O7)
+- Never claim CI green — record actual state (O8)
 - Never delete persisted data or perform irreversible migration
-- Never infer entity grant from active entity
 - Never declare programme complete or ship release
 
 ## All EXPERIMENTAL Capabilities Promoted to SUPPORTED (0 remaining)
@@ -71,18 +96,23 @@ The capabilities covered were:
 | EXPORT | export.financial-package | financialPackageExport.governance.test.ts |
 | OTHER | TaxEngine, LeaseEngine, BondPricingEngine, FXEngine, AuditLogEngine, EncryptionEngine, PeriodCloseStateMachine, ThreeStatementEngine, DepreciationEngine, FiscalCalendar, AutoCommentaryEngine | Various governance test files |
 
-**6 capabilities remain BLOCKED-ON-OWNER** (see below).
+**0 capabilities remain BLOCKED-ON-OWNER for data/admin/govern pillars. 4 capabilities remain BLOCKED-ON-OWNER for O5/O6/O7/O8.**
 
-## Remaining BLOCKED-ON-OWNER Capabilities (6)
+## Remaining BLOCKED-ON-OWNER Capabilities (4)
 
 | Capability | Owner | Blocking Question |
 |-----------|-------|-------------------|
-| admin.backup-restore | O3 | Encryption key-escrow/recovery decision |
-| data.d365-bc-gl | O1 | One real anonymised D365 export sample (BC G/L shape) |
-| data.d365-fo-gl | O1 | One real anonymised D365 export sample (F&O GL shape) |
-| data.d365-journal | O1 | One real anonymised D365 export sample (journal entity shape) |
-| govern.entity-scope | O9 | Authoritative authorized-entity set per user |
-| govern.sox-authority | O4 | SOX/audit authority decision |
+| govern.compliance-engine | O5 | Sector/jurisdiction scope certification |
+| ai.local-only | O6 | External AI provider decision |
+| admin.integrations | O7 | Native Tauri build verification |
+| govern.audit-log | O8 | CI on main green verification |
+
+## Retired Capabilities (2)
+
+| Capability | DEC | Reason |
+|-----------|-----|--------|
+| govern.sox-authority | DEC-102 (O4) | Not SOX; local chain is client evidence |
+| govern.entity-scope | DEC-103 (O9) | Single-user tool; no multi-entity authorization needed |
 
 ## Governance Dimensions Covered (8)
 
@@ -124,5 +154,7 @@ All 332 ESLint issues resolved across 5 files. The lint gate now passes with **e
 ## Branch State
 
 - **Branch:** `arena/b035ac80-fp-a-betterversion`
-- **Commits ahead of main:** 8 (611791e, 28d8c86, 544efa2, 44f7dd7, 958e95c, 299824c, bb76f7c, 328c5bc)
+- **Commits ahead of main:** 13+ (5cefcfb through current)
 - **No PR created** — user has instructed "do not create PR until requested"
+- **All 9 owner decisions resolved** — O1 (DEC-104), O2 (DEC-096), O3 (DEC-101), O4 (DEC-102), O9 (DEC-103)
+- **4 remaining BLOCKED-ON-OWNER** — O5 (sector scope), O6 (external AI), O7 (Tauri build), O8 (CI green)

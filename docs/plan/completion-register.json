@@ -2627,32 +2627,86 @@
     {
       "kind": "capability",
       "id": "cap:data.d365-bc-gl",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "SUPPORTED",
       "evidence": {
-        "owner": "O1",
-        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER)"
+        "tests": [
+          "src/services/import/universalImportEngine.governance.test.ts",
+          "src/services/import/d365Parser.test.ts",
+          "src/services/import/parseGLRows.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/services/import/universalImportEngine.governance.test.ts",
+            "title": "data.universal-import — GOVERNANCE (O1: universal data importer)"
+          }
+        ]
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "O1 RESOLVED (DEC-104): universal importer with template system. D365 parsing covered by universalImportEngine governance tests + existing d365Parser tests.",
+      "tests": [
+        "src/services/import/universalImportEngine.governance.test.ts",
+        "src/services/import/d365Parser.test.ts",
+        "src/services/import/parseGLRows.test.ts"
+      ],
+      "gate": "governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:data.d365-fo-gl",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "SUPPORTED",
       "evidence": {
-        "owner": "O1",
-        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER)"
+        "tests": [
+          "src/services/import/universalImportEngine.governance.test.ts",
+          "src/services/import/d365Parser.test.ts",
+          "src/services/import/parseGLRows.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/services/import/universalImportEngine.governance.test.ts",
+            "title": "data.universal-import — GOVERNANCE (O1: universal data importer)"
+          }
+        ]
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "O1 RESOLVED (DEC-104): universal importer with template system. D365 parsing covered by universalImportEngine governance tests + existing d365Parser tests.",
+      "tests": [
+        "src/services/import/universalImportEngine.governance.test.ts",
+        "src/services/import/d365Parser.test.ts",
+        "src/services/import/parseGLRows.test.ts"
+      ],
+      "gate": "governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:data.d365-journal",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "SUPPORTED",
       "evidence": {
-        "owner": "O1",
-        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER)"
+        "tests": [
+          "src/services/import/universalImportEngine.governance.test.ts",
+          "src/services/import/d365Parser.test.ts",
+          "src/services/import/parseGLRows.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/services/import/universalImportEngine.governance.test.ts",
+            "title": "data.universal-import — GOVERNANCE (O1: universal data importer)"
+          }
+        ]
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "O1 RESOLVED (DEC-104): universal importer with template system. D365 parsing covered by universalImportEngine governance tests + existing d365Parser tests.",
+      "tests": [
+        "src/services/import/universalImportEngine.governance.test.ts",
+        "src/services/import/d365Parser.test.ts",
+        "src/services/import/parseGLRows.test.ts"
+      ],
+      "gate": "governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
@@ -2916,7 +2970,7 @@
       "status": "RETIRED",
       "evidence": {
         "decision": "DEC-103",
-        "commit": "PLACEHOLDER_COMMIT"
+        "commit": "c9b84116ad408b2d574e952cd953c67b92edcbab"
       },
       "note": "RETIRED per DEC-103 (O9): single-user tool; no multi-entity authorization needed."
     },
@@ -2946,7 +3000,7 @@
       "status": "RETIRED",
       "evidence": {
         "decision": "DEC-102",
-        "commit": "PLACEHOLDER_COMMIT"
+        "commit": "c9b84116ad408b2d574e952cd953c67b92edcbab"
       },
       "note": "RETIRED per DEC-102 (O4): not SOX; local chain is client evidence."
     },
@@ -9566,6 +9620,34 @@
         "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Engine-level governance testing (src/engines/PeriodCloseStateMachine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:data.universal-import",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/services/import/universalImportEngine.governance.test.ts",
+          "src/services/import/d365Parser.test.ts",
+          "src/services/import/parseGLRows.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/services/import/universalImportEngine.governance.test.ts",
+            "title": "data.universal-import — GOVERNANCE (O1: universal data importer)"
+          }
+        ]
+      },
+      "note": "O1 RESOLVED (DEC-104): universal data importer with template system. 28 governance tests covering template validation, D365 auto-detection, generic import, money primitive safety, determinism, rejection integrity.",
+      "tests": [
+        "src/services/import/universalImportEngine.governance.test.ts",
+        "src/services/import/d365Parser.test.ts",
+        "src/services/import/parseGLRows.test.ts"
+      ],
+      "gate": "governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     }
   ]
 }

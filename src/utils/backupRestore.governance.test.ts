@@ -16,7 +16,7 @@
  *  4. Atomicity — restore validates all stores before writing any
  *  5. Completeness — backup captures every persisted store, no drift
  */
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   BackupRestore,
   canonicalJSON,
@@ -100,7 +100,9 @@ describe('admin.backup-restore — GOVERNANCE (O3: no escrow, user-held key)', (
       await BackupRestore.restoreFromJSON(serialized);
 
       const restored = await readAllStores();
-      const glState = (restored['gl-store'] as { state: { entries: Array<{ debit: string; credit: string }> } }).state;
+      const glState = (
+        restored['gl-store'] as { state: { entries: Array<{ debit: string; credit: string }> } }
+      ).state;
 
       // Exact string equality — not parseFloat comparison
       expect(glState.entries[0]!.debit).toBe('0.00');
@@ -118,7 +120,9 @@ describe('admin.backup-restore — GOVERNANCE (O3: no escrow, user-held key)', (
       await BackupRestore.restoreFromJSON(serialized);
 
       const restored = await readAllStores();
-      const budgetState = (restored['budget-store'] as { state: { budgets: Array<{ totalAmount: string }> } }).state;
+      const budgetState = (
+        restored['budget-store'] as { state: { budgets: Array<{ totalAmount: string }> } }
+      ).state;
 
       expect(budgetState.budgets[0]!.totalAmount).toBe('1000000.00');
       expect(budgetState.budgets[1]!.totalAmount).toBe('250000.00');
@@ -133,7 +137,8 @@ describe('admin.backup-restore — GOVERNANCE (O3: no escrow, user-held key)', (
       await BackupRestore.restoreFromJSON(serialized);
 
       const restored = await readAllStores();
-      const fxState = (restored['fx-rate-store'] as { state: { rates: Array<{ rate: string }> } }).state;
+      const fxState = (restored['fx-rate-store'] as { state: { rates: Array<{ rate: string }> } })
+        .state;
 
       expect(fxState.rates[0]!.rate).toBe('1.09');
     });
