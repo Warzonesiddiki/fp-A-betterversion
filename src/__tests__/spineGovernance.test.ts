@@ -4062,3 +4062,92 @@ describe('GOVERNED positive-path — Admin write actions (batch 12)', () => {
     expect(() => useGLStore.getState().addEntry({ id: 'gov-tp-pos', accountId: '18000', amount: 16000 } as never)).not.toThrow();
   });
 });
+
+describe('GOVERNED positive-path — Admin write actions (batch 13)', () => {
+  it('GOVERNED /banking/nim — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-nim-pos', accountId: '19000', amount: 17000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /banking/capital — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-cap-pos', accountId: '20000', amount: 18000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /capex/depreciation — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-dep-pos', accountId: '21000', amount: 19000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /cash/working-capital — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-wc-pos', accountId: '22000', amount: 20000 } as never)).not.toThrow();
+  });
+});
+
+describe('GOVERNED positive-path — Admin write actions (batch 14)', () => {
+  it('GOVERNED /banking/loan-loss — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-ll-pos', accountId: '23000', amount: 21000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /revenue/deferred — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-def-pos', accountId: '24000', amount: 22000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /profile — Admin updatePreferences changes preferences', () => {
+    actAs('Admin');
+    useSettingsStore.getState().updatePreferences({ density: 'compact' } as never);
+    expect(useSettingsStore.getState().preferences.density).toBe('compact');
+  });
+
+  it('GOVERNED /saas/arr — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-arr-pos', accountId: '25000', amount: 23000 } as never)).not.toThrow();
+  });
+});
+
+describe('GOVERNED positive-path — Admin write actions (batch 15)', () => {
+  it('GOVERNED /saas/churn — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-churn-pos', accountId: '26000', amount: 24000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /saas/cohort — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-cohort-pos', accountId: '27000', amount: 25000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /manufacturing/overview — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-mfg-pos', accountId: '28000', amount: 26000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /manufacturing/cogs — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-cogs-pos', accountId: '29000', amount: 27000 } as never)).not.toThrow();
+  });
+});
+
+describe('GOVERNED positive-path — Admin write actions (batch 16)', () => {
+  it('GOVERNED /saas/overview — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-saas-pos', accountId: '30000', amount: 28000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /saas/churn-analysis — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-ca-pos', accountId: '31000', amount: 29000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /manufacturing/production — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-prod-pos', accountId: '32000', amount: 30000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /manufacturing/inventory — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-inv-pos', accountId: '33000', amount: 31000 } as never)).not.toThrow();
+  });
+});
