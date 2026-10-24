@@ -3779,6 +3779,13 @@
         "title": "ConsolidationEngine \u2014 GOVERNANCE (model.consolidation)",
         "proves": "ConsolidationEngine.consolidate() validates input (empty/invalid/non-array), eliminates intercompany pairs (AB/BA), calculates minority interest (full method, 75% ownership), checks balance (assets = liabilities + equity), uses Money primitive (safe integer cents), returns failed status for empty entities (F-0003), discloses cent-exact tolerance (F-0009), and is deterministic for identical inputs."
       }
+    ],
+    "model.revenue-recognition": [
+      {
+        "file": "src/engines/RevRecEngine.governance.test.ts",
+        "title": "RevRecEngine \u2014 GOVERNANCE (model.revenue-recognition)",
+        "proves": "RevRecEngine.allocateTransactionPrice() allocates proportionally to standalone prices (sums to 100%, decimal division). calculateRevenueSchedule() foots to total contract value (cent-exact, largest-remainder). Over-time straight-line recognition with cumulative recognizedToDate and decreasing remainingToRecognize. Point-in-time recognition requires completionMetric >= 1. Contract modifications (termination, discount, additional goods). Variable consideration constrained by reversal probability. Contract asset/liability computed from billed vs recognized. Deferred revenue from remaining to recognize. Money primitive safety (no float drift). Determinism."
+      }
     ]
   },
   "census": {
@@ -3803,5 +3810,5 @@
       "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
     }
   },
-  "totalCapabilityClaims": 216
+  "totalCapabilityClaims": 217
 }

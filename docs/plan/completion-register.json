@@ -2950,11 +2950,22 @@
     {
       "kind": "capability",
       "id": "cap:model.revenue-recognition",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/revenue"
+        "gatedBy": "/revenue-recognition",
+        "tests": [
+          "src/engines/RevRecEngine.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/engines/RevRecEngine.governance.test.ts",
+            "title": "RevRecEngine \u2014 GOVERNANCE (model.revenue-recognition)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 RevRecEngine ASC 606 compliance verified by 24 engine-level governance tests covering input validation, transaction price allocation, revenue schedule footing, over-time and point-in-time recognition, contract modification, variable consideration constraint, contract asset/liability, deferred revenue, money primitive safety, and determinism."
     },
     {
       "kind": "capability",
