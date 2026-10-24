@@ -5102,3 +5102,101 @@ describe('GOVERNED capability-level — audit trail store tests (batch 10)', () 
     expect(() => useAuditTrailStore.getState().revertToState('entry-test' as never)).not.toThrow();
   });
 });
+
+describe('GOVERNED capability-level — budget lifecycle validation tests (batch 12)', () => {
+  it('GOVERNED cap:plan.budgets — submitBudget transitions Draft → InReview, audit chain intact', async () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Test Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('Draft');
+    await useBudgetStore.getState().submitBudget(budgetId);
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('InReview');
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.budgets — submitBudget on InReview budget throws lifecycle error', async () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Test Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    await useBudgetStore.getState().submitBudget(budgetId);
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('InReview');
+    expect(() => useBudgetStore.getState().submitBudget(budgetId)).rejects.toThrow(/Cannot submit.*InReview/);
+  });
+
+  it('GOVERNED cap:plan.budgets — approveBudget transitions InReview → Approved, audit chain intact', async () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Test Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    await useBudgetStore.getState().submitBudget(budgetId);
+    useBudgetStore.getState().approveBudget(budgetId);
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('Approved');
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.budgets — approveBudget on Draft budget throws lifecycle error', () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Test Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('Draft');
+    expect(() => useBudgetStore.getState().approveBudget(budgetId)).toThrow(/Cannot approve.*Draft/);
+  });
+
+  it('GOVERNED cap:plan.budgets — deleteBudget on Approved budget throws lifecycle error', async () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Test Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    await useBudgetStore.getState().submitBudget(budgetId);
+    useBudgetStore.getState().approveBudget(budgetId);
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('Approved');
+    expect(() => useBudgetStore.getState().deleteBudget(budgetId)).toThrow(/Cannot delete.*Approved/);
+  });
+
+  it('GOVERNED cap:plan.budgets — deleteBudget on Draft budget succeeds, audit chain intact', () => {
+    actAs('Admin');
+    useBudgetStore.getState().createBudget({
+      name: 'Lifecycle Test Budget',
+      status: 'Draft',
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+    } as never);
+    const budgetId = useBudgetStore.getState().budgets[0]!.id;
+    expect(useBudgetStore.getState().budgets[0]!.status).toBe('Draft');
+    expect(() => useBudgetStore.getState().deleteBudget(budgetId)).not.toThrow();
+    expect(useBudgetStore.getState().budgets).toHaveLength(0);
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+});

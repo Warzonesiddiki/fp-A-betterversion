@@ -317,3 +317,40 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 |
 | Remaining EXPERIMENTAL capabilities | 25 (engine/AI features without store-level enforce()) |
 | All gates PASS | ✓ |
+
+## Phase 9 — Lifecycle Validation Tests (2026-10-24)
+
+**Objective:** Test budgetStore's state machine (assertBudgetTransition) — a new governance dimension beyond RBAC permission checks.
+
+**Store tested:** budgetStore
+
+**Tests added:** 6 (batch 12)
+
+| # | Test | Claim |
+|---|------|-------|
+| 1 | submitBudget transitions Draft → InReview, audit chain intact | stateClaim |
+| 2 | submitBudget on InReview budget throws lifecycle error | stateClaim |
+| 3 | approveBudget transitions InReview → Approved, audit chain intact | stateClaim |
+| 4 | approveBudget on Draft budget throws lifecycle error | stateClaim |
+| 5 | deleteBudget on Approved budget throws lifecycle error | stateClaim |
+| 6 | deleteBudget on Draft budget succeeds, audit chain intact | stateClaim |
+
+**Capability claims:** 6 new under plan.budgets (42 capabilities, 148 total claims).
+
+**Key learning:** `createBudget` requires `assertDraftCreation` validation — input must include `status: 'Draft'`, `submittedAt: null`, `approvedAt: null`, `approvedBy: null`. Existing tests use `expectPermissionDenied` (no Admin role) which bypasses this validation. Positive-path tests with `actAs('Admin')` must provide full draft fields.
+
+**Test count:** 603 total (597 base + 6 lifecycle validation). All passing.
+
+**Register SUPPORTED:** 146 (unchanged — plan.budgets already SUPPORTED).
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 603 |
+| Routes governed | 104 |
+| Capability claims | 148 (42 capabilities) |
+| Register SUPPORTED | 146 |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL | 25 (engine/AI features) |
+| All gates PASS | ✓ |

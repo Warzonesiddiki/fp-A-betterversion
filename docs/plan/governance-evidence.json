@@ -3105,6 +3105,36 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:plan.budgets \u2014 budget:delete guards deleteBudget, Admin reaches enforce gate",
         "proves": "budgetStore.deleteBudget requires budget:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 submitBudget transitions Draft \u2192 InReview, audit chain intact",
+        "proves": "budgetStore.submitBudget transitions Draft \u2192 InReview via assertBudgetTransition; Admin succeeds; audit chain verifies"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 submitBudget on InReview budget throws lifecycle error",
+        "proves": "budgetStore.submitBudget throws on InReview budget (lifecycle violation); assertBudgetTransition enforces state machine"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 approveBudget transitions InReview \u2192 Approved, audit chain intact",
+        "proves": "budgetStore.approveBudget transitions InReview \u2192 Approved via assertBudgetTransition; Admin succeeds; audit chain verifies"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 approveBudget on Draft budget throws lifecycle error",
+        "proves": "budgetStore.approveBudget throws on Draft budget (lifecycle violation); assertBudgetTransition enforces state machine"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 deleteBudget on Approved budget throws lifecycle error",
+        "proves": "budgetStore.deleteBudget throws on Approved budget (lifecycle violation); assertEditableBudget enforces state machine"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.budgets \u2014 deleteBudget on Draft budget succeeds, audit chain intact",
+        "proves": "budgetStore.deleteBudget succeeds on Draft budget; assertEditableBudget allows; audit chain verifies"
       }
     ],
     "plan.scenarios": [
