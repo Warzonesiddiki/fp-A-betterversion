@@ -1,7 +1,5 @@
 import { randomId } from '@/utils/cryptoId';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
+
 // =============================================================================
 // WORKFLOW TRIGGER ENGINE
 // Trigger system for workflow automation: data change, time-based, manual, events

@@ -26,9 +26,6 @@
 // =============================================================================
 
 import { createLogger } from '@/utils/logger';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PipelineFunction = (...args: any[]) => Promise<any>;

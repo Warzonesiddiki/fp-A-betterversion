@@ -5,9 +5,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { cn } from '@/utils/cn';
 import { FormulaAutoCompleteEngine } from '@/engines/FormulaAutoCompleteEngine';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface AutocompleteSuggestion {
   text: string;

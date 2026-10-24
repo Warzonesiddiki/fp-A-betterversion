@@ -43,9 +43,10 @@ function computeReportStats(entries: readonly GLEntry[]) {
       net: 0,
       count: 0,
     };
-    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
-    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
-    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
+    // zero is correct — entries without debit/credit/netChange are valid GL lines
+    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber(); // zero is correct — entries without debit are valid
+    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber(); // zero is correct — entries without credit are valid
+    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber(); // zero is correct — entries without netChange are valid
     existing.count += 1;
     accountMap.set(e.accountCode, existing);
   }

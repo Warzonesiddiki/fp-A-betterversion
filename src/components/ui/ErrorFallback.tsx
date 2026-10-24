@@ -2,9 +2,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, RefreshCw, Copy, Check, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface ErrorFallbackProps {
   error?: Error | null;

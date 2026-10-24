@@ -39,16 +39,6 @@ import { SparklineChart } from '@/components/charts/SparklineChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 /**
  * Cash position page. Every figure is derived by
  * `@/pages/cash/cashForecastModel` from posted cash-account activity; see that
@@ -100,7 +90,9 @@ export default function CashForecastPage() {
   if (importError) {
     return (
       <div className="p-12 text-center" role="alert" aria-live="assertive">
-        <h2 className="text-xl font-semibold mb-2 text-[var(--negative)]">Failed to load cash data</h2>
+        <h2 className="text-xl font-semibold mb-2 text-[var(--negative)]">
+          Failed to load cash data
+        </h2>
         <p className="text-[var(--text-muted)] mb-6">{importError}</p>
         <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
@@ -152,7 +144,9 @@ export default function CashForecastPage() {
       key: 'disbursements',
       header: 'Disbursements',
       align: 'right',
-      render: (_, r) => <span className="text-[var(--negative)]">{fmt.currency0(r.disbursements)}</span>,
+      render: (_, r) => (
+        <span className="text-[var(--negative)]">{fmt.currency0(r.disbursements)}</span>
+      ),
       sortable: true,
     },
     {

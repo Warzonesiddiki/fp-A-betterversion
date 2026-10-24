@@ -12,7 +12,15 @@ import HeadcountPlanPage from './HeadcountPlanPage';
 
 // Mock workforce store
 const mockEmployees = [
-  { id: '1', name: 'Alice', department: 'Engineering', position: 'Engineer', salary: 100000, startDate: '2023-01-01', status: 'active' as const },
+  {
+    id: '1',
+    name: 'Alice',
+    department: 'Engineering',
+    position: 'Engineer',
+    salary: 100000,
+    startDate: '2023-01-01',
+    status: 'active' as const,
+  },
 ];
 
 vi.mock('@/store/workforceStore', () => ({
@@ -61,7 +69,7 @@ describe('HeadcountPlanPage — 4-state interop (T061-T065)', () => {
   });
 
   it('journey: renders headcount plan with data (T061)', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = {
         employees: mockEmployees,
@@ -78,7 +86,7 @@ describe('HeadcountPlanPage — 4-state interop (T061-T065)', () => {
   });
 
   it('empty: shows No Workforce Data with CTA when no employees (T062)', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = {
         employees: [],
@@ -97,7 +105,7 @@ describe('HeadcountPlanPage — 4-state interop (T061-T065)', () => {
   });
 
   it('error: shows role=alert with retry when error (T063)', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = {
         employees: [],
@@ -117,7 +125,7 @@ describe('HeadcountPlanPage — 4-state interop (T061-T065)', () => {
   });
 
   it('loading: shows Skeleton with srLabel and aria-busy (T064)', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = {
         employees: [],
@@ -138,7 +146,7 @@ describe('HeadcountPlanPage — 4-state interop (T061-T065)', () => {
 
   it('interop: 4 states combined are mutually exclusive (T065)', async () => {
     // Loading state should not show empty or error
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = { employees: [], isLoading: true, error: null };
       return selector(state);
@@ -151,7 +159,7 @@ describe('HeadcountPlanPage — 4-state interop (T061-T065)', () => {
     unmount();
 
     // Error state should not show loading or empty
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = { employees: [], isLoading: false, error: 'Error' };
       return selector(state);

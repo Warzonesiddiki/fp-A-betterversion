@@ -9,10 +9,6 @@ import {
 } from '@/engines/ImportEngine';
 import { CheckCircle2, AlertCircle, RotateCcw, FileText } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
-
 
 export interface FileUploaderProps {
   onImport?: (data: Record<string, unknown>[], columns: string[]) => void;

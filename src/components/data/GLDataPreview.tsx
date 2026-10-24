@@ -3,9 +3,6 @@ import { Button } from '@/components/ui/Button';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { parseGLRows } from '@/services/import/parseGLRows';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Data rows rendered in the preview table. This is a DISPLAY window only —

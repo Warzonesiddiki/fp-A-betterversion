@@ -74,7 +74,7 @@ export default function DebtSchedulePage() {
     multiplyMoney(toDecimal(CONSOLIDATED.totalMonthlyPayment), 12),
     2
   );
-  const dscr = CONSOLIDATED.debtServiceCoverageRatio ?? 0;
+  const dscr = CONSOLIDATED.debtServiceCoverageRatio ?? null;
 
   // REAL per-instrument display rows: payments, maturity and balance-at-maturity
   // come straight from the engine schedules, not from hardcoded fields.
@@ -85,8 +85,8 @@ export default function DebtSchedulePage() {
     principal: row.principal,
     rate: row.rate * 100,
     maturity: addMonths(row.startDate, row.termMonths),
-    monthlyPayment: result.schedule[0]?.payment ?? 0,
-    remaining: result.schedule[result.schedule.length - 1]?.endingBalance ?? 0,
+    monthlyPayment: result.schedule[0]?.payment ?? null,
+    remaining: result.schedule[result.schedule.length - 1]?.endingBalance ?? null,
     status: row.status,
   }));
 
@@ -342,7 +342,7 @@ export default function DebtSchedulePage() {
         <KPIValue
           label="DSCR"
           value={formatPercent(dscr)}
-          trend={dscr >= 1.25 ? 'up' : 'down'}
+          trend={(dscr ?? 0 >= 1.25) ? 'up' : 'down'}
           changeLabel="Target: 1.25x"
         />
       </div>

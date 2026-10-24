@@ -1,7 +1,5 @@
 import { randomId } from '@/utils/cryptoId';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
+
 // =============================================================================
 // VISUAL WORKFLOW ENGINE
 // DAG-based visual workflow builder with nodes, edges, validation, and execution

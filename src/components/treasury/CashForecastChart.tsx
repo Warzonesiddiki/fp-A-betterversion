@@ -1,10 +1,8 @@
 import { WaterfallChart } from '@/components/ui/WaterfallChart';
 import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export function CashForecastChart() {
-  // Money adoption: values are exact-decimal via toDecimal, waterfall chart renders Money-compatible numbers
+  // Values are exact-decimal via toDecimal; the waterfall chart renders Money-compatible numbers.
   const data = [
     { label: 'Start', value: toDecimal(500000).toNumber() },
     { label: 'Collections', value: toDecimal(250000).toNumber() },

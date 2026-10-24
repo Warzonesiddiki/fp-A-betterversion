@@ -14,9 +14,6 @@
 import type { ExportData, ExportConfig } from './ExportEngine';
 import { loadJsPDF } from '@/utils/pdfRuntime';
 import { now as clockNow } from '@/utils/clock';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // ---------------------------------------------------------------------------
 // Type definitions

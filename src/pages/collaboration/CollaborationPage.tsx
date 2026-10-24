@@ -10,16 +10,6 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, type Column } from '@/components/ui/DataTable';
 import { MessageSquare, Users, Clock, Activity, Plus, Send } from 'lucide-react';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 type Tab = 'comments' | 'tasks' | 'activity';
 
 interface CommentRow {

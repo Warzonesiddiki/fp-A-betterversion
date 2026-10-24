@@ -3,9 +3,6 @@ import { activateOnKey } from '@/utils/a11yActivate';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { cn } from '@/utils/cn';
 import { currencyFormatter, formatCompact, formatPercent } from '@/utils/financialFormatting';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface HeatmapCell {
   rowId: string;

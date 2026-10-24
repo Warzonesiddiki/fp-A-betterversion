@@ -41,6 +41,7 @@ export default function ReconciliationPage() {
       if (!key) return;
       const prev = map.get(key) ?? toDecimal(0);
       // Original logic: (debit - credit) || amount (fallback when net is zero)
+      // zero is correct — entries without debit/credit/amount are valid GL lines
       const dc = toDecimal(e.debit || 0).minus(toDecimal(e.credit || 0));
       const net = dc.isZero() ? toDecimal(e.amount || 0) : dc;
       map.set(key, prev.plus(net));

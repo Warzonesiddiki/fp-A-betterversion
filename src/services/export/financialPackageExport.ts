@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ExactConsolidationResult } from '@/engines/ConsolidationEngine';
 
-async function loadExcelJS() {
-  const mod = await import('exceljs');
-  return (mod.default ?? mod) as any;
+async function loadExcelJS(): Promise<any> {
+  const mod: any = await import('exceljs');
+  return mod.default ?? mod;
 }
 
-type ExcelJS = any;
 import {
   addMoney,
   compareMoney,
@@ -110,7 +110,7 @@ function moneyNum(value: string): number {
 
 const ACCOUNTING_NUM_FMT = '#,##0.00;(#,##0.00);"0.00"';
 
-function makeFormulaCell(formula: string, exactResult: string): any {
+function makeFormulaCell(formula: string, exactResult: string): unknown {
   return {
     formula: assertSafeSpreadsheetFormula(formula),
     result: moneyNum(exactResult),
@@ -487,8 +487,9 @@ export async function inspectFormulaWorkbookBytes(
   const keyedMetrics = new Map<string, string>();
   const sheetRows: Record<string, (string | number | null)[][]> = {};
 
-  for (const ws of workbook.worksheets) {
+  for (const ws of (workbook as any).worksheets) {
     const rows: (string | number | null)[][] = [];
+
     ws.eachRow({ includeEmpty: false }, (row: any) => {
       const rowKey = String(row.getCell(1).value ?? '').trim();
       const rowVals: (string | number | null)[] = [];

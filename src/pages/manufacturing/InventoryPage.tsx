@@ -195,6 +195,7 @@ export default function InventoryPage() {
   const categoryData = useMemo(() => {
     const cats: Record<string, number> = {};
     mockInventory.forEach((i) => {
+      // zero is correct — category with no prior totalValue starts at zero
       const prev = cats[i.category] ?? 0;
       cats[i.category] = addMoney(prev, i.totalValue).toNumber();
     });
@@ -204,7 +205,7 @@ export default function InventoryPage() {
   const _inventoryByCategory = useMemo(() => {
     const cats: Record<string, number> = {};
     mockInventory.forEach((i) => {
-      cats[i.category] = (cats[i.category] || 0) + i.quantity;
+      cats[i.category] = (cats[i.category] || 0) + i.quantity; // zero is correct — category with no prior quantity starts at zero
     });
     return Object.entries(cats).map(([name, value]) => ({ name, value }));
   }, []);

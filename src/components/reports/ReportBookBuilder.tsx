@@ -17,10 +17,6 @@ import { useBudgetStore } from '@/store/budgetStore';
 import { useEntityStore } from '@/store/entityStore';
 import { ReportResultsPanel } from './ReportResultsPanel';
 import { formatNumber } from '@/utils/financialFormatting';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
-
 
 const PRESET_LIST = Object.values(REPORT_TEMPLATE_PRESETS);
 

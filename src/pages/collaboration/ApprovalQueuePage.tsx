@@ -57,7 +57,7 @@ export default function ApprovalQueuePage() {
       name: b.name,
       type: 'Budget',
       requester: 'System',
-      amount: b.totalAmount || 0,
+      amount: b.totalAmount || 0, // zero is correct — budget without totalAmount is valid
       submitted: b.createdAt ? new Date(b.createdAt).toLocaleDateString() : '-',
       status:
         b.status === 'Approved'

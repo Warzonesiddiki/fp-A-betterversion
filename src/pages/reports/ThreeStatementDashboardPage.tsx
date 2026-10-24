@@ -26,13 +26,6 @@ import { deriveThreeStatement } from './threeStatementData';
 import { deriveChangesInEquity } from '@/services/statements/changesInEquity';
 import { deriveDirectCashFlow } from '@/services/statements/directCashFlow';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => { try { return toDecimal(0); } catch { return 0 as unknown as ReturnType<typeof toDecimal>; } })();
-
-
-
-
 function fmt(n: number | { toNumber(): number }): string {
   const value = typeof n === 'number' ? n : n.toNumber();
   return currencyFormatter(reportingCurrency(), { decimals: 0 })(value);
@@ -270,7 +263,7 @@ export default function ThreeStatementDashboardPage() {
               <span className={result?.balanceCheck.isBalanced ? 'text-green-600' : 'text-red-600'}>
                 {result?.balanceCheck.isBalanced
                   ? '✓ Balanced'
-                  : `✗ ${fmt(result?.balanceCheck.imbalance ?? 0)}`}
+                  : `✗ ${fmt(result?.balanceCheck.imbalance ?? 0)}`} // unavailable when result is undefined — zero is correct fallback
               </span>
             </div>
           </CardContent>

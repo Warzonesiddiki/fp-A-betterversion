@@ -67,6 +67,7 @@ export function SaaSPage() {
     for (const e of targetRevEntries) {
       const month = e.period || (typeof e.date === 'string' ? e.date.slice(0, 7) : '');
       if (!month) continue;
+      // zero is correct — entries without credit/debit contribute zero to the month bucket
       const net = subtractMoney(e.credit ?? 0, e.debit ?? 0).toNumber();
       byMonth.set(month, roundTo(addMoney(byMonth.get(month) ?? 0, net), 2));
     }
@@ -75,7 +76,7 @@ export function SaaSPage() {
       months.length > 0
         ? months[months.length - 1]![1]
         : roundTo(
-            sumMoney(targetRevEntries.map((e) => subtractMoney(e.credit ?? 0, e.debit ?? 0))),
+            sumMoney(targetRevEntries.map((e) => subtractMoney(e.credit ?? 0, e.debit ?? 0))), // zero is correct — entries without credit/debit contribute zero
             2
           );
 
@@ -83,14 +84,14 @@ export function SaaSPage() {
 
     // Total posted revenue (credit - debit for 4xxx)
     const totalRevenue = roundTo(
-      sumMoney(allRevEntries.map((e) => subtractMoney(e.credit ?? 0, e.debit ?? 0))),
+      sumMoney(allRevEntries.map((e) => subtractMoney(e.credit ?? 0, e.debit ?? 0))), // zero is correct — entries without credit/debit contribute zero
       2
     );
 
     // COGS: 5xxx accounts (debit - credit)
     const cogsEntries = entries.filter((e) => e.accountCode?.startsWith('5'));
     const cogs = roundTo(
-      sumMoney(cogsEntries.map((e) => subtractMoney(e.debit ?? 0, e.credit ?? 0))),
+      sumMoney(cogsEntries.map((e) => subtractMoney(e.debit ?? 0, e.credit ?? 0))), // zero is correct — entries without debit/credit contribute zero
       2
     );
 
@@ -103,13 +104,13 @@ export function SaaSPage() {
     // Specific cost buckets
     const hostingEntries = entries.filter((e) => e.accountCode?.startsWith('51'));
     const hosting = roundTo(
-      sumMoney(hostingEntries.map((e) => subtractMoney(e.debit ?? 0, e.credit ?? 0))),
+      sumMoney(hostingEntries.map((e) => subtractMoney(e.debit ?? 0, e.credit ?? 0))), // zero is correct — entries without debit/credit contribute zero
       2
     );
 
     const supportEntries = entries.filter((e) => e.accountCode?.startsWith('52'));
     const support = roundTo(
-      sumMoney(supportEntries.map((e) => subtractMoney(e.debit ?? 0, e.credit ?? 0))),
+      sumMoney(supportEntries.map((e) => subtractMoney(e.debit ?? 0, e.credit ?? 0))), // zero is correct — entries without debit/credit contribute zero
       2
     );
 
@@ -120,7 +121,7 @@ export function SaaSPage() {
         /sales|marketing/i.test(e.accountName ?? '')
     );
     const sm = roundTo(
-      sumMoney(smEntries.map((e) => subtractMoney(e.debit ?? 0, e.credit ?? 0))),
+      sumMoney(smEntries.map((e) => subtractMoney(e.debit ?? 0, e.credit ?? 0))), // zero is correct — entries without debit/credit contribute zero
       2
     );
 
@@ -129,7 +130,7 @@ export function SaaSPage() {
         e.accountCode?.startsWith('62') || /research|development|r&d/i.test(e.accountName ?? '')
     );
     const rd = roundTo(
-      sumMoney(rdEntries.map((e) => subtractMoney(e.debit ?? 0, e.credit ?? 0))),
+      sumMoney(rdEntries.map((e) => subtractMoney(e.debit ?? 0, e.credit ?? 0))), // zero is correct — entries without debit/credit contribute zero
       2
     );
 

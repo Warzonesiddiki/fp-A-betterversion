@@ -3,9 +3,6 @@ import { MessageSquare, Send, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import type { CellComment } from '@/engines/CellCommentEngine';
 import { CommentThread } from './CommentThread';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface CellCommentsProps {
   cellKey: string;

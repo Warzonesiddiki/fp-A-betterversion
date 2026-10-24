@@ -166,6 +166,7 @@ export default function BudgetVsActualPage() {
 
     activeLineItems.forEach((li) => {
       const code = li.accountCode;
+      // zero is correct — code with no prior budget starts at zero
       budgetMap.set(code, (budgetMap.get(code) ?? 0) + li.amount);
       if (!accountInfoMap.has(code)) {
         accountInfoMap.set(code, {
@@ -183,6 +184,7 @@ export default function BudgetVsActualPage() {
         Math.abs(subtractMoney(e.debit, e.credit).toNumber()),
         2
       );
+      // zero is correct — account with no prior actual starts at zero
       actualMap.set(e.accountCode, addMoney(actualMap.get(e.accountCode) ?? 0, amount).toNumber());
       if (!accountInfoMap.has(e.accountCode)) {
         accountInfoMap.set(e.accountCode, {
@@ -201,6 +203,7 @@ export default function BudgetVsActualPage() {
     const rows: VarianceRow[] = [];
 
     allCodes.forEach((code) => {
+      // zero is correct — code present in only one map has zero in the other
       const budget = budgetMap.get(code) ?? 0;
       const actual = actualMap.get(code) ?? 0;
       const info = accountInfoMap.get(code);

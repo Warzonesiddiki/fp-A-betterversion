@@ -1,18 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * MigrationEngine — Source-specific migration parsers for Planful, Adaptive, Anaplan
  * Extends ImportEngine with column auto-detection, migration readiness scoring, and rollback
  */
 
 import { nowISO, nowMs } from '@/utils/clock';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 async function loadExcelJS() {
   const mod = await import('exceljs');
   return (mod.default ?? mod) as any;
 }
-type ExcelJS = any;
 
 export type MigrationSource = 'excel' | 'planful' | 'adaptive' | 'anaplan' | 'csv' | 'unknown';
 

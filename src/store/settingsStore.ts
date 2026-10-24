@@ -9,9 +9,6 @@ import { masterStorage } from '../utils/masterStorage';
 // active sector) guarded by ui:update, which every role holds.
 import { enforce, Permissions } from '../utils/rbacEnforcer';
 import { now as clockNow, nowMs } from '@/utils/clock';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export const useSettingsStore = create<SettingsState>()(
   subscribeWithSelector(

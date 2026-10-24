@@ -102,6 +102,6 @@ describe('ConsolidationDashboard interop — 4-state CONNECTED', () => {
     expect(statuses).toHaveLength(1);
     expect(statuses[0]).toHaveAttribute('aria-live', 'polite');
     expect(statuses[0]).toHaveTextContent('Loading consolidation dashboard…');
-    expect(container.querySelectorAll('[aria-hidden=\"true\"]').length).toBeGreaterThan(0);
+    expect(container.querySelectorAll('[aria-hidden="true"]').length).toBeGreaterThan(0);
   });
 });

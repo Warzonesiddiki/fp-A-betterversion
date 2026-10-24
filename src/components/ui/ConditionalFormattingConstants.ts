@@ -4,9 +4,6 @@ import type {
   VisualType,
   IconSetType,
 } from '@/engines/ConditionalFormattingEngine';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export const RULE_TYPES: { value: RuleType; label: string }[] = [
   { value: 'cellValue', label: 'Cell Value' },

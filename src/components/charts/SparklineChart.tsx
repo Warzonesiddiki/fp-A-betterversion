@@ -58,8 +58,20 @@ export function SparklineChart({
       className="dark:opacity-90"
       style={{ width, height, display: 'inline-block', cursor: onClick ? 'pointer' : 'default' }}
     >
-      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
-        <polyline fill="none" stroke={color} strokeWidth={1.5} points={points} strokeLinejoin="round" strokeLinecap="round" />
+      <svg
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="none"
+      >
+        <polyline
+          fill="none"
+          stroke={color}
+          strokeWidth={1.5}
+          points={points}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
       </svg>
     </div>
   );

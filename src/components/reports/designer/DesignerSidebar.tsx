@@ -15,9 +15,6 @@ import { cn } from '@/utils/cn';
 import { useCubeStore } from '@/store/cubeStore';
 import { ROW_TYPES, COLUMN_TYPES } from '../reportBuilder.constants';
 import type { DragItem } from '../reportBuilder.constants';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface DesignerSidebarProps {
   onDragStart: (e: React.DragEvent, item: DragItem | { type: string; value: unknown }) => void;

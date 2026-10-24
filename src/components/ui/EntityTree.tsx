@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import { ChevronRight, ChevronDown, Building2, Globe, Home } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import type { Entity } from '@/types';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface EntityTreeProps {
   entities?: Entity[];

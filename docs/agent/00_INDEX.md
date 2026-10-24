@@ -10,55 +10,57 @@ The product goal is [`docs/VISION.md`](../VISION.md).
 
 ## Handbook files
 
-| #   | File                                                   | Owns                                                                                |
-| --- | ------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| —   | [`AGENTS.md`](../../AGENTS.md)                         | Entry point, non-negotiable rules, session protocol                                 |
-| 00  | this file                                              | Precedence, superseded documents                                                    |
-| 01  | [`01_PROJECT_BRIEF.md`](01_PROJECT_BRIEF.md)           | What the product is, for whom, current truth, non-goals, open decisions             |
-| 02  | [`02_ARCHITECTURE.md`](02_ARCHITECTURE.md)             | Stack, entry points, layers, dependency direction, runtime gates, config            |
-| 03  | [`03_DOMAIN_RULES.md`](03_DOMAIN_RULES.md)             | Accounting and FP&A invariants the code must enforce                                |
-| 04  | [`04_ENGINEERING_RULES.md`](04_ENGINEERING_RULES.md)   | Coding rules with the reason and the gate behind each                               |
-| 05  | [`05_COMMANDS_AND_GATES.md`](05_COMMANDS_AND_GATES.md) | Every script, what it measures, how to update baselines, CI constraints             |
-| 06  | [`06_TESTING.md`](06_TESTING.md)                       | Test conventions, global mocks, clock pinning, store reset, evidence                |
-| 07  | [`07_WORKFLOW_AND_DOD.md`](07_WORKFLOW_AND_DOD.md)     | Definition of done, commit/PR format, forbidden acts, handover                      |
-| 08  | [`08_DATA_MODEL.md`](08_DATA_MODEL.md)                 | Core types with file locations, persistence truth, schema homes                     |
-| 09  | [`09_KNOWN_GAPS.md`](09_KNOWN_GAPS.md)                 | What works, what is unwired, what is false, what is decided/undecided               |
-| 10  | [`10_GLOSSARY.md`](10_GLOSSARY.md)                     | Domain and repository vocabulary                                                    |
-| —   | [`WORKING_AGREEMENT.md`](WORKING_AGREEMENT.md)         | The owner's stated goal, the bar a work item must clear, the live queue             |
-| —   | [`HANDOVER_TEMPLATE.md`](HANDOVER_TEMPLATE.md)         | End-of-session report format                                                        |
-| —   | [`skills/README.md`](skills/README.md)                 | Agent skill library: 50 methods, indexed and gate-checked (`npm run skills:verify`) |
-| —   | [`skills/ponytail.md`](skills/ponytail.md)             | Standing working style: smallest complete change, one-read reply                    |
+| #   | File                                                                       | Owns                                                                                                                 |
+| --- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| —   | [`AGENTS.md`](../../AGENTS.md)                                             | Entry point, non-negotiable rules, session protocol                                                                  |
+| 00  | this file                                                                  | Precedence, superseded documents                                                                                     |
+| 01  | [`01_PROJECT_BRIEF.md`](01_PROJECT_BRIEF.md)                               | What the product is, for whom, current truth, non-goals, open decisions                                              |
+| 02  | [`02_ARCHITECTURE.md`](02_ARCHITECTURE.md)                                 | Stack, entry points, layers, dependency direction, runtime gates, config                                             |
+| 03  | [`03_DOMAIN_RULES.md`](03_DOMAIN_RULES.md)                                 | Accounting and FP&A invariants the code must enforce                                                                 |
+| 04  | [`04_ENGINEERING_RULES.md`](04_ENGINEERING_RULES.md)                       | Coding rules with the reason and the gate behind each                                                                |
+| 05  | [`05_COMMANDS_AND_GATES.md`](05_COMMANDS_AND_GATES.md)                     | Every script, what it measures, how to update baselines, CI constraints                                              |
+| 06  | [`06_TESTING.md`](06_TESTING.md)                                           | Test conventions, global mocks, clock pinning, store reset, evidence                                                 |
+| 07  | [`07_WORKFLOW_AND_DOD.md`](07_WORKFLOW_AND_DOD.md)                         | Definition of done, commit/PR format, forbidden acts, handover                                                       |
+| 08  | [`08_DATA_MODEL.md`](08_DATA_MODEL.md)                                     | Core types with file locations, persistence truth, schema homes                                                      |
+| 09  | [`09_KNOWN_GAPS.md`](09_KNOWN_GAPS.md)                                     | What works, what is unwired, what is false, what is decided/undecided                                                |
+| 10  | [`10_GLOSSARY.md`](10_GLOSSARY.md)                                         | Domain and repository vocabulary                                                                                     |
+| 11  | [`11_ANTI_FABRICATION_AND_QUALITY.md`](11_ANTI_FABRICATION_AND_QUALITY.md) | Metric integrity (MI-01…MI-10), work quality (WQ-01…WQ-07), the 2026-10-24 incident, the self-check, and the doc map |
+| —   | [`WORKING_AGREEMENT.md`](WORKING_AGREEMENT.md)                             | The owner's stated goal, the bar a work item must clear, the live queue                                              |
+| —   | [`HANDOVER_TEMPLATE.md`](HANDOVER_TEMPLATE.md)                             | End-of-session report format                                                                                         |
+| —   | [`skills/README.md`](skills/README.md)                                     | Agent skill library: 50 methods, indexed and gate-checked (`npm run skills:verify`)                                  |
+| —   | [`skills/ponytail.md`](skills/ponytail.md)                                 | Standing working style: smallest complete change, one-read reply                                                     |
 
 ## Source-of-truth matrix
 
-| Fact / concern                                                       | Authoritative location                                                                            | Enforced by                                    |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| Agent instructions, rules                                            | `AGENTS.md`, `docs/agent/`                                                                        | review; this matrix                            |
-| Product goal, all-in-one module map, non-goals                       | `docs/VISION.md`                                                                                  | review                                         |
-| Documentation map / authority definition                             | `docs/README.md`                                                                                  | review                                         |
-| Product scope, requirements, acceptance criteria                     | `docs/discovery/requirements-register.md`                                                         | — (owner approval pending)                     |
-| The owner's goal as stated, the done bar, the live work queue        | `docs/agent/WORKING_AGREEMENT.md`                                                                 | review                                         |
-| Decisions (made or open)                                             | `docs/discovery/decision-log.md`                                                                  | —                                              |
-| Risks                                                                | `docs/discovery/risk-register.md`                                                                 | —                                              |
-| Delivery sequence / gates                                            | `docs/discovery/roadmap.md`                                                                       | —                                              |
-| Measured state of the codebase                                       | `docs/audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md`, `docs/audit/ALL_IN_ONE_GAP_REPORT_2026-08-25.md` | scripts listed in 05                           |
-| Headline numbers (tests, engines, stores, reachability)              | `README.md`                                                                                       | `npm run docs:verify`                          |
-| Which engines are reachable                                          | `node scripts/verify-readme-stats.mjs --list`                                                     | `docs:verify`                                  |
-| Engine manifest                                                      | `src/engines/manifest.generated.*` (generated)                                                    | `npm run engines:verify`                       |
-| Route list                                                           | `docs/product/ROUTE_MAP.md` (generated by `scripts/generate-route-map.js`)                        | `npm run routemap:check`                       |
-| Capability truth per route                                           | `docs/CAPABILITY_TRUTH_MATRIX.md` (generated by `scripts/generate-capability-truth-matrix.mjs`)   | `npm run capability:inventory`                 |
-| Persisted store keys and classification                              | `docs/architecture/PERSISTENCE_MAP.md`                                                            | `npm run persistence:map`                      |
-| Schema homes (migrations vs server DDL)                              | `src-tauri/migrations/`, `server/src/**`                                                          | `npm run schema:equality` (shared tables only) |
-| Money rules                                                          | `src/utils/money.ts`, `docs/agent/03_DOMAIN_RULES.md`                                             | `money:ast`, `money:adoption`                  |
-| Determinism                                                          | `src/utils/clock.ts`, `scripts/determinism-baseline.json`                                         | `determinism:ratchet`                          |
-| Type-escape budget                                                   | `scripts/type-safety-baseline.json`                                                               | `type-safety:ratchet`                          |
-| Import contract (idempotency, rejections, provenance, scope, totals) | `src/store/glStore.ts` (`importGLData` doc comment), `src/services/import/importProvenance.ts`    | `src/store/glStore.provenance.test.ts`         |
-| Domain types                                                         | `src/types/index.ts`                                                                              | `tsc`                                          |
-| Security policy                                                      | `SECURITY.md`, `docs/security/`                                                                   | —                                              |
-| Doc link graph                                                       | —                                                                                                 | `npm run docs:links`                           |
-| CI definition                                                        | `.github/workflows/*.yml` (human-edited only)                                                     | GitHub                                         |
-| CI fixes awaiting a human                                            | `ci-patches/`                                                                                     | —                                              |
-| Changelog                                                            | `CHANGELOG.md`                                                                                    | —                                              |
+| Fact / concern                                                                              | Authoritative location                                                                            | Enforced by                                    |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Agent instructions, rules                                                                   | `AGENTS.md`, `docs/agent/`                                                                        | review; this matrix                            |
+| Product goal, all-in-one module map, non-goals                                              | `docs/VISION.md`                                                                                  | review                                         |
+| Documentation map / authority definition                                                    | `docs/README.md`                                                                                  | review                                         |
+| Product scope, requirements, acceptance criteria                                            | `docs/discovery/requirements-register.md`                                                         | — (owner approval pending)                     |
+| The owner's goal as stated, the done bar, the live work queue                               | `docs/agent/WORKING_AGREEMENT.md`                                                                 | review                                         |
+| Decisions (made or open)                                                                    | `docs/discovery/decision-log.md`                                                                  | —                                              |
+| Risks                                                                                       | `docs/discovery/risk-register.md`                                                                 | —                                              |
+| Delivery sequence / gates                                                                   | `docs/discovery/roadmap.md`                                                                       | —                                              |
+| Measured state of the codebase                                                              | `docs/audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md`, `docs/audit/ALL_IN_ONE_GAP_REPORT_2026-08-25.md` | scripts listed in 05                           |
+| Headline numbers (tests, engines, stores, reachability)                                     | `README.md`                                                                                       | `npm run docs:verify`                          |
+| Which engines are reachable                                                                 | `node scripts/verify-readme-stats.mjs --list`                                                     | `docs:verify`                                  |
+| Engine manifest                                                                             | `src/engines/manifest.generated.*` (generated)                                                    | `npm run engines:verify`                       |
+| Route list                                                                                  | `docs/product/ROUTE_MAP.md` (generated by `scripts/generate-route-map.js`)                        | `npm run routemap:check`                       |
+| Capability truth per route                                                                  | `docs/CAPABILITY_TRUTH_MATRIX.md` (generated by `scripts/generate-capability-truth-matrix.mjs`)   | `npm run capability:inventory`                 |
+| Persisted store keys and classification                                                     | `docs/architecture/PERSISTENCE_MAP.md`                                                            | `npm run persistence:map`                      |
+| Schema homes (migrations vs server DDL)                                                     | `src-tauri/migrations/`, `server/src/**`                                                          | `npm run schema:equality` (shared tables only) |
+| Money rules                                                                                 | `src/utils/money.ts`, `docs/agent/03_DOMAIN_RULES.md`                                             | `money:ast`, `money:adoption`                  |
+| Metric integrity / anti-fabrication rules (no fake markers, measure behaviour not presence) | `docs/agent/11_ANTI_FABRICATION_AND_QUALITY.md`, `scripts/placeholder-audit.mjs`                  | `placeholder:audit`, `money:adoption`, `check` |
+| Determinism                                                                                 | `src/utils/clock.ts`, `scripts/determinism-baseline.json`                                         | `determinism:ratchet`                          |
+| Type-escape budget                                                                          | `scripts/type-safety-baseline.json`                                                               | `type-safety:ratchet`                          |
+| Import contract (idempotency, rejections, provenance, scope, totals)                        | `src/store/glStore.ts` (`importGLData` doc comment), `src/services/import/importProvenance.ts`    | `src/store/glStore.provenance.test.ts`         |
+| Domain types                                                                                | `src/types/index.ts`                                                                              | `tsc`                                          |
+| Security policy                                                                             | `SECURITY.md`, `docs/security/`                                                                   | —                                              |
+| Doc link graph                                                                              | —                                                                                                 | `npm run docs:links`                           |
+| CI definition                                                                               | `.github/workflows/*.yml` (human-edited only)                                                     | GitHub                                         |
+| CI fixes awaiting a human                                                                   | `ci-patches/`                                                                                     | —                                              |
+| Changelog                                                                                   | `CHANGELOG.md`                                                                                    | —                                              |
 
 ## Standing working style
 
@@ -76,20 +78,28 @@ applied, not extra process, and they are indexed in
 - **Consult the library before starting.** Find the row whose "use it when" line
   matches the work and follow it. When two skills apply, the narrower one wins;
   when a skill and a gate disagree, the gate is right and the skill gets fixed.
-- **Discipline** (13) — brainstorming, plans, TDD, systematic debugging,
+- **Discipline** (16) — brainstorming, plans, TDD, systematic debugging,
   verification before completion, giving and receiving review, finishing a
-  branch, onboarding, research and sourcing, bulk refactors, local preview.
-- **Finance** (8) — money and decimals, financial domain modelling, import and
+  branch, onboarding, research and sourcing, bulk refactors, local preview,
+  **vision alignment** (map any new surface to the owner's jobs J1–J4 and a
+  pillar before building).
+- **Finance** (13) — money and decimals, financial domain modelling, import and
   mapping, reconciliation and tie-out, period close, audit trail and lineage,
-  no invented data, determinism.
-- **Engineering** (13) — TypeScript strictness, stores and state, persistence
+  no invented data, determinism, driver-based scenarios, rolling forecast,
+  **one-stop completion** (a supported workflow is completable in-app, no
+  mandatory external step).
+- **Engineering** (15) — TypeScript strictness, stores and state, persistence
   integrity, testing strategy, gates and ratchets, architecture boundaries,
   security and secrets, SQLite/server, observability, dependencies and licences,
   release, incidents, the desktop shell.
-- **Product and UI** (7) — accessibility, performance and bundle, visual design,
-  charts, forms, exports, AI safety.
-- **Meta** (3) — documentation and decisions, requirements traceability, skill
-  authoring.
+- **Product and UI** (14) — accessibility, performance and bundle, visual design,
+  charts, forms, exports, AI safety, **board-output tie-out** (an export's
+  number must tie back to the screen, verified by a failing-first test).
+- **Meta** (8) — documentation and decisions, requirements traceability, skill
+  authoring, evidence-chain verification, owner-pack completion, zero-compromise
+  audit, **connector utilization** (publish repo → connector),
+  **connector-driven documentation** (connector content re-derived from the
+  repo, kept truthful).
 - **Owner set** (6) — the Ponytail skills themselves, reproduced verbatim.
 
 The library is generated and checked: `npm run skills:verify` fails if a skill

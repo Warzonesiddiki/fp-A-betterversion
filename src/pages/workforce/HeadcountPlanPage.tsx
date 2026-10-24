@@ -28,16 +28,6 @@ import { useShallow } from 'zustand/react/shallow';
 import { todayISO } from '@/utils/clock';
 import { deriveHeadcountPlan, type DepartmentHeadcount } from './headcountPlanData';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 /**
  * Phase 10 decontamination: this page previously multiplied a real
  * GL average cost by invented department headcounts and an invented
@@ -89,7 +79,9 @@ export default function HeadcountPlanPage() {
   if (error) {
     return (
       <div className="p-12 text-center" role="alert" aria-live="assertive">
-        <h2 className="text-xl font-semibold mb-2 text-[var(--negative)]">Failed to load workforce data</h2>
+        <h2 className="text-xl font-semibold mb-2 text-[var(--negative)]">
+          Failed to load workforce data
+        </h2>
         <p className="text-[var(--text-muted)] mb-6">{error}</p>
         <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>

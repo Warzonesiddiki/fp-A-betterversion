@@ -11,16 +11,6 @@ import { currencyFormatter, formatNumber } from '@/utils/financialFormatting';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { deriveTelecomDashboard } from './telecomDashboardData';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 function formatArpu(value: number | null): string {
   if (value === null) return '—';
   return currencyFormatter(reportingCurrency(), { minDecimals: 2 })(value);

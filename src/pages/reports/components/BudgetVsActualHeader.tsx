@@ -3,13 +3,6 @@ import { HelpCircle, FileText, Table as TableIcon } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/ui/PageHeader';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => { try { return toDecimal(0); } catch { return 0 as unknown as ReturnType<typeof toDecimal>; } })();
-
-
-
-
 interface BudgetVsActualHeaderProps {
   onHelpClick: () => void;
   onExportPDF: () => void;

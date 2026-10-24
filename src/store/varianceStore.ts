@@ -6,9 +6,6 @@ import type { VarianceState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
 import { nowMs } from '@/utils/clock';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export const useVarianceStore = create<VarianceState>()(
   subscribeWithSelector(

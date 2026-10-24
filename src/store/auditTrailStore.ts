@@ -25,9 +25,6 @@ import { randomId } from '@/utils/cryptoId';
 // unkeyed hash chain is not general audit authority; revert requires audit:delete.
 import { enforce, getCurrentUser, PermissionError, Permissions } from '@/utils/rbacEnforcer';
 import { now as clockNow } from '@/utils/clock';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // ---------------------------------------------------------------------------
 // Types (re-exported from canonical location)

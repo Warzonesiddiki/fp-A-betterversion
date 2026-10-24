@@ -57,6 +57,7 @@ function createEngineFromStores(
       oldValue: null,
       // A GL row may carry only debit/credit (or only an amount). The fallback
       // chain is kept — dropping it made every such row throw inside `roundTo`.
+      // zero is correct — rows without netChange/amount fall back to debit minus credit.
       newValue: roundTo(e.netChange ?? e.amount ?? subtractMoney(e.debit ?? 0, e.credit ?? 0)),
     }));
     engine.commit(mainBranch.id, `Imported ${glEntries.length} GL entries`, 'system', changes);
@@ -74,7 +75,7 @@ function createEngineFromStores(
       },
       measure: 'amount' as const,
       oldValue: null,
-      newValue: item.amount ?? 0,
+      newValue: item.amount ?? 0, // zero is correct — budget line without amount is valid
     }));
     engine.commit(
       currentBranch.id,

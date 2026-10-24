@@ -20,10 +20,6 @@ import { BenchmarkService, BenchmarkResult, BenchmarkReport } from '@/services/B
 import { createLogger } from '@/utils/logger';
 import { formatNumber } from '@/utils/financialFormatting';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
-
 
 const benchmarksPageLogger = createLogger('BenchmarksPage');
 
@@ -164,7 +160,7 @@ const BenchmarksPage: React.FC = () => {
           </div>
           <div className="text-3xl font-bold text-blue-600">
             {latestReport
-              ? `${((latestReport.aiEngine.classify + latestReport.aiEngine.embedding) / 2).toFixed(2)}ms`
+              ? `${formatNumber((latestReport.aiEngine.classify + latestReport.aiEngine.embedding) / 2, 2)}ms`
               : '--'}
           </div>
           <p className="text-xs text-slate-400">Combined inference & embedding</p>
@@ -278,7 +274,9 @@ const BenchmarksPage: React.FC = () => {
                       {new Date(res.timestamp).toLocaleString()}
                     </td>
                     <td className="p-2 font-mono uppercase text-xs">{res.name}</td>
-                    <td className="p-2 text-right font-medium">{res.duration.toFixed(3)}ms</td>
+                    <td className="p-2 text-right font-medium">
+                      {formatNumber(res.duration, 3)}ms
+                    </td>
                   </tr>
                 ))}
               {history.length === 0 && (

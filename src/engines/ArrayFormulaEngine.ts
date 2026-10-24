@@ -1,7 +1,4 @@
 import { randomId } from '@/utils/cryptoId';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * ArrayFormulaEngine — Array formula support for FinPlan Pro

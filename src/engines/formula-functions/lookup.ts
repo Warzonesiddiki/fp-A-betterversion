@@ -2,9 +2,7 @@
 // FORMULA FUNCTION REGISTRY — Lookup & Array Functions
 // =============================================================================
 import type { FormulaFunction } from './helpers';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
+
 // MDETERM is defined locally as it's an array function
 
 // =============================================================================
