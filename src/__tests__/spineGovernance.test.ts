@@ -3547,3 +3547,107 @@ describe('GOVERNED /saas/arr — ARR dashboard surface', () => {
     expect(useAuthStore.getState().activeEntityId).toBe('');
   });
 });
+
+// ---------------------------------------------------------------------------
+// /saas/churn — Churn dashboard surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /saas/churn — Churn dashboard surface', () => {
+  it('GOVERNED /saas/churn — import:create guards churn entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-churn-1', accountId: '26000', amount: 24000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /saas/churn — audit trail records churn write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'churn:write', entity: 'entry', entityId: 'gov-churn-1', payload: { accountId: '26000', amount: 24000, metric: 'churn-rate' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /saas/churn — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /saas/churn — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /saas/cohort — Cohort analysis surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /saas/cohort — Cohort analysis surface', () => {
+  it('GOVERNED /saas/cohort — import:create guards cohort entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-cohort-1', accountId: '27000', amount: 25000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /saas/cohort — audit trail records cohort write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'cohort:write', entity: 'entry', entityId: 'gov-cohort-1', payload: { accountId: '27000', amount: 25000, cohort: 'Q1-2026' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /saas/cohort — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /saas/cohort — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /manufacturing/overview — Manufacturing overview surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /manufacturing/overview — Manufacturing overview surface', () => {
+  it('GOVERNED /manufacturing/overview — import:create guards manufacturing entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-mfg-1', accountId: '28000', amount: 26000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /manufacturing/overview — audit trail records manufacturing write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'manufacturing:write', entity: 'entry', entityId: 'gov-mfg-1', payload: { accountId: '28000', amount: 26000, plant: 'Plant-A' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /manufacturing/overview — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /manufacturing/overview — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /manufacturing/cogs — COGS variance surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /manufacturing/cogs — COGS variance surface', () => {
+  it('GOVERNED /manufacturing/cogs — import:create guards COGS entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-cogs-1', accountId: '29000', amount: 27000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /manufacturing/cogs — audit trail records COGS write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'cogs:write', entity: 'entry', entityId: 'gov-cogs-1', payload: { accountId: '29000', amount: 27000, variance: 'favorable' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /manufacturing/cogs — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /manufacturing/cogs — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
