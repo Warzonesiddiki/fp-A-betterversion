@@ -3877,6 +3877,111 @@
         "title": "financialPackageExport \u2014 GOVERNANCE (report.pptx-editable)",
         "proves": "financialPackageExport PPTX board pack generation: buildEditableBoardPackPptxBytes produces valid byte archive with correct slide count. parseEditablePptxBytes round-trips slide content and summary metrics. assertSafeSpreadsheetFormula blocks injection (pipes, quotes, backticks, backslash, <>, cmd, powershell, hyperlink, webservice, filterxml) and allows safe formulas (SUM, ROUND, ABS, cell refs, sheet-qualified refs). verifyBoardPackRowTieOut reports match when XLSX and PPTX agree, and discrepancy when XLSX has wrong value. Money primitive safety: exact decimal strings, zero float coercion. Determinism verified."
       }
+    ],
+    "close.financial-close-engine": [
+      {
+        "file": "src/engines/FinancialCloseEngine.governance.test.ts",
+        "title": "GOVERNED cap:close.financial-close-engine \u2014 close plan validation, dependency resolution, regulatory flagging, determinism",
+        "proves": "FinancialCloseEngine.validatePlan detects duplicate task IDs, negative estimated hours, dependency cycles, and dangling dependencies. Close plan tasks are validated for regulatory flagging. Determinism verified."
+      }
+    ],
+    "govern.rbac": [
+      {
+        "file": "src/engines/RBACEngine.governance.test.ts",
+        "title": "GOVERNED cap:govern.rbac \u2014 role assignment, permission checks, entity scoping, highest role resolution, determinism",
+        "proves": "RBACEngine.assignRole/revokeRole manage role-entity mappings. hasPermission enforces role-based access with entity scoping. getHighestRole resolves role hierarchy. Determinism verified."
+      }
+    ],
+    "close.reconciliation-engine": [
+      {
+        "file": "src/engines/ReconciliationEngine.governance.test.ts",
+        "title": "GOVERNED cap:close.reconciliation-engine \u2014 match accuracy, discrepancy detection, auto-resolution, report generation, money primitive safety",
+        "proves": "ReconciliationEngine.reconcile matches records by key, detects amount discrepancies, computes match rate. autoResolve filters by tolerance. generateReport produces auditable summaries. Determinism verified."
+      }
+    ],
+    "govern.encryption": [
+      {
+        "file": "src/engines/EncryptionEngine.governance.test.ts",
+        "title": "GOVERNED cap:govern.encryption \u2014 AES-GCM encryption/decryption, password validation, constant-time comparison, zeroization, PBKDF2 key derivation",
+        "proves": "EncryptionEngine.encrypt/decrypt round-trips with AES-GCM. assertStrongPassword enforces minimum length. constantTimeEqual prevents timing attacks. zeroize clears buffers. deriveKey produces CryptoKey via PBKDF2. Determinism verified."
+      }
+    ],
+    "govern.audit-log": [
+      {
+        "file": "src/engines/AuditLogEngine.governance.test.ts",
+        "title": "GOVERNED cap:govern.audit-log \u2014 tamper-evident audit trail, hash chain integrity, filtering, serialization, retention",
+        "proves": "AuditLogEngine.log creates audit entries with timestamps. logChain builds tamper-evident hash chain. verifyIntegrity confirms chain integrity. filter/getRecent/getByUser/getByResource provide retrieval. serialize/deserialize round-trips. Determinism verified."
+      }
+    ],
+    "fiscal.calendar": [
+      {
+        "file": "src/engines/FiscalCalendar.governance.test.ts",
+        "title": "GOVERNED cap:fiscal.calendar \u2014 fiscal period generation for Standard/4-4-5/4-5-4/13-Period calendars, date-to-period mapping, YTD/quarter calculation",
+        "proves": "FiscalCalendar.generatePeriods produces correct period counts for all calendar types. getPeriodForDate maps dates to correct periods. getYearToDate and getQuarterPeriods compute correct sub-ranges. Determinism verified."
+      }
+    ],
+    "statement.three-statement": [
+      {
+        "file": "src/engines/ThreeStatementEngine.governance.test.ts",
+        "title": "GOVERNED cap:statement.three-statement \u2014 three-statement linking, balance verification (A=L+E), account classification, empty statement creation",
+        "proves": "ThreeStatementEngine.link connects P&L net income to retained earnings, cash flow to cash balance. verifyBalance checks A=L+E with decimal tolerance. getAccountCategory and getStatementType map account codes. Determinism verified."
+      }
+    ],
+    "fx.engine": [
+      {
+        "file": "src/engines/FXEngine.governance.test.ts",
+        "title": "GOVERNED cap:fx.engine \u2014 decimal-precision currency conversion, missing rate error handling, invalid input rejection, consolidation translation",
+        "proves": "FXEngine.convert uses decimal.js (not IEEE-754) for multiplication. getRate throws MissingFXRateError for unknown pairs. setRate rejects non-positive/non-finite rates. translateForConsolidation produces accurate translations. Determinism verified."
+      }
+    ],
+    "tax.engine": [
+      {
+        "file": "src/engines/TaxEngine.governance.test.ts",
+        "title": "GOVERNED cap:tax.engine \u2014 current tax, deferred tax (DTA/DTL), effective tax rate, full provision, loss carryforward",
+        "proves": "TaxEngine.calculateCurrentTax computes tax expense with permanent/temporary differences and credits. calculateDeferredTax computes DTA/DTL with valuation allowance. calculateEffectiveRate computes rate to 4dp. computeProvision combines all components. Determinism verified."
+      }
+    ],
+    "fixed-assets.depreciation": [
+      {
+        "file": "src/engines/DepreciationEngine.governance.test.ts",
+        "title": "GOVERNED cap:fixed-assets.depreciation \u2014 straight-line, declining balance, MACRS, SYD, units-of-production, asset disposal",
+        "proves": "DepreciationEngine.straightLine computes annual depreciation. decliningBalance produces schedules. macrs/macrsSchedule compute MACRS depreciation. sumOfYearsDigits computes SYD. unitsOfProduction computes usage-based depreciation. assetDisposal computes gain/loss. Determinism verified."
+      }
+    ],
+    "treasury.lease-engine": [
+      {
+        "file": "src/engines/LeaseEngine.governance.test.ts",
+        "title": "GOVERNED cap:treasury.lease-engine \u2014 ASC 842 ROU asset, lease liability, classification, modification, disclosure",
+        "proves": "LeaseEngine.calculateROUAsset produces amortization schedules. calculateLeaseLiability produces liability schedules with decreasing balances. classifyLease classifies as finance or operating. isShortTermLease/isLowValueAsset apply exemptions. extendLease/terminateLease modify contracts. Determinism verified."
+      }
+    ],
+    "treasury.bond-pricing": [
+      {
+        "file": "src/engines/BondPricingEngine.governance.test.ts",
+        "title": "GOVERNED cap:treasury.bond-pricing \u2014 bond pricing, yield to maturity, Macaulay/modified duration, convexity, accrued interest, dirty price",
+        "proves": "BondPricingEngine.price computes bond prices for par/discount/premium bonds. yieldToMaturity computes YTM via Newton-Raphson. duration returns Macaulay, modified, and convexity. accruedInterest computes proportional interest. dirtyPrice = cleanPrice + accrued interest. Determinism verified."
+      }
+    ],
+    "govern.compliance-engine": [
+      {
+        "file": "src/engines/ComplianceEngine.governance.test.ts",
+        "title": "GOVERNED cap:govern.compliance-engine \u2014 SOX segregation of duties, approval workflow, data retention, access control, report generation",
+        "proves": "ComplianceEngine.checkSegregationOfDuties detects conflicting role pairs (approver+requester, admin+auditor, creator+approver). checkApprovalWorkflow prevents self-approval and flags threshold breaches. checkDataRetention flags expired records. validateAccess checks permissions including wildcard. generateReport computes compliance score. Determinism verified."
+      }
+    ],
+    "govern.data-governance": [
+      {
+        "file": "src/engines/DataGovernanceEngine.governance.test.ts",
+        "title": "GOVERNED cap:govern.data-governance \u2014 data catalog, classification, tagging, lineage, quality scoring, retention policies",
+        "proves": "DataGovernanceEngine.addAsset/getAsset/removeAsset manage the data catalog. classifyAsset updates sensitivity. tagAsset/untagAsset manage tags. addLineageNode/getUpstream/getDownstream track data lineage. recordQualityScore/getOverallQualityScore track quality. addRetentionPolicy/removeRetentionPolicy manage retention. Determinism verified."
+      }
+    ],
+    "close.period-close-state-machine": [
+      {
+        "file": "src/engines/PeriodCloseStateMachine.governance.test.ts",
+        "title": "GOVERNED cap:close.period-close-state-machine \u2014 close lifecycle state machine, posting controls, trial balance, approval requirements, audit trail",
+        "proves": "PeriodCloseStateMachine enforces open\u2192soft-close\u2192hard-close\u2192locked lifecycle. canTransition validates allowed transitions. canPost blocks posting to hard-close/locked. canReverse allows reversal only in non-locked states. checkTrialBalance verifies debits=credits with decimal arithmetic. reopen requires approvalId. Every transition emits an audit event. Determinism verified."
+      }
     ]
   },
   "census": {
@@ -3899,7 +4004,8 @@
       "owner": "O9",
       "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md \u00a7OWNER)",
       "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
-    }
+    },
+    "capabilities": 74
   },
-  "totalCapabilityClaims": 230
+  "totalCapabilityClaims": 245
 }

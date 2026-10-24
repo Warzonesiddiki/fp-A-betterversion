@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 162 |
-| EXPERIMENTAL | 305 |
+| SUPPORTED | 163 |
+| EXPERIMENTAL | 304 |
 | BLOCKED-ON-OWNER | 6 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -743,7 +743,7 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:plan.versions` | SUPPORTED | gatedBy=/budgets/bva; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (3 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:report.board-pack` | SUPPORTED | connected=1 [src/pages/reports/BoardPackPage.exportTieOut.test.tsx]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/BoardPackPage.exportTieOut.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:report.pdf` | SUPPORTED | gatedBy=/reports; tests=src/engines/AdvancedPDFEngine.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/AdvancedPDFEngine.governance.test.ts] | SUPPORTED — AdvancedPDFEngine PDF report generation verified by 14 engine-level governance tests covering TOC, watermark, header/footer, page break, financial table, money primitive safety, document export, and determinism. |
-| `cap:report.pptx-editable` | EXPERIMENTAL | gatedBy=/board-pack | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:report.pptx-editable` | SUPPORTED | gatedBy=/reports; tests=src/services/export/financialPackageExport.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/services/export/financialPackageExport.governance.test.ts] | SUPPORTED — financialPackageExport PPTX board pack generation verified by 29 engine-level governance tests covering PPTX generation, round-trip, formula safety (injection blocking), tie-out verification (XLSX↔PPTX), money primitive safety (exact decimal), and determinism. |
 | `cap:report.statements` | SUPPORTED | gatedBy=/reports/three-statement; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=5 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (5 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:report.tie-back` | SUPPORTED | connected=1 [src/pages/reports/BoardPackPage.exportTieOut.test.tsx]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/BoardPackPage.exportTieOut.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:report.xlsx-formula` | SUPPORTED | gatedBy=/reports; tests=src/engines/report-builder-formulas.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/report-builder-formulas.governance.test.ts] | SUPPORTED — report-builder-formulas engine formula evaluation safety verified by 30 engine-level governance tests covering formula parsing, evaluation, safe evaluation (no code injection), missing/non-finite cell detection, column conversion, circular reference detection, and determinism. |

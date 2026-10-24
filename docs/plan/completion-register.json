@@ -3826,9 +3826,12 @@
     {
       "kind": "engine",
       "id": "engine:AuditLogEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/AuditLogEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -3871,9 +3874,12 @@
     {
       "kind": "engine",
       "id": "engine:BondPricingEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/BondPricingEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -3997,9 +4003,12 @@
     {
       "kind": "engine",
       "id": "engine:ComplianceEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/ComplianceEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4168,9 +4177,12 @@
     {
       "kind": "engine",
       "id": "engine:DataGovernanceEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/DataGovernanceEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4222,9 +4234,12 @@
     {
       "kind": "engine",
       "id": "engine:DepreciationEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/DepreciationEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4294,9 +4309,12 @@
     {
       "kind": "engine",
       "id": "engine:EncryptionEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/EncryptionEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4357,9 +4375,12 @@
     {
       "kind": "engine",
       "id": "engine:FXEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/FXEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4393,9 +4414,12 @@
     {
       "kind": "engine",
       "id": "engine:FinancialCloseEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/FinancialCloseEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4411,9 +4435,12 @@
     {
       "kind": "engine",
       "id": "engine:FiscalCalendar",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/FiscalCalendar.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4591,9 +4618,12 @@
     {
       "kind": "engine",
       "id": "engine:LeaseEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/LeaseEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4717,9 +4747,12 @@
     {
       "kind": "engine",
       "id": "engine:PeriodCloseStateMachine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/PeriodCloseStateMachine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4771,9 +4804,12 @@
     {
       "kind": "engine",
       "id": "engine:RBACEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/RBACEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4807,9 +4843,12 @@
     {
       "kind": "engine",
       "id": "engine:ReconciliationEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/ReconciliationEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -5068,9 +5107,12 @@
     {
       "kind": "engine",
       "id": "engine:TaxEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/TaxEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -5095,9 +5137,12 @@
     {
       "kind": "engine",
       "id": "engine:ThreeStatementEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/ThreeStatementEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
