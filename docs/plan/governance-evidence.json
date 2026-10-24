@@ -2645,6 +2645,16 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards saveMappingProfile, Admin reaches enforce gate",
         "proves": "glUploadStore.saveMappingProfile requires import:update; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:delete guards removeDocument, audit chain intact",
+        "proves": "documentStore.removeDocument requires import:delete; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards signLatestVersion, Admin reaches enforce gate",
+        "proves": "documentStore.signLatestVersion requires import:update; Viewer denied, Admin reaches enforce gate."
       }
     ],
     "data.mapping": [
@@ -3087,6 +3097,88 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:plan.scenarios \u2014 forecast:create guards createForecast, Admin reaches enforce gate",
         "proves": "forecastStore.createForecast requires forecast:create; Viewer denied, Admin reaches enforce gate."
+      }
+    ],
+    "plan.assumptions": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.assumptions \u2014 cube:delete guards deleteCell, audit chain intact",
+        "proves": "cubeStore.deleteCell requires cube:delete; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:plan.assumptions \u2014 cube:admin guards addMember, Admin reaches enforce gate",
+        "proves": "cubeStore.addMember requires cube:admin; Viewer denied, Admin reaches enforce gate."
+      }
+    ],
+    "admin.integrations": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.integrations \u2014 import:create guards connect, audit chain intact",
+        "proves": "integrationStore.connect requires import:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.integrations \u2014 import:update guards disconnect, Admin reaches enforce gate",
+        "proves": "integrationStore.disconnect requires import:update; Viewer denied, Admin reaches enforce gate."
+      }
+    ],
+    "ops.capex": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:ops.capex \u2014 capex:create guards addProject, audit chain intact",
+        "proves": "capExStore.addProject requires capex:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:ops.capex \u2014 capex:delete guards removeProject, Admin reaches enforce gate",
+        "proves": "capExStore.removeProject requires capex:delete; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:ops.capex \u2014 budget:create guards addChangeOrder, audit chain intact",
+        "proves": "constructionStore.addChangeOrder requires budget:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:ops.capex \u2014 budget:update guards updateChangeOrder, Admin reaches enforce gate",
+        "proves": "constructionStore.updateChangeOrder requires budget:update; Viewer denied, Admin reaches enforce gate."
+      }
+    ],
+    "model.leases": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:model.leases \u2014 budget:create guards addLease, audit chain intact",
+        "proves": "leaseStore.addLease requires budget:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:model.leases \u2014 budget:delete guards removeLease, Admin reaches enforce gate",
+        "proves": "leaseStore.removeLease requires budget:delete; Viewer denied, Admin reaches enforce gate."
+      }
+    ],
+    "model.fx-translation": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:model.fx-translation \u2014 forecast:create guards addRate, audit chain intact",
+        "proves": "fxRateStore.addRate requires forecast:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:model.fx-translation \u2014 forecast:delete guards deleteRate, Admin reaches enforce gate",
+        "proves": "fxRateStore.deleteRate requires forecast:delete; Viewer denied, Admin reaches enforce gate."
+      }
+    ],
+    "ops.cash-planning": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:ops.cash-planning \u2014 budget:create guards addInstrument, audit chain intact",
+        "proves": "debtStore.addInstrument requires budget:create; Viewer denied; audit chain verified."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:ops.cash-planning \u2014 budget:delete guards removeInstrument, Admin reaches enforce gate",
+        "proves": "debtStore.removeInstrument requires budget:delete; Viewer denied, Admin reaches enforce gate."
       }
     ]
   },

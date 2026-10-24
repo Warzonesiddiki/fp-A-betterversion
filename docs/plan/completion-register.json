@@ -1843,9 +1843,14 @@
     {
       "kind": "capability",
       "id": "cap:admin.integrations",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/settings/integrations"
+        "gatedBy": "/settings/integrations",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -2525,9 +2530,14 @@
     {
       "kind": "capability",
       "id": "cap:model.fx-translation",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/currency/translation"
+        "gatedBy": "/currency/translation",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -2543,9 +2553,14 @@
     {
       "kind": "capability",
       "id": "cap:model.leases",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/lease"
+        "gatedBy": "/lease",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -2579,18 +2594,28 @@
     {
       "kind": "capability",
       "id": "cap:ops.capex",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/capex"
+        "gatedBy": "/capex",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
     {
       "kind": "capability",
       "id": "cap:ops.cash-planning",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/cash/forecast"
+        "gatedBy": "/cash/forecast",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },
@@ -2606,9 +2631,14 @@
     {
       "kind": "capability",
       "id": "cap:plan.assumptions",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/forecasts/drivers"
+        "gatedBy": "/forecasts/drivers",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
     },

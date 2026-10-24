@@ -58,6 +58,8 @@ import { useEducationStore } from '@/store/educationStore';
 import { useRealEstateStore } from '@/store/realEstateStore';
 import { useEnergyStore } from '@/store/energyStore';
 import { useInsuranceStore } from '@/store/insuranceStore';
+import { useCapExStore } from '@/store/capexStore';
+import { useDebtStore } from '@/store/debtStore';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -147,6 +149,8 @@ function resetAll() {
   useRealEstateStore.setState({ facilities: [], maintenanceTrend: {} } as never);
   useEnergyStore.setState({ assets: [], generationTrend: {}, capacityMix: {} } as never);
   useInsuranceStore.setState({ rateAdequacy: {}, lossPicks: {}, rateFilings: [] } as never);
+  useCapExStore.setState({ projects: [] } as never);
+  useDebtStore.setState({ instruments: [] } as never);
 }
 
 beforeEach(() => {
@@ -4687,5 +4691,119 @@ describe('GOVERNED capability-level — remaining store method tests (batch 5)',
     expectPermissionDenied(() => useRetailStore.getState().clearAll());
     actAs('Admin');
     expect(() => useRetailStore.getState().clearAll()).not.toThrow();
+  });
+});
+
+describe('GOVERNED capability-level — remaining store tests (batch 6)', () => {
+  it('GOVERNED cap:plan.assumptions — cube:delete guards deleteCell, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useCubeStore.getState().deleteCell('budget' as never, { entity: 'default', account: '1000', period: '2026-01' } as never, 'amount' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:plan.assumptions — cube:admin guards addMember, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useCubeStore.getState().addMember('account' as never, { code: '1000', name: 'Cash' } as never));
+    actAs('Admin');
+    try { useCubeStore.getState().addMember('account' as never, { code: '1000', name: 'Cash' } as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+  });
+
+  it('GOVERNED cap:admin.integrations — import:create guards connect, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useIntegrationStore.getState().connect('quickbooks' as never, {} as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:admin.integrations — import:update guards disconnect, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useIntegrationStore.getState().disconnect('quickbooks' as never));
+    actAs('Admin');
+    expect(() => useIntegrationStore.getState().disconnect('quickbooks' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — import:delete guards removeDocument, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDocumentStore.getState().removeDocument('doc-test' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — import:update guards signLatestVersion, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDocumentStore.getState().signLatestVersion('doc-test' as never));
+    actAs('Admin');
+    try { useDocumentStore.getState().signLatestVersion('doc-test' as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+  });
+
+  it('GOVERNED cap:ops.capex — capex:create guards addProject, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useCapExStore.getState().addProject({ id: 'proj-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:ops.capex — capex:delete guards removeProject, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useCapExStore.getState().removeProject('proj-test' as never));
+    actAs('Admin');
+    expect(() => useCapExStore.getState().removeProject('proj-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:model.leases — budget:create guards addLease, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useLeaseStore.getState().addLease({ id: 'lease-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:model.leases — budget:delete guards removeLease, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useLeaseStore.getState().removeLease('lease-test' as never));
+    actAs('Admin');
+    expect(() => useLeaseStore.getState().removeLease('lease-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:model.fx-translation — forecast:create guards addRate, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useFxRateStore.getState().addRate({ currency: 'EUR', rate: 1.1 } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:model.fx-translation — forecast:delete guards deleteRate, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useFxRateStore.getState().deleteRate('EUR' as never));
+    actAs('Admin');
+    expect(() => useFxRateStore.getState().deleteRate('EUR' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:ops.cash-planning — budget:create guards addInstrument, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDebtStore.getState().addInstrument({ id: 'inst-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:ops.cash-planning — budget:delete guards removeInstrument, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useDebtStore.getState().removeInstrument('inst-test' as never));
+    actAs('Admin');
+    expect(() => useDebtStore.getState().removeInstrument('inst-test' as never)).not.toThrow();
+  });
+
+  it('GOVERNED cap:ops.capex — budget:create guards addChangeOrder, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useConstructionStore.getState().addChangeOrder({ id: 'co-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:ops.capex — budget:update guards updateChangeOrder, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useConstructionStore.getState().updateChangeOrder('co-test' as never, { name: 'Updated' } as never));
+    actAs('Admin');
+    expect(() => useConstructionStore.getState().updateChangeOrder('co-test' as never, { name: 'Updated' } as never)).not.toThrow();
   });
 });
