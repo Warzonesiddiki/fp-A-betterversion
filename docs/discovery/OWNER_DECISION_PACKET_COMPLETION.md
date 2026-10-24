@@ -16,7 +16,7 @@ The completion programme has achieved:
 - **6 BLOCKED-ON-OWNER capabilities** — all need owner decisions (O1, O3, O4, O9)
 - **Money adoption 36.37%** (371/1020 modules) — zero unsafe money operations
 - **AI census 0 ungated** — all AI narrative surfaces gated
-- **All gates PASS** — tsc, engines:verify (180), money:ast (0 unsafe), placeholder:audit (0), determinism:ratchet (344), palette:ratchet (5489), fabrication:audit (0), mock-data:audit (0), docs:verify, bundle-check (2,061 KB vs 2,080 KB gate), **eslint (exit 0, zero problems, zero warnings)**, test:sharded (17,856 passed, 14 pre-existing, 1 skipped)
+- **All gates PASS** — tsc, engines:verify (180), money:ast (0 unsafe), placeholder:audit (0), determinism:ratchet (344), palette:ratchet (5489), fabrication:audit (0), mock-data:audit (0), docs:verify, bundle-check (2,061 KB vs 2,080 KB gate), **eslint (exit 0, zero problems, zero warnings)**, test:sharded (17,854 passed, 14 pre-existing, 1 skipped)
 
 ## The Nine Decisions
 
