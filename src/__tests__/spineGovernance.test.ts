@@ -4645,3 +4645,47 @@ describe('GOVERNED capability-level — additional store method tests (batch 4)'
     expect(v.valid).toBe(true);
   });
 });
+
+describe('GOVERNED capability-level — remaining store method tests (batch 5)', () => {
+  it('GOVERNED cap:close.trial-balance — ui:update guards clearFilters, audit chain intact', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLTrialBalanceStore.getState().clearFilters());
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:close.trial-balance — ui:update guards nextPage, Admin reaches enforce gate', () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLTrialBalanceStore.getState().nextPage());
+    actAs('Admin');
+    expect(() => useGLTrialBalanceStore.getState().nextPage()).not.toThrow();
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — import:create guards completeSession, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useGLUploadStore.getState().completeSession({ success: true, imported: 100, skipped: 0 } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — import:update guards saveMappingProfile, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useGLUploadStore.getState().saveMappingProfile({ name: 'profile' } as never));
+    actAs('Admin');
+    try { useGLUploadStore.getState().saveMappingProfile({ name: 'profile' } as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+  });
+
+  it('GOVERNED cap:govern.authorization — retailStore entity:create guards addPromotion, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useRetailStore.getState().addPromotion({ id: 'promo-test', name: 'Test' } as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.authorization — retailStore inventory:delete guards clearAll, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useRetailStore.getState().clearAll());
+    actAs('Admin');
+    expect(() => useRetailStore.getState().clearAll()).not.toThrow();
+  });
+});
