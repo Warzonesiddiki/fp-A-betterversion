@@ -3786,6 +3786,13 @@
         "title": "RevRecEngine \u2014 GOVERNANCE (model.revenue-recognition)",
         "proves": "RevRecEngine.allocateTransactionPrice() allocates proportionally to standalone prices (sums to 100%, decimal division). calculateRevenueSchedule() foots to total contract value (cent-exact, largest-remainder). Over-time straight-line recognition with cumulative recognizedToDate and decreasing remainingToRecognize. Point-in-time recognition requires completionMetric >= 1. Contract modifications (termination, discount, additional goods). Variable consideration constrained by reversal probability. Contract asset/liability computed from billed vs recognized. Deferred revenue from remaining to recognize. Money primitive safety (no float drift). Determinism."
       }
+    ],
+    "model.ic-elimination": [
+      {
+        "file": "src/engines/IntercompanyMatchingEngine.governance.test.ts",
+        "title": "IntercompanyMatchingEngine \u2014 GOVERNANCE (model.ic-elimination)",
+        "proves": "IntercompanyMatchingEngine auto-matches AB/BA pairs (tolerance, account code), manual matching, elimination creation (no duplicates), net IC balances (AB/BA net to zero), IC interest calculation, IC profit elimination, minority interest allocation (cent-exact, parent+minority=total), IC reconciliation (discrepancy detection), money primitive safety (no float drift), determinism."
+      }
     ]
   },
   "census": {
@@ -3810,5 +3817,5 @@
       "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
     }
   },
-  "totalCapabilityClaims": 217
+  "totalCapabilityClaims": 218
 }

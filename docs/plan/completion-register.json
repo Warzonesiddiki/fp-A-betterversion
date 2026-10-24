@@ -2908,11 +2908,22 @@
     {
       "kind": "capability",
       "id": "cap:model.ic-elimination",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/consolidation/ic-eliminations"
+        "gatedBy": "/consolidation",
+        "tests": [
+          "src/engines/IntercompanyMatchingEngine.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/engines/IntercompanyMatchingEngine.governance.test.ts",
+            "title": "IntercompanyMatchingEngine \u2014 GOVERNANCE (model.ic-elimination)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED \u2014 IntercompanyMatchingEngine ASC 810 IC matching and elimination verified by 26 engine-level governance tests covering auto-matching, manual matching, elimination creation, net IC balances, IC interest, profit elimination, minority interest allocation, reconciliation, money primitive safety, and determinism."
     },
     {
       "kind": "capability",

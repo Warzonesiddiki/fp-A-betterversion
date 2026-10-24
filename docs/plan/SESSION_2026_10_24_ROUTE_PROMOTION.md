@@ -827,3 +827,36 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 (ALL COMPLETE) |
 | Engine governance dimensions | 8 (financial correctness) |
 | All gates PASS | ✓ |
+
+## Phase 23 — Engine-Level Governance Testing: RevRecEngine (2026-10-24)
+
+**Gap:** Phase 2 of engine-level testing plan — revenue recognition (ASC 606).
+
+**Tests added:** 24 engine-level governance tests in `src/engines/RevRecEngine.governance.test.ts`
+**Dimensions tested:** 11 (input validation, transaction price allocation, revenue schedule footing, over-time recognition, point-in-time recognition, contract modification, variable consideration constraint, contract asset/liability, deferred revenue, money primitive safety, determinism)
+**Capability promoted:** model.revenue-recognition EXPERIMENTAL → SUPPORTED
+**Register:** 150 SUPPORTED (was 149), 317 EXPERIMENTAL (was 318)
+**Governance evidence:** 46 capabilities (was 45), 217 claims (was 216)
+
+## Phase 24 — Engine-Level Governance Testing: IntercompanyMatchingEngine (2026-10-24)
+
+**Gap:** Phase 3 of engine-level testing plan — intercompany elimination (ASC 810).
+
+**Tests added:** 26 engine-level governance tests in `src/engines/IntercompanyMatchingEngine.governance.test.ts`
+**Dimensions tested:** 11 (state management, auto-matching, manual matching, elimination creation, net IC balances, IC interest, IC profit elimination, minority interest allocation, IC reconciliation, money primitive safety, determinism)
+**Capability promoted:** model.ic-elimination EXPERIMENTAL → SUPPORTED
+**Register:** 151 SUPPORTED (was 150), 316 EXPERIMENTAL (was 317)
+**Governance evidence:** 47 capabilities (was 46), 218 claims (was 217)
+
+### Metrics after Phase 24
+
+| Metric | Value |
+|--------|-------|
+| Spine governance tests | 684 |
+| Engine governance tests | 21 + 24 + 26 = 71 |
+| GOVERNED routes | 104 |
+| Governance-evidence capability claims | 218 (47 capabilities) |
+| Register SUPPORTED | 151 |
+| Stores with enforce() covered | 39/39 (ALL COMPLETE) |
+| Engine governance dimensions | 8 (financial correctness) |
+| All gates PASS | ✓ |
