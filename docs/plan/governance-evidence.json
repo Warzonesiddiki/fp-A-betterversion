@@ -1407,6 +1407,106 @@
           "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
         }
       }
+    },
+    "/reports/scheduler": {
+      "page": "src/pages/reports/ReportScheduler.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/scheduler — report:schedule guards scheduled report deletion",
+          "proves": "Scheduled report deletion requires report:schedule permission; the enforce() wrapper on deleteScheduledReport throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/scheduler — audit trail records report schedule write",
+          "proves": "Report schedule write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/scheduler — write guard requires report:schedule on schedule creation",
+          "proves": "Schedule creation (addScheduledReport) is wrapped in enforce(REPORT_SCHEDULE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/treasury/investments": {
+      "page": "src/pages/treasury/InvestmentPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /treasury/investments — import:create guards investment entry posting",
+          "proves": "Investment entry posting requires import:create permission; the enforce() wrapper on addEntry throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /treasury/investments — audit trail records treasury investment write",
+          "proves": "Treasury investment write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /treasury/investments — write guard requires import:delete on data clear",
+          "proves": "Data clear (clearData) is wrapped in enforce(IMPORT_DELETE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/tax/provision": {
+      "page": "src/pages/tax/TaxProvisionPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /tax/provision — import:create guards tax entry posting",
+          "proves": "Tax entry posting requires import:create permission; the enforce() wrapper on addEntry throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /tax/provision — audit trail records tax provision write",
+          "proves": "Tax provision write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /tax/provision — write guard requires import:delete on data clear",
+          "proves": "Data clear (clearData) is wrapped in enforce(IMPORT_DELETE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/lease/accounting": {
+      "page": "src/pages/lease/LeaseAccountingPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /lease/accounting — import:create guards lease entry posting",
+          "proves": "Lease entry posting requires import:create permission; the enforce() wrapper on addEntry throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /lease/accounting — audit trail records lease accounting write",
+          "proves": "Lease accounting write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /lease/accounting — write guard requires import:delete on data clear",
+          "proves": "Data clear (clearData) is wrapped in enforce(IMPORT_DELETE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
     }
   },
   "capabilities": {
