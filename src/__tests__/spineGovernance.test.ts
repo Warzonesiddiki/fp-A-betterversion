@@ -3441,3 +3441,109 @@ describe('GOVERNED /cash/working-capital — Working capital surface', () => {
     expect(useAuthStore.getState().activeEntityId).toBe('');
   });
 });
+
+// ---------------------------------------------------------------------------
+// /banking/loan-loss — Loan loss provision surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /banking/loan-loss — Loan loss provision surface', () => {
+  it('GOVERNED /banking/loan-loss — import:create guards loan loss entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-ll-1', accountId: '23000', amount: 21000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /banking/loan-loss — audit trail records loan loss write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'loanloss:write', entity: 'entry', entityId: 'gov-ll-1', payload: { accountId: '23000', amount: 21000, method: 'CECL' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /banking/loan-loss — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /banking/loan-loss — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /revenue/deferred — Deferred revenue schedule surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /revenue/deferred — Deferred revenue schedule surface', () => {
+  it('GOVERNED /revenue/deferred — import:create guards deferred revenue entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-def-1', accountId: '24000', amount: 22000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /revenue/deferred — audit trail records deferred revenue write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'deferred:write', entity: 'entry', entityId: 'gov-def-1', payload: { accountId: '24000', amount: 22000, schedule: 'monthly' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /revenue/deferred — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /revenue/deferred — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /profile — User profile surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /profile — User profile surface', () => {
+  it('GOVERNED /profile — ui:update guards profile preference changes', () => {
+    const error = expectPermissionDenied(() =>
+      useSettingsStore.getState().updatePreferences({ density: 'compact' } as never)
+    );
+    expect(error.message).toContain('ui:update');
+  });
+  it('GOVERNED /profile — audit trail records profile write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'profile:write', entity: 'preference', entityId: 'gov-prof-1', payload: { density: 'compact', activeSector: 'finance' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /profile — write guard requires settings:update on organization changes', () => {
+    const error = expectPermissionDenied(() =>
+      useSettingsStore.getState().updateOrganization({ name: 'Gov Org' } as never)
+    );
+    expect(error.message).toContain('settings:update');
+  });
+  it('GOVERNED /profile — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /saas/arr — ARR dashboard surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /saas/arr — ARR dashboard surface', () => {
+  it('GOVERNED /saas/arr — import:create guards ARR entry posting', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().addEntry({ id: 'gov-arr-1', accountId: '25000', amount: 23000 } as never)
+    );
+    expect(error.message).toContain('import:create');
+  });
+  it('GOVERNED /saas/arr — audit trail records ARR write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({ action: 'arr:write', entity: 'entry', entityId: 'gov-arr-1', payload: { accountId: '25000', amount: 23000, metric: 'ARR' } });
+    expect(entryId).toBeTruthy();
+    expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(true);
+  });
+  it('GOVERNED /saas/arr — write guard requires import:delete on data clear', () => {
+    const error = expectPermissionDenied(() => useGLStore.getState().clearData());
+    expect(error.message).toContain('import:delete');
+  });
+  it('GOVERNED /saas/arr — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
