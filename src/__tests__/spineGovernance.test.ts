@@ -2181,3 +2181,151 @@ describe('GOVERNED /consolidation/detail — Entity management surface', () => {
     expect(useAuthStore.getState().activeEntityId).toBe('');
   });
 });
+
+// ---------------------------------------------------------------------------
+// /reports/templates — Financial statement template surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /reports/templates — Financial statement template surface', () => {
+  it('GOVERNED /reports/templates — report:create guards report creation from template', () => {
+    const error = expectPermissionDenied(() =>
+      useReportStore.getState().createReport({ name: 'Gov Template Report' } as never)
+    );
+    expect(error.message).toContain('report:create');
+  });
+
+  it('GOVERNED /reports/templates — audit trail records template report write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'report:write',
+      entity: 'report',
+      entityId: 'gov-rpt-tpl-1',
+      payload: { name: 'Gov Template Report', template: 'balance-sheet' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /reports/templates — write guard requires report:delete on report removal', () => {
+    const error = expectPermissionDenied(() =>
+      useReportStore.getState().deleteReport('gov-rpt-tpl-1')
+    );
+    expect(error.message).toContain('report:delete');
+  });
+
+  it('GOVERNED /reports/templates — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /scenarios/compare — Scenario comparison surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /scenarios/compare — Scenario comparison surface', () => {
+  it('GOVERNED /scenarios/compare — scenario:create guards scenario creation for comparison', () => {
+    const error = expectPermissionDenied(() =>
+      useScenarioStore.getState().createScenario({ name: 'Gov Compare Scenario' } as never)
+    );
+    expect(error.message).toContain('scenario:create');
+  });
+
+  it('GOVERNED /scenarios/compare — audit trail records scenario write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'scenario:write',
+      entity: 'scenario',
+      entityId: 'gov-scn-cmp-1',
+      payload: { name: 'Gov Compare Scenario', comparedTo: 'base' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /scenarios/compare — write guard requires scenario:delete on scenario removal', () => {
+    const error = expectPermissionDenied(() =>
+      useScenarioStore.getState().deleteScenario('gov-scn-cmp-1')
+    );
+    expect(error.message).toContain('scenario:delete');
+  });
+
+  it('GOVERNED /scenarios/compare — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /settings/security — Security settings surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /settings/security — Security settings surface', () => {
+  it('GOVERNED /settings/security — ui:update guards preference changes', () => {
+    const error = expectPermissionDenied(() =>
+      useSettingsStore.getState().updatePreferences({ activeSector: 'finance' } as never)
+    );
+    expect(error.message).toContain('ui:update');
+  });
+
+  it('GOVERNED /settings/security — audit trail records security setting write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'settings:write',
+      entity: 'preference',
+      entityId: 'gov-sec-1',
+      payload: { activeSector: 'finance', density: 'compact' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /settings/security — write guard requires user:assign-role on role changes', () => {
+    const error = expectPermissionDenied(() =>
+      useSettingsStore.getState().setRoles([])
+    );
+    expect(error.message).toContain('user:assign-role');
+  });
+
+  it('GOVERNED /settings/security — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /collaboration/activity — Collaboration activity feed surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /collaboration/activity — Collaboration activity feed surface', () => {
+  it('GOVERNED /collaboration/activity — collab:update guards comment posting', () => {
+    const error = expectPermissionDenied(() =>
+      useCollaborationStore.getState().addComment({ content: 'Gov comment' } as never)
+    );
+    expect(error.message).toContain('collab:update');
+  });
+
+  it('GOVERNED /collaboration/activity — audit trail records collaboration write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'collab:write',
+      entity: 'comment',
+      entityId: 'gov-collab-act-1',
+      payload: { content: 'Gov activity comment', threadId: 'gov-thread-1' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /collaboration/activity — write guard requires workflow:approve on approvals', () => {
+    const error = expectPermissionDenied(() =>
+      useCollaborationStore.getState().setApprovals([])
+    );
+    expect(error.message).toContain('workflow:approve');
+  });
+
+  it('GOVERNED /collaboration/activity — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});

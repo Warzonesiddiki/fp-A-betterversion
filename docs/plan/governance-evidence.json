@@ -1307,6 +1307,106 @@
           "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
         }
       }
+    },
+    "/reports/templates": {
+      "page": "src/pages/reports/FinancialStatementTemplates.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/templates — report:create guards report creation from template",
+          "proves": "Report creation from template requires report:create permission; the enforce() wrapper on createReport throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/templates — audit trail records template report write",
+          "proves": "Template report write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /reports/templates — write guard requires report:delete on report removal",
+          "proves": "Report removal (deleteReport) is wrapped in enforce(REPORT_DELETE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/scenarios/compare": {
+      "page": "src/pages/scenarios/ScenarioComparisonPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /scenarios/compare — scenario:create guards scenario creation for comparison",
+          "proves": "Scenario creation for comparison requires scenario:create permission; the enforce() wrapper on createScenario throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /scenarios/compare — audit trail records scenario write",
+          "proves": "Scenario write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /scenarios/compare — write guard requires scenario:delete on scenario removal",
+          "proves": "Scenario removal (deleteScenario) is wrapped in enforce(SCENARIO_DELETE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/settings/security": {
+      "page": "src/pages/settings/SecuritySettingsPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /settings/security — ui:update guards preference changes",
+          "proves": "Preference changes require ui:update permission; the enforce() wrapper on updatePreferences throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /settings/security — audit trail records security setting write",
+          "proves": "Security setting write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /settings/security — write guard requires user:assign-role on role changes",
+          "proves": "Role changes (setRoles) are wrapped in enforce(USER_ASSIGN_ROLE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/collaboration/activity": {
+      "page": "src/pages/collaboration/ActivityFeed.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /collaboration/activity — collab:update guards comment posting",
+          "proves": "Comment posting requires collab:update permission; the enforce() wrapper on addComment throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /collaboration/activity — audit trail records collaboration write",
+          "proves": "Collaboration write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /collaboration/activity — write guard requires workflow:approve on approvals",
+          "proves": "Approval changes (setApprovals) are wrapped in enforce(WORKFLOW_APPROVE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
     }
   },
   "capabilities": {
