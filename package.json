@@ -59,11 +59,13 @@
     "money:ast:list": "node scripts/money-ast-detector.mjs --list",
     "fabrication:audit": "node scripts/fabrication-detector.mjs",
     "fabrication:list": "node scripts/fabrication-detector.mjs --list",
+    "placeholder:audit": "node scripts/placeholder-audit.mjs",
+    "placeholder:list": "node scripts/placeholder-audit.mjs --list",
     "persistence:map": "node scripts/persistence-map-check.mjs",
     "schema:equality": "node scripts/schema-equality-check.mjs",
     "routemap:check": "node scripts/generate-route-map.js --check",
     "escape:ledger": "node scripts/escape-ledger-check.mjs",
-    "check": "npm run tsc && npm run lint && npm run format:check && npm run docs:verify && npm run engines:verify && npm run money:ast && npm run determinism:ratchet && npm run palette:ratchet && npm run fabrication:audit && npm run test:sharded"
+    "check": "npm run tsc && npm run lint && npm run format:check && npm run docs:verify && npm run engines:verify && npm run money:ast && npm run placeholder:audit && npm run determinism:ratchet && npm run palette:ratchet && npm run fabrication:audit && npm run mock-data:audit && npm run test:sharded"
   },
   "dependencies": {
     "@json-render/core": "^0.19.0",

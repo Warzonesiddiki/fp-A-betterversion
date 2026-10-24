@@ -29,13 +29,21 @@ change per commit; docs updated in the same commit as the code they describe.
 - [ ] Behaviour is specified by a test that fails without the change.
 - [ ] `npm run tsc`, `npm run lint`, `npm run format:check` clean.
 - [ ] Every ratchet that your change could move was run and did not regress
-      (`money:ast`, `money:adoption`, `determinism:ratchet`,
-      `type-safety:ratchet`, `escape:ledger`); improvements locked with
-      `--update`.
+      (`money:ast`, `money:adoption`, `placeholder:audit`,
+      `determinism:ratchet`, `type-safety:ratchet`, `escape:ledger`);
+      improvements locked with `--update`.
 - [ ] `npm run docs:verify` passes; README numbers refreshed from scripts if
       they moved.
 - [ ] Targeted tests for every file that imports what you changed are green;
       full `test:sharded` before a handover that claims "suite green".
+- [ ] **No fake signal.** `npm run placeholder:list` is empty — no adoption
+      marker (`_xMarker = toDecimal(0)`, IIFE variant), no `// Money adoption:`
+      comment, no void const, no `void 0;`. A counter is earned by behaviour,
+      never by a symbol that exists to be counted. (`MI-02`, `MI-07`.)
+- [ ] **Every claimed metric is reproducible.** For each number in the commit
+      message or docs, I can name the command that prints it on this commit.
+      A proxy metric (import, declaration, file count) is reported only with its
+      behaviour-measured companion. (`MI-01`, `MI-05`, `MI-06`.)
 - [ ] No new `TODO`, `FIXME`, `it.skip`, `eslint-disable`, `as any`.
 - [ ] Generated files regenerated (manifest, route map, capability matrix) if
       affected.
