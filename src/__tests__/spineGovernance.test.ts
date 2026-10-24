@@ -5812,3 +5812,108 @@ describe('GOVERNED capability-level — glStore import method tests (batch 20)',
     expect(v.valid).toBe(true);
   });
 });
+
+describe('GOVERNED capability-level — periodCloseStore transition tests (batch 21)', () => {
+  const makeEntry = (periodId: string, state: string) => ({
+    periodId,
+    entityId: 'entity-001',
+    state,
+    auditEvents: [],
+  });
+
+  it('GOVERNED cap:close.tie-out — transition with unknown periodId returns error result', async () => {
+    actAs('Admin');
+    usePeriodCloseStore.setState({ entries: {}, initialized: true } as never);
+    const result = await usePeriodCloseStore.getState().transition(
+      'UNKNOWN-PERIOD',
+      'soft-close'
+    );
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('Unknown period');
+  });
+
+  it('GOVERNED cap:close.tie-out — soft-close transition succeeds for Admin (open → soft-close)', async () => {
+    actAs('Admin');
+    usePeriodCloseStore.setState({
+      entries: { 'PERIOD-1': makeEntry('PERIOD-1', 'open') as never },
+      initialized: true,
+    } as never);
+    const result = await usePeriodCloseStore.getState().transition(
+      'PERIOD-1',
+      'soft-close'
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it('GOVERNED cap:close.tie-out — hard-close transition succeeds for Admin (soft-close → hard-close)', async () => {
+    actAs('Admin');
+    usePeriodCloseStore.setState({
+      entries: { 'PERIOD-2': makeEntry('PERIOD-2', 'soft-close') as never },
+      initialized: true,
+    } as never);
+    const result = await usePeriodCloseStore.getState().transition(
+      'PERIOD-2',
+      'hard-close'
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it('GOVERNED cap:close.tie-out — lock transition succeeds for Admin (hard-close → locked)', async () => {
+    actAs('Admin');
+    usePeriodCloseStore.setState({
+      entries: { 'PERIOD-3': makeEntry('PERIOD-3', 'hard-close') as never },
+      initialized: true,
+    } as never);
+    const result = await usePeriodCloseStore.getState().transition(
+      'PERIOD-3',
+      'lock'
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it('GOVERNED cap:close.tie-out — reopen without reason returns error result', async () => {
+    actAs('Admin');
+    usePeriodCloseStore.setState({
+      entries: { 'PERIOD-4': makeEntry('PERIOD-4', 'soft-close') as never },
+      initialized: true,
+    } as never);
+    const result = await usePeriodCloseStore.getState().transition(
+      'PERIOD-4',
+      'reopen'
+    );
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('reason');
+  });
+
+  it('GOVERNED cap:close.tie-out — reopen with reason and approvalId succeeds for Admin', async () => {
+    actAs('Admin');
+    usePeriodCloseStore.setState({
+      entries: { 'PERIOD-5': makeEntry('PERIOD-5', 'soft-close') as never },
+      initialized: true,
+    } as never);
+    const result = await usePeriodCloseStore.getState().transition(
+      'PERIOD-5',
+      'reopen',
+      'Reopening for correction',
+      undefined,
+      'approval-1'
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it('GOVERNED cap:close.tie-out — force-reopen transition succeeds for Admin (locked → open)', async () => {
+    actAs('Admin');
+    usePeriodCloseStore.setState({
+      entries: { 'PERIOD-6': makeEntry('PERIOD-6', 'locked') as never },
+      initialized: true,
+    } as never);
+    const result = await usePeriodCloseStore.getState().transition(
+      'PERIOD-6',
+      'force-reopen',
+      'Force reopen by Admin',
+      undefined,
+      'approval-2'
+    );
+    expect(result.success).toBe(true);
+  });
+});

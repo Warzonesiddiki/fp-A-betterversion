@@ -623,3 +623,49 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 |
 | Remaining EXPERIMENTAL | 25 (engine/AI features) |
 | All gates PASS | ✓ |
+
+## Phase 17 — Period Close Store Transition Tests (2026-10-24)
+
+**Objective:** Test periodCloseStore's transition() method — the store's integration with the PeriodCloseStateMachine engine. This tests the full close lifecycle: open → soft-close → hard-close → locked, plus reopen and force-reopen paths.
+
+**Store tested:** periodCloseStore
+
+**Tests added:** 7 (batch 21)
+
+| # | Test | Claim |
+|---|------|-------|
+| 1 | transition with unknown periodId returns error result | stateClaim |
+| 2 | soft-close transition succeeds for Admin (open → soft-close) | stateClaim |
+| 3 | hard-close transition succeeds for Admin (soft-close → hard-close) | stateClaim |
+| 4 | lock transition succeeds for Admin (hard-close → locked) | stateClaim |
+| 5 | reopen without reason returns error result | stateClaim |
+| 6 | reopen with reason and approvalId succeeds for Admin | stateClaim |
+| 7 | force-reopen transition succeeds for Admin (locked → open) | stateClaim |
+
+**Capability claims:** 7 new under close.tie-out (44 capabilities, 207 total claims).
+
+**Key learning:** periodCloseStore.transition() is an async method that returns a result object (not throws) — it uses clean error results so the UI can render reasons instead of crashing. The state machine enforces: open → soft-close → hard-close → locked, with reopen (from soft-close or hard-close) and force-reopen (from locked) as alternative paths. Reopen requires a non-empty audit reason and an approvalId from an authorized approver (REOPEN_APPROVAL_ROLES: admin, compliance). Force-reopen requires Admin only (FORCE_REOPEN_APPROVAL_ROLES: admin). This is the 6th governance dimension: period close state machine integration (store wraps engine with permission and approval checks).
+
+**Test count:** 662 total. All passing.
+
+**Register SUPPORTED:** 146 (unchanged).
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 662 |
+| Routes governed | 104 |
+| Capability claims | 207 (44 capabilities) |
+| Register SUPPORTED | 146 |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL | 25 (engine/AI features) |
+| All gates PASS | ✓ |
+
+**Governance dimensions covered (6):**
+1. RBAC permission guards (enforce/assertPermission)
+2. Lifecycle state machine guards (assertBudgetTransition, LEGAL correction state machine)
+3. Input validation guards (forecastStore, tpBenchmarkStore, documentStore)
+4. Rule versioning validation (exceptionRuleCatalogue)
+5. Cross-store integration guards (glStore cube sync)
+6. Period close state machine integration (periodCloseStore transition)

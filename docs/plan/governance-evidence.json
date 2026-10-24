@@ -2825,6 +2825,41 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:close.tie-out \u2014 tie-out enforces write guards and audit chain",
         "proves": "Tie-out enforces write guards and audit chain; close journey runs end-to-end over two entities and two currencies."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 transition with unknown periodId returns error result",
+        "proves": "periodCloseStore.transition returns error result for unknown period; PERIOD_CLOSE permission passes for Admin"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 soft-close transition succeeds for Admin (open \u2192 soft-close)",
+        "proves": "periodCloseStore.transition soft-close succeeds for Admin; PeriodCloseStateMachine validates open \u2192 soft-close"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 hard-close transition succeeds for Admin (soft-close \u2192 hard-close)",
+        "proves": "periodCloseStore.transition hard-close succeeds for Admin; PeriodCloseStateMachine validates soft-close \u2192 hard-close"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 lock transition succeeds for Admin (hard-close \u2192 locked)",
+        "proves": "periodCloseStore.transition lock succeeds for Admin; PeriodCloseStateMachine validates hard-close \u2192 locked"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 reopen without reason returns error result",
+        "proves": "periodCloseStore.transition reopen returns error without reason; audit reason required for reopen"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 reopen with reason and approvalId succeeds for Admin",
+        "proves": "periodCloseStore.transition reopen succeeds for Admin with reason and approvalId; REOPEN_APPROVAL_ROLES enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out \u2014 force-reopen transition succeeds for Admin (locked \u2192 open)",
+        "proves": "periodCloseStore.transition force-reopen succeeds for Admin; FORCE_REOPEN_APPROVAL_ROLES (admin only) enforced"
       }
     ],
     "close.audit-chain": [
