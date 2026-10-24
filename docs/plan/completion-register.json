@@ -13,7 +13,7 @@
     "engines": 180,
     "requirements": 19,
     "annex": 200,
-    "capabilities": 67
+    "capabilities": 74
   },
   "rows": [
     {
@@ -3831,7 +3831,12 @@
         "governanceTest": "src/engines/AuditLogEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/AuditLogEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -3879,7 +3884,12 @@
         "governanceTest": "src/engines/BondPricingEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/BondPricingEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4008,7 +4018,12 @@
         "governanceTest": "src/engines/ComplianceEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/ComplianceEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4182,7 +4197,12 @@
         "governanceTest": "src/engines/DataGovernanceEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/DataGovernanceEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4239,7 +4259,12 @@
         "governanceTest": "src/engines/DepreciationEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/DepreciationEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4314,7 +4339,12 @@
         "governanceTest": "src/engines/EncryptionEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/EncryptionEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4380,7 +4410,12 @@
         "governanceTest": "src/engines/FXEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/FXEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4419,7 +4454,12 @@
         "governanceTest": "src/engines/FinancialCloseEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/FinancialCloseEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4440,7 +4480,12 @@
         "governanceTest": "src/engines/FiscalCalendar.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/FiscalCalendar.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4623,7 +4668,12 @@
         "governanceTest": "src/engines/LeaseEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/LeaseEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4752,7 +4802,12 @@
         "governanceTest": "src/engines/PeriodCloseStateMachine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/PeriodCloseStateMachine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4809,7 +4864,12 @@
         "governanceTest": "src/engines/RBACEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/RBACEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4848,7 +4908,12 @@
         "governanceTest": "src/engines/ReconciliationEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/ReconciliationEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -5112,7 +5177,12 @@
         "governanceTest": "src/engines/TaxEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/TaxEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -5142,7 +5212,12 @@
         "governanceTest": "src/engines/ThreeStatementEngine.governance.test.ts",
         "governanceTestResult": "PASS",
         "promotedFrom": "EXPERIMENTAL",
-        "promotedBy": "engine-level governance testing"
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/ThreeStatementEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -9266,6 +9341,201 @@
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (PayrollForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:close.financial-close-engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/FinancialCloseEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/FinancialCloseEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:govern.rbac",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/RBACEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/RBACEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:close.reconciliation-engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/ReconciliationEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/ReconciliationEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:govern.encryption",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/EncryptionEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/EncryptionEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:govern.audit-log",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/AuditLogEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/AuditLogEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:fiscal.calendar",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/FiscalCalendar.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/FiscalCalendar.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:statement.three-statement",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/ThreeStatementEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/ThreeStatementEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:fx.engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/FXEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/FXEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:tax.engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/TaxEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/TaxEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:fixed-assets.depreciation",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/DepreciationEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/DepreciationEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:treasury.lease-engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/LeaseEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/LeaseEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:treasury.bond-pricing",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/BondPricingEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/BondPricingEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:govern.compliance-engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/ComplianceEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/ComplianceEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:govern.data-governance",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/DataGovernanceEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/DataGovernanceEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:close.period-close-state-machine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/PeriodCloseStateMachine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/PeriodCloseStateMachine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
     }
   ]
 }

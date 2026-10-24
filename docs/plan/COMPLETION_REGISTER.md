@@ -14,12 +14,12 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 163 |
-| EXPERIMENTAL | 304 |
+| SUPPORTED | 193 |
+| EXPERIMENTAL | 289 |
 | BLOCKED-ON-OWNER | 6 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
-| Total rows | 693 |
+| Total rows | 708 |
 
 | Route disposition | Count |
 | --- | --- |
@@ -35,7 +35,7 @@ question that stops it. Nothing here is promoted by prose.
 | engines | 180 |
 | requirements | 19 |
 | annex | 200 |
-| capabilities | 67 |
+| capabilities | 82 |
 
 ## Routed screens (227)
 
@@ -286,12 +286,12 @@ question that stops it. Nothing here is promoted by prose.
 | `engine:AnomalyDetectionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ArrayFormulaEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:AssumptionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:AuditLogEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AuditLogEngine` | SUPPORTED | governanceTest=src/engines/AuditLogEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/AuditLogEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:AutoCommentaryEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:AutoSaveEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:BankingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:BatchOperationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:BondPricingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:BondPricingEngine` | SUPPORTED | governanceTest=src/engines/BondPricingEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/BondPricingEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:BreakEvenEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:BudgetCollectionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:COGSVarianceEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
@@ -305,7 +305,7 @@ question that stops it. Nothing here is promoted by prose.
 | `engine:CellProtectionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:CellValidationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ChartAnnotationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:ComplianceEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ComplianceEngine` | SUPPORTED | governanceTest=src/engines/ComplianceEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/ComplianceEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ConditionalFormattingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ConnectorEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ConnectorImportEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
@@ -324,13 +324,13 @@ question that stops it. Nothing here is promoted by prose.
 | `engine:DashboardBuilderEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:DataCatalogEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:DataClassificationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:DataGovernanceEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DataGovernanceEngine` | SUPPORTED | governanceTest=src/engines/DataGovernanceEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/DataGovernanceEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:DataLineageEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:DataMaskingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:DataQualityEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:DataRetentionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:DebtScheduleEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:DepreciationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DepreciationEngine` | SUPPORTED | governanceTest=src/engines/DepreciationEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/DepreciationEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:DimensionalModelingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:DocumentEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:DrillThroughEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
@@ -338,20 +338,20 @@ question that stops it. Nothing here is promoted by prose.
 | `engine:DriverLibrary` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ESGEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ETLPipelineEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:EncryptionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:EncryptionEngine` | SUPPORTED | governanceTest=src/engines/EncryptionEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/EncryptionEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:EnergyEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ExcelImportEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ExcelKeyboardEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ExcelKeyboardShortcuts` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ExportEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ExportTemplateEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:FXEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FXEngine` | SUPPORTED | governanceTest=src/engines/FXEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/FXEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:FairValueEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:FinPlanFileEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:FinanceCopilotEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:FinancialCloseEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FinancialCloseEngine` | SUPPORTED | governanceTest=src/engines/FinancialCloseEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/FinancialCloseEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:FinancialInstrumentsEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:FiscalCalendar` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FiscalCalendar` | SUPPORTED | governanceTest=src/engines/FiscalCalendar.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/FiscalCalendar.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:FiscalCalendarEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ForecastMethodEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ForecastReconciliationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
@@ -371,7 +371,7 @@ question that stops it. Nothing here is promoted by prose.
 | `engine:IntercompanyMatchingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:InventoryEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:IterativeCalculationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:LeaseEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:LeaseEngine` | SUPPORTED | governanceTest=src/engines/LeaseEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/LeaseEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:LoanAmortizationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:MDXEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ManufacturingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
@@ -385,17 +385,17 @@ question that stops it. Nothing here is promoted by prose.
 | `engine:OperationalDriverEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:OptionPricingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:PeriodCloseEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:PeriodCloseStateMachine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:PeriodCloseStateMachine` | SUPPORTED | governanceTest=src/engines/PeriodCloseStateMachine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/PeriodCloseStateMachine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:PeriodLockEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:PivotTableEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:PluginEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ProfessionalExportEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:QueryCache` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:RBACEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:RBACEngine` | SUPPORTED | governanceTest=src/engines/RBACEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/RBACEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:RatioAnalysisEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:RealEstateEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:RecentFilesEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:ReconciliationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ReconciliationEngine` | SUPPORTED | governanceTest=src/engines/ReconciliationEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/ReconciliationEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:RegulatoryReportingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ReportBookEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ReportBuilderEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
@@ -424,10 +424,10 @@ question that stops it. Nothing here is promoted by prose.
 | `engine:StateMachine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:StreamImportEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:SyncEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:TaxEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:TaxEngine` | SUPPORTED | governanceTest=src/engines/TaxEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/TaxEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:TemplateEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:TemplateLibrary` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
-| `engine:ThreeStatementEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ThreeStatementEngine` | SUPPORTED | governanceTest=src/engines/ThreeStatementEngine.governance.test.ts; governanceTestResult=PASS; promotedFrom=EXPERIMENTAL; promotedBy=engine-level governance testing; tests=src/engines/ThreeStatementEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:UndoRedoEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:ValidationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
 | `engine:VarianceAttributionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
@@ -683,7 +683,7 @@ question that stops it. Nothing here is promoted by prose.
 | `annex:98` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "MISSING". |
 | `annex:99` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — zero-attrition a11y suites exist; WCAG 2.2 AA full coverage UNPROVEN". |
 
-## Vision capabilities (67)
+## Vision capabilities (82)
 
 | Id | Status | Evidence | Note |
 | --- | --- | --- | --- |
@@ -754,5 +754,20 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:wf.human-attribution` | SUPPORTED | gatedBy=/audit-trail; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/__tests__/spineGovernance.test.ts] | SUPPORTED — auditTrailStore human attribution verified by 8 spine governance tests covering recordUpdate/recordDelete/recordRead attribution, recordBulk transactionId grouping, approvalUserId/approvalStatus/approvalTimestamp recording, exportToCSV/exportToJSON PII masking, and audit chain integrity. |
 | `cap:wf.rbac` | SUPPORTED | gatedBy=/settings/security; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:wf.reviews` | SUPPORTED | gatedBy=/workflow; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/__tests__/spineGovernance.test.ts] | SUPPORTED — workflowStore review workflow methods (submitRequest, approveRequest, rejectRequest, delegateRequest, bulkApprove) verified by 12 spine governance tests covering RBAC authorization for all review workflow methods. Viewer denied all; Admin reaches enforce gate. |
+| `cap:close.financial-close-engine` | SUPPORTED | tests=src/engines/FinancialCloseEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/FinancialCloseEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:govern.rbac` | SUPPORTED | tests=src/engines/RBACEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/RBACEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:close.reconciliation-engine` | SUPPORTED | tests=src/engines/ReconciliationEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/ReconciliationEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:govern.encryption` | SUPPORTED | tests=src/engines/EncryptionEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/EncryptionEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:govern.audit-log` | SUPPORTED | tests=src/engines/AuditLogEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/AuditLogEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:fiscal.calendar` | SUPPORTED | tests=src/engines/FiscalCalendar.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/FiscalCalendar.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:statement.three-statement` | SUPPORTED | tests=src/engines/ThreeStatementEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/ThreeStatementEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:fx.engine` | SUPPORTED | tests=src/engines/FXEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/FXEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:tax.engine` | SUPPORTED | tests=src/engines/TaxEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/TaxEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:fixed-assets.depreciation` | SUPPORTED | tests=src/engines/DepreciationEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/DepreciationEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:treasury.lease-engine` | SUPPORTED | tests=src/engines/LeaseEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/LeaseEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:treasury.bond-pricing` | SUPPORTED | tests=src/engines/BondPricingEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/BondPricingEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:govern.compliance-engine` | SUPPORTED | tests=src/engines/ComplianceEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/ComplianceEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:govern.data-governance` | SUPPORTED | tests=src/engines/DataGovernanceEngine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/DataGovernanceEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
+| `cap:close.period-close-state-machine` | SUPPORTED | tests=src/engines/PeriodCloseStateMachine.governance.test.ts; gate=test:sharded; doc=docs/plan/governance-evidence.json | Engine-level governance testing (src/engines/PeriodCloseStateMachine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED. |
 
 <!-- REGISTER:END -->
