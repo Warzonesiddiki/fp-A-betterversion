@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 153 |
-| EXPERIMENTAL | 314 |
+| SUPPORTED | 154 |
+| EXPERIMENTAL | 313 |
 | BLOCKED-ON-OWNER | 6 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -746,7 +746,7 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:report.pptx-editable` | EXPERIMENTAL | gatedBy=/board-pack | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:report.statements` | SUPPORTED | gatedBy=/reports/three-statement; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=5 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (5 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:report.tie-back` | SUPPORTED | connected=1 [src/pages/reports/BoardPackPage.exportTieOut.test.tsx]; governed=1 [src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/BoardPackPage.exportTieOut.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
-| `cap:report.xlsx-formula` | EXPERIMENTAL | gatedBy=/reports | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:report.xlsx-formula` | SUPPORTED | gatedBy=/reports; tests=src/engines/report-builder-formulas.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/report-builder-formulas.governance.test.ts] | SUPPORTED — report-builder-formulas engine formula evaluation safety verified by 30 engine-level governance tests covering formula parsing, evaluation, safe evaluation (no code injection), missing/non-finite cell detection, column conversion, circular reference detection, and determinism. |
 | `cap:wf.administration` | SUPPORTED | gatedBy=/admin; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:wf.approvals` | SUPPORTED | gatedBy=/budgets/approval; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (3 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:wf.auditability` | SUPPORTED | gatedBy=/audit/trail; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
