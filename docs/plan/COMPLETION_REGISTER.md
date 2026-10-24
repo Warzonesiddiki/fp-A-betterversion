@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 148 |
-| EXPERIMENTAL | 319 |
+| SUPPORTED | 149 |
+| EXPERIMENTAL | 318 |
 | BLOCKED-ON-OWNER | 6 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -724,7 +724,7 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:govern.entity-scope` | BLOCKED-ON-OWNER | owner=O9; question=Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
 | `cap:govern.security-policy` | EXPERIMENTAL | gatedBy=/settings/security | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:govern.sox-authority` | BLOCKED-ON-OWNER | owner=O4; question=SOX/audit authority decision (O4, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
-| `cap:model.consolidation` | EXPERIMENTAL | gatedBy=/consolidation | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:model.consolidation` | SUPPORTED | gatedBy=/consolidation; tests=src/engines/ConsolidationEngine.governance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/engines/ConsolidationEngine.governance.test.ts] | SUPPORTED — ConsolidationEngine ASC 810 compliance verified by 21 engine-level governance tests covering input validation, IC elimination, minority interest, balance check, money primitive safety, failed result safety, cent-exact tolerance, and determinism. Promoted per DEC-100. |
 | `cap:model.fx-translation` | SUPPORTED | gatedBy=/currency/translation; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:model.ic-elimination` | EXPERIMENTAL | gatedBy=/consolidation/ic-eliminations | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:model.leases` | SUPPORTED | gatedBy=/lease; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
