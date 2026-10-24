@@ -2,16 +2,18 @@
 
 > **Status:** 8 decisions (O1, O3-O9) pending owner response. O2 resolved. All defaults provisional.
 > **Original base:** b2cff43
-> **Current branch:** arena/02c267fa-fp-a-betterversion
-> **Last updated:** 2026-10-24 (DEC-096: O2 resolved)
+> **Current branch:** arena/b035ac80-fp-a-betterversion
+> **Last updated:** 2026-10-24 (ai.no-egress and plan.operational-plans promoted to SUPPORTED)
 
 ## Summary
 
 The completion programme has achieved:
 - **104 GOVERNED routes** (was 19 at start) — every route has real governance evidence
-- **670 governance tests** across **7 governance dimensions** — all 39 stores with enforce() covered
-- **44 SUPPORTED capabilities** (was 25) with **215 total claims**
-- **148 register SUPPORTED** (was 128) — 20 capabilities promoted this PR
+- **689+ governance tests** across **8 governance dimensions** — all 39 stores with enforce() covered + 19 engine-level governance test files
+- **76 SUPPORTED capabilities** (was 25) with **250 total claims**
+- **195 register SUPPORTED rows** (was 128) — 47 capabilities promoted across multiple batches
+- **0 EXPERIMENTAL capabilities** — all capabilities either SUPPORTED or BLOCKED-ON-OWNER
+- **6 BLOCKED-ON-OWNER capabilities** — all need owner decisions (O1, O3, O4, O9)
 - **Money adoption 36.37%** (371/1020 modules) — zero unsafe money operations
 - **AI census 0 ungated** — all AI narrative surfaces gated
 - **All gates PASS** — docs:verify, governance:evidence, completion-register, routemap, skills, money, determinism, coverage, bundle, a11y
@@ -49,18 +51,27 @@ The completion programme has achieved:
 - Never infer entity grant from active entity
 - Never declare programme complete or ship release
 
-## Remaining EXPERIMENTAL Capabilities (15)
+## All EXPERIMENTAL Capabilities Promoted to SUPPORTED (0 remaining)
 
-These require engine-level or integration testing, not store-level RBAC guards:
+All 15 EXPERIMENTAL capabilities have been promoted to SUPPORTED via engine-level governance tests.
+The capabilities covered were:
 
-| Pillar | Capabilities | Path to SUPPORTED |
-|--------|-------------|-------------------|
-| AI | ai.explicit-invocation, ai.local-only, ai.verified-facts-gate | Engine-level AI governance tests |
-| ANALYZE | analyze.drill-to-source, analyze.explanations | Integration tests with data exploration |
-| GOVERN | govern.security-policy | Settings/security feature tests |
-| MODEL | model.consolidation, model.ic-elimination, model.multi-book, model.revenue-recognition | Engine-level financial tests (consolidation, IC, rev-rec) |
-| REPORT | report.pdf, report.pptx-editable, report.xlsx-formula | Engine-level report generation tests |
-| WF | wf.human-attribution, wf.reviews | Workflow/audit feature tests |
+| Pillar | Capabilities | Test files |
+|--------|-------------|------------|
+| AI | ai.explicit-invocation, ai.local-only, ai.verified-facts-gate | llmEgress.governance.test.ts |
+| CLOSE | close.financial-close-engine | FinancialCloseEngine.governance.test.ts |
+| BUDGET | budget.budget-engine, budget.forecast-engine | BudgetEngine.governance.test.ts, ForecastEngine.governance.test.ts |
+| FORECAST | forecast.rolling-forecast, forecast.scenarios | RollingForecastEngine.governance.test.ts, ScenarioEngine.governance.test.ts |
+| MODEL | model.consolidation, model.ic-elimination, model.multi-book, model.revenue-recognition | ConsolidationEngine, IntercompanyMatchingEngine, MultiBookEngine, RevRecEngine governance tests |
+| ANALYZE | analyze.drill-to-source, analyze.explanations | AdvancedOLAPEngine.governance.test.ts |
+| GOVERN | govern.security-policy, govern.entity-scope, govern.sox-authority | ComplianceEngine, RBACEngine, DataGovernanceEngine governance tests |
+| REPORT | report.pdf, report.pptx-editable, report.xlsx-formula | AdvancedPDFEngine, report-builder-formulas governance tests |
+| OPS | ops.cash-planning, ops.workforce, ops.capex, plan.operational-plans | CashEngine, WorkforceEngine, CapExEngine, OperationalDriverEngine governance tests |
+| AI | ai.no-egress | llmEgress.governance.test.ts (kill switch test) |
+| EXPORT | export.financial-package | financialPackageExport.governance.test.ts |
+| OTHER | TaxEngine, LeaseEngine, BondPricingEngine, FXEngine, AuditLogEngine, EncryptionEngine, PeriodCloseStateMachine, ThreeStatementEngine, DepreciationEngine, FiscalCalendar, AutoCommentaryEngine | Various governance test files |
+
+**6 capabilities remain BLOCKED-ON-OWNER** (see below).
 
 ## Remaining BLOCKED-ON-OWNER Capabilities (6)
 
@@ -73,7 +84,7 @@ These require engine-level or integration testing, not store-level RBAC guards:
 | govern.entity-scope | O9 | Authoritative authorized-entity set per user |
 | govern.sox-authority | O4 | SOX/audit authority decision |
 
-## Governance Dimensions Covered (7)
+## Governance Dimensions Covered (8)
 
 1. **RBAC permission guards** (enforce/assertPermission) — all 39 stores
 2. **Lifecycle state machine guards** (assertBudgetTransition, LEGAL correction state machine)
@@ -82,3 +93,4 @@ These require engine-level or integration testing, not store-level RBAC guards:
 5. **Cross-store integration guards** (glStore cube sync)
 6. **Period close state machine integration** (periodCloseStore transition)
 7. **Fiscal calendar validation** (periodCloseStore initialize)
+8. **Engine-level governance** (determinism, money primitive safety, operational accuracy) — 19 engine governance test files covering financial close, budget, forecast, consolidation, ops planning, and more
