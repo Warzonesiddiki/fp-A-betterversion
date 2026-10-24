@@ -586,3 +586,40 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 |
 | Remaining EXPERIMENTAL | 25 (engine/AI features) |
 | All gates PASS | ✓ |
+
+## Phase 16 — GL Store Import Method Tests (2026-10-24)
+
+**Objective:** Test glStore's remaining financial methods (addEntries, setAccounts, recordImport) with blockInvalidAmounts and blockPeriodWrite validation guards.
+
+**Store tested:** glStore
+
+**Tests added:** 6 (batch 20)
+
+| # | Test | Claim |
+|---|------|-------|
+| 1 | addEntries denies Viewer (IMPORT_CREATE) | stateClaim |
+| 2 | addEntries with valid entries succeeds for Admin | stateClaim |
+| 3 | setAccounts denies Viewer (IMPORT_UPDATE) | stateClaim |
+| 4 | setAccounts with Admin succeeds | stateClaim |
+| 5 | recordImport denies Viewer (IMPORT_CREATE) | stateClaim |
+| 6 | recordImport with Admin succeeds, audit chain intact | stateClaim |
+
+**Capability claims:** 6 new under data.csv-xlsx-intake (44 capabilities, 200 total claims).
+
+**Key learning:** glStore.addEntries has two validation guards: `blockInvalidAmounts` (prevents invalid debit/credit amounts) and `blockPeriodWrite` (prevents writing to closed periods). Both return early (no throw) when validation fails — the method silently skips invalid entries. `setAccounts` also has `blockPeriodWrite`. `recordImport` has no validation guards — it records import results in history. All three methods use IMPORT_CREATE/IMPORT_UPDATE permissions.
+
+**Test count:** 655 total. All passing.
+
+**Register SUPPORTED:** 146 (unchanged).
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 655 |
+| Routes governed | 104 |
+| Capability claims | 200 (44 capabilities) |
+| Register SUPPORTED | 146 |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL | 25 (engine/AI features) |
+| All gates PASS | ✓ |

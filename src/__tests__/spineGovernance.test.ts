@@ -5751,3 +5751,64 @@ describe('GOVERNED capability-level — glStore cube sync integration tests (bat
     }
   });
 });
+
+describe('GOVERNED capability-level — glStore import method tests (batch 20)', () => {
+  it('GOVERNED cap:data.csv-xlsx-intake — addEntries denies Viewer (IMPORT_CREATE required)', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() =>
+      useGLStore.getState().addEntries([
+        { accountCode: 'A', debit: 100, credit: 0, postDate: '2024-01-01' } as never,
+      ])
+    );
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — addEntries with valid entries succeeds for Admin', () => {
+    actAs('Admin');
+    useGLStore.getState().addEntries([
+      { accountCode: 'A', debit: 100, credit: 0, postDate: '2024-01-01' } as never,
+    ]);
+    expect(useGLStore.getState().entries.length).toBeGreaterThan(0);
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — setAccounts denies Viewer (IMPORT_UPDATE required)', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() =>
+      useGLStore.getState().setAccounts([{ code: 'A', name: 'Account A' } as never])
+    );
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — setAccounts with Admin succeeds', () => {
+    actAs('Admin');
+    expect(() =>
+      useGLStore.getState().setAccounts([{ code: 'A', name: 'Account A' } as never])
+    ).not.toThrow();
+    expect(useGLStore.getState().accounts).toHaveLength(1);
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — recordImport denies Viewer (IMPORT_CREATE required)', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() =>
+      useGLStore.getState().recordImport({
+        batchId: 'batch-1',
+        status: 'success',
+        rowCount: 10,
+        successCount: 10,
+        errorCount: 0,
+      } as never)
+    );
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — recordImport with Admin succeeds, audit chain intact', () => {
+    actAs('Admin');
+    useGLStore.getState().recordImport({
+      batchId: 'batch-1',
+      status: 'success',
+      rowCount: 10,
+      successCount: 10,
+      errorCount: 0,
+    } as never);
+    expect(useGLStore.getState().importHistory).toHaveLength(1);
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+});

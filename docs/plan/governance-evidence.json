@@ -2685,6 +2685,36 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 syncFromCube with Admin passes permission check (no PermissionError)",
         "proves": "glStore.syncFromCube passes permission check for Admin; no PermissionError even if cube query fails"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 addEntries denies Viewer (IMPORT_CREATE required)",
+        "proves": "glStore.addEntries requires import:create; Viewer denied; IMPORT_CREATE permission enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 addEntries with valid entries succeeds for Admin",
+        "proves": "glStore.addEntries succeeds with valid entries for Admin; blockInvalidAmounts and blockPeriodWrite guards pass"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 setAccounts denies Viewer (IMPORT_UPDATE required)",
+        "proves": "glStore.setAccounts requires import:update; Viewer denied; IMPORT_UPDATE permission enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 setAccounts with Admin succeeds",
+        "proves": "glStore.setAccounts succeeds for Admin; blockPeriodWrite guard passes; accounts stored"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 recordImport denies Viewer (IMPORT_CREATE required)",
+        "proves": "glStore.recordImport requires import:create; Viewer denied; IMPORT_CREATE permission enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 recordImport with Admin succeeds, audit chain intact",
+        "proves": "glStore.recordImport succeeds for Admin; import history recorded; audit chain verifies"
       }
     ],
     "data.mapping": [
