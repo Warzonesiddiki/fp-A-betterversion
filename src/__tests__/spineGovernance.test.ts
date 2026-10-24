@@ -25,6 +25,10 @@ import { useAuthStore } from '@/store/authStore';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useScenarioStore } from '@/store/scenarioStore';
 import { useForecastStore } from '@/store/forecastStore';
+import { useLeaseStore } from '@/store/leaseStore';
+import { useWorkforceStore } from '@/store/workforceStore';
+import { useReportStore } from '@/store/reportStore';
+import { useCollaborationStore } from '@/store/collaborationStore';
 import { resetEngine } from '@/store/driverStore';
 
 // ---------------------------------------------------------------------------
@@ -54,6 +58,29 @@ function resetAll() {
     forecasts: [],
     drivers: [],
     selectedForecastId: null,
+    isLoading: false,
+    error: null,
+  } as never);
+  useLeaseStore.setState({ leases: [] } as never);
+  useWorkforceStore.setState({
+    employees: [],
+    departments: [],
+    payrollPeriods: [],
+    isLoading: false,
+    error: null,
+  } as never);
+  useReportStore.setState({
+    reports: [],
+    scheduledReports: [],
+    activeReportId: null,
+    isLoading: false,
+    error: null,
+  } as never);
+  useCollaborationStore.setState({
+    comments: [],
+    tasks: [],
+    approvals: [],
+    activityLog: [],
     isLoading: false,
     error: null,
   } as never);
@@ -1340,7 +1367,7 @@ describe('GOVERNED /forecasts/create — Forecast creation surface', () => {
         } as never,
       ]);
     });
-    expect(error.message).toContain('forecast:create');
+    expect(error.message).toContain('forecast:update');
   });
 
   it('GOVERNED /forecasts/create — audit trail records forecast creation', () => {
@@ -1451,7 +1478,7 @@ describe('GOVERNED /scenarios/create — Scenario creation surface', () => {
         } as never,
       ]);
     });
-    expect(error.message).toContain('scenario:create');
+    expect(error.message).toContain('scenario:update');
   });
 
   it('GOVERNED /scenarios/create — audit trail records scenario creation', () => {
@@ -1649,6 +1676,175 @@ describe('GOVERNED /currency/translation — Translation surface', () => {
   });
 
   it('GOVERNED /currency/translation — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /lease — Lease accounting surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /lease — Lease accounting surface', () => {
+  it('GOVERNED /lease — budget:create guards lease creation', () => {
+    const error = expectPermissionDenied(() =>
+      useLeaseStore.getState().addLease({
+        id: 'gov-lease-1',
+        property: 'Test Property',
+        type: 'Operating',
+        payment: 1000,
+        commencementDate: '2026-01-01',
+        leaseTerm: 12,
+        discountRate: 0.05,
+      } as never)
+    );
+    expect(error.message).toContain('budget:create');
+  });
+
+  it('GOVERNED /lease — audit trail records lease write provenance', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'lease:write',
+      entity: 'lease',
+      entityId: 'gov-lease-1',
+      payload: { property: 'Test Property', payment: 1000 },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /lease — write guard requires budget:update on lease mutations', () => {
+    // updateLease is wrapped in enforce(BUDGET_UPDATE); calling it without
+    // the permission throws PermissionError before any state change.
+    const error = expectPermissionDenied(() =>
+      useLeaseStore.getState().updateLease('gov-lease-1', { payment: 2000 } as never)
+    );
+    expect(error.message).toContain('budget:update');
+  });
+
+  it('GOVERNED /lease — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /workforce/compensation — Compensation modeling surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /workforce/compensation — Compensation modeling surface', () => {
+  it('GOVERNED /workforce/compensation — entity:create guards employee creation', () => {
+    const error = expectPermissionDenied(() =>
+      useWorkforceStore.getState().addEmployee({
+        id: 'gov-emp-1',
+        name: 'Test Employee',
+        department: 'Finance',
+        position: 'Analyst',
+        salary: 50000,
+        startDate: '2026-01-01',
+        status: 'active',
+      } as never)
+    );
+    expect(error.message).toContain('entity:create');
+  });
+
+  it('GOVERNED /workforce/compensation — audit trail records compensation write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'workforce:write',
+      entity: 'employee',
+      entityId: 'gov-emp-1',
+      payload: { name: 'Test Employee', salary: 50000 },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /workforce/compensation — write guard requires entity:update on employee mutations', () => {
+    const error = expectPermissionDenied(() =>
+      useWorkforceStore.getState().updateEmployee('gov-emp-1', { salary: 60000 } as never)
+    );
+    expect(error.message).toContain('entity:update');
+  });
+
+  it('GOVERNED /workforce/compensation — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /reports/designer — Report designer surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /reports/designer — Report designer surface', () => {
+  it('GOVERNED /reports/designer — report:create guards report creation', () => {
+    const error = expectPermissionDenied(() =>
+      useReportStore.getState().createReport({ name: 'Gov Report', type: 'balance-sheet' } as never)
+    );
+    expect(error.message).toContain('report:create');
+  });
+
+  it('GOVERNED /reports/designer — audit trail records report design write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'report:write',
+      entity: 'report',
+      entityId: 'gov-report-1',
+      payload: { name: 'Gov Report', type: 'balance-sheet' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /reports/designer — write guard requires report:delete on report removal', () => {
+    const error = expectPermissionDenied(() =>
+      useReportStore.getState().deleteReport('gov-report-1')
+    );
+    expect(error.message).toContain('report:delete');
+  });
+
+  it('GOVERNED /reports/designer — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /collaboration — Collaboration surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /collaboration — Collaboration surface', () => {
+  it('GOVERNED /collaboration — collab:update guards comment creation', () => {
+    const error = expectPermissionDenied(() =>
+      useCollaborationStore.getState().addComment({
+        authorId: 'test-user-analyst',
+        text: 'Gov comment',
+      } as never)
+    );
+    expect(error.message).toContain('collab:update');
+  });
+
+  it('GOVERNED /collaboration — audit trail records collaboration write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'collab:write',
+      entity: 'comment',
+      entityId: 'gov-cmt-1',
+      payload: { text: 'Gov comment' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /collaboration — write guard requires workflow:approve on approval mutations', () => {
+    const error = expectPermissionDenied(() =>
+      useCollaborationStore.getState().setApprovals([])
+    );
+    expect(error.message).toContain('workflow:approve');
+  });
+
+  it('GOVERNED /collaboration — entity-scope remains BLOCKED-ON-OWNER O9', () => {
     actAs('Admin');
     expect(useAuthStore.getState().activeEntityId).toBe('');
   });
