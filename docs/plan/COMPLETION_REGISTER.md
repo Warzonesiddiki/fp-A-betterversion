@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 155 |
-| EXPERIMENTAL | 312 |
+| SUPPORTED | 156 |
+| EXPERIMENTAL | 311 |
 | BLOCKED-ON-OWNER | 6 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -751,7 +751,7 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:wf.approvals` | SUPPORTED | gatedBy=/budgets/approval; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (3 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:wf.auditability` | SUPPORTED | gatedBy=/audit/trail; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:wf.correction-follow-through` | SUPPORTED | gatedBy=/data/corrections; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
-| `cap:wf.human-attribution` | EXPERIMENTAL | gatedBy=/audit/trail | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:wf.human-attribution` | SUPPORTED | gatedBy=/audit-trail; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/__tests__/spineGovernance.test.ts] | SUPPORTED — auditTrailStore human attribution verified by 8 spine governance tests covering recordUpdate/recordDelete/recordRead attribution, recordBulk transactionId grouping, approvalUserId/approvalStatus/approvalTimestamp recording, exportToCSV/exportToJSON PII masking, and audit chain integrity. |
 | `cap:wf.rbac` | SUPPORTED | gatedBy=/settings/security; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md; governed=2 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts] | GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated. |
 | `cap:wf.reviews` | SUPPORTED | gatedBy=/workflow; tests=src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md; governed=1 [src/__tests__/spineGovernance.test.ts] | SUPPORTED — workflowStore review workflow methods (submitRequest, approveRequest, rejectRequest, delegateRequest, bulkApprove) verified by 12 spine governance tests covering RBAC authorization for all review workflow methods. Viewer denied all; Admin reaches enforce gate. |
 
