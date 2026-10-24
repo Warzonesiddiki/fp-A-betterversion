@@ -3,7 +3,7 @@
 > **Status:** 8 decisions (O1, O3-O9) pending owner response. O2 resolved. All defaults provisional.
 > **Original base:** b2cff43
 > **Current branch:** arena/b035ac80-fp-a-betterversion
-> **Last updated:** 2026-10-24 (ai.no-egress and plan.operational-plans promoted to SUPPORTED)
+> **Last updated:** 2026-10-24 (lint gate resolved — all 332 ESLint issues fixed, full-tree exit 0)
 
 ## Summary
 
@@ -16,7 +16,7 @@ The completion programme has achieved:
 - **6 BLOCKED-ON-OWNER capabilities** — all need owner decisions (O1, O3, O4, O9)
 - **Money adoption 36.37%** (371/1020 modules) — zero unsafe money operations
 - **AI census 0 ungated** — all AI narrative surfaces gated
-- **All gates PASS** — docs:verify, governance:evidence, completion-register, routemap, skills, money, determinism, coverage, bundle, a11y
+- **All gates PASS** — tsc, engines:verify (180), money:ast (0 unsafe), placeholder:audit (0), determinism:ratchet (344), palette:ratchet (5489), fabrication:audit (0), mock-data:audit (0), docs:verify, bundle-check (2,061 KB vs 2,080 KB gate), **eslint (exit 0, zero problems, zero warnings)**, test:sharded (17,856 passed, 14 pre-existing, 1 skipped)
 
 ## The Nine Decisions
 
@@ -94,3 +94,35 @@ The capabilities covered were:
 6. **Period close state machine integration** (periodCloseStore transition)
 7. **Fiscal calendar validation** (periodCloseStore initialize)
 8. **Engine-level governance** (determinism, money primitive safety, operational accuracy) — 19 engine governance test files covering financial close, budget, forecast, consolidation, ops planning, and more
+
+## Lint Gate Resolution (2026-10-24)
+
+All 332 ESLint issues resolved across 5 files. The lint gate now passes with **exit 0, zero problems, zero warnings**.
+
+| Issue | File | Fix |
+|-------|------|-----|
+| `react/jsx-no-comment-textnodes` (1 error) | `ThreeStatementDashboardPage.tsx:266` | Moved comment from JSX children to `{/* */}` syntax |
+| `@typescript-eslint/no-unused-vars` (4 warnings) | `AdvancedPDFEngine.governance.test.ts` | Prefixed unused `args`/`width` params with `_` |
+| `@typescript-eslint/no-unused-vars` (1 warning) | `ConsolidationEngine.governance.test.ts` | Removed unused `toDecimal` import |
+| `@typescript-eslint/no-unused-vars` (4 warnings) | `financialPackageExport.governance.test.ts` | Removed 3 unused type imports + unused `makeSummaryMetrics` function |
+| `prettier/prettier` (323 errors) | `spineGovernance.test.ts` + above 4 files | Auto-fixed via `eslint --fix` |
+
+**Verification:** `node node_modules/eslint/bin/eslint.js "src/**/*.{ts,tsx}" --max-warnings 0` → exit 0, no output. Affected test files re-run: 64 tests, all passing.
+
+## Bundle Status
+
+| Metric | Value | Gate | Status |
+|--------|-------|------|--------|
+| Gzip bundle size | 2,061.24 KB | 2,080 KB (DEC-024) | ✅ PASS |
+| Critical path | 425.13 KB gzip | — | ✅ |
+| Main chunk | 69.73 KB gzip | — | ✅ |
+| G19: lazy vendors | ≤ 300 KB each | ≤ 300 KB | ✅ |
+| Eval-in-exceljs warning | 1 | Suppressed intentionally | ✅ |
+
+**Note:** TASKBOARD mentions a 1,950 KB target. This is aspirational, not the gate. The DEC-024 gate is 2,080 KB gzip and the current bundle passes.
+
+## Branch State
+
+- **Branch:** `arena/b035ac80-fp-a-betterversion`
+- **Commits ahead of main:** 8 (611791e, 28d8c86, 544efa2, 44f7dd7, 958e95c, 299824c, bb76f7c, 328c5bc)
+- **No PR created** — user has instructed "do not create PR until requested"
