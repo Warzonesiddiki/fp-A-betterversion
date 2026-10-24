@@ -469,3 +469,46 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 |
 | Remaining EXPERIMENTAL | 25 (engine/AI features) |
 | All gates PASS | ✓ |
+
+## Phase 13 — TP Benchmark + Document Store Validation Guard Tests (2026-10-24)
+
+**Objective:** Test validation guards in tpBenchmarkStore and documentStore — expanding the input validation governance dimension to stores with financial evidence requirements.
+
+**Stores tested:** tpBenchmarkStore, documentStore
+
+**Tests added:** 12 (batch 16: 6 tpBenchmarkStore, batch 17: 6 documentStore)
+
+| # | Test | Claim |
+|---|------|-------|
+| 1 | tpBenchmarkStore: attachBenchmark with empty transactionId throws | stateClaim |
+| 2 | tpBenchmarkStore: attachBenchmark with empty studyRef throws | stateClaim |
+| 3 | tpBenchmarkStore: attachBenchmark with rangeLow > rangeHigh throws | stateClaim |
+| 4 | tpBenchmarkStore: attachBenchmark with non-finite margin throws | stateClaim |
+| 5 | tpBenchmarkStore: attachBenchmark with valid data succeeds | stateClaim |
+| 6 | tpBenchmarkStore: removeBenchmark with TAX_UPDATE succeeds | stateClaim |
+| 7 | documentStore: addDocument with empty name throws | stateClaim |
+| 8 | documentStore: addDocument with name > 200 chars throws | stateClaim |
+| 9 | documentStore: addDocument with negative size throws | stateClaim |
+| 10 | documentStore: addDocument with non-finite size throws | stateClaim |
+| 11 | documentStore: tagDocument with empty tag throws | stateClaim |
+| 12 | documentStore: addDocument with valid input succeeds, audit chain intact | stateClaim |
+
+**Capability claims:** 12 new (model.tax: 6, admin.data-management: 6). 44 capabilities, 182 total claims.
+
+**Key learning:** tpBenchmarkStore requires Admin role for TAX_UPDATE permission (only Admin has it). documentStore's addDocument/tagDocument have validation guards but no permission checks (they're content management, not financial operations). The validation guards enforce financial evidence requirements: benchmark study references must be non-empty ("evidence, not assertion"), range values must be finite with rangeLow <= rangeHigh.
+
+**Test count:** 637 total (597 base + 6 batch 12 + 8 batch 13 + 8 batch 14 + 6 batch 15 + 12 batches 16-17). All passing.
+
+**Register SUPPORTED:** 146 (unchanged — model.tax and admin.data-management already SUPPORTED).
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 637 |
+| Routes governed | 104 |
+| Capability claims | 182 (44 capabilities) |
+| Register SUPPORTED | 146 |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL | 25 (engine/AI features) |
+| All gates PASS | ✓ |

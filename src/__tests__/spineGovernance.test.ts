@@ -33,6 +33,7 @@ import { useSettingsStore } from '@/store/settingsStore';
 import { useFxRateStore } from '@/store/fxRateStore';
 import { useCubeStore } from '@/store/cubeStore';
 import { useDocumentStore } from '@/store/documentStore';
+import { useTPBenchmarkStore } from '@/store/tpBenchmarkStore';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useIntegrationStore } from '@/store/integrationStore';
 import { useConstructionStore } from '@/store/constructionStore';
@@ -5482,6 +5483,129 @@ describe('GOVERNED capability-level — forecastStore validation guard tests (ba
     } as never);
     expect(id).toBeTruthy();
     expect(useForecastStore.getState().forecasts).toHaveLength(1);
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+});
+
+describe('GOVERNED capability-level — tpBenchmarkStore validation guard tests (batch 16)', () => {
+  it('GOVERNED cap:model.tax — attachBenchmark with empty transactionId throws validation error', () => {
+    actAs('Admin');
+    expect(() =>
+      useTPBenchmarkStore.getState().attachBenchmark('', {
+        studyRef: 'IRS-2024',
+        margin: 0.05,
+        rangeLow: 0.03,
+        rangeHigh: 0.07,
+      } as never)
+    ).toThrow(/transaction is required/);
+  });
+
+  it('GOVERNED cap:model.tax — attachBenchmark with empty studyRef throws validation error', () => {
+    actAs('Admin');
+    expect(() =>
+      useTPBenchmarkStore.getState().attachBenchmark('tx-1', {
+        studyRef: '',
+        margin: 0.05,
+        rangeLow: 0.03,
+        rangeHigh: 0.07,
+      } as never)
+    ).toThrow(/study reference is required/);
+  });
+
+  it('GOVERNED cap:model.tax — attachBenchmark with rangeLow > rangeHigh throws validation error', () => {
+    actAs('Admin');
+    expect(() =>
+      useTPBenchmarkStore.getState().attachBenchmark('tx-1', {
+        studyRef: 'IRS-2024',
+        margin: 0.05,
+        rangeLow: 0.10,
+        rangeHigh: 0.03,
+      } as never)
+    ).toThrow(/rangeLow.*rangeHigh|finite/);
+  });
+
+  it('GOVERNED cap:model.tax — attachBenchmark with non-finite margin throws validation error', () => {
+    actAs('Admin');
+    expect(() =>
+      useTPBenchmarkStore.getState().attachBenchmark('tx-1', {
+        studyRef: 'IRS-2024',
+        margin: Infinity,
+        rangeLow: 0.03,
+        rangeHigh: 0.07,
+      } as never)
+    ).toThrow(/finite/);
+  });
+
+  it('GOVERNED cap:model.tax — attachBenchmark with valid data succeeds', () => {
+    actAs('Admin');
+    expect(() =>
+      useTPBenchmarkStore.getState().attachBenchmark('tx-1', {
+        studyRef: 'IRS-2024',
+        margin: 0.05,
+        rangeLow: 0.03,
+        rangeHigh: 0.07,
+      } as never)
+    ).not.toThrow();
+    expect(useTPBenchmarkStore.getState().benchmarks['tx-1']).toBeDefined();
+  });
+
+  it('GOVERNED cap:model.tax — removeBenchmark with TAX_UPDATE permission succeeds', () => {
+    actAs('Admin');
+    useTPBenchmarkStore.getState().attachBenchmark('tx-2', {
+      studyRef: 'IRS-2024',
+      margin: 0.05,
+      rangeLow: 0.03,
+      rangeHigh: 0.07,
+    } as never);
+    expect(() => useTPBenchmarkStore.getState().removeBenchmark('tx-2')).not.toThrow();
+    expect(useTPBenchmarkStore.getState().benchmarks['tx-2']).toBeUndefined();
+  });
+});
+
+describe('GOVERNED capability-level — documentStore validation guard tests (batch 17)', () => {
+  it('GOVERNED cap:admin.data-management — addDocument with empty name throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useDocumentStore.getState().addDocument({ name: '' } as never)
+    ).toThrow(/Document name must be a non-empty string/);
+  });
+
+  it('GOVERNED cap:admin.data-management — addDocument with name > 200 chars throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useDocumentStore.getState().addDocument({ name: 'x'.repeat(201) } as never)
+    ).toThrow(/Document name must be 200 characters or less/);
+  });
+
+  it('GOVERNED cap:admin.data-management — addDocument with negative size throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useDocumentStore.getState().addDocument({ name: 'Test', size: -1 } as never)
+    ).toThrow(/Document size must be a non-negative finite number/);
+  });
+
+  it('GOVERNED cap:admin.data-management — addDocument with non-finite size throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useDocumentStore.getState().addDocument({ name: 'Test', size: Infinity } as never)
+    ).toThrow(/Document size must be a non-negative finite number/);
+  });
+
+  it('GOVERNED cap:admin.data-management — tagDocument with empty tag throws validation error', () => {
+    actAs('Analyst');
+    expect(() =>
+      useDocumentStore.getState().tagDocument('doc-1', '   ')
+    ).toThrow(/Tag must be a non-empty string/);
+  });
+
+  it('GOVERNED cap:admin.data-management — addDocument with valid input succeeds, audit chain intact', () => {
+    actAs('Analyst');
+    const doc = useDocumentStore.getState().addDocument({
+      name: 'Validation Test Document',
+      size: 1024,
+    } as never);
+    expect(doc).toBeDefined();
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);
   });

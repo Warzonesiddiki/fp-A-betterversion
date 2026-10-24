@@ -2908,6 +2908,36 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:admin.data-management \u2014 import:create guards addAccount, Admin reaches enforce gate",
         "proves": "dataStore.addAccount requires import:create; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.data-management \u2014 addDocument with empty name throws validation error",
+        "proves": "documentStore.addDocument throws on empty name via validateName guard"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.data-management \u2014 addDocument with name > 200 chars throws validation error",
+        "proves": "documentStore.addDocument throws on name > 200 chars via validateName length guard"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.data-management \u2014 addDocument with negative size throws validation error",
+        "proves": "documentStore.addDocument throws on negative size via Number.isFinite validation"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.data-management \u2014 addDocument with non-finite size throws validation error",
+        "proves": "documentStore.addDocument throws on non-finite size via Number.isFinite validation"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.data-management \u2014 tagDocument with empty tag throws validation error",
+        "proves": "documentStore.tagDocument throws on empty tag via trim() validation; IMPORT_UPDATE permission passes for Analyst"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:admin.data-management \u2014 addDocument with valid input succeeds, audit chain intact",
+        "proves": "documentStore.addDocument succeeds with valid input; document stored; audit chain verifies"
       }
     ],
     "analyze.variance-decomposition": [
@@ -3544,6 +3574,38 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with valid name succeeds, audit chain intact",
         "proves": "forecastStore.createForecast succeeds with valid input for Analyst; forecast stored; audit chain verifies"
+      }
+    ],
+    "model.tax": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with empty transactionId throws validation error",
+        "proves": "tpBenchmarkStore.attachBenchmark throws on empty transactionId; TAX_UPDATE permission passes for Admin"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with empty studyRef throws validation error",
+        "proves": "tpBenchmarkStore.attachBenchmark throws on empty studyRef via requireText validation"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with rangeLow > rangeHigh throws validation error",
+        "proves": "tpBenchmarkStore.attachBenchmark throws on rangeLow > rangeHigh via finite number validation"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with non-finite margin throws validation error",
+        "proves": "tpBenchmarkStore.attachBenchmark throws on non-finite margin via Number.isFinite validation"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with valid data succeeds",
+        "proves": "tpBenchmarkStore.attachBenchmark succeeds with valid input for Admin; benchmark stored"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:model.tax \u2014 removeBenchmark with TAX_UPDATE permission succeeds",
+        "proves": "tpBenchmarkStore.removeBenchmark succeeds for Admin with TAX_UPDATE; benchmark removed"
       }
     ]
   },
