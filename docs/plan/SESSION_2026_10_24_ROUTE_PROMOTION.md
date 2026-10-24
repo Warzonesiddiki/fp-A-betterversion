@@ -779,3 +779,27 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 |
 | Governance dimensions | 7 |
 | All gates PASS | ✓ |
+
+## Phase 21 — GL Store UI Method Tests (2026-10-24)
+
+**Gap:** glStore has the most enforce() calls (18). Batch 24 tested the last 7 untested UI methods: setEnvironmentId, filterByDate, filterByAccount, clearFilters, setImportProgress, setImportStatus, setImportError. All are ui:update (all 5 roles hold it), so the governance dimension is (a) state actually changes, (b) Viewer denial via expectPermissionDenied.
+
+**Tests added:** 14 (7 methods × 2 tests each: negative + positive)
+**Spine tests:** 470 → 684 (all passing)
+**Claims:** No new capability claims — these are UI methods already covered under data.csv-xlsx-intake and close.trial-balance capabilities.
+
+**DEC-099: glStore UI method coverage is a state-mutation audit, not a governance claim.**
+- Rationale: ui:update is held by all 5 roles by design (UI preference, not data). The enforce() guard is real but the permission dimension is trivially satisfied. The governance value is confirming the state mutation works correctly and the deny path fires for Viewer without ui:update.
+
+### Metrics after Phase 21
+
+| Metric | Value |
+|--------|-------|
+| Spine governance tests | 684 |
+| GOVERNED routes | 104 |
+| Governance-evidence capability claims | 215 (44 capabilities) |
+| Register SUPPORTED | 148 |
+| Stores with enforce() covered | 39/39 (ALL COMPLETE) |
+| glStore enforce methods tested | 18/18 (ALL COMPLETE) |
+| Governance dimensions | 7 |
+| All gates PASS | ✓ |

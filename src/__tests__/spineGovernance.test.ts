@@ -6016,3 +6016,88 @@ describe('GOVERNED capability-level — glStore undoLastImport tests (batch 23)'
     expect(v.valid).toBe(true);
   });
 });
+
+describe("GL Store — UI filter and import state setters (batch 24 — CLOSES glStore ENFORCE-METHOD-COVERAGE)", () => {
+  // Every remaining glStore enforce method. These are all ui:update — all 5 roles
+  // hold it, so the positive path is trivially open; the governance dimension is
+  // (a) the state actually changes, (b) the Viewer denial via expectPermissionDenied.
+  it("denies Viewer setEnvironmentId (ui:update)", () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLStore.getState().setEnvironmentId('env-123'));
+  });
+
+  it("Admin setEnvironmentId updates state", () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().setEnvironmentId('env-prod')).not.toThrow();
+    expect(useGLStore.getState().environmentId).toBe('env-prod');
+  });
+
+  it("denies Viewer filterByDate (ui:update)", () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLStore.getState().filterByDate('2026-01-01', '2026-03-31'));
+  });
+
+  it("Admin filterByDate updates state", () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().filterByDate('2026-01-01', '2026-03-31')).not.toThrow();
+    expect(useGLStore.getState().dateFilter).toEqual({ start: '2026-01-01', end: '2026-03-31' });
+  });
+
+  it("denies Viewer filterByAccount (ui:update)", () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLStore.getState().filterByAccount(['acc-1000']));
+  });
+
+  it("Admin filterByAccount updates state", () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().filterByAccount(['acc-1000'])).not.toThrow();
+    expect(useGLStore.getState().accountFilter).toEqual(['acc-1000']);
+  });
+
+  it("denies Viewer clearFilters (ui:update)", () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLStore.getState().clearFilters());
+  });
+
+  it("Admin clearFilters resets filters", () => {
+    actAs('Admin');
+    useGLStore.getState().filterByDate('2026-01-01', '2026-03-31');
+    useGLStore.getState().filterByAccount(['acc-1000']);
+    expect(() => useGLStore.getState().clearFilters()).not.toThrow();
+    expect(useGLStore.getState().dateFilter).toBeNull();
+    expect(useGLStore.getState().accountFilter).toEqual([]);
+  });
+
+  it("denies Viewer setImportProgress (ui:update)", () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLStore.getState().setImportProgress(75));
+  });
+
+  it("Admin setImportProgress updates state", () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().setImportProgress(75)).not.toThrow();
+    expect(useGLStore.getState().importProgress).toBe(75);
+  });
+
+  it("denies Viewer setImportStatus (ui:update)", () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLStore.getState().setImportStatus('processing'));
+  });
+
+  it("Admin setImportStatus updates state", () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().setImportStatus('processing')).not.toThrow();
+    expect(useGLStore.getState().importStatus).toBe('processing');
+  });
+
+  it("denies Viewer setImportError (ui:update)", () => {
+    actAsRoleWithout('Viewer', 'ui:update');
+    expectPermissionDenied(() => useGLStore.getState().setImportError('bad row'));
+  });
+
+  it("Admin setImportError updates state", () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().setImportError('bad row at line 42')).not.toThrow();
+    expect(useGLStore.getState().importError).toBe('bad row at line 42');
+  });
+});
