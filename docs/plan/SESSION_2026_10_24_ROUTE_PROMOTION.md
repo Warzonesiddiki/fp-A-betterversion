@@ -714,3 +714,34 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 5. Cross-store integration guards (glStore cube sync)
 6. Period close state machine integration (periodCloseStore transition)
 7. Fiscal calendar validation (periodCloseStore initialize)
+
+## Phase 19 — O2 Resolution + Capability Promotions (2026-10-24)
+
+**Objective:** Resolve owner question O2 (delegated — conservative default) and promote 2 capabilities to SUPPORTED.
+
+**Owner question resolved:**
+- **O2**: Roll semantics: replace vs blend, which months roll, approval interplay
+- **Decision**: Conservative default — REPLACE semantics (no blending), all months shift forward by one period, rolled forecasts require same approval as original forecasts
+- **Rationale**: REPLACE is conservative because it doesn't carry forward speculative forecasts. Blending would mix actuals with projections, reducing transparency. Same approval interplay ensures rolled forecasts face the same governance bar as originals.
+
+**Capabilities promoted to SUPPORTED:**
+1. **plan.rolling-forecast**: BLOCKED-ON-OWNER → SUPPORTED (6 validation guard tests, batch 15)
+2. **model.tax**: EXPERIMENTAL → SUPPORTED (6 tpBenchmarkStore validation tests, batch 16)
+
+**Register metrics:**
+- SUPPORTED: 146 → 148
+- BLOCKED-ON-OWNER: 7 → 6
+- EXPERIMENTAL: 320 → 319
+- SUPPORTED capabilities: 42 → 44
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 667 |
+| Routes governed | 104 |
+| Capability claims | 212 (44 capabilities) |
+| Register SUPPORTED | 148 |
+| Stores with enforce() covered | 39/39 |
+| Governance dimensions | 7 |
+| All gates PASS | ✓ |

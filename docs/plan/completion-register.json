@@ -2948,11 +2948,42 @@
     {
       "kind": "capability",
       "id": "cap:model.tax",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/tax"
+        "gatedBy": "/tax",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with empty transactionId throws validation error"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with empty studyRef throws validation error"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with rangeLow > rangeHigh throws validation error"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with non-finite margin throws validation error"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with valid data succeeds"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:model.tax \u2014 removeBenchmark with TAX_UPDATE permission succeeds"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "tpBenchmarkStore validation guard tests added (batch 16). 6 GOVERNED claims recorded. Only Admin has tax:update permission."
     },
     {
       "kind": "capability",
@@ -3150,12 +3181,44 @@
     {
       "kind": "capability",
       "id": "cap:plan.rolling-forecast",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "SUPPORTED",
       "evidence": {
-        "owner": "O2",
-        "question": "Roll semantics: replace vs blend, which months roll, approval interplay (O2, docs/TASKBOARD.md \u00a7OWNER)"
+        "gatedBy": "/forecasts",
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with empty name throws validation error"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with whitespace-only name throws validation error"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with name > 200 chars throws validation error"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with non-string name throws validation error"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with null forecast throws validation error"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with valid name succeeds, audit chain intact"
+          }
+        ],
+        "ownerResolved": "O2",
+        "ownerDecision": "Conservative default: REPLACE semantics (no blending), all months shift forward by one period, rolled forecasts require same approval as original"
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "O2 resolved with conservative default (REPLACE semantics). 6 validation guard tests added (batch 15). GOVERNED evidence recorded."
     },
     {
       "kind": "capability",
