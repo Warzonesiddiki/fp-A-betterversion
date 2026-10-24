@@ -261,9 +261,10 @@ export default function ThreeStatementDashboardPage() {
             <div className="flex justify-between font-bold border-t pt-2 text-base">
               <span>A = L + E</span>
               <span className={result?.balanceCheck.isBalanced ? 'text-green-600' : 'text-red-600'}>
+                {/* unavailable when result is undefined — zero is correct fallback */}
                 {result?.balanceCheck.isBalanced
                   ? '✓ Balanced'
-                  : `✗ ${fmt(result?.balanceCheck.imbalance ?? 0)}`} // unavailable when result is undefined — zero is correct fallback
+                  : `✗ ${fmt(result?.balanceCheck.imbalance ?? 0)}`}
               </span>
             </div>
           </CardContent>

@@ -13,7 +13,7 @@
     "engines": 180,
     "requirements": 19,
     "annex": 200,
-    "capabilities": 67
+    "capabilities": 74
   },
   "rows": [
     {
@@ -23,7 +23,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 file import proven (Gate 2); connector classes for QuickBooks/NetSuite/Xero/Sage/Dynamics(CRM)/Salesforce/Stripe/Plaid/Slack exist, **0 wired**; SAP/Oracle/Workday/HRIS/billing/e-comm/DB direct/market/economic feeds MISSING; OCR/email/SFTP MISSING\"."
+      "note": "Checklist status \"PARTIAL — file import proven (Gate 2); connector classes for QuickBooks/NetSuite/Xero/Sage/Dynamics(CRM)/Salesforce/Stripe/Plaid/Slack exist, **0 wired**; SAP/Oracle/Workday/HRIS/billing/e-comm/DB direct/market/economic feeds MISSING; OCR/email/SFTP MISSING\"."
     },
     {
       "kind": "annex",
@@ -32,7 +32,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 exact pipeline built/tested with independent CTA/elimination oracle; FX/CTA/IC engines built; UI per DEC-012; PPA + goodwill impairment engine built (AcquisitionAccounting, ASC 805/350 oracles, labelled EXPERIMENTAL \u2014 no acquisition workflow UI yet); legacy worksheet goodwill no longer emits a wrong ASC-350 amortization; VIE remains a consolidation-engine path without a dedicated oracle\"."
+      "note": "Checklist status \"PARTIAL — exact pipeline built/tested with independent CTA/elimination oracle; FX/CTA/IC engines built; UI per DEC-012; PPA + goodwill impairment engine built (AcquisitionAccounting, ASC 805/350 oracles, labelled EXPERIMENTAL — no acquisition workflow UI yet); legacy worksheet goodwill no longer emits a wrong ASC-350 amortization; VIE remains a consolidation-engine path without a dedicated oracle\"."
     },
     {
       "kind": "annex",
@@ -41,7 +41,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 money primitive exact; GLEntry numbers remain (F-A); stress suites exist, 100M-txn UNPROVEN\"."
+      "note": "Checklist status \"PARTIAL — money primitive exact; GLEntry numbers remain (F-A); stress suites exist, 100M-txn UNPROVEN\"."
     },
     {
       "kind": "annex",
@@ -50,7 +50,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 license inventory script exists; DPA/SLA/support-matrix docs PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — license inventory script exists; DPA/SLA/support-matrix docs PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -59,7 +59,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 backup/restore tested; DR drill/cloud failover DECIDE\"."
+      "note": "Checklist status \"PARTIAL — backup/restore tested; DR drill/cloud failover DECIDE\"."
     },
     {
       "kind": "annex",
@@ -68,7 +68,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"UNWIRED \u2014 plugin SDK exists; REST/GraphQL/webhooks MISSING; server 0 frontend callers (DEC-011)\"."
+      "note": "Checklist status \"UNWIRED — plugin SDK exists; REST/GraphQL/webhooks MISSING; server 0 frontend callers (DEC-011)\"."
     },
     {
       "kind": "annex",
@@ -77,7 +77,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 shortcut system exists; financial-shortcut map PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — shortcut system exists; financial-shortcut map PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -86,7 +86,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 demo company + sector fixtures exist (labelled); sample-co rollback PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — demo company + sector fixtures exist (labelled); sample-co rollback PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -104,7 +104,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 decimal money + JPY/BHD precision in money layer; DBL-zero/unicode/orphan handling PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — decimal money + JPY/BHD precision in money layer; DBL-zero/unicode/orphan handling PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -131,7 +131,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 statements + oracles strong; changes-in-equity + direct-method operating CF derived and tied (Phase 9); XBRL EXPERIMENTAL (DEC-021); scheduler governed, distribution manual; report designer now GL-wired with cube tie-out (Phase 14)\"."
+      "note": "Checklist status \"PARTIAL — statements + oracles strong; changes-in-equity + direct-method operating CF derived and tied (Phase 9); XBRL EXPERIMENTAL (DEC-021); scheduler governed, distribution manual; report designer now GL-wired with cube tie-out (Phase 14)\"."
     },
     {
       "kind": "annex",
@@ -230,7 +230,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 widget/chart estate large; sector $0-KPI flaw class EVIDENCE-OWED (W6-P0-06); real-time refresh is local-state only\"."
+      "note": "Checklist status \"PARTIAL — widget/chart estate large; sector $0-KPI flaw class EVIDENCE-OWED (W6-P0-06); real-time refresh is local-state only\"."
     },
     {
       "kind": "annex",
@@ -329,7 +329,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 RatioAnalysis engine; variance pages use prefix rollups + canned drivers (must purge); price/volume/mix engines PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — RatioAnalysis engine; variance pages use prefix rollups + canned drivers (must purge); price/volume/mix engines PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -428,7 +428,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 CashEngine/13-week model disclosures; bank rec page built; bank-format imports (OFX/BAI2/MT940/CAMT) MISSING\"."
+      "note": "Checklist status \"PARTIAL — CashEngine/13-week model disclosures; bank rec page built; bank-format imports (OFX/BAI2/MT940/CAMT) MISSING\"."
     },
     {
       "kind": "annex",
@@ -527,7 +527,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 DebtSchedule/Loan/Bond engines; covenant tracking PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — DebtSchedule/Loan/Bond engines; covenant tracking PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -626,7 +626,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 TaxEngine/provision page; transfer pricing rebuilt on entered benchmarks (Phase 8: `tpBenchmarkStore` + `applyBenchmarks`, both tested; out-of-range flags labelled judgement calls); jurisdiction packs still MISSING (E4)\"."
+      "note": "Checklist status \"PARTIAL — TaxEngine/provision page; transfer pricing rebuilt on entered benchmarks (Phase 8: `tpBenchmarkStore` + `applyBenchmarks`, both tested; out-of-range flags labelled judgement calls); jurisdiction packs still MISSING (E4)\"."
     },
     {
       "kind": "annex",
@@ -725,7 +725,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 LeaseEngine + dashboard; disclosure pack PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — LeaseEngine + dashboard; disclosure pack PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -824,7 +824,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 RevRecEngine + dashboard; contract DB PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — RevRecEngine + dashboard; contract DB PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -923,7 +923,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 pages decontaminated (Phase 10): comp modelling + headcount derive from actual employee records; planned headcount/attrition not displayed (no source data); WorkforceEngine paths remain\"."
+      "note": "Checklist status \"PARTIAL — pages decontaminated (Phase 10): comp modelling + headcount derive from actual employee records; planned headcount/attrition not displayed (no source data); WorkforceEngine paths remain\"."
     },
     {
       "kind": "annex",
@@ -1022,7 +1022,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 encrypted blob KV works; SQLite schema exists unwritten by client; staging pipeline UNWIRED; OLAP cube engines \u00d76 UNWIRED/PARTIAL; lineage/quality engines UNWIRED\"."
+      "note": "Checklist status \"PARTIAL — encrypted blob KV works; SQLite schema exists unwritten by client; staging pipeline UNWIRED; OLAP cube engines ×6 UNWIRED/PARTIAL; lineage/quality engines UNWIRED\"."
     },
     {
       "kind": "annex",
@@ -1031,7 +1031,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL/SHALLOW \u2014 sector pages largely template clones; CRM pipeline is connector-only\"."
+      "note": "Checklist status \"PARTIAL/SHALLOW — sector pages largely template clones; CRM pipeline is connector-only\"."
     },
     {
       "kind": "annex",
@@ -1049,7 +1049,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 construction/job-cost pieces; WIP/%-complete PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — construction/job-cost pieces; WIP/%-complete PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1058,7 +1058,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 NPV/IRR engines; IRR flaw class EVIDENCE-OWED (W6-P0-16); DCF/comps/LBO PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — NPV/IRR engines; IRR flaw class EVIDENCE-OWED (W6-P0-16); DCF/comps/LBO PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1067,7 +1067,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 copilot/NLQ/commentary behind flags; verified-facts gate BUILT (Phase 13, DEC-022: `verifyNarrative` + AI-001 corpus, wired at the NLQ boundary \u2014 unsupported figures are withheld, never published); ML forecasting still MISSING (statistical only, E3)\"."
+      "note": "Checklist status \"PARTIAL — copilot/NLQ/commentary behind flags; verified-facts gate BUILT (Phase 13, DEC-022: `verifyNarrative` + AI-001 corpus, wired at the NLQ boundary — unsupported figures are withheld, never published); ML forecasting still MISSING (statistical only, E3)\"."
     },
     {
       "kind": "annex",
@@ -1076,7 +1076,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 workflow engines \u00d76 (duplicated); close checklist built; approvals PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — workflow engines ×6 (duplicated); close checklist built; approvals PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1085,7 +1085,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 SOX engine reports not-evaluated by design (authority = owner DEC, still pending); XBRL engine EXPERIMENTAL-labelled (DEC-021, export withheld until taxonomy validation exists); ESG frameworks PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — SOX engine reports not-evaluated by design (authority = owner DEC, still pending); XBRL engine EXPERIMENTAL-labelled (DEC-021, export withheld until taxonomy validation exists); ESG frameworks PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1094,7 +1094,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 AST census pins 409 Zustand store actions (302 guarded, 107 explicit reasoned exceptions); failing-first denial tests cover consequential actions. Production callers cannot reach imported store `setState` directly; 401 refresh delegates through an auth-store action. `authStore.register` is disabled in production and when mock auth is off. `getCurrentUser()` requires `isAuthenticated`. N3 remains active; `authStore.switchEntity` is owner-blocked under O9 until authorized entity scope is defined. MFA/SSO/ABAC/cell-level authorization remain MISSING; offline auth is governed by DEC-014.\"."
+      "note": "Checklist status \"PARTIAL — AST census pins 409 Zustand store actions (302 guarded, 107 explicit reasoned exceptions); failing-first denial tests cover consequential actions. Production callers cannot reach imported store `setState` directly; 401 refresh delegates through an auth-store action. `authStore.register` is disabled in production and when mock auth is off. `getCurrentUser()` requires `isAuthenticated`. N3 remains active; `authStore.switchEntity` is owner-blocked under O9 until authorized entity scope is defined. MFA/SSO/ABAC/cell-level authorization remain MISSING; offline auth is governed by DEC-014.\"."
     },
     {
       "kind": "annex",
@@ -1103,7 +1103,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 import pipeline + staging (UNWIRED); visual pipeline designer MISSING; rollback = undo-batch only\"."
+      "note": "Checklist status \"PARTIAL — import pipeline + staging (UNWIRED); visual pipeline designer MISSING; rollback = undo-batch only\"."
     },
     {
       "kind": "annex",
@@ -1112,7 +1112,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 canonical subset DECLARED (DEC-020: SafeMathParser, Excel-known-answer oracle suite MISSION E passes); W6-P0-01 silent-zero class guard witness added in the batch worker (erroring cells named, prior values kept); duplicate formula/cube engines remain for Phase 14 retire-or-wire\"."
+      "note": "Checklist status \"PARTIAL — canonical subset DECLARED (DEC-020: SafeMathParser, Excel-known-answer oracle suite MISSION E passes); W6-P0-01 silent-zero class guard witness added in the batch worker (erroring cells named, prior values kept); duplicate formula/cube engines remain for Phase 14 retire-or-wire\"."
     },
     {
       "kind": "annex",
@@ -1121,7 +1121,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 spreadsheet components + AG Grid; cell lineage store exists; 100k-row virtualization bench exists\"."
+      "note": "Checklist status \"PARTIAL — spreadsheet components + AG Grid; cell lineage store exists; 100k-row virtualization bench exists\"."
     },
     {
       "kind": "annex",
@@ -1130,7 +1130,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 account types + COA domain exist; hierarchies/templates/mapping wizard PARTIAL; merge/split, impact analysis MISSING\"."
+      "note": "Checklist status \"PARTIAL — account types + COA domain exist; hierarchies/templates/mapping wizard PARTIAL; merge/split, impact analysis MISSING\"."
     },
     {
       "kind": "annex",
@@ -1139,7 +1139,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"UNWIRED \u2014 DocumentEngine 0 consumers; documentStore exists\"."
+      "note": "Checklist status \"UNWIRED — DocumentEngine 0 consumers; documentStore exists\"."
     },
     {
       "kind": "annex",
@@ -1148,7 +1148,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 XLSX/PDF/PPTX(board) built; DOCX/HTML/JSON/XML PARTIAL; print PARTIAL; bursting/distribution MISSING\"."
+      "note": "Checklist status \"PARTIAL — XLSX/PDF/PPTX(board) built; DOCX/HTML/JSON/XML PARTIAL; print PARTIAL; bursting/distribution MISSING\"."
     },
     {
       "kind": "annex",
@@ -1157,7 +1157,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 notification store + Tauri notifications; alert rule builder MISSING; email/push channels DECIDE (egress, DEC-003)\"."
+      "note": "Checklist status \"PARTIAL — notification store + Tauri notifications; alert rule builder MISSING; email/push channels DECIDE (egress, DEC-003)\"."
     },
     {
       "kind": "annex",
@@ -1166,7 +1166,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 settings/integrations pages built; feature toggles/license PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — settings/integrations pages built; feature toggles/license PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1175,7 +1175,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 bench/load suites exist (Monte Carlo, 100k grid, chaos); millions-of-rows UNPROVEN on blob store\"."
+      "note": "Checklist status \"PARTIAL — bench/load suites exist (Monte Carlo, 100k grid, chaos); millions-of-rows UNPROVEN on blob store\"."
     },
     {
       "kind": "annex",
@@ -1184,7 +1184,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 desktop-local by design; offline sign-in broken (DEC-014); sync/conflict N/A in single-user v1 = DECIDE for team mode\"."
+      "note": "Checklist status \"PARTIAL — desktop-local by design; offline sign-in broken (DEC-014); sync/conflict N/A in single-user v1 = DECIDE for team mode\"."
     },
     {
       "kind": "annex",
@@ -1193,7 +1193,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 i18n en/ar parity proven; RTL exists; 10-language set MISSING; locale number/date formats PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — i18n en/ar parity proven; RTL exists; 10-language set MISSING; locale number/date formats PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1202,7 +1202,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 help pages/\\_docs map; tutorials/tours store exists; demo company exists as mock-data (must stay labelled)\"."
+      "note": "Checklist status \"PARTIAL — help pages/\\_docs map; tutorials/tours store exists; demo company exists as mock-data (must stay labelled)\"."
     },
     {
       "kind": "annex",
@@ -1211,7 +1211,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"WORKS as discipline (15k tests, ratchets) \u2014 gaps named per row in this annex\"."
+      "note": "Checklist status \"WORKS as discipline (15k tests, ratchets) — gaps named per row in this annex\"."
     },
     {
       "kind": "annex",
@@ -1220,7 +1220,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 Tauri packaging config; signing/notarization/updater UNVERIFIED (native); delta updates MISSING\"."
+      "note": "Checklist status \"PARTIAL — Tauri packaging config; signing/notarization/updater UNVERIFIED (native); delta updates MISSING\"."
     },
     {
       "kind": "annex",
@@ -1229,7 +1229,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 import GL proven; manual/recurring/reversing JE UI PARTIAL; approvals/attachments PARTIAL; double-entry enforced in store\"."
+      "note": "Checklist status \"PARTIAL — import GL proven; manual/recurring/reversing JE UI PARTIAL; approvals/attachments PARTIAL; double-entry enforced in store\"."
     },
     {
       "kind": "annex",
@@ -1238,7 +1238,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 plugin system + sandbox (escape class EVIDENCE-OWED W6-P0-02/03); custom fields/KPI PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — plugin system + sandbox (escape class EVIDENCE-OWED W6-P0-02/03); custom fields/KPI PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1247,7 +1247,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 backup/restore built + tested; key escrow MISSING (owner DEC, F-B); scheduled/cloud backup DECIDE (egress)\"."
+      "note": "Checklist status \"PARTIAL — backup/restore built + tested; key escrow MISSING (owner DEC, F-B); scheduled/cloud backup DECIDE (egress)\"."
     },
     {
       "kind": "annex",
@@ -1256,7 +1256,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL/SHALLOW \u2014 18 sector packs, mostly template clones (F-E)\"."
+      "note": "Checklist status \"PARTIAL/SHALLOW — 18 sector packs, mostly template clones (F-E)\"."
     },
     {
       "kind": "annex",
@@ -1265,7 +1265,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 pillar nav; command palette MISSING (global search engine UNWIRED); tabs/split PARTIAL; 242-route overload\"."
+      "note": "Checklist status \"PARTIAL — pillar nav; command palette MISSING (global search engine UNWIRED); tabs/split PARTIAL; 242-route overload\"."
     },
     {
       "kind": "annex",
@@ -1274,7 +1274,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 Office/Google/Slack surfaces PARTIAL (Slack connector UNWIRED); Excel add-in/Teams/BI bridges MISSING\"."
+      "note": "Checklist status \"PARTIAL — Office/Google/Slack surfaces PARTIAL (Slack connector UNWIRED); Excel add-in/Teams/BI bridges MISSING\"."
     },
     {
       "kind": "annex",
@@ -1283,7 +1283,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 F-0015 SHA-256 chain + R-009 reconstruction remain proven. N2 evidence: `AuditTrailPage` consumes persisted `auditTrailStore` via typed adapter (20 tests); persistence compatibility test exercises v0\u2192v1 migration contract, preserves entries + chain head, and verifies restored chain (7 persistence tests total); `npm run tsc` passes. `docs/architecture/AUDIT_CHAIN_REACHABILITY.md` maps additional paths. DEC-025 selects `auditTrailStore` as client-side canonical chain; DEC-026\u2013028 retire EventLedger and three unconsumed in-memory audit engines (`CellAuditTrailEngine`, `AuditEngine`, `AuditTrailEngine`) with no production writers or persisted data. Server integration/retirement remains Q6 and SOX authority remains O4. Retirement evidence: `rbacMatrixCompleteness.test.ts` 9/9; regenerated capability matrix omits retired prototypes; current README count 48 Zustand stores, 43 persisted. Period-close remains separate and unanchored after DEC-030 repairs per-period append-order verification; `periodCloseStore.test.ts` + `PeriodClosePage.test.tsx` pass 50/50 and relevant gates pass; it is not SOX/general-audit proof. DEC-029 retains cell-lineage as separate local-draft state with v1\u2192v2 reconstruction and digest-verification unit evidence, but no production caller/native restart or general-audit adapter. DEC-031 retains `AuditLogger` only as an isolated in-memory helper with snapshot compatibility; `SecretRotation-AuditLogger.test.ts` (63/63) and `SecretsVault.test.ts` (75/75) pass, but their callback bridge/mocks are not production wiring. DEC-032 retains `PIIRedactor` as an isolated in-memory helper (70 tests); no production caller/persistence was found, and prior policy claims of product-wide redaction are now marked unverified. Historic policy/A11Y integration claims are not runtime evidence. Server authority remains Q6-blocked. Do not claim one canonical product-wide audit chain. DEC-038 reversion attribution: authenticated per-call actor, historical record preserved, stale-session/Viewer/partial-permission denials; `auditTrailStore.attribution.test.ts` (6 tests); combined trust slice 8 files / 204 tests (2026-10-20). No ledger rollback or native/compliance proof.\"."
+      "note": "Checklist status \"PARTIAL — F-0015 SHA-256 chain + R-009 reconstruction remain proven. N2 evidence: `AuditTrailPage` consumes persisted `auditTrailStore` via typed adapter (20 tests); persistence compatibility test exercises v0→v1 migration contract, preserves entries + chain head, and verifies restored chain (7 persistence tests total); `npm run tsc` passes. `docs/architecture/AUDIT_CHAIN_REACHABILITY.md` maps additional paths. DEC-025 selects `auditTrailStore` as client-side canonical chain; DEC-026–028 retire EventLedger and three unconsumed in-memory audit engines (`CellAuditTrailEngine`, `AuditEngine`, `AuditTrailEngine`) with no production writers or persisted data. Server integration/retirement remains Q6 and SOX authority remains O4. Retirement evidence: `rbacMatrixCompleteness.test.ts` 9/9; regenerated capability matrix omits retired prototypes; current README count 48 Zustand stores, 43 persisted. Period-close remains separate and unanchored after DEC-030 repairs per-period append-order verification; `periodCloseStore.test.ts` + `PeriodClosePage.test.tsx` pass 50/50 and relevant gates pass; it is not SOX/general-audit proof. DEC-029 retains cell-lineage as separate local-draft state with v1→v2 reconstruction and digest-verification unit evidence, but no production caller/native restart or general-audit adapter. DEC-031 retains `AuditLogger` only as an isolated in-memory helper with snapshot compatibility; `SecretRotation-AuditLogger.test.ts` (63/63) and `SecretsVault.test.ts` (75/75) pass, but their callback bridge/mocks are not production wiring. DEC-032 retains `PIIRedactor` as an isolated in-memory helper (70 tests); no production caller/persistence was found, and prior policy claims of product-wide redaction are now marked unverified. Historic policy/A11Y integration claims are not runtime evidence. Server authority remains Q6-blocked. Do not claim one canonical product-wide audit chain. DEC-038 reversion attribution: authenticated per-call actor, historical record preserved, stale-session/Viewer/partial-permission denials; `auditTrailStore.attribution.test.ts` (6 tests); combined trust slice 8 files / 204 tests (2026-10-20). No ledger rollback or native/compliance proof.\"."
     },
     {
       "kind": "annex",
@@ -1292,7 +1292,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 error boundaries per route group; chaos benches exist; crash recovery engine UNWIRED\"."
+      "note": "Checklist status \"PARTIAL — error boundaries per route group; chaos benches exist; crash recovery engine UNWIRED\"."
     },
     {
       "kind": "annex",
@@ -1301,7 +1301,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 GDPR events; SOX/COSO PARTIAL; HIPAA/PCI/Basel etc = DECIDE (sector packs, E4/E5)\"."
+      "note": "Checklist status \"PARTIAL — GDPR events; SOX/COSO PARTIAL; HIPAA/PCI/Basel etc = DECIDE (sector packs, E4/E5)\"."
     },
     {
       "kind": "annex",
@@ -1310,7 +1310,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 migration page exists; onboarding wizard built; parallel-run support = the plan's \u00a719 acceptance itself\"."
+      "note": "Checklist status \"PARTIAL — migration page exists; onboarding wizard built; parallel-run support = the plan's §19 acceptance itself\"."
     },
     {
       "kind": "annex",
@@ -1319,7 +1319,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 OLAP/pivot/benchmark pages built on engines PARTIAL; cohort/regression/clustering MISSING as governed features\"."
+      "note": "Checklist status \"PARTIAL — OLAP/pivot/benchmark pages built on engines PARTIAL; cohort/regression/clustering MISSING as governed features\"."
     },
     {
       "kind": "annex",
@@ -1328,7 +1328,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"UNWIRED/MISSING \u2014 WorkingCapital scalar AR only; cash-forecast self-discloses no AR sub-ledger\"."
+      "note": "Checklist status \"UNWIRED/MISSING — WorkingCapital scalar AR only; cash-forecast self-discloses no AR sub-ledger\"."
     },
     {
       "kind": "annex",
@@ -1337,7 +1337,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 board pack is the flagship (tie-out tested); portal/watermark/versioning PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — board pack is the flagship (tie-out tested); portal/watermark/versioning PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1346,7 +1346,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 SaaS metrics engine; revenue waterfall/RPO/cohorts PARTIAL; pricing-elasticity MISSING\"."
+      "note": "Checklist status \"PARTIAL — SaaS metrics engine; revenue waterfall/RPO/cohorts PARTIAL; pricing-elasticity MISSING\"."
     },
     {
       "kind": "annex",
@@ -1355,7 +1355,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 allocation engines (step-down/reciprocal components); CVP/break-even engines exist UNWIRED/PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — allocation engines (step-down/reciprocal components); CVP/break-even engines exist UNWIRED/PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1364,7 +1364,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 cash waterfall engine; FCFF/FCFE/quality-of-earnings PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — cash waterfall engine; FCFF/FCFE/quality-of-earnings PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1373,7 +1373,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 customer/product/channel P&L pages PARTIAL; fully-loaded costing depends on \u00a752\"."
+      "note": "Checklist status \"PARTIAL — customer/product/channel P&L pages PARTIAL; fully-loaded costing depends on §52\"."
     },
     {
       "kind": "annex",
@@ -1382,7 +1382,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 CreditRisk engine; VaR/heat-map/KRI PARTIAL; fraud indicators feed J2 rules (\u00a77)\"."
+      "note": "Checklist status \"PARTIAL — CreditRisk engine; VaR/heat-map/KRI PARTIAL; fraud indicators feed J2 rules (§7)\"."
     },
     {
       "kind": "annex",
@@ -1391,7 +1391,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 ESG dashboards/CSRD generator; framework templates (GRI/SASB/TCFD/CSRD/ISSB) PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — ESG dashboards/CSRD generator; framework templates (GRI/SASB/TCFD/CSRD/ISSB) PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1400,7 +1400,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 insurance dashboard/underwriting; claims register MISSING\"."
+      "note": "Checklist status \"PARTIAL — insurance dashboard/underwriting; claims register MISSING\"."
     },
     {
       "kind": "annex",
@@ -1409,7 +1409,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 government/education leaves FUNCTIONAL in spots; fund accounting PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — government/education leaves FUNCTIONAL in spots; fund accounting PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1418,7 +1418,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 contract facts feed rev-rec; repository/alerts MISSING\"."
+      "note": "Checklist status \"PARTIAL — contract facts feed rev-rec; repository/alerts MISSING\"."
     },
     {
       "kind": "annex",
@@ -1427,7 +1427,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"MISSING native (as \u00a75)\"."
+      "note": "Checklist status \"MISSING native (as §5)\"."
     },
     {
       "kind": "annex",
@@ -1436,7 +1436,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 real-estate dashboard FUNCTIONAL(high) per gap report; rent roll/CAM PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — real-estate dashboard FUNCTIONAL(high) per gap report; rent roll/CAM PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1454,7 +1454,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 inventory planning pages; valuation methods/landed cost PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — inventory planning pages; valuation methods/landed cost PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1463,7 +1463,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 SaaSMetricsEngine + dashboards; cohort/CAC-magic-number PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — SaaSMetricsEngine + dashboards; cohort/CAC-magic-number PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1472,7 +1472,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 equity plans section MISSING; 409A/comps PARTIAL; banding PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — equity plans section MISSING; 409A/comps PARTIAL; banding PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1481,7 +1481,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 cash positioning/hedging/investments PARTIAL; payment factory (ACH/SEPA/Wire formats) MISSING\"."
+      "note": "Checklist status \"PARTIAL — cash positioning/hedging/investments PARTIAL; payment factory (ACH/SEPA/Wire formats) MISSING\"."
     },
     {
       "kind": "annex",
@@ -1490,7 +1490,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 IC matching/forensics engines; IC fees/royalties PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — IC matching/forensics engines; IC fees/royalties PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1499,7 +1499,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 country registers/templates MISSING by jurisdiction\"."
+      "note": "Checklist status \"PARTIAL — country registers/templates MISSING by jurisdiction\"."
     },
     {
       "kind": "annex",
@@ -1508,7 +1508,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 SOX suite (authority undecided, \u00a725)\"."
+      "note": "Checklist status \"PARTIAL — SOX suite (authority undecided, §25)\"."
     },
     {
       "kind": "annex",
@@ -1517,7 +1517,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 modelling framework/pack exists; SWOT/PESTEL/Porter/Boston PARTIAL; OKR/scorecard pages exist\"."
+      "note": "Checklist status \"PARTIAL — modelling framework/pack exists; SWOT/PESTEL/Porter/Boston PARTIAL; OKR/scorecard pages exist\"."
     },
     {
       "kind": "annex",
@@ -1526,7 +1526,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 Depreciation/CapEx engines exist; register/dual tax-book PARTIAL/UNWIRED\"."
+      "note": "Checklist status \"PARTIAL — Depreciation/CapEx engines exist; register/dual tax-book PARTIAL/UNWIRED\"."
     },
     {
       "kind": "annex",
@@ -1544,7 +1544,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 banking dashboard FUNCTIONAL(high); CECL/ALM/Basel calculators MISSING\"."
+      "note": "Checklist status \"PARTIAL — banking dashboard FUNCTIONAL(high); CECL/ALM/Basel calculators MISSING\"."
     },
     {
       "kind": "annex",
@@ -1553,7 +1553,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 insurance dashboard (as \u00a757); reserving/IFRS 17 MISSING\"."
+      "note": "Checklist status \"PARTIAL — insurance dashboard (as §57); reserving/IFRS 17 MISSING\"."
     },
     {
       "kind": "annex",
@@ -1562,7 +1562,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 healthcare payroll verified in spots; payer mix/case mix MISSING\"."
+      "note": "Checklist status \"PARTIAL — healthcare payroll verified in spots; payer mix/case mix MISSING\"."
     },
     {
       "kind": "annex",
@@ -1571,7 +1571,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 retail leaf FUNCTIONAL; same-store/marketplace fees PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — retail leaf FUNCTIONAL; same-store/marketplace fees PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1580,7 +1580,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 manufacturing dashboard FUNCTIONAL(high); standard cost/absorption/EVM-depth PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — manufacturing dashboard FUNCTIONAL(high); standard cost/absorption/EVM-depth PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1589,7 +1589,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 buildingSuite; EVM (CPI/SPI/EAC) PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — buildingSuite; EVM (CPI/SPI/EAC) PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1598,7 +1598,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 SOW/process leaves; utilization-pyramid PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — SOW/process leaves; utilization-pyramid PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1607,7 +1607,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 oil&gas leaves (MRL class); rate case/fuel hedging PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — oil&gas leaves (MRL class); rate case/fuel hedging PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1616,7 +1616,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 ITBM leaf set exists; TBM taxonomy/apptio-style PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — ITBM leaf set exists; TBM taxonomy/apptio-style PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1625,7 +1625,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 budgets/BvA built; seeding/spreading/versions PARTIAL; cascade-token flaw class EVIDENCE-OWED (W6-P0-15)\"."
+      "note": "Checklist status \"PARTIAL — budgets/BvA built; seeding/spreading/versions PARTIAL; cascade-token flaw class EVIDENCE-OWED (W6-P0-15)\"."
     },
     {
       "kind": "annex",
@@ -1634,7 +1634,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 workforce pages (decontamination owed, \u00a719); compa-ratio/attrition-cost PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — workforce pages (decontamination owed, §19); compa-ratio/attrition-cost PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1643,7 +1643,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 churn dashboards; segment PnL/DHCO PARTIAL; CLV models MISSING\"."
+      "note": "Checklist status \"PARTIAL — churn dashboards; segment PnL/DHCO PARTIAL; CLV models MISSING\"."
     },
     {
       "kind": "annex",
@@ -1652,7 +1652,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 forecasting engines (exponential smoothing etc.); ARIMA/Holt-Winters/Bayesian/Prophet/GBM MISSING; confidence intervals PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — forecasting engines (exponential smoothing etc.); ARIMA/Holt-Winters/Bayesian/Prophet/GBM MISSING; confidence intervals PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1661,7 +1661,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 reference-data owners PARTIAL; retention/enrichment MISSING\"."
+      "note": "Checklist status \"PARTIAL — reference-data owners PARTIAL; retention/enrichment MISSING\"."
     },
     {
       "kind": "annex",
@@ -1670,7 +1670,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 AI commentary UNWIRED to proof; PDF board books PARTIAL; annotation PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — AI commentary UNWIRED to proof; PDF board books PARTIAL; annotation PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1679,7 +1679,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 fiscal/planning calendar pages; filing-deadline MISSING\"."
+      "note": "Checklist status \"PARTIAL — fiscal/planning calendar pages; filing-deadline MISSING\"."
     },
     {
       "kind": "annex",
@@ -1688,7 +1688,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 driver registry exists; sensitivity-of-assumption PARTIAL; inflation/FX forecast tables PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — driver registry exists; sensitivity-of-assumption PARTIAL; inflation/FX forecast tables PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1706,7 +1706,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 workflow/rules engines duplicated; scheduled auto-posting PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — workflow/rules engines duplicated; scheduled auto-posting PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1715,7 +1715,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"UNWIRED \u2014 searchExpr engine 0 consumers; palette MISSING\"."
+      "note": "Checklist status \"UNWIRED — searchExpr engine 0 consumers; palette MISSING\"."
     },
     {
       "kind": "annex",
@@ -1724,7 +1724,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 Scenario/WhatIf/Sensitivity/MonteCarlo engines + worker; goal-seek page exists\"."
+      "note": "Checklist status \"PARTIAL — Scenario/WhatIf/Sensitivity/MonteCarlo engines + worker; goal-seek page exists\"."
     },
     {
       "kind": "annex",
@@ -1742,7 +1742,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 print/PDF generators PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — print/PDF generators PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1751,7 +1751,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 snapshot store exists; retention/backup-drill PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — snapshot store exists; retention/backup-drill PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1760,7 +1760,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 OpenTelemetryExporter engine UNWIRED; performance profiling PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — OpenTelemetryExporter engine UNWIRED; performance profiling PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1769,7 +1769,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 chart estate includes waterfall; Sankey/Gantt/map widgets PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — chart estate includes waterfall; Sankey/Gantt/map widgets PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1778,7 +1778,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 archive page exists; retention/legal-hold PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — archive page exists; retention/legal-hold PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1787,7 +1787,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 tax engine core; country rules MISSING\"."
+      "note": "Checklist status \"PARTIAL — tax engine core; country rules MISSING\"."
     },
     {
       "kind": "annex",
@@ -1796,7 +1796,7 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 several engines exist (impairment/EPS tests per gap report); hedge/FV hierarchy PARTIAL\"."
+      "note": "Checklist status \"PARTIAL — several engines exist (impairment/EPS tests per gap report); hedge/FV hierarchy PARTIAL\"."
     },
     {
       "kind": "annex",
@@ -1814,17 +1814,35 @@
       "evidence": {
         "namedBy": "docs/MASTER_CHECKLIST_COVERAGE.md"
       },
-      "note": "Checklist status \"PARTIAL \u2014 zero-attrition a11y suites exist; WCAG 2.2 AA full coverage UNPROVEN\"."
+      "note": "Checklist status \"PARTIAL — zero-attrition a11y suites exist; WCAG 2.2 AA full coverage UNPROVEN\"."
     },
     {
       "kind": "capability",
       "id": "cap:admin.backup-restore",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "SUPPORTED",
       "evidence": {
-        "owner": "O3",
-        "question": "Encryption key-escrow/recovery decision (O3, docs/TASKBOARD.md \u00a7OWNER)"
+        "tests": [
+          "src/utils/backupRestore.governance.test.ts",
+          "src/utils/backupRestore.test.ts",
+          "src/utils/backupRestore.escrow.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/utils/backupRestore.governance.test.ts",
+            "title": "admin.backup-restore — GOVERNANCE (O3: no escrow, user-held key)"
+          }
+        ]
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "O3 RESOLVED (DEC-101): no escrow, user-held key. 16 governance tests covering money primitive safety, determinism, key custody, atomicity, completeness.",
+      "tests": [
+        "src/utils/backupRestore.governance.test.ts",
+        "src/utils/backupRestore.test.ts",
+        "src/utils/backupRestore.escrow.test.ts"
+      ],
+      "gate": "governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
@@ -1840,11 +1858,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.data-management \u2014 import:update guards setAccounts, audit chain intact"
+            "title": "GOVERNED cap:admin.data-management — import:update guards setAccounts, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.data-management \u2014 import:create guards addAccount, Admin reaches enforce gate"
+            "title": "GOVERNED cap:admin.data-management — import:create guards addAccount, Admin reaches enforce gate"
           }
         ]
       },
@@ -1864,11 +1882,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.integrations \u2014 import:create guards connect, audit chain intact"
+            "title": "GOVERNED cap:admin.integrations — import:create guards connect, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.integrations \u2014 import:update guards disconnect, Admin reaches enforce gate"
+            "title": "GOVERNED cap:admin.integrations — import:update guards disconnect, Admin reaches enforce gate"
           }
         ]
       },
@@ -1888,19 +1906,19 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.settings \u2014 ui:update guards setTheme, audit chain intact"
+            "title": "GOVERNED cap:admin.settings — ui:update guards setTheme, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.settings \u2014 ui:update guards addToast, Admin reaches enforce gate"
+            "title": "GOVERNED cap:admin.settings — ui:update guards addToast, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.settings \u2014 ui:update guards startTour, audit chain intact"
+            "title": "GOVERNED cap:admin.settings — ui:update guards startTour, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.settings \u2014 ui:update guards completeTour, Admin reaches enforce gate"
+            "title": "GOVERNED cap:admin.settings — ui:update guards completeTour, Admin reaches enforce gate"
           }
         ]
       },
@@ -1920,19 +1938,19 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.users \u2014 user:create guards addUser, audit chain intact"
+            "title": "GOVERNED cap:admin.users — user:create guards addUser, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.users \u2014 user:delete guards deleteUser, Admin reaches enforce gate"
+            "title": "GOVERNED cap:admin.users — user:delete guards deleteUser, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.users \u2014 user:update guards setUsers, audit chain intact"
+            "title": "GOVERNED cap:admin.users — user:update guards setUsers, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:admin.users \u2014 user:assign-role guards setRoles, Admin reaches enforce gate"
+            "title": "GOVERNED cap:admin.users — user:assign-role guards setRoles, Admin reaches enforce gate"
           }
         ]
       },
@@ -1952,11 +1970,11 @@
         "governed": [
           {
             "file": "src/services/llm/llmEgress.governance.test.ts",
-            "title": "LLM Egress Chokepoint \u2014 AI EXPLICIT INVOCATION (ai.explicit-invocation)"
+            "title": "LLM Egress Chokepoint — AI EXPLICIT INVOCATION (ai.explicit-invocation)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 LlmEgressChokepoint explicit invocation and local-only verified by 19 engine-level governance tests covering kill switch, fail-closed endpoint gating, error types, redaction (emails/secrets/IBANs/GL accounts/money), message redaction, and local-only processing."
+      "note": "SUPPORTED — LlmEgressChokepoint explicit invocation and local-only verified by 19 engine-level governance tests covering kill switch, fail-closed endpoint gating, error types, redaction (emails/secrets/IBANs/GL accounts/money), message redaction, and local-only processing."
     },
     {
       "kind": "capability",
@@ -1972,20 +1990,25 @@
         "governed": [
           {
             "file": "src/services/llm/llmEgress.governance.test.ts",
-            "title": "LLM Egress Chokepoint \u2014 AI EXPLICIT INVOCATION (ai.explicit-invocation)"
+            "title": "LLM Egress Chokepoint — AI EXPLICIT INVOCATION (ai.explicit-invocation)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 LlmEgressChokepoint explicit invocation and local-only verified by 19 engine-level governance tests covering kill switch, fail-closed endpoint gating, error types, redaction (emails/secrets/IBANs/GL accounts/money), message redaction, and local-only processing."
+      "note": "SUPPORTED — LlmEgressChokepoint explicit invocation and local-only verified by 19 engine-level governance tests covering kill switch, fail-closed endpoint gating, error types, redaction (emails/secrets/IBANs/GL accounts/money), message redaction, and local-only processing."
     },
     {
       "kind": "capability",
       "id": "cap:ai.no-egress",
-      "status": "NOT_BUILT",
+      "status": "SUPPORTED",
       "evidence": {
-        "namedBy": "docs/plan/COMPLETION_PLAN_86_100.md"
+        "gatedBy": "/settings/ai",
+        "tests": [
+          "src/services/llm/llmEgress.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
-      "note": "no egress path is proven; DEC-022 is policy, not a tested control"
+      "note": "LLM egress chokepoint proven: kill switch off by default, all endpoints fail-closed, no egress in test environment. Promoted from NOT_BUILT to SUPPORTED."
     },
     {
       "kind": "capability",
@@ -2001,11 +2024,11 @@
         "governed": [
           {
             "file": "src/engines/AutoCommentaryEngine.governance.test.ts",
-            "title": "AutoCommentaryEngine \u2014 GOVERNANCE (ai.verified-facts-gate)"
+            "title": "AutoCommentaryEngine — GOVERNANCE (ai.verified-facts-gate)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 AutoCommentaryEngine narrative gate (verifyNarrative) blocks computed numbers not in verified facts. 24 engine-level governance tests covering narrative gating, money primitive safety, zero-budget handling, variance direction (above/below, never favorable/unfavorable), significance threshold, template interpolation, YoY comparison, and determinism."
+      "note": "SUPPORTED — AutoCommentaryEngine narrative gate (verifyNarrative) blocks computed numbers not in verified facts. 24 engine-level governance tests covering narrative gating, money primitive safety, zero-budget handling, variance direction (above/below, never favorable/unfavorable), significance threshold, template interpolation, YoY comparison, and determinism."
     },
     {
       "kind": "capability",
@@ -2016,27 +2039,27 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards setDashboards, audit chain intact"
+            "title": "GOVERNED cap:analyze.dashboards — dashboard:update guards setDashboards, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:create guards addDashboard, Admin reaches enforce gate"
+            "title": "GOVERNED cap:analyze.dashboards — dashboard:create guards addDashboard, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards updateDashboard, audit chain intact"
+            "title": "GOVERNED cap:analyze.dashboards — dashboard:update guards updateDashboard, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:delete guards deleteDashboard, Admin reaches enforce gate"
+            "title": "GOVERNED cap:analyze.dashboards — dashboard:delete guards deleteDashboard, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:create guards addWidget, audit chain intact"
+            "title": "GOVERNED cap:analyze.dashboards — dashboard:create guards addWidget, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.dashboards \u2014 dashboard:update guards addFilter, Admin reaches enforce gate"
+            "title": "GOVERNED cap:analyze.dashboards — dashboard:update guards addFilter, Admin reaches enforce gate"
           }
         ],
         "tests": [
@@ -2061,11 +2084,11 @@
         "governed": [
           {
             "file": "src/engines/AdvancedOLAPEngine.governance.test.ts",
-            "title": "AdvancedOLAPEngine \u2014 GOVERNANCE (analyze.drill-to-source)"
+            "title": "AdvancedOLAPEngine — GOVERNANCE (analyze.drill-to-source)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 AdvancedOLAPEngine drill-to-source traceability verified by 25 engine-level governance tests covering member management, hierarchy navigation (drill-down/up), cell security (RBAC), writeback audit trail, query execution, what-if scenario isolation, serialization, and determinism."
+      "note": "SUPPORTED — AdvancedOLAPEngine drill-to-source traceability verified by 25 engine-level governance tests covering member management, hierarchy navigation (drill-down/up), cell security (RBAC), writeback audit trail, query execution, what-if scenario isolation, serialization, and determinism."
     },
     {
       "kind": "capability",
@@ -2081,7 +2104,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.exception-rules \u2014 exception rules guarded by exception:configure, audit trail"
+            "title": "GOVERNED cap:analyze.exception-rules — exception rules guarded by exception:configure, audit trail"
           }
         ],
         "tests": [
@@ -2113,11 +2136,11 @@
         "governed": [
           {
             "file": "src/engines/AutoCommentaryEngine.explanations.governance.test.ts",
-            "title": "AutoCommentaryEngine \u2014 EXPLANATIONS (analyze.explanations)"
+            "title": "AutoCommentaryEngine — EXPLANATIONS (analyze.explanations)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 AutoCommentaryEngine explanation attribution verified by 15 engine-level governance tests covering source attribution (local vs LLM), narrative determinism, empty/multi-item handling, variance direction, and attribution consistency."
+      "note": "SUPPORTED — AutoCommentaryEngine explanation attribution verified by 15 engine-level governance tests covering source attribution (local vs LLM), narrative determinism, empty/multi-item handling, variance direction, and attribution consistency."
     },
     {
       "kind": "capability",
@@ -2127,13 +2150,13 @@
         "connected": [
           {
             "file": "src/store/exceptionDispositionStore.lifecycle.test.ts",
-            "title": "REQUESTED \u2192 APPLIED \u2192 REVERIFIED is the legal path, each step audited"
+            "title": "REQUESTED → APPLIED → REVERIFIED is the legal path, each step audited"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.findings-disposition \u2014 disposition follows audited legal path"
+            "title": "GOVERNED cap:analyze.findings-disposition — disposition follows audited legal path"
           }
         ],
         "tests": [
@@ -2165,11 +2188,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.statements \u2014 dashboard:create guards addChart, audit chain intact"
+            "title": "GOVERNED cap:analyze.statements — dashboard:create guards addChart, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.statements \u2014 dashboard:update guards updateChart, Admin reaches enforce gate"
+            "title": "GOVERNED cap:analyze.statements — dashboard:update guards updateChart, Admin reaches enforce gate"
           }
         ]
       },
@@ -2189,11 +2212,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.variance-decomposition \u2014 variance:create guards addAnalysis, audit chain intact"
+            "title": "GOVERNED cap:analyze.variance-decomposition — variance:create guards addAnalysis, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:analyze.variance-decomposition \u2014 variance:delete guards deleteAnalysis, Admin reaches enforce gate"
+            "title": "GOVERNED cap:analyze.variance-decomposition — variance:delete guards deleteAnalysis, Admin reaches enforce gate"
           }
         ]
       },
@@ -2213,7 +2236,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.audit-chain \u2014 audit chain is hash-chained from genesis, single canonical authority"
+            "title": "GOVERNED cap:close.audit-chain — audit chain is hash-chained from genesis, single canonical authority"
           },
           {
             "file": "src/services/audit/auditChainCensus.test.ts",
@@ -2251,7 +2274,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.corrections \u2014 corrections are tracked with audit trail"
+            "title": "GOVERNED cap:close.corrections — corrections are tracked with audit trail"
           }
         ],
         "tests": [
@@ -2283,7 +2306,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.period-entity-scope \u2014 period-entity scope guard cannot be evaded, O9 boundary stated"
+            "title": "GOVERNED cap:close.period-entity-scope — period-entity scope guard cannot be evaded, O9 boundary stated"
           }
         ],
         "tests": [
@@ -2309,13 +2332,13 @@
         "connected": [
           {
             "file": "src/engines/PeriodCloseStateMachine.test.ts",
-            "title": "hard-close \u2192 reopen is valid"
+            "title": "hard-close → reopen is valid"
           }
         ],
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.state-machine \u2014 state machine transitions are RBAC-guarded and audited"
+            "title": "GOVERNED cap:close.state-machine — state machine transitions are RBAC-guarded and audited"
           }
         ],
         "tests": [
@@ -2347,7 +2370,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.tie-out \u2014 tie-out enforces write guards and audit chain"
+            "title": "GOVERNED cap:close.tie-out — tie-out enforces write guards and audit chain"
           }
         ],
         "tests": [
@@ -2379,35 +2402,35 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.trial-balance \u2014 import:update guards setRows, audit chain intact"
+            "title": "GOVERNED cap:close.trial-balance — import:update guards setRows, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards setLoading, Admin reaches enforce gate"
+            "title": "GOVERNED cap:close.trial-balance — ui:update guards setLoading, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards setSort, audit chain intact"
+            "title": "GOVERNED cap:close.trial-balance — ui:update guards setSort, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards addFilter, Admin reaches enforce gate"
+            "title": "GOVERNED cap:close.trial-balance — ui:update guards addFilter, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards refresh, audit chain intact"
+            "title": "GOVERNED cap:close.trial-balance — ui:update guards refresh, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards reset, Admin reaches enforce gate"
+            "title": "GOVERNED cap:close.trial-balance — ui:update guards reset, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards clearFilters, audit chain intact"
+            "title": "GOVERNED cap:close.trial-balance — ui:update guards clearFilters, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.trial-balance \u2014 ui:update guards nextPage, Admin reaches enforce gate"
+            "title": "GOVERNED cap:close.trial-balance — ui:update guards nextPage, Admin reaches enforce gate"
           }
         ],
         "tests": [
@@ -2439,7 +2462,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:close.write-guards \u2014 write guards enforce period-close, audit records guard decisions"
+            "title": "GOVERNED cap:close.write-guards — write guards enforce period-close, audit records guard decisions"
           }
         ],
         "tests": [
@@ -2466,35 +2489,35 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:collab \u2014 collab:update guards setTasks, audit chain intact"
+            "title": "GOVERNED cap:collab — collab:update guards setTasks, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:collab \u2014 collab:update guards addTask, Admin reaches enforce gate"
+            "title": "GOVERNED cap:collab — collab:update guards addTask, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:collab \u2014 collab:update guards updateTaskStatus, audit chain intact"
+            "title": "GOVERNED cap:collab — collab:update guards updateTaskStatus, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:collab \u2014 collab:update guards setActivityLog, Admin reaches enforce gate"
+            "title": "GOVERNED cap:collab — collab:update guards setActivityLog, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:collab \u2014 collab:update guards addActivity, audit chain intact"
+            "title": "GOVERNED cap:collab — collab:update guards addActivity, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:collab \u2014 notification:update guards markAsRead, audit chain intact"
+            "title": "GOVERNED cap:collab — notification:update guards markAsRead, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:collab \u2014 notification:update guards markAllAsRead, Admin reaches enforce gate"
+            "title": "GOVERNED cap:collab — notification:update guards markAllAsRead, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:collab \u2014 notification:delete guards clearNotifications, audit chain intact"
+            "title": "GOVERNED cap:collab — notification:delete guards clearNotifications, audit chain intact"
           }
         ],
         "tests": [
@@ -2519,7 +2542,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.control-totals \u2014 control totals tie out, audit chain verified"
+            "title": "GOVERNED cap:data.control-totals — control totals tie out, audit chain verified"
           }
         ],
         "tests": [
@@ -2551,39 +2574,39 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:create guards setFile, audit chain intact"
+            "title": "GOVERNED cap:data.csv-xlsx-intake — import:create guards setFile, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 ui:update guards setStep, Admin reaches enforce gate"
+            "title": "GOVERNED cap:data.csv-xlsx-intake — ui:update guards setStep, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards setMappings, audit chain intact"
+            "title": "GOVERNED cap:data.csv-xlsx-intake — import:update guards setMappings, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 ui:update guards setProgress, Admin reaches enforce gate"
+            "title": "GOVERNED cap:data.csv-xlsx-intake — ui:update guards setProgress, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards setAutoMapping, audit chain intact"
+            "title": "GOVERNED cap:data.csv-xlsx-intake — import:update guards setAutoMapping, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:create guards completeSession, audit chain intact"
+            "title": "GOVERNED cap:data.csv-xlsx-intake — import:create guards completeSession, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards saveMappingProfile, Admin reaches enforce gate"
+            "title": "GOVERNED cap:data.csv-xlsx-intake — import:update guards saveMappingProfile, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:delete guards removeDocument, audit chain intact"
+            "title": "GOVERNED cap:data.csv-xlsx-intake — import:delete guards removeDocument, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards signLatestVersion, Admin reaches enforce gate"
+            "title": "GOVERNED cap:data.csv-xlsx-intake — import:update guards signLatestVersion, Admin reaches enforce gate"
           }
         ],
         "tests": [
@@ -2604,32 +2627,86 @@
     {
       "kind": "capability",
       "id": "cap:data.d365-bc-gl",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "SUPPORTED",
       "evidence": {
-        "owner": "O1",
-        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md \u00a7OWNER)"
+        "tests": [
+          "src/services/import/universalImportEngine.governance.test.ts",
+          "src/services/import/d365Parser.test.ts",
+          "src/services/import/parseGLRows.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/services/import/universalImportEngine.governance.test.ts",
+            "title": "data.universal-import — GOVERNANCE (O1: universal data importer)"
+          }
+        ]
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "O1 RESOLVED (DEC-104): universal importer with template system. D365 parsing covered by universalImportEngine governance tests + existing d365Parser tests.",
+      "tests": [
+        "src/services/import/universalImportEngine.governance.test.ts",
+        "src/services/import/d365Parser.test.ts",
+        "src/services/import/parseGLRows.test.ts"
+      ],
+      "gate": "governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:data.d365-fo-gl",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "SUPPORTED",
       "evidence": {
-        "owner": "O1",
-        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md \u00a7OWNER)"
+        "tests": [
+          "src/services/import/universalImportEngine.governance.test.ts",
+          "src/services/import/d365Parser.test.ts",
+          "src/services/import/parseGLRows.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/services/import/universalImportEngine.governance.test.ts",
+            "title": "data.universal-import — GOVERNANCE (O1: universal data importer)"
+          }
+        ]
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "O1 RESOLVED (DEC-104): universal importer with template system. D365 parsing covered by universalImportEngine governance tests + existing d365Parser tests.",
+      "tests": [
+        "src/services/import/universalImportEngine.governance.test.ts",
+        "src/services/import/d365Parser.test.ts",
+        "src/services/import/parseGLRows.test.ts"
+      ],
+      "gate": "governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:data.d365-journal",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "SUPPORTED",
       "evidence": {
-        "owner": "O1",
-        "question": "One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md \u00a7OWNER)"
+        "tests": [
+          "src/services/import/universalImportEngine.governance.test.ts",
+          "src/services/import/d365Parser.test.ts",
+          "src/services/import/parseGLRows.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/services/import/universalImportEngine.governance.test.ts",
+            "title": "data.universal-import — GOVERNANCE (O1: universal data importer)"
+          }
+        ]
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "O1 RESOLVED (DEC-104): universal importer with template system. D365 parsing covered by universalImportEngine governance tests + existing d365Parser tests.",
+      "tests": [
+        "src/services/import/universalImportEngine.governance.test.ts",
+        "src/services/import/d365Parser.test.ts",
+        "src/services/import/parseGLRows.test.ts"
+      ],
+      "gate": "governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
@@ -2645,11 +2722,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.lineage \u2014 audit:create guards recordChange, audit chain intact"
+            "title": "GOVERNED cap:data.lineage — audit:create guards recordChange, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.lineage \u2014 Admin recordChange reaches the enforce gate"
+            "title": "GOVERNED cap:data.lineage — Admin recordChange reaches the enforce gate"
           }
         ],
         "tests": [
@@ -2681,7 +2758,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.mapping \u2014 mapping respects RBAC and audit"
+            "title": "GOVERNED cap:data.mapping — mapping respects RBAC and audit"
           }
         ],
         "tests": [
@@ -2713,7 +2790,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.quarantine \u2014 quarantine blocks promotion, audit trail append-only"
+            "title": "GOVERNED cap:data.quarantine — quarantine blocks promotion, audit trail append-only"
           }
         ],
         "tests": [
@@ -2745,7 +2822,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:data.validation \u2014 validation quarantines with reasons, audit trail intact"
+            "title": "GOVERNED cap:data.validation — validation quarantines with reasons, audit trail intact"
           }
         ],
         "tests": [
@@ -2777,111 +2854,111 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 retailStore inventory:create guards addProduct, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — retailStore inventory:create guards addProduct, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 retailStore inventory:delete guards removeProduct, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — retailStore inventory:delete guards removeProduct, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 telecomStore inventory:create guards addSubscriber, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — telecomStore inventory:create guards addSubscriber, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 telecomStore inventory:delete guards removeSubscriber, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — telecomStore inventory:delete guards removeSubscriber, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 healthcareStore budget:create guards addProgram, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — healthcareStore budget:create guards addProgram, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 healthcareStore budget:update guards updateProgram, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — healthcareStore budget:update guards updateProgram, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 governmentStore budget:create guards addFund, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — governmentStore budget:create guards addFund, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 governmentStore budget:delete guards removeFund, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — governmentStore budget:delete guards removeFund, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 logisticsStore inventory:create guards addShipment, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — logisticsStore inventory:create guards addShipment, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 logisticsStore inventory:delete guards removeShipment, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — logisticsStore inventory:delete guards removeShipment, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 esgStore analytics:create guards addMetric, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — esgStore analytics:create guards addMetric, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 esgStore analytics:delete guards removeMetric, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — esgStore analytics:delete guards removeMetric, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 educationStore entity:create guards addProgram, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — educationStore entity:create guards addProgram, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 educationStore entity:delete guards removeProgram, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — educationStore entity:delete guards removeProgram, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 realEstateStore entity:create guards addFacility, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — realEstateStore entity:create guards addFacility, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 realEstateStore entity:delete guards removeFacility, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — realEstateStore entity:delete guards removeFacility, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 energyStore entity:create guards addAsset, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — energyStore entity:create guards addAsset, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 energyStore entity:delete guards removeAsset, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — energyStore entity:delete guards removeAsset, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 insuranceStore budget:create guards addRateFiling, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — insuranceStore budget:create guards addRateFiling, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 insuranceStore budget:update guards updateRateFiling, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — insuranceStore budget:update guards updateRateFiling, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 retailStore inventory:update guards updateProduct, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — retailStore inventory:update guards updateProduct, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 retailStore entity:update guards setStores, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — retailStore entity:update guards setStores, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 entity:update guards setEntities, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — entity:update guards setEntities, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 entity:update guards updateEntity, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — entity:update guards updateEntity, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 entity:delete guards deleteEntity, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — entity:delete guards deleteEntity, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 retailStore entity:create guards addPromotion, audit chain intact"
+            "title": "GOVERNED cap:govern.authorization — retailStore entity:create guards addPromotion, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:govern.authorization \u2014 retailStore inventory:delete guards clearAll, Admin reaches enforce gate"
+            "title": "GOVERNED cap:govern.authorization — retailStore inventory:delete guards clearAll, Admin reaches enforce gate"
           }
         ]
       },
@@ -2890,12 +2967,12 @@
     {
       "kind": "capability",
       "id": "cap:govern.entity-scope",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "RETIRED",
       "evidence": {
-        "owner": "O9",
-        "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md \u00a7OWNER)"
+        "decision": "DEC-103",
+        "commit": "c9b84116ad408b2d574e952cd953c67b92edcbab"
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "RETIRED per DEC-103 (O9): single-user tool; no multi-entity authorization needed."
     },
     {
       "kind": "capability",
@@ -2911,21 +2988,21 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "Settings Store \u2014 Security policy methods (batch 27 \u2014 CLOSES govern.security-policy METHOD-COVERAGE)"
+            "title": "Settings Store — Security policy methods (batch 27 — CLOSES govern.security-policy METHOD-COVERAGE)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 settingsStore security policy methods (updateRolePermissions, updateUser, deleteUser, addUser, setRoles) verified by 10 spine governance tests covering RBAC authorization for all security policy methods. Viewer denied all; Admin reaches enforce gate."
+      "note": "SUPPORTED — settingsStore security policy methods (updateRolePermissions, updateUser, deleteUser, addUser, setRoles) verified by 10 spine governance tests covering RBAC authorization for all security policy methods. Viewer denied all; Admin reaches enforce gate."
     },
     {
       "kind": "capability",
       "id": "cap:govern.sox-authority",
-      "status": "BLOCKED-ON-OWNER",
+      "status": "RETIRED",
       "evidence": {
-        "owner": "O4",
-        "question": "SOX/audit authority decision (O4, docs/TASKBOARD.md \u00a7OWNER)"
+        "decision": "DEC-102",
+        "commit": "c9b84116ad408b2d574e952cd953c67b92edcbab"
       },
-      "note": "Named in the plan as blocked on an owner decision."
+      "note": "RETIRED per DEC-102 (O4): not SOX; local chain is client evidence."
     },
     {
       "kind": "capability",
@@ -2941,11 +3018,11 @@
         "governed": [
           {
             "file": "src/engines/ConsolidationEngine.governance.test.ts",
-            "title": "ConsolidationEngine \u2014 GOVERNANCE (model.consolidation)"
+            "title": "ConsolidationEngine — GOVERNANCE (model.consolidation)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 ConsolidationEngine ASC 810 compliance verified by 21 engine-level governance tests covering input validation, IC elimination, minority interest, balance check, money primitive safety, failed result safety, cent-exact tolerance, and determinism. Promoted per DEC-100."
+      "note": "SUPPORTED — ConsolidationEngine ASC 810 compliance verified by 21 engine-level governance tests covering input validation, IC elimination, minority interest, balance check, money primitive safety, failed result safety, cent-exact tolerance, and determinism. Promoted per DEC-100."
     },
     {
       "kind": "capability",
@@ -2961,11 +3038,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:model.fx-translation \u2014 forecast:create guards addRate, audit chain intact"
+            "title": "GOVERNED cap:model.fx-translation — forecast:create guards addRate, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:model.fx-translation \u2014 forecast:delete guards deleteRate, Admin reaches enforce gate"
+            "title": "GOVERNED cap:model.fx-translation — forecast:delete guards deleteRate, Admin reaches enforce gate"
           }
         ]
       },
@@ -2985,11 +3062,11 @@
         "governed": [
           {
             "file": "src/engines/IntercompanyMatchingEngine.governance.test.ts",
-            "title": "IntercompanyMatchingEngine \u2014 GOVERNANCE (model.ic-elimination)"
+            "title": "IntercompanyMatchingEngine — GOVERNANCE (model.ic-elimination)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 IntercompanyMatchingEngine ASC 810 IC matching and elimination verified by 26 engine-level governance tests covering auto-matching, manual matching, elimination creation, net IC balances, IC interest, profit elimination, minority interest allocation, reconciliation, money primitive safety, and determinism."
+      "note": "SUPPORTED — IntercompanyMatchingEngine ASC 810 IC matching and elimination verified by 26 engine-level governance tests covering auto-matching, manual matching, elimination creation, net IC balances, IC interest, profit elimination, minority interest allocation, reconciliation, money primitive safety, and determinism."
     },
     {
       "kind": "capability",
@@ -3005,11 +3082,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:model.leases \u2014 budget:create guards addLease, audit chain intact"
+            "title": "GOVERNED cap:model.leases — budget:create guards addLease, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:model.leases \u2014 budget:delete guards removeLease, Admin reaches enforce gate"
+            "title": "GOVERNED cap:model.leases — budget:delete guards removeLease, Admin reaches enforce gate"
           }
         ]
       },
@@ -3029,11 +3106,11 @@
         "governed": [
           {
             "file": "src/engines/MultiBookEngine.governance.test.ts",
-            "title": "MultiBookEngine \u2014 GOVERNANCE (model.multi-book)"
+            "title": "MultiBookEngine — GOVERNANCE (model.multi-book)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 MultiBookEngine multi-book accounting verified by 14 engine-level governance tests covering period closing immutability, adjustment chain, book consolidation, book comparison, money primitive safety, and book lifecycle."
+      "note": "SUPPORTED — MultiBookEngine multi-book accounting verified by 14 engine-level governance tests covering period closing immutability, adjustment chain, book consolidation, book comparison, money primitive safety, and book lifecycle."
     },
     {
       "kind": "capability",
@@ -3049,11 +3126,11 @@
         "governed": [
           {
             "file": "src/engines/RevRecEngine.governance.test.ts",
-            "title": "RevRecEngine \u2014 GOVERNANCE (model.revenue-recognition)"
+            "title": "RevRecEngine — GOVERNANCE (model.revenue-recognition)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 RevRecEngine ASC 606 compliance verified by 24 engine-level governance tests covering input validation, transaction price allocation, revenue schedule footing, over-time and point-in-time recognition, contract modification, variable consideration constraint, contract asset/liability, deferred revenue, money primitive safety, and determinism."
+      "note": "SUPPORTED — RevRecEngine ASC 606 compliance verified by 24 engine-level governance tests covering input validation, transaction price allocation, revenue schedule footing, over-time and point-in-time recognition, contract modification, variable consideration constraint, contract asset/liability, deferred revenue, money primitive safety, and determinism."
     },
     {
       "kind": "capability",
@@ -3069,27 +3146,27 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with empty transactionId throws validation error"
+            "title": "GOVERNED cap:model.tax — attachBenchmark with empty transactionId throws validation error"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with empty studyRef throws validation error"
+            "title": "GOVERNED cap:model.tax — attachBenchmark with empty studyRef throws validation error"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with rangeLow > rangeHigh throws validation error"
+            "title": "GOVERNED cap:model.tax — attachBenchmark with rangeLow > rangeHigh throws validation error"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with non-finite margin throws validation error"
+            "title": "GOVERNED cap:model.tax — attachBenchmark with non-finite margin throws validation error"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:model.tax \u2014 attachBenchmark with valid data succeeds"
+            "title": "GOVERNED cap:model.tax — attachBenchmark with valid data succeeds"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:model.tax \u2014 removeBenchmark with TAX_UPDATE permission succeeds"
+            "title": "GOVERNED cap:model.tax — removeBenchmark with TAX_UPDATE permission succeeds"
           }
         ]
       },
@@ -3109,19 +3186,19 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:ops.capex \u2014 capex:create guards addProject, audit chain intact"
+            "title": "GOVERNED cap:ops.capex — capex:create guards addProject, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:ops.capex \u2014 capex:delete guards removeProject, Admin reaches enforce gate"
+            "title": "GOVERNED cap:ops.capex — capex:delete guards removeProject, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:ops.capex \u2014 budget:create guards addChangeOrder, audit chain intact"
+            "title": "GOVERNED cap:ops.capex — budget:create guards addChangeOrder, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:ops.capex \u2014 budget:update guards updateChangeOrder, Admin reaches enforce gate"
+            "title": "GOVERNED cap:ops.capex — budget:update guards updateChangeOrder, Admin reaches enforce gate"
           }
         ]
       },
@@ -3141,11 +3218,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:ops.cash-planning \u2014 budget:create guards addInstrument, audit chain intact"
+            "title": "GOVERNED cap:ops.cash-planning — budget:create guards addInstrument, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:ops.cash-planning \u2014 budget:delete guards removeInstrument, Admin reaches enforce gate"
+            "title": "GOVERNED cap:ops.cash-planning — budget:delete guards removeInstrument, Admin reaches enforce gate"
           }
         ]
       },
@@ -3165,19 +3242,19 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:ops.workforce \u2014 entity:create guards addEmployee, audit chain intact"
+            "title": "GOVERNED cap:ops.workforce — entity:create guards addEmployee, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:ops.workforce \u2014 entity:delete guards removeEmployee, Admin reaches enforce gate"
+            "title": "GOVERNED cap:ops.workforce — entity:delete guards removeEmployee, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:ops.workforce \u2014 entity:update guards setDepartments, audit chain intact"
+            "title": "GOVERNED cap:ops.workforce — entity:update guards setDepartments, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:ops.workforce \u2014 entity:delete guards clearAll, Admin reaches enforce gate"
+            "title": "GOVERNED cap:ops.workforce — entity:delete guards clearAll, Admin reaches enforce gate"
           }
         ]
       },
@@ -3197,11 +3274,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.assumptions \u2014 cube:delete guards deleteCell, audit chain intact"
+            "title": "GOVERNED cap:plan.assumptions — cube:delete guards deleteCell, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.assumptions \u2014 cube:admin guards addMember, Admin reaches enforce gate"
+            "title": "GOVERNED cap:plan.assumptions — cube:admin guards addMember, Admin reaches enforce gate"
           }
         ]
       },
@@ -3221,19 +3298,19 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.budgets \u2014 budget:update guards setBudgets, audit chain intact"
+            "title": "GOVERNED cap:plan.budgets — budget:update guards setBudgets, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.budgets \u2014 budget:update guards updateLineItem, Admin reaches enforce gate"
+            "title": "GOVERNED cap:plan.budgets — budget:update guards updateLineItem, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.budgets \u2014 budget:approve guards approveBudget, audit chain intact"
+            "title": "GOVERNED cap:plan.budgets — budget:approve guards approveBudget, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.budgets \u2014 budget:delete guards deleteBudget, Admin reaches enforce gate"
+            "title": "GOVERNED cap:plan.budgets — budget:delete guards deleteBudget, Admin reaches enforce gate"
           }
         ]
       },
@@ -3253,27 +3330,27 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:create guards addDriver, audit chain intact"
+            "title": "GOVERNED cap:plan.drivers-cascades — driver:create guards addDriver, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:delete guards removeDriver, Admin reaches enforce gate"
+            "title": "GOVERNED cap:plan.drivers-cascades — driver:delete guards removeDriver, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:create guards addRule, audit chain intact"
+            "title": "GOVERNED cap:plan.drivers-cascades — driver:create guards addRule, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:delete guards removeRule, Admin reaches enforce gate"
+            "title": "GOVERNED cap:plan.drivers-cascades — driver:delete guards removeRule, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:update guards applyCascade, audit chain intact"
+            "title": "GOVERNED cap:plan.drivers-cascades — driver:update guards applyCascade, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.drivers-cascades \u2014 driver:delete guards reset, Admin reaches enforce gate"
+            "title": "GOVERNED cap:plan.drivers-cascades — driver:delete guards reset, Admin reaches enforce gate"
           }
         ]
       },
@@ -3282,11 +3359,18 @@
     {
       "kind": "capability",
       "id": "cap:plan.operational-plans",
-      "status": "NOT_BUILT",
+      "status": "SUPPORTED",
       "evidence": {
-        "namedBy": "docs/plan/COMPLETION_PLAN_86_100.md"
+        "tests": [
+          "src/engines/CashEngine.governance.test.ts",
+          "src/engines/WorkforceEngine.governance.test.ts",
+          "src/engines/CapExEngine.governance.test.ts",
+          "src/engines/OperationalDriverEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
-      "note": "Identified in plan \u00a74; nothing claims it yet."
+      "note": "Four operational planning engines governed: CashEngine, WorkforceEngine, CapExEngine, OperationalDriverEngine. Promoted from NOT_BUILT to SUPPORTED."
     },
     {
       "kind": "capability",
@@ -3302,27 +3386,27 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with empty name throws validation error"
+            "title": "GOVERNED cap:plan.rolling-forecast — createForecast with empty name throws validation error"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with whitespace-only name throws validation error"
+            "title": "GOVERNED cap:plan.rolling-forecast — createForecast with whitespace-only name throws validation error"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with name > 200 chars throws validation error"
+            "title": "GOVERNED cap:plan.rolling-forecast — createForecast with name > 200 chars throws validation error"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with non-string name throws validation error"
+            "title": "GOVERNED cap:plan.rolling-forecast — createForecast with non-string name throws validation error"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with null forecast throws validation error"
+            "title": "GOVERNED cap:plan.rolling-forecast — createForecast with null forecast throws validation error"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.rolling-forecast \u2014 createForecast with valid name succeeds, audit chain intact"
+            "title": "GOVERNED cap:plan.rolling-forecast — createForecast with valid name succeeds, audit chain intact"
           }
         ],
         "ownerResolved": "O2",
@@ -3344,11 +3428,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.scenarios \u2014 forecast:update guards setForecasts, audit chain intact"
+            "title": "GOVERNED cap:plan.scenarios — forecast:update guards setForecasts, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.scenarios \u2014 forecast:create guards createForecast, Admin reaches enforce gate"
+            "title": "GOVERNED cap:plan.scenarios — forecast:create guards createForecast, Admin reaches enforce gate"
           }
         ]
       },
@@ -3368,15 +3452,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.versions \u2014 scenario:lock guards lockScenario, Admin reaches enforce gate"
+            "title": "GOVERNED cap:plan.versions — scenario:lock guards lockScenario, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.versions \u2014 scenario:lock guards unlockScenario, audit chain intact"
+            "title": "GOVERNED cap:plan.versions — scenario:lock guards unlockScenario, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:plan.versions \u2014 scenario:update guards setScenarios, Admin reaches enforce gate"
+            "title": "GOVERNED cap:plan.versions — scenario:update guards setScenarios, Admin reaches enforce gate"
           }
         ]
       },
@@ -3396,7 +3480,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:report.board-pack \u2014 board pack read guarded by report:read, export ties out to audited ledger"
+            "title": "GOVERNED cap:report.board-pack — board pack read guarded by report:read, export ties out to audited ledger"
           }
         ],
         "tests": [
@@ -3428,20 +3512,31 @@
         "governed": [
           {
             "file": "src/engines/AdvancedPDFEngine.governance.test.ts",
-            "title": "AdvancedPDFEngine \u2014 GOVERNANCE (report.pdf)"
+            "title": "AdvancedPDFEngine — GOVERNANCE (report.pdf)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 AdvancedPDFEngine PDF report generation verified by 14 engine-level governance tests covering TOC, watermark, header/footer, page break, financial table, money primitive safety, document export, and determinism."
+      "note": "SUPPORTED — AdvancedPDFEngine PDF report generation verified by 14 engine-level governance tests covering TOC, watermark, header/footer, page break, financial table, money primitive safety, document export, and determinism."
     },
     {
       "kind": "capability",
       "id": "cap:report.pptx-editable",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/board-pack"
+        "gatedBy": "/reports",
+        "tests": [
+          "src/services/export/financialPackageExport.governance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/plan/ENGINE_LEVEL_GOVERNANCE_TESTING_PLAN.md",
+        "governed": [
+          {
+            "file": "src/services/export/financialPackageExport.governance.test.ts",
+            "title": "financialPackageExport — GOVERNANCE (report.pptx-editable)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan \u00a75)."
+      "note": "SUPPORTED — financialPackageExport PPTX board pack generation verified by 29 engine-level governance tests covering PPTX generation, round-trip, formula safety (injection blocking), tie-out verification (XLSX↔PPTX), money primitive safety (exact decimal), and determinism."
     },
     {
       "kind": "capability",
@@ -3457,23 +3552,23 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:report.statements \u2014 report:schedule guards toggleScheduledReport, audit chain intact"
+            "title": "GOVERNED cap:report.statements — report:schedule guards toggleScheduledReport, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:report.statements \u2014 report:schedule guards toggleScheduledReport, Admin reaches enforce gate"
+            "title": "GOVERNED cap:report.statements — report:schedule guards toggleScheduledReport, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:report.statements \u2014 report:schedule guards deleteScheduledReport, audit chain intact"
+            "title": "GOVERNED cap:report.statements — report:schedule guards deleteScheduledReport, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:report.statements \u2014 report:schedule guards recordScheduleRun, Admin reaches enforce gate"
+            "title": "GOVERNED cap:report.statements — report:schedule guards recordScheduleRun, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:report.statements \u2014 report:update guards setReports, audit chain intact"
+            "title": "GOVERNED cap:report.statements — report:update guards setReports, audit chain intact"
           }
         ]
       },
@@ -3493,7 +3588,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:report.tie-back \u2014 tie-back ensures export reflects audited ledger, not hardcoded figures"
+            "title": "GOVERNED cap:report.tie-back — tie-back ensures export reflects audited ledger, not hardcoded figures"
           }
         ],
         "tests": [
@@ -3525,11 +3620,11 @@
         "governed": [
           {
             "file": "src/engines/report-builder-formulas.governance.test.ts",
-            "title": "report-builder-formulas \u2014 GOVERNANCE (report.xlsx-formula)"
+            "title": "report-builder-formulas — GOVERNANCE (report.xlsx-formula)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 report-builder-formulas engine formula evaluation safety verified by 30 engine-level governance tests covering formula parsing, evaluation, safe evaluation (no code injection), missing/non-finite cell detection, column conversion, circular reference detection, and determinism."
+      "note": "SUPPORTED — report-builder-formulas engine formula evaluation safety verified by 30 engine-level governance tests covering formula parsing, evaluation, safe evaluation (no code injection), missing/non-finite cell detection, column conversion, circular reference detection, and determinism."
     },
     {
       "kind": "capability",
@@ -3545,11 +3640,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:wf.administration \u2014 workflow:update guards addDelegation, audit chain intact"
+            "title": "GOVERNED cap:wf.administration — workflow:update guards addDelegation, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:wf.administration \u2014 workflow:delete guards removeDelegation, Admin reaches enforce gate"
+            "title": "GOVERNED cap:wf.administration — workflow:delete guards removeDelegation, Admin reaches enforce gate"
           }
         ]
       },
@@ -3569,15 +3664,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:wf.approvals \u2014 workflow:approve guards lockRequest, audit chain intact"
+            "title": "GOVERNED cap:wf.approvals — workflow:approve guards lockRequest, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:wf.approvals \u2014 workflow:approve guards lockRequest, Admin reaches enforce gate"
+            "title": "GOVERNED cap:wf.approvals — workflow:approve guards lockRequest, Admin reaches enforce gate"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:wf.approvals \u2014 workflow:approve guards setApprovals, Admin reaches enforce gate"
+            "title": "GOVERNED cap:wf.approvals — workflow:approve guards setApprovals, Admin reaches enforce gate"
           }
         ]
       },
@@ -3597,11 +3692,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:wf.auditability \u2014 notification:update guards markAsRead, audit chain intact"
+            "title": "GOVERNED cap:wf.auditability — notification:update guards markAsRead, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:wf.auditability \u2014 notification:delete guards clearNotifications, Admin reaches enforce gate"
+            "title": "GOVERNED cap:wf.auditability — notification:delete guards clearNotifications, Admin reaches enforce gate"
           }
         ]
       },
@@ -3621,11 +3716,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:wf.correction-follow-through \u2014 workflow:update guards checkEscalations, audit chain intact"
+            "title": "GOVERNED cap:wf.correction-follow-through — workflow:update guards checkEscalations, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:wf.correction-follow-through \u2014 workflow:update guards checkEscalations, Admin reaches enforce gate"
+            "title": "GOVERNED cap:wf.correction-follow-through — workflow:update guards checkEscalations, Admin reaches enforce gate"
           }
         ]
       },
@@ -3645,11 +3740,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "Audit Trail Store \u2014 Human attribution (batch 26 \u2014 CLOSES wf.human-attribution ATTRIBUTION-COVERAGE)"
+            "title": "Audit Trail Store — Human attribution (batch 26 — CLOSES wf.human-attribution ATTRIBUTION-COVERAGE)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 auditTrailStore human attribution verified by 8 spine governance tests covering recordUpdate/recordDelete/recordRead attribution, recordBulk transactionId grouping, approvalUserId/approvalStatus/approvalTimestamp recording, exportToCSV/exportToJSON PII masking, and audit chain integrity."
+      "note": "SUPPORTED — auditTrailStore human attribution verified by 8 spine governance tests covering recordUpdate/recordDelete/recordRead attribution, recordBulk transactionId grouping, approvalUserId/approvalStatus/approvalTimestamp recording, exportToCSV/exportToJSON PII masking, and audit chain integrity."
     },
     {
       "kind": "capability",
@@ -3665,11 +3760,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:wf.rbac \u2014 workflow:create guards createWorkflow, audit chain intact"
+            "title": "GOVERNED cap:wf.rbac — workflow:create guards createWorkflow, audit chain intact"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED cap:wf.rbac \u2014 workflow:delete guards deleteWorkflow, Admin reaches enforce gate"
+            "title": "GOVERNED cap:wf.rbac — workflow:delete guards deleteWorkflow, Admin reaches enforce gate"
           }
         ]
       },
@@ -3689,11 +3784,11 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "Workflow Store \u2014 Review workflow methods (batch 25 \u2014 CLOSES wf.reviews ENFORCE-METHOD-COVERAGE)"
+            "title": "Workflow Store — Review workflow methods (batch 25 — CLOSES wf.reviews ENFORCE-METHOD-COVERAGE)"
           }
         ]
       },
-      "note": "SUPPORTED \u2014 workflowStore review workflow methods (submitRequest, approveRequest, rejectRequest, delegateRequest, bulkApprove) verified by 12 spine governance tests covering RBAC authorization for all review workflow methods. Viewer denied all; Admin reaches enforce gate."
+      "note": "SUPPORTED — workflowStore review workflow methods (submitRequest, approveRequest, rejectRequest, delegateRequest, bulkApprove) verified by 12 spine governance tests covering RBAC authorization for all review workflow methods. Viewer denied all; Admin reaches enforce gate."
     },
     {
       "kind": "engine",
@@ -3815,9 +3910,17 @@
     {
       "kind": "engine",
       "id": "engine:AuditLogEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/AuditLogEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/AuditLogEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -3860,9 +3963,17 @@
     {
       "kind": "engine",
       "id": "engine:BondPricingEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/BondPricingEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/BondPricingEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -3986,9 +4097,17 @@
     {
       "kind": "engine",
       "id": "engine:ComplianceEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/ComplianceEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/ComplianceEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4157,9 +4276,17 @@
     {
       "kind": "engine",
       "id": "engine:DataGovernanceEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/DataGovernanceEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/DataGovernanceEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4211,9 +4338,17 @@
     {
       "kind": "engine",
       "id": "engine:DepreciationEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/DepreciationEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/DepreciationEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4283,9 +4418,17 @@
     {
       "kind": "engine",
       "id": "engine:EncryptionEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/EncryptionEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/EncryptionEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4346,9 +4489,17 @@
     {
       "kind": "engine",
       "id": "engine:FXEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/FXEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/FXEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4382,9 +4533,17 @@
     {
       "kind": "engine",
       "id": "engine:FinancialCloseEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/FinancialCloseEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/FinancialCloseEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4400,9 +4559,17 @@
     {
       "kind": "engine",
       "id": "engine:FiscalCalendar",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/FiscalCalendar.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/FiscalCalendar.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4580,9 +4747,17 @@
     {
       "kind": "engine",
       "id": "engine:LeaseEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/LeaseEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/LeaseEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4706,9 +4881,17 @@
     {
       "kind": "engine",
       "id": "engine:PeriodCloseStateMachine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/PeriodCloseStateMachine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/PeriodCloseStateMachine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4760,9 +4943,17 @@
     {
       "kind": "engine",
       "id": "engine:RBACEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/RBACEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/RBACEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -4796,9 +4987,17 @@
     {
       "kind": "engine",
       "id": "engine:ReconciliationEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/ReconciliationEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/ReconciliationEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -5057,9 +5256,17 @@
     {
       "kind": "engine",
       "id": "engine:TaxEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/TaxEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/TaxEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -5084,9 +5291,17 @@
     {
       "kind": "engine",
       "id": "engine:ThreeStatementEngine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "src/engines/engineManifest.generated.ts"
+        "governanceTest": "src/engines/ThreeStatementEngine.governance.test.ts",
+        "governanceTestResult": "PASS",
+        "promotedFrom": "EXPERIMENTAL",
+        "promotedBy": "engine-level governance testing",
+        "tests": [
+          "src/engines/ThreeStatementEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
       },
       "note": "Loadable engine in the manifest; no capability claims it as supported yet."
     },
@@ -5622,7 +5837,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /analytics \u2014 analytics:read allows viewing analytics"
+            "title": "GOVERNED /analytics — analytics:read allows viewing analytics"
           }
         ],
         "tests": [
@@ -5632,7 +5847,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/analytics/AnalyticsPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5724,7 +5939,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /audit/sox \u2014 audit:read allows viewing SOX compliance"
+            "title": "GOVERNED /audit/sox — audit:read allows viewing SOX compliance"
           }
         ],
         "tests": [
@@ -5735,7 +5950,7 @@
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
         "page": "src/pages/audit/AuditTrailPage.tsx"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/audit/AuditTrailPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5787,7 +6002,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /audit/sox \u2014 audit:read allows viewing SOX compliance"
+            "title": "GOVERNED /audit/sox — audit:read allows viewing SOX compliance"
           }
         ],
         "tests": [
@@ -5797,7 +6012,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/audit/SOXCompliancePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5819,7 +6034,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /audit/trail \u2014 audit:read allows viewing audit trail"
+            "title": "GOVERNED /audit/trail — audit:read allows viewing audit trail"
           }
         ],
         "tests": [
@@ -5829,7 +6044,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/audit/AuditTrailPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -5961,7 +6176,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /board-pack \u2014 report:read allows viewing board pack"
+            "title": "GOVERNED /board-pack — report:read allows viewing board pack"
           }
         ],
         "tests": [
@@ -5971,7 +6186,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/reports/BoardPackPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6015,7 +6230,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /budgets \u2014 budget:read allows viewing budgets"
+            "title": "GOVERNED /budgets — budget:read allows viewing budgets"
           }
         ],
         "tests": [
@@ -6025,7 +6240,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/budgets/BudgetListPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6057,7 +6272,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /budgets/approval \u2014 budget:approve guards the approval path"
+            "title": "GOVERNED /budgets/approval — budget:approve guards the approval path"
           }
         ],
         "tests": [
@@ -6067,7 +6282,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/budgets/BudgetApproval.deep.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6104,7 +6319,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /budgets/create \u2014 budget:create guards the creation path"
+            "title": "GOVERNED /budgets/create — budget:create guards the creation path"
           }
         ],
         "tests": [
@@ -6114,7 +6329,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/budgets/BudgetCreatePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6136,7 +6351,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /capex \u2014 capex:read allows viewing CapEx"
+            "title": "GOVERNED /capex — capex:read allows viewing CapEx"
           }
         ],
         "tests": [
@@ -6146,7 +6361,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/capex/CapExDashboard.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6203,7 +6418,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /cash/debt \u2014 report:read allows viewing debt schedule"
+            "title": "GOVERNED /cash/debt — report:read allows viewing debt schedule"
           }
         ],
         "tests": [
@@ -6213,7 +6428,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/cash/DebtSchedulePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6235,7 +6450,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /cash/forecast \u2014 report:read allows viewing cash forecast"
+            "title": "GOVERNED /cash/forecast — report:read allows viewing cash forecast"
           }
         ],
         "tests": [
@@ -6245,7 +6460,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/cash/CashForecastPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6260,14 +6475,14 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/cash/working-capital",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED",
+        "note": "EXPERIMENTAL — requires journey/empty/error/loading test evidence before SUPPORTED",
         "tests": [
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL — requires real test evidence before SUPPORTED promotion",
       "tests": [
         "src/__tests__/spineGovernance.test.ts"
       ]
@@ -6407,15 +6622,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /consolidation \u2014 report:read allows viewing consolidation"
+            "title": "GOVERNED /consolidation — report:read allows viewing consolidation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /consolidation \u2014 audit trail records consolidation derivation"
+            "title": "GOVERNED /consolidation — audit trail records consolidation derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /consolidation \u2014 write guard blocks closed periods from affecting consolidation"
+            "title": "GOVERNED /consolidation — write guard blocks closed periods from affecting consolidation"
           }
         ],
         "tests": [
@@ -6424,7 +6639,7 @@
           "src/pages/consolidation/ConsolidationDashboard.test.tsx"
         ]
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 ASC 810 consolidation elimination, single economic entity",
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — ASC 810 consolidation elimination, single economic entity",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/consolidation/ConsolidationDashboard.interop.test.tsx",
@@ -6462,7 +6677,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /consolidation/ic-eliminations \u2014 gl:read allows viewing IC eliminations"
+            "title": "GOVERNED /consolidation/ic-eliminations — gl:read allows viewing IC eliminations"
           }
         ],
         "tests": [
@@ -6472,7 +6687,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/consolidation/ICEliminationPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6494,7 +6709,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /consolidation/ownership \u2014 gl:read allows viewing ownership tree"
+            "title": "GOVERNED /consolidation/ownership — gl:read allows viewing ownership tree"
           }
         ],
         "tests": [
@@ -6504,7 +6719,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/consolidation/OwnershipTreePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6586,7 +6801,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /currency/fx-rates \u2014 gl:read allows viewing FX rates"
+            "title": "GOVERNED /currency/fx-rates — gl:read allows viewing FX rates"
           }
         ],
         "tests": [
@@ -6596,7 +6811,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/currency/FXRatesPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6633,7 +6848,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /currency/translation \u2014 gl:read allows viewing translation"
+            "title": "GOVERNED /currency/translation — gl:read allows viewing translation"
           }
         ],
         "tests": [
@@ -6643,7 +6858,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/currency/TranslationResultPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6665,7 +6880,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /dashboard \u2014 dashboard:read allows viewing dashboard"
+            "title": "GOVERNED /dashboard — dashboard:read allows viewing dashboard"
           }
         ],
         "tests": [
@@ -6675,7 +6890,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/dashboard/DashboardPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -6705,15 +6920,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data \u2014 import:create guards the import path"
+            "title": "GOVERNED /data — import:create guards the import path"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data \u2014 audit trail records the import provenance"
+            "title": "GOVERNED /data — audit trail records the import provenance"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data \u2014 write guard blocks closed periods"
+            "title": "GOVERNED /data — write guard blocks closed periods"
           }
         ],
         "tests": [
@@ -6723,7 +6938,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 3 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/DataImportPage.deep.test.tsx"
@@ -6785,15 +7000,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/corrections \u2014 exception:dispose guards correction request"
+            "title": "GOVERNED /data/corrections — exception:dispose guards correction request"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/corrections \u2014 audit trail records correction lifecycle"
+            "title": "GOVERNED /data/corrections — audit trail records correction lifecycle"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/corrections \u2014 write guard enforces human-only status transitions"
+            "title": "GOVERNED /data/corrections — write guard enforces human-only status transitions"
           }
         ],
         "tests": [
@@ -6803,7 +7018,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 3 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/CorrectionsPage.test.tsx"
@@ -6849,15 +7064,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/exceptions \u2014 exception:dispose guards disposition"
+            "title": "GOVERNED /data/exceptions — exception:dispose guards disposition"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/exceptions \u2014 audit trail records disposition lifecycle"
+            "title": "GOVERNED /data/exceptions — audit trail records disposition lifecycle"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/exceptions \u2014 write guard prevents bypassing quarantine"
+            "title": "GOVERNED /data/exceptions — write guard prevents bypassing quarantine"
           }
         ],
         "tests": [
@@ -6867,7 +7082,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/ExceptionQueuePage.test.tsx"
@@ -6914,15 +7129,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-explorer \u2014 gl:read allows viewing explorer"
+            "title": "GOVERNED /data/gl-explorer — gl:read allows viewing explorer"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-explorer \u2014 audit trail records explorer derivation"
+            "title": "GOVERNED /data/gl-explorer — audit trail records explorer derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-explorer \u2014 write guard blocks closed periods from affecting explorer"
+            "title": "GOVERNED /data/gl-explorer — write guard blocks closed periods from affecting explorer"
           }
         ],
         "tests": [
@@ -6933,7 +7148,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 3 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/GLExplorerPage.interop.test.tsx",
@@ -6968,15 +7183,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-journals \u2014 gl:read allows viewing journals"
+            "title": "GOVERNED /data/gl-journals — gl:read allows viewing journals"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-journals \u2014 audit trail records journals derivation"
+            "title": "GOVERNED /data/gl-journals — audit trail records journals derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-journals \u2014 write guard blocks closed periods from affecting journals"
+            "title": "GOVERNED /data/gl-journals — write guard blocks closed periods from affecting journals"
           }
         ],
         "tests": [
@@ -6987,7 +7202,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/data/GLJournalsPage.test.tsx",
@@ -7025,7 +7240,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-trial-balance \u2014 Viewer can read trial balance (import:read)"
+            "title": "GOVERNED /data/gl-trial-balance — Viewer can read trial balance (import:read)"
           }
         ],
         "tests": [
@@ -7035,7 +7250,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/data/GLTrialBalancePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -7071,15 +7286,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-upload \u2014 import:create guards the upload path"
+            "title": "GOVERNED /data/gl-upload — import:create guards the upload path"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-upload \u2014 audit trail records upload provenance"
+            "title": "GOVERNED /data/gl-upload — audit trail records upload provenance"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /data/gl-upload \u2014 write guard blocks closed periods"
+            "title": "GOVERNED /data/gl-upload — write guard blocks closed periods"
           }
         ],
         "tests": [
@@ -7090,7 +7305,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/data/GLUploadPage.deep.test.tsx",
         "src/pages/data/GLUploadPage.test.tsx",
@@ -7298,7 +7513,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /forecasts \u2014 forecast:read allows viewing forecasts"
+            "title": "GOVERNED /forecasts — forecast:read allows viewing forecasts"
           }
         ],
         "tests": [
@@ -7308,7 +7523,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/forecasts/ForecastListPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -7360,7 +7575,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /forecasts/create \u2014 forecast:update guards the setForecasts path"
+            "title": "GOVERNED /forecasts/create — forecast:update guards the setForecasts path"
           }
         ],
         "tests": [
@@ -7370,7 +7585,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/forecasts/ForecastBuilderPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -7392,7 +7607,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /forecasts/drivers \u2014 driver:read allows viewing drivers"
+            "title": "GOVERNED /forecasts/drivers — driver:read allows viewing drivers"
           }
         ],
         "tests": [
@@ -7402,7 +7617,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/forecasts/DriverPlanningPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -7424,7 +7639,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /forecasts/rolling \u2014 forecast:read allows viewing rolling forecast"
+            "title": "GOVERNED /forecasts/rolling — forecast:read allows viewing rolling forecast"
           }
         ],
         "tests": [
@@ -7434,7 +7649,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/forecasts/RollingForecastPage.money.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -7861,7 +8076,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /periods/close \u2014 Viewer cannot close, Admin can close (period:close)"
+            "title": "GOVERNED /periods/close — Viewer cannot close, Admin can close (period:close)"
           }
         ],
         "tests": [
@@ -7871,7 +8086,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/periods/PeriodClosePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -7995,7 +8210,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /reports/balance-sheet \u2014 report:read allows viewing balance sheet"
+            "title": "GOVERNED /reports/balance-sheet — report:read allows viewing balance sheet"
           }
         ],
         "tests": [
@@ -8005,7 +8220,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/reports/ReportsListPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -8037,15 +8252,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /reports/balance-sheet \u2014 report:read allows viewing balance sheet"
+            "title": "GOVERNED /reports/balance-sheet — report:read allows viewing balance sheet"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /reports/balance-sheet \u2014 audit trail records balance sheet derivation"
+            "title": "GOVERNED /reports/balance-sheet — audit trail records balance sheet derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /reports/balance-sheet \u2014 write guard blocks closed periods from affecting BS"
+            "title": "GOVERNED /reports/balance-sheet — write guard blocks closed periods from affecting BS"
           }
         ],
         "disposition": "MIGRATE",
@@ -8057,7 +8272,7 @@
           "src/pages/reports/BalanceSheetPage.interop.test.tsx"
         ]
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 report tie-out",
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — report tie-out",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/reports/BalanceSheetPage.interop.test.tsx"
@@ -8129,15 +8344,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /reports/cash-flow \u2014 report:read allows viewing cash flow"
+            "title": "GOVERNED /reports/cash-flow — report:read allows viewing cash flow"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /reports/cash-flow \u2014 audit trail records cash flow derivation"
+            "title": "GOVERNED /reports/cash-flow — audit trail records cash flow derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /reports/cash-flow \u2014 write guard blocks closed periods from affecting CF"
+            "title": "GOVERNED /reports/cash-flow — write guard blocks closed periods from affecting CF"
           }
         ],
         "disposition": "MIGRATE",
@@ -8149,7 +8364,7 @@
           "src/pages/reports/CashFlowPage.interop.test.tsx"
         ]
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 report tie-out",
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — report tie-out",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/reports/CashFlowPage.interop.test.tsx"
@@ -8211,15 +8426,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /reports/profit-loss \u2014 report:read allows viewing P&L"
+            "title": "GOVERNED /reports/profit-loss — report:read allows viewing P&L"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /reports/profit-loss \u2014 audit trail records P&L derivation"
+            "title": "GOVERNED /reports/profit-loss — audit trail records P&L derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /reports/profit-loss \u2014 write guard blocks closed periods from affecting P&L"
+            "title": "GOVERNED /reports/profit-loss — write guard blocks closed periods from affecting P&L"
           }
         ],
         "disposition": "MIGRATE",
@@ -8231,7 +8446,7 @@
           "src/pages/reports/ProfitLossPage.interop.test.tsx"
         ]
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 report tie-out",
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — report tie-out",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/reports/ProfitLossPage.interop.test.tsx"
@@ -8513,7 +8728,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /scenarios \u2014 scenario:read allows viewing scenarios"
+            "title": "GOVERNED /scenarios — scenario:read allows viewing scenarios"
           }
         ],
         "tests": [
@@ -8523,7 +8738,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/scenarios/ScenarioListPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -8570,7 +8785,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /scenarios/create \u2014 scenario:update guards the setScenarios path"
+            "title": "GOVERNED /scenarios/create — scenario:update guards the setScenarios path"
           }
         ],
         "tests": [
@@ -8580,7 +8795,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/scenarios/ScenarioBuilderPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -8802,7 +9017,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /settings \u2014 user:read allows viewing user management"
+            "title": "GOVERNED /settings — user:read allows viewing user management"
           }
         ],
         "tests": [
@@ -8812,7 +9027,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/settings/SettingsPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -8984,7 +9199,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /treasury/fx-exposure \u2014 report:read allows viewing FX exposure"
+            "title": "GOVERNED /treasury/fx-exposure — report:read allows viewing FX exposure"
           }
         ],
         "tests": [
@@ -8994,7 +9209,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/treasury/InvestmentPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -9026,15 +9241,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /treasury/fx-exposure \u2014 report:read allows viewing FX exposure"
+            "title": "GOVERNED /treasury/fx-exposure — report:read allows viewing FX exposure"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /treasury/fx-exposure \u2014 audit trail records FX derivation"
+            "title": "GOVERNED /treasury/fx-exposure — audit trail records FX derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /treasury/fx-exposure \u2014 write guard blocks closed periods from affecting FX"
+            "title": "GOVERNED /treasury/fx-exposure — write guard blocks closed periods from affecting FX"
           }
         ],
         "disposition": "MIGRATE",
@@ -9046,7 +9261,7 @@
           "src/pages/treasury/FXExposurePage.interop.test.tsx"
         ]
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 ASC 830 FX translation",
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — ASC 830 FX translation",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/treasury/FXExposurePage.interop.test.tsx"
@@ -9093,7 +9308,7 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /variance \u2014 variance:read allows viewing variance"
+            "title": "GOVERNED /variance — variance:read allows viewing variance"
           }
         ],
         "tests": [
@@ -9103,7 +9318,7 @@
         "gate": "governance:evidence",
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 1 GOVERNED 1 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/pages/variance/__tests__/VarianceDashboardPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
@@ -9170,15 +9385,15 @@
         "governed": [
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /workforce/headcount \u2014 report:read allows viewing workforce"
+            "title": "GOVERNED /workforce/headcount — report:read allows viewing workforce"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /workforce/headcount \u2014 audit trail records workforce derivation"
+            "title": "GOVERNED /workforce/headcount — audit trail records workforce derivation"
           },
           {
             "file": "src/__tests__/spineGovernance.test.ts",
-            "title": "GOVERNED /workforce/headcount \u2014 write guard blocks closed periods from affecting workforce"
+            "title": "GOVERNED /workforce/headcount — write guard blocks closed periods from affecting workforce"
           }
         ],
         "disposition": "MIGRATE",
@@ -9190,7 +9405,7 @@
           "src/pages/workforce/HeadcountPlanPage.interop.test.tsx"
         ]
       },
-      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9",
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
       "tests": [
         "src/__tests__/spineGovernance.test.ts",
         "src/pages/workforce/HeadcountPlanPage.interop.test.tsx"
@@ -9210,6 +9425,229 @@
         "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
       "note": "Routed screen (PayrollForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:close.financial-close-engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/FinancialCloseEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/FinancialCloseEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:govern.rbac",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/RBACEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/RBACEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:close.reconciliation-engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/ReconciliationEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/ReconciliationEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:govern.encryption",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/EncryptionEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/EncryptionEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:govern.audit-log",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/AuditLogEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/AuditLogEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:fiscal.calendar",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/FiscalCalendar.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/FiscalCalendar.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:statement.three-statement",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/ThreeStatementEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/ThreeStatementEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:fx.engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/FXEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/FXEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:tax.engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/TaxEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/TaxEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:fixed-assets.depreciation",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/DepreciationEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/DepreciationEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:treasury.lease-engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/LeaseEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/LeaseEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:treasury.bond-pricing",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/BondPricingEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/BondPricingEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:govern.compliance-engine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/ComplianceEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/ComplianceEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:govern.data-governance",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/DataGovernanceEngine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/DataGovernanceEngine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:close.period-close-state-machine",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/engines/PeriodCloseStateMachine.governance.test.ts"
+        ],
+        "gate": "test:sharded",
+        "doc": "docs/plan/governance-evidence.json"
+      },
+      "note": "Engine-level governance testing (src/engines/PeriodCloseStateMachine.governance.test.ts). Promoted from EXPERIMENTAL to SUPPORTED."
+    },
+    {
+      "kind": "capability",
+      "id": "cap:data.universal-import",
+      "status": "SUPPORTED",
+      "evidence": {
+        "tests": [
+          "src/services/import/universalImportEngine.governance.test.ts",
+          "src/services/import/d365Parser.test.ts",
+          "src/services/import/parseGLRows.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "governed": [
+          {
+            "file": "src/services/import/universalImportEngine.governance.test.ts",
+            "title": "data.universal-import — GOVERNANCE (O1: universal data importer)"
+          }
+        ]
+      },
+      "note": "O1 RESOLVED (DEC-104): universal data importer with template system. 28 governance tests covering template validation, D365 auto-detection, generic import, money primitive safety, determinism, rejection integrity.",
+      "tests": [
+        "src/services/import/universalImportEngine.governance.test.ts",
+        "src/services/import/d365Parser.test.ts",
+        "src/services/import/parseGLRows.test.ts"
+      ],
+      "gate": "governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     }
   ]
 }

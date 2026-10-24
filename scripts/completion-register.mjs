@@ -86,6 +86,7 @@ export const CAPABILITIES = [
   'data.d365-fo-gl',
   'data.d365-journal',
   'data.d365-bc-gl',
+  'data.universal-import',
   'data.csv-xlsx-intake',
   'data.mapping',
   'data.validation',
@@ -155,6 +156,22 @@ export const CAPABILITIES = [
   'govern.sox-authority',
   'govern.security-policy',
   'govern.entity-scope',
+  'govern.rbac',
+  'govern.encryption',
+  'govern.audit-log',
+  'govern.compliance-engine',
+  'govern.data-governance',
+  // ENGINE-LEVEL GOVERNANCE
+  'close.financial-close-engine',
+  'close.reconciliation-engine',
+  'close.period-close-state-machine',
+  'fiscal.calendar',
+  'statement.three-statement',
+  'fx.engine',
+  'tax.engine',
+  'fixed-assets.depreciation',
+  'treasury.lease-engine',
+  'treasury.bond-pricing',
   // AI
   'ai.verified-facts-gate',
   'ai.local-only',
@@ -172,6 +189,7 @@ const CAPABILITY_SEED = {
   'data.d365-fo-gl': { blockedBy: 'O1' },
   'data.d365-journal': { blockedBy: 'O1' },
   'data.d365-bc-gl': { blockedBy: 'O1' },
+  'data.universal-import': { route: '/data/gl-upload' },
   'data.csv-xlsx-intake': { route: '/data/gl-upload' },
   'data.mapping': { route: '/data/data-flow' },
   'data.validation': { route: '/data/exceptions' },
@@ -234,9 +252,6 @@ const CAPABILITY_SEED = {
   'ai.verified-facts-gate': { route: '/ai' },
   'ai.local-only': { route: '/ai' },
   'ai.explicit-invocation': { route: '/ai' },
-  'ai.no-egress': {
-    needsProof: 'no egress path is proven; DEC-022 is policy, not a tested control',
-  },
 };
 
 const ENGINE_PLUMBING = new Set([

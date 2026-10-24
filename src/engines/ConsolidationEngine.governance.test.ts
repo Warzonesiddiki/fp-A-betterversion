@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { ConsolidationEngine, type EntityData, type OwnershipStructure, type ICPair } from './ConsolidationEngine';
-import { asMoney, toDecimal } from '../utils/money';
+import {
+  ConsolidationEngine,
+  type EntityData,
+  type OwnershipStructure,
+  type ICPair,
+} from './ConsolidationEngine';
+import { asMoney } from '../utils/money';
 import type { GLEntry } from '../types';
 
 /**
@@ -59,19 +64,17 @@ function makeEntity(
 }
 
 describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
-
   describe('1. Input validation', () => {
-
     it('throws when entities is not an array', () => {
-      expect(() =>
-        ConsolidationEngine.consolidate('not-array' as never, [])
-      ).toThrow('entities must be an array');
+      expect(() => ConsolidationEngine.consolidate('not-array' as never, [])).toThrow(
+        'entities must be an array'
+      );
     });
 
     it('throws when ownerships is not an array', () => {
-      expect(() =>
-        ConsolidationEngine.consolidate([], 'not-array' as never)
-      ).toThrow('ownerships must be an array');
+      expect(() => ConsolidationEngine.consolidate([], 'not-array' as never)).toThrow(
+        'ownerships must be an array'
+      );
     });
 
     it('returns failed result with status "failed" when entities is empty', () => {
@@ -97,7 +100,12 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
     });
 
     it('throws when entity has non-array entries', () => {
-      const entity = { entityId: 'E1', entityName: 'Entity A', currency: 'USD', entries: 'not-array' } as never;
+      const entity = {
+        entityId: 'E1',
+        entityName: 'Entity A',
+        currency: 'USD',
+        entries: 'not-array',
+      } as never;
       expect(() => ConsolidationEngine.consolidate([entity], [])).toThrow(
         'must have an entries array'
       );
@@ -105,7 +113,6 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
   });
 
   describe('2. Intercompany elimination', () => {
-
     it('eliminates AB and BA intercompany pairs', () => {
       const entityA = makeEntity('A', 'Entity A', [
         makeEntry('a-1', '1400', 'Accounts Receivable', 50000, 0, 'A'),
@@ -117,7 +124,14 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
       ]);
 
       const icPairs: ICPair[] = [
-        { fromEntityId: 'A', toEntityId: 'B', accountCode: '1400', toAccountCode: '2400', amount: 50000, type: 'receivable' },
+        {
+          fromEntityId: 'A',
+          toEntityId: 'B',
+          accountCode: '1400',
+          toAccountCode: '2400',
+          amount: 50000,
+          type: 'receivable',
+        },
       ];
 
       const result = ConsolidationEngine.consolidate([entityA, entityB], [], icPairs);
@@ -126,7 +140,7 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
       // The IC pair should produce elimination entries
       expect(result.eliminations.length).toBeGreaterThan(0);
       // The eliminated amount should be 50000
-      const elim = result.eliminations.find(e => e.type === 'ic_receivable');
+      const elim = result.eliminations.find((e) => e.type === 'ic_receivable');
       expect(elim).toBeDefined();
       expect(Math.abs(elim!.eliminatedAmount)).toBe(50000);
     });
@@ -140,7 +154,14 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
       ]);
 
       const icPairs: ICPair[] = [
-        { fromEntityId: 'A', toEntityId: 'B', accountCode: '1400', toAccountCode: '2400', amount: 30000, type: 'receivable' },
+        {
+          fromEntityId: 'A',
+          toEntityId: 'B',
+          accountCode: '1400',
+          toAccountCode: '2400',
+          amount: 30000,
+          type: 'receivable',
+        },
       ];
 
       const result = ConsolidationEngine.consolidate([entityA, entityB], [], icPairs);
@@ -154,7 +175,6 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
   });
 
   describe('3. Minority interest (equity method)', () => {
-
     it('calculates minority interest for partial ownership', () => {
       const parent = makeEntity('P', 'Parent Co', [
         makeEntry('p-1', '1000', 'Cash', 1000000, 0, 'P'),
@@ -198,7 +218,6 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
   });
 
   describe('4. Balance check', () => {
-
     it('consolidated entries balance when assets = liabilities + equity', () => {
       const entityA = makeEntity('A', 'Entity A', [
         makeEntry('a-1', '1000', 'Cash', 100000, 0, 'A'),
@@ -228,7 +247,6 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
   });
 
   describe('5. Money primitive safety', () => {
-
     it('all consolidated entries use Money type for debit/credit', () => {
       const entityA = makeEntity('A', 'Entity A', [
         makeEntry('a-1', '1000', 'Cash', 100000, 0, 'A'),
@@ -261,7 +279,6 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
   });
 
   describe('6. Failed result never claims balanced (F-0003)', () => {
-
     it('empty entities returns failed status and isBalanced=false', () => {
       const result = ConsolidationEngine.consolidate([], []);
       expect(result.status).toBe('failed');
@@ -278,7 +295,6 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
   });
 
   describe('7. Cent-exact tolerance (F-0009)', () => {
-
     it('default tolerance is 0 cents (cent-exact)', () => {
       const entityA = makeEntity('A', 'Entity A', [
         makeEntry('a-1', '1000', 'Cash', 100000, 0, 'A'),
@@ -303,7 +319,6 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
   });
 
   describe('8. Single entity consolidation', () => {
-
     it('consolidates a single entity without ownerships', () => {
       const entityA = makeEntity('A', 'Entity A', [
         makeEntry('a-1', '1000', 'Cash', 100000, 0, 'A'),
@@ -339,7 +354,6 @@ describe('ConsolidationEngine — GOVERNANCE (model.consolidation)', () => {
   });
 
   describe('9. Determinism', () => {
-
     it('produces identical results for identical inputs', () => {
       const entityA = makeEntity('A', 'Entity A', [
         makeEntry('a-1', '1000', 'Cash', 100000, 0, 'A'),
