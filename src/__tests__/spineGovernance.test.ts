@@ -5072,3 +5072,33 @@ describe('GOVERNED capability-level — collab, dashboard, notification store te
     expect(v.valid).toBe(true);
   });
 });
+
+describe('GOVERNED capability-level — audit trail store tests (batch 10)', () => {
+  it('GOVERNED cap:govern.auditability — audit:create guards recordBulk, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useAuditTrailStore.getState().recordBulk([{ action: 'test' }] as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.auditability — audit:create guards recordBulk, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useAuditTrailStore.getState().recordBulk([{ action: 'test' }] as never));
+    actAs('Admin');
+    try { useAuditTrailStore.getState().recordBulk([{ action: 'test' }] as never); } catch (e) { expect((e as Error).name).not.toBe('PermissionError'); }
+  });
+
+  it('GOVERNED cap:govern.auditability — audit:delete guards revertToState, audit chain intact', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useAuditTrailStore.getState().revertToState('entry-test' as never));
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED cap:govern.auditability — audit:delete guards revertToState, Admin reaches enforce gate', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useAuditTrailStore.getState().revertToState('entry-test' as never));
+    actAs('Admin');
+    expect(() => useAuditTrailStore.getState().revertToState('entry-test' as never)).not.toThrow();
+  });
+});
