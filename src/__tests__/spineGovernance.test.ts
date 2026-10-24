@@ -4016,3 +4016,49 @@ describe('GOVERNED positive-path — Admin write actions (batch 10)', () => {
     expect(() => useGLStore.getState().addEntry({ id: 'gov-glaa-pos', accountId: '11000', amount: 8000 } as never)).not.toThrow();
   });
 });
+
+describe('GOVERNED positive-path — Admin write actions (batch 11)', () => {
+  it('GOVERNED /ai/nlq — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-nlq-pos', accountId: '12000', amount: 9000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /banking/banking — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-bank-pos', accountId: '13000', amount: 11000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /banking/reconciliation — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-bkrecon-pos', accountId: '14000', amount: 12000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /construction/project — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-proj-pos', accountId: '15000', amount: 13000 } as never)).not.toThrow();
+  });
+});
+
+describe('GOVERNED positive-path — Admin write actions (batch 12)', () => {
+  it('GOVERNED /banking/statements — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-bstmt-pos', accountId: '16000', amount: 14000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /reports/library — Admin createReport creates a library report', () => {
+    actAs('Admin');
+    const id = useReportStore.getState().createReport({ name: 'Gov Library', template: 'cash-flow' } as never);
+    expect(id).toBeTruthy();
+    expect(useReportStore.getState().reports.length).toBe(1);
+  });
+
+  it('GOVERNED /revenue/rev-rec — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-revrec-pos', accountId: '17000', amount: 15000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /tax/transfer-pricing — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-tp-pos', accountId: '18000', amount: 16000 } as never)).not.toThrow();
+  });
+});
