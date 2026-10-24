@@ -1607,6 +1607,106 @@
           "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
         }
       }
+    },
+    "/budgets/bva": {
+      "page": "src/pages/budgets/BudgetVAReport.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /budgets/bva — budget:create guards budget creation for BVA report",
+          "proves": "Budget creation for BVA report requires budget:create permission; the enforce() wrapper on createBudget throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /budgets/bva — audit trail records BVA report budget write",
+          "proves": "BVA report budget write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /budgets/bva — write guard requires budget:delete on budget removal",
+          "proves": "Budget removal (deleteBudget) is wrapped in enforce(BUDGET_DELETE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/forecasts/what-if": {
+      "page": "src/pages/forecasts/WhatIfPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /forecasts/what-if — forecast:create guards forecast creation for what-if",
+          "proves": "Forecast creation for what-if analysis requires forecast:create permission; the enforce() wrapper on createForecast throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /forecasts/what-if — audit trail records what-if forecast write",
+          "proves": "What-if forecast write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /forecasts/what-if — write guard requires forecast:delete on forecast removal",
+          "proves": "Forecast removal (deleteForecast) is wrapped in enforce(FORECAST_DELETE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/collaboration/team": {
+      "page": "src/pages/collaboration/TeamWorkspace.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /collaboration/team — collab:update guards comment posting in team workspace",
+          "proves": "Comment posting in team workspace requires collab:update permission; the enforce() wrapper on addComment throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /collaboration/team — audit trail records team workspace collaboration write",
+          "proves": "Team workspace collaboration write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /collaboration/team — write guard requires workflow:approve on approvals",
+          "proves": "Approval changes (setApprovals) are wrapped in enforce(WORKFLOW_APPROVE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/data/version-diff": {
+      "page": "src/pages/data/VersionDiffPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/version-diff — budget:create guards budget creation for version diff",
+          "proves": "Budget creation for version diff requires budget:create permission; the enforce() wrapper on createBudget throws PermissionError without it."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/version-diff — audit trail records version diff budget write",
+          "proves": "Version diff budget write actions produce auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/version-diff — write guard requires budget:delete on budget removal",
+          "proves": "Budget removal (deleteBudget) is wrapped in enforce(BUDGET_DELETE); unauthorized writes throw before any state change."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+        }
+      }
     }
   },
   "capabilities": {

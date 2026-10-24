@@ -2625,3 +2625,151 @@ describe('GOVERNED /reports/three-statement — Three-statement model surface', 
     expect(useAuthStore.getState().activeEntityId).toBe('');
   });
 });
+
+// ---------------------------------------------------------------------------
+// /budgets/bva — Budget vs Actual report surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /budgets/bva — Budget vs Actual report surface', () => {
+  it('GOVERNED /budgets/bva — budget:create guards budget creation for BVA report', () => {
+    const error = expectPermissionDenied(() =>
+      useBudgetStore.getState().createBudget({ name: 'Gov BVA Rpt Budget' } as never)
+    );
+    expect(error.message).toContain('budget:create');
+  });
+
+  it('GOVERNED /budgets/bva — audit trail records BVA report budget write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'budget:write',
+      entity: 'budget',
+      entityId: 'gov-bva-rpt-1',
+      payload: { name: 'Gov BVA Rpt Budget', type: 'bva' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /budgets/bva — write guard requires budget:delete on budget removal', () => {
+    const error = expectPermissionDenied(() =>
+      useBudgetStore.getState().deleteBudget('gov-bva-rpt-1')
+    );
+    expect(error.message).toContain('budget:delete');
+  });
+
+  it('GOVERNED /budgets/bva — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /forecasts/what-if — What-if forecast surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /forecasts/what-if — What-if forecast surface', () => {
+  it('GOVERNED /forecasts/what-if — forecast:create guards forecast creation for what-if', () => {
+    const error = expectPermissionDenied(() =>
+      useForecastStore.getState().createForecast({ name: 'Gov What-If' } as never)
+    );
+    expect(error.message).toContain('forecast:create');
+  });
+
+  it('GOVERNED /forecasts/what-if — audit trail records what-if forecast write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'forecast:write',
+      entity: 'forecast',
+      entityId: 'gov-whatif-1',
+      payload: { name: 'Gov What-If', scenario: 'bull' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /forecasts/what-if — write guard requires forecast:delete on forecast removal', () => {
+    const error = expectPermissionDenied(() =>
+      useForecastStore.getState().deleteForecast('gov-whatif-1')
+    );
+    expect(error.message).toContain('forecast:delete');
+  });
+
+  it('GOVERNED /forecasts/what-if — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /collaboration/team — Team workspace surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /collaboration/team — Team workspace surface', () => {
+  it('GOVERNED /collaboration/team — collab:update guards comment posting in team workspace', () => {
+    const error = expectPermissionDenied(() =>
+      useCollaborationStore.getState().addComment({ content: 'Gov team comment' } as never)
+    );
+    expect(error.message).toContain('collab:update');
+  });
+
+  it('GOVERNED /collaboration/team — audit trail records team workspace collaboration write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'collab:write',
+      entity: 'teamComment',
+      entityId: 'gov-team-1',
+      payload: { content: 'Gov team comment', workspace: 'fin-team' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /collaboration/team — write guard requires workflow:approve on approvals', () => {
+    const error = expectPermissionDenied(() =>
+      useCollaborationStore.getState().setApprovals([])
+    );
+    expect(error.message).toContain('workflow:approve');
+  });
+
+  it('GOVERNED /collaboration/team — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /data/version-diff — Version diff analysis surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /data/version-diff — Version diff analysis surface', () => {
+  it('GOVERNED /data/version-diff — budget:create guards budget creation for version diff', () => {
+    const error = expectPermissionDenied(() =>
+      useBudgetStore.getState().createBudget({ name: 'Gov Ver Diff Budget' } as never)
+    );
+    expect(error.message).toContain('budget:create');
+  });
+
+  it('GOVERNED /data/version-diff — audit trail records version diff budget write', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      action: 'budget:write',
+      entity: 'budget',
+      entityId: 'gov-verdiff-1',
+      payload: { name: 'Gov Ver Diff Budget', fromVersion: 'v1', toVersion: 'v2' },
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /data/version-diff — write guard requires budget:delete on budget removal', () => {
+    const error = expectPermissionDenied(() =>
+      useBudgetStore.getState().deleteBudget('gov-verdiff-1')
+    );
+    expect(error.message).toContain('budget:delete');
+  });
+
+  it('GOVERNED /data/version-diff — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    actAs('Admin');
+    expect(useAuthStore.getState().activeEntityId).toBe('');
+  });
+});
