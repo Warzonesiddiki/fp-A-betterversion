@@ -5710,3 +5710,44 @@ describe('GOVERNED capability-level — exceptionRuleCatalogue validation guard 
     );
   });
 });
+
+describe('GOVERNED capability-level — glStore cube sync integration tests (batch 19)', () => {
+  it('GOVERNED cap:data.csv-xlsx-intake — syncToCube denies Viewer (CUBE_WRITE required)', () => {
+    actAs('Viewer');
+    expectPermissionDenied(() => useGLStore.getState().syncToCube());
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — syncFromCube denies Viewer without cube:read (CUBE_READ required)', () => {
+    actAsRoleWithout('Viewer', 'cube:read');
+    expectPermissionDenied(() => useGLStore.getState().syncFromCube());
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — syncToCube with uninitialized cubeStore returns without throwing', () => {
+    actAs('Admin');
+    useCubeStore.setState({ isInitialized: false } as never);
+    expect(() => useGLStore.getState().syncToCube()).not.toThrow();
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — syncFromCube with uninitialized cubeStore returns without throwing', () => {
+    actAs('Admin');
+    useCubeStore.setState({ isInitialized: false } as never);
+    expect(() => useGLStore.getState().syncFromCube()).not.toThrow();
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — syncToCube with Admin and initialized cubeStore does not throw permission error', () => {
+    actAs('Admin');
+    useCubeStore.setState({ isInitialized: true } as never);
+    expect(() => useGLStore.getState().syncToCube()).not.toThrow();
+  });
+
+  it('GOVERNED cap:data.csv-xlsx-intake — syncFromCube with Admin passes permission check (no PermissionError)', () => {
+    actAs('Admin');
+    useCubeStore.setState({ isInitialized: true } as never);
+    try {
+      useGLStore.getState().syncFromCube();
+    } catch (e) {
+      // Cube query may fail (no GL_Actuals cube) — but must NOT be a PermissionError
+      expect((e as Error).message).not.toContain('Permission denied');
+    }
+  });
+});

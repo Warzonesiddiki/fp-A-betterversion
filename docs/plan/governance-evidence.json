@@ -2655,6 +2655,36 @@
         "file": "src/__tests__/spineGovernance.test.ts",
         "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 import:update guards signLatestVersion, Admin reaches enforce gate",
         "proves": "documentStore.signLatestVersion requires import:update; Viewer denied, Admin reaches enforce gate."
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 syncToCube denies Viewer (CUBE_WRITE required)",
+        "proves": "glStore.syncToCube requires cube:write; Viewer denied; CUBE_WRITE permission enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 syncFromCube denies Viewer without cube:read (CUBE_READ required)",
+        "proves": "glStore.syncFromCube requires cube:read; Viewer without cube:read denied; CUBE_READ permission enforced"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 syncToCube with uninitialized cubeStore returns without throwing",
+        "proves": "glStore.syncToCube returns early when cubeStore not initialized; integration guard prevents crash"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 syncFromCube with uninitialized cubeStore returns without throwing",
+        "proves": "glStore.syncFromCube returns early when cubeStore not initialized; integration guard prevents crash"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 syncToCube with Admin and initialized cubeStore does not throw permission error",
+        "proves": "glStore.syncToCube passes permission check for Admin with initialized cube; CUBE_WRITE permission satisfied"
+      },
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake \u2014 syncFromCube with Admin passes permission check (no PermissionError)",
+        "proves": "glStore.syncFromCube passes permission check for Admin; no PermissionError even if cube query fails"
       }
     ],
     "data.mapping": [

@@ -549,3 +549,40 @@ Added 4 tests for auditTrailStore.recordBulk (AUDIT_CREATE) and revertToState (A
 | Stores with enforce() covered | 39/39 |
 | Remaining EXPERIMENTAL | 25 (engine/AI features) |
 | All gates PASS | ✓ |
+
+## Phase 15 — GL Store Cube Sync Integration Tests (2026-10-24)
+
+**Objective:** Test glStore's cube integration methods (syncToCube, syncFromCube) — a new governance dimension of cross-store integration guards.
+
+**Store tested:** glStore (cube sync methods)
+
+**Tests added:** 6 (batch 19)
+
+| # | Test | Claim |
+|---|------|-------|
+| 1 | syncToCube denies Viewer (CUBE_WRITE required) | stateClaim |
+| 2 | syncFromCube denies Viewer without cube:read | stateClaim |
+| 3 | syncToCube with uninitialized cubeStore returns without throwing | stateClaim |
+| 4 | syncFromCube with uninitialized cubeStore returns without throwing | stateClaim |
+| 5 | syncToCube with Admin and initialized cubeStore does not throw permission error | stateClaim |
+| 6 | syncFromCube with Admin passes permission check (no PermissionError) | stateClaim |
+
+**Capability claims:** 6 new under data.csv-xlsx-intake (44 capabilities, 194 total claims).
+
+**Key learning:** glStore's syncToCube (CUBE_WRITE) and syncFromCube (CUBE_READ) have integration guards — they check if cubeStore.isInitialized before attempting sync, returning early with an error toast if not. This prevents crashes when the cube store hasn't been set up. All roles have cube:read, so negative tests for syncFromCube require actAsRoleWithout to strip the permission. The positive path for syncFromCube may throw "Cube GL_Actuals not found" (runtime error, not permission error) — the test verifies the error is NOT a PermissionError.
+
+**Test count:** 649 total. All passing.
+
+**Register SUPPORTED:** 146 (unchanged).
+
+**All gates PASS:** ✓
+
+| Metric | Value |
+|--------|-------|
+| Spine tests | 649 |
+| Routes governed | 104 |
+| Capability claims | 194 (44 capabilities) |
+| Register SUPPORTED | 146 |
+| Stores with enforce() covered | 39/39 |
+| Remaining EXPERIMENTAL | 25 (engine/AI features) |
+| All gates PASS | ✓ |
