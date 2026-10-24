@@ -3972,3 +3972,47 @@ describe('GOVERNED positive-path — Admin write actions (batch 8)', () => {
     expect(() => useGLStore.getState().addEntry({ id: 'gov-bench-pos', accountId: '4000', amount: 5000 } as never)).not.toThrow();
   });
 });
+
+describe('GOVERNED positive-path — Admin write actions (batch 9)', () => {
+  it('GOVERNED /analytics/goal-seek — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-goal-pos', accountId: '5000', amount: 3000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /data/gl-reporting — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-glrep-pos', accountId: '6000', amount: 2500 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /data/reconciliation — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-recon-pos', accountId: '1000', amount: 750 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /ai — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-ai-pos', accountId: '7000', amount: 1000 } as never)).not.toThrow();
+  });
+});
+
+describe('GOVERNED positive-path — Admin write actions (batch 10)', () => {
+  it('GOVERNED /analytics/pivot-explorer — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-pivot-pos', accountId: '8000', amount: 4000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /data/chart-of-accounts — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-coa-pos', accountId: '9000', amount: 2000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /data/comparison — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-cmp-pos', accountId: '10000', amount: 6000 } as never)).not.toThrow();
+  });
+
+  it('GOVERNED /data/gl-account-analysis — Admin addEntry reaches the enforce gate', () => {
+    actAs('Admin');
+    expect(() => useGLStore.getState().addEntry({ id: 'gov-glaa-pos', accountId: '11000', amount: 8000 } as never)).not.toThrow();
+  });
+});
