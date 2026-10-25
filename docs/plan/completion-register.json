@@ -2970,7 +2970,7 @@
       "status": "RETIRED",
       "evidence": {
         "decision": "DEC-103",
-        "commit": "c9b84116ad408b2d574e952cd953c67b92edcbab"
+        "commit": "4f91615"
       },
       "note": "RETIRED per DEC-103 (O9): single-user tool; no multi-entity authorization needed."
     },
@@ -3000,7 +3000,7 @@
       "status": "RETIRED",
       "evidence": {
         "decision": "DEC-102",
-        "commit": "c9b84116ad408b2d574e952cd953c67b92edcbab"
+        "commit": "4f91615"
       },
       "note": "RETIRED per DEC-102 (O4): not SOX; local chain is client evidence."
     },
