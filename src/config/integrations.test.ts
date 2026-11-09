@@ -36,8 +36,17 @@ describe('integration catalog', () => {
       expect(def.capability.length).toBeGreaterThan(0);
       expect(def.icon).toBeDefined();
       expect(def.fields.length).toBeGreaterThan(0);
+      expect(typeof def.ledgerImportable).toBe('boolean');
       expect(Object.keys(CATEGORY_LABELS)).toContain(def.category);
     }
+  });
+
+  it('marks CRM and notification connectors as not importing ledger transactions', () => {
+    expect(getIntegrationDefinition('dynamics')?.ledgerImportable).toBe(false);
+    expect(getIntegrationDefinition('salesforce')?.ledgerImportable).toBe(false);
+    expect(getIntegrationDefinition('slack')?.ledgerImportable).toBe(false);
+    expect(getIntegrationDefinition('stripe')?.ledgerImportable).toBe(true);
+    expect(getIntegrationDefinition('plaid')?.ledgerImportable).toBe(true);
   });
 
   it('requires all fields to have unique keys and at least one credential field', () => {

@@ -313,12 +313,9 @@ export class SalesforceConnector extends BaseConnector {
       'LastModifiedDate, IsClosed, IsWon, ForecastCategory, ForecastCategoryName,',
       'OwnerId, Description, LeadSource, Type, NextStep',
       `FROM Opportunity ORDER BY CloseDate DESC LIMIT ${limit}`,
-      pagination?.cursor ? `OFFSET ${pagination.cursor}` : '',
-    ]
-      .filter((s) => s)
-      .join(' ');
+    ].join(' ');
 
-    return this.query<SfOpportunity>(soql, limit);
+    return this.query<SfOpportunity>(soql, limit, pagination?.cursor);
   }
 
   /** Map a Salesforce Opportunity to the canonical opportunity shape. */
@@ -423,12 +420,9 @@ export class SalesforceConnector extends BaseConnector {
       'SELECT Id, Name, AccountNumber, Industry, AnnualRevenue, NumberOfEmployees,',
       'BillingCity, BillingState, BillingCountry, Phone, Website, Type, IsActive, LastModifiedDate',
       `FROM Account WHERE IsActive = true ORDER BY Name ASC LIMIT ${limit}`,
-      pagination?.cursor ? `OFFSET ${pagination.cursor}` : '',
-    ]
-      .filter((s) => s)
-      .join(' ');
+    ].join(' ');
 
-    const result = await this.query<SfAccount>(soql, limit);
+    const result = await this.query<SfAccount>(soql, limit, pagination?.cursor);
     return {
       items: result.items.map(this.mapAccount),
       total: result.total,
@@ -470,12 +464,9 @@ export class SalesforceConnector extends BaseConnector {
     const soql = [
       'SELECT Id, Name, ProductCode, Description, IsActive, Family',
       `FROM Product2 WHERE IsActive = true ORDER BY Name ASC LIMIT ${limit}`,
-      pagination?.cursor ? `OFFSET ${pagination.cursor}` : '',
-    ]
-      .filter((s) => s)
-      .join(' ');
+    ].join(' ');
 
-    return this.query<SfProduct>(soql, limit);
+    return this.query<SfProduct>(soql, limit, pagination?.cursor);
   }
 
   // ── Forecasts (revenue forecast snapshots) ───────────────────────────────
@@ -486,12 +477,9 @@ export class SalesforceConnector extends BaseConnector {
       'SELECT Id, ForecastName, PeriodId, OwnerId, Quota, QuotaOwnerId,',
       'ForecastAmount, IsQuota, ForecastCategory',
       `FROM Forecast ORDER BY PeriodId DESC LIMIT ${limit}`,
-      pagination?.cursor ? `OFFSET ${pagination.cursor}` : '',
-    ]
-      .filter((s) => s)
-      .join(' ');
+    ].join(' ');
 
-    return this.query<SfForecast>(soql, limit);
+    return this.query<SfForecast>(soql, limit, pagination?.cursor);
   }
 
   // ── SOQL Query Helper ────────────────────────────────────────────────────
@@ -500,9 +488,11 @@ export class SalesforceConnector extends BaseConnector {
    * Run a SOQL query with automatic pagination via nextRecordsUrl.
    * Returns one page of results.
    */
-  async query<T>(soql: string, _limit: number): Promise<PaginatedResponse<T>> {
-    const path = `/services/data/v59.0/query?q=${encodeURIComponent(soql)}`;
-    const response = await this.client.get<SfQueryResponse<T>>(`${this.instanceUrl}${path}`);
+  async query<T>(soql: string, _limit: number, cursor?: string): Promise<PaginatedResponse<T>> {
+    const requestUrl = cursor
+      ? this.resolveNextRecordsUrl(cursor)
+      : `${this.instanceUrl}/services/data/v59.0/query?q=${encodeURIComponent(soql)}`;
+    const response = await this.client.get<SfQueryResponse<T>>(requestUrl);
 
     return {
       items: response.data.records,
@@ -512,6 +502,16 @@ export class SalesforceConnector extends BaseConnector {
       hasNext: !response.data.done && Boolean(response.data.nextRecordsUrl),
       nextCursor: response.data.nextRecordsUrl,
     };
+  }
+
+  /** Keep OAuth credentials on the Salesforce org when following server cursors. */
+  private resolveNextRecordsUrl(cursor: string): string {
+    const instance = new URL(this.instanceUrl);
+    const next = new URL(cursor, instance);
+    if (next.origin !== instance.origin || !next.pathname.startsWith('/services/data/')) {
+      throw new Error('Invalid Salesforce nextRecordsUrl');
+    }
+    return next.toString();
   }
 
   // ── Composite API (batch operations) ─────────────────────────────────────

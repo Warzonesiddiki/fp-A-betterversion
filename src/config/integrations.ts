@@ -66,6 +66,8 @@ export interface IntegrationDefinition {
   authKind: 'oauth2' | 'token' | 'webhook';
   /** True when the connector pulls/pushes data during sync (Slack is outbound-only). */
   syncable: boolean;
+  /** True only when getTransactions returns records suitable for GL ledger import. */
+  ledgerImportable: boolean;
   fields: IntegrationField[];
   docsUrl?: string;
   buildConfig: (values: Record<string, string>, id: string) => ConnectorConfig;
@@ -91,6 +93,7 @@ export const INTEGRATION_CATALOG: IntegrationDefinition[] = [
     icon: Calculator,
     authKind: 'oauth2',
     syncable: true,
+    ledgerImportable: true,
     fields: [
       {
         key: 'realmId',
@@ -138,6 +141,7 @@ export const INTEGRATION_CATALOG: IntegrationDefinition[] = [
     icon: BookOpen,
     authKind: 'oauth2',
     syncable: true,
+    ledgerImportable: true,
     fields: [
       { key: 'clientId', label: 'Client ID', required: true },
       { key: 'clientSecret', label: 'Client Secret', type: 'password', required: true },
@@ -176,6 +180,7 @@ export const INTEGRATION_CATALOG: IntegrationDefinition[] = [
     icon: Database,
     authKind: 'token',
     syncable: true,
+    ledgerImportable: true,
     fields: [
       {
         key: 'accountId',
@@ -217,6 +222,7 @@ export const INTEGRATION_CATALOG: IntegrationDefinition[] = [
     icon: Landmark,
     authKind: 'token',
     syncable: true,
+    ledgerImportable: true,
     fields: [
       { key: 'companyId', label: 'Company ID (IAID)', required: true },
       { key: 'userId', label: 'User ID', required: true },
@@ -257,6 +263,7 @@ export const INTEGRATION_CATALOG: IntegrationDefinition[] = [
     icon: Building2,
     authKind: 'token',
     syncable: true,
+    ledgerImportable: false,
     fields: [
       { key: 'tenantId', label: 'Azure Tenant ID', required: true },
       {
@@ -299,6 +306,7 @@ export const INTEGRATION_CATALOG: IntegrationDefinition[] = [
     icon: Users,
     authKind: 'oauth2',
     syncable: true,
+    ledgerImportable: false,
     fields: [
       {
         key: 'instanceUrl',
@@ -345,6 +353,7 @@ export const INTEGRATION_CATALOG: IntegrationDefinition[] = [
     icon: CreditCard,
     authKind: 'token',
     syncable: true,
+    ledgerImportable: true,
     fields: [
       {
         key: 'secretKey',
@@ -373,6 +382,7 @@ export const INTEGRATION_CATALOG: IntegrationDefinition[] = [
     icon: Landmark,
     authKind: 'token',
     syncable: true,
+    ledgerImportable: true,
     fields: [
       { key: 'clientId', label: 'Client ID', required: true },
       { key: 'secret', label: 'Secret', type: 'password', required: true },
@@ -405,6 +415,7 @@ export const INTEGRATION_CATALOG: IntegrationDefinition[] = [
     icon: MessageSquare,
     authKind: 'webhook',
     syncable: false,
+    ledgerImportable: false,
     fields: [
       {
         key: 'webhookUrl',

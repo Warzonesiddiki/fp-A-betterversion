@@ -6,12 +6,7 @@
 > because they **remove claims** rather than add them; O2 is a reversible
 > versioning default. All are reversible by a later decision.
 
-**Prepared:** 2026-10-20
-**Original base:** `b2cff43`
-**Reissued in conversation:** 2026-10-20 on `arena/efe658d1-fp-a-betterversion`
-(base `9f6d6a02`); one batched request for source text, D365 samples, workflow
-facts and owner rulings. O8 recheck: `gh run list --branch main --limit 5`
-still returns HTTP 403. No answer or certification is inferred.
+**Prepared/reissued:** 2026-10-20; historical owner-input packet. **Status note 2026-11-04:** O1's *architecture* question was resolved by DEC-104 (universal import using the user's own template system for D365 and other accounting/finance sources). This packet's request for anonymized source samples and control totals remains an evidence request, not an open decision about whether universal import is in scope. O4 was resolved by DEC-102: the product is not a SOX compliance system and the local chain is not SOX authority; do not request a second answer unless the owner wants to reverse that decision. O8 remains unverifiable when GitHub Actions access returns HTTP 403; no answer or certification is inferred.
 **Reply rule:** reply with corrections only. Silence means the recommended
 default is adopted as a **provisional default**, recorded in
 [`decision-log.md`](decision-log.md), and named as provisional in every report.
@@ -20,10 +15,10 @@ default is adopted as a **provisional default**, recorded in
 
 | ID     | Question                                                                                                             | Recommended default                                                                                                     | Why it is safe                                                      | What stays blocked                                 |
 | ------ | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------- |
-| **O1** | Can you provide one real anonymized D365 export per shape (F&O GL, journal entity, BC G/L) plus your control totals? | All shapes stay "mapping-driven, unverified"; synthetic fixtures only                                                   | Adds no claim; prevents a false "verified D365" label               | Verified shape label; Q1 live connector claim      |
+| **O1** | Can you provide one anonymized D365 export per used shape (F&O GL/journal entity, BC G/L, or another documented shape) plus independent source controls? | DEC-104 accepts the universal user-template path; without real samples and controls, each shape remains mapping-capable but unverified | Prevents a false “verified D365” label while preserving the accepted universal-import direction | Owner-validated shape label and any provider-specific live claim |
 | **O2** | Rolling forecast: replace or blend? Which periods roll? How does an approved forecast interact?                      | **Versioned replace**: actuals replace closed periods; a new version is created; the prior approved version is retained | Reversible; preserves an audit trail; no silent overwrite           | Wiring `RollingForecastEngine` as supported        |
 | **O3** | Encryption-key escrow/recovery: who can recover, and under what procedure?                                           | **No escrow claim**; user-held recovery key; no "your data is safe" wording until a restore test passes                 | Removes an unsupported security claim; keeps custody with the owner | Backup/restore certification; security marketing   |
-| **O4** | What is the authority source for SOX/audit, and should the SOX engine graduate from "not evaluated"?                 | **Not SOX**: the local chain is client evidence, unanchored, not compliance authority                                   | Removes an unsupported compliance claim                             | SOX engine graduation                              |
+| **O4 — RESOLVED (DEC-102)** | Is FinPlan Pro a SOX compliance system? | **No.** The local chain is client evidence, not SOX authority. | Removes an unsupported compliance claim. | No SOX-compliance claim; reopen only by a new owner decision. |
 | **O5** | Which sectors and jurisdiction tiers are supported scope?                                                            | **None certified**; generic FP&A only; all sector packs labelled `EXPERIMENTAL`                                         | Removes certification claims; keeps breadth visible but honest      | E4 builds; E5 certification order                  |
 | **O6** | External AI provider: yes or no?                                                                                     | **Local-only AI**; no external egress                                                                                   | Matches DEC-022 and DEC-003; no data leaves the machine             | Any non-local AI                                   |
 | **O7** | Can we verify the native Tauri build on a real desktop toolchain?                                                    | **No offline/desktop claim** until verified                                                                             | Removes unsupported platform claims                                 | Offline auth, native persistence, installer claims |
@@ -38,7 +33,7 @@ default is adopted as a **provisional default**, recorded in
 | Desktop updater channel        | No auto-update claim; manual, signed installer only after O7                              | Updater UI and release claims          |
 | Server fate (Q6)               | Retire from supported scope; keep code non-shipping until signed                          | Server integration claims              |
 | Plugin marketplace/sandbox     | No marketplace; no sandbox-isolation claim until isolation tests and a threat model exist | Plugin listings and marketplace claims |
-| Direct D365 API pull           | Not supported; file import is the supported route until O1 and a connector contract exist | API-pull feature                       |
+| Direct D365 API pull               | Not currently supported; the universal file/template direction is accepted under DEC-104. Consider a provider-specific API only after owner priority, API/security research, and the shared import contract | Direct API feature claim and live support until those gates pass |
 
 ## 2. Workflow facts (plan §12)
 
@@ -63,7 +58,7 @@ owner replies.
 O1:  [provided / not available] — files: ...
 O2:  [accept default / change: ...]
 O3:  [accept default / change: ...]
-O4:  [accept default / change: ...]
+O4:  RESOLVED by DEC-102 — no SOX compliance system; no response needed unless reversing the decision.
 O5:  [accept default / change: ...]
 O6:  [accept default / change: ...]
 O7:  [accept default / change: ...]

@@ -1,7 +1,6 @@
 # 08 — Data model (as it exists)
 
-Read this before touching anything that persists. Line numbers refer to
-`src/types/index.ts` at tip `6777ce7`; verify with grep.
+Read this before touching anything that persists. Line numbers below are evidence locators for the audited tree and may shift; verify with `rg` before editing.
 
 ## Core types
 
@@ -11,15 +10,15 @@ Read this before touching anything that persists. Line numbers refer to
 | `FiscalPeriod`                           | `:22`                         | `YYYY-MM` string periods throughout                                                                                                                                               |
 | `GLAccount`                              | `:36`                         | code, name, type, hierarchy; chart helpers in `src/domain/chartOfAccounts.ts`                                                                                                     |
 | `Budget`, `Forecast`, `Scenario`, `User` | `:78`, `:100`, `:157`, `:200` | —                                                                                                                                                                                 |
-| `GLEntry`                                | `:712`                        | `debit`, `credit`, `netChange`, `amount` are **JS numbers** (inherited); treat as cents-exact decimals via `@/utils/money` when computing; `provenance?` optional for legacy rows |
-| `GLEntryProvenance`                      | `:746`                        | `batchId`, `fileHash` (SHA-256 hex), `sourceFile`, `sourceRow` (1-based, header = 1)                                                                                              |
-| `ImportRejection`                        | `:758`                        | `row`, `code: 'DUPLICATE_ROW' \| 'DUPLICATE_FILE' \| 'VALIDATION'`, `reason`                                                                                                      |
-| `ImportScope`                            | `:768`                        | periods, dateRange, `entities`/`currencies` are `string[] \| 'unavailable'` (never guessed), `importedAt` from the clock                                                          |
-| `ImportControlTotals`                    | `:782`                        | `rows`, `debit`, `credit`, `net` as **decimal strings**                                                                                                                           |
-| `ImportResult`                           | `:818`                        | counts + status + optional `batchId/fileHash/rejections/controlTotals/scope` (optional only for history rows that predate provenance)                                             |
-| `ImportSource`                           | `:838`                        | caller-supplied `fileHash`, `sourceRows`, pre-rejections                                                                                                                          |
-| `ImportHistoryEntry`                     | `:851`                        | `ImportResult` + `id` + `timestamp`                                                                                                                                               |
-| `GLState`                                | `:856`                        | the GL store contract                                                                                                                                                             |
+| `GLEntry`                                | `src/types/index.ts:743`      | `debit`, `credit`, `netChange`, `amount` are `Money` (integer minor units); import/server/derived-output adapters still cross as major-unit numbers; `provenance?` remains optional for legacy/manual rows |
+| `GLEntryProvenance`                      | `src/types/index.ts:777`      | `batchId`, `fileHash` (SHA-256 hex), `sourceFile`, `sourceRow` (1-based, header = 1)                                                                                              |
+| `ImportRejection`                        | `src/types/index.ts:789`      | `row`, `code: 'DUPLICATE_ROW' \| 'DUPLICATE_FILE' \| 'VALIDATION'`, `reason`                                                                                                      |
+| `ImportScope`                            | `src/types/index.ts:799`      | periods, dateRange, `entities`/`currencies` are `string[] \| 'unavailable'` (never guessed), `importedAt` from the clock                                                          |
+| `ImportControlTotals`                    | `src/types/index.ts:813`      | `rows`, `debit`, `credit`, `net` as **decimal strings**                                                                                                                           |
+| `ImportResult`                           | `src/types/index.ts:886`      | counts + status + optional `batchId/fileHash/rejections/controlTotals/scope` (optional only for history rows that predate provenance)                                             |
+| `ImportSource`                           | `src/types/index.ts:908`      | caller-supplied `fileHash`, `sourceRows`, pre-rejections                                                                                                                          |
+| `ImportHistoryEntry`                     | `src/types/index.ts:923`      | `ImportResult` + `id` + `timestamp`                                                                                                                                               |
+| `GLState`                                | `src/types/index.ts:928`      | the GL store contract                                                                                                                                                             |
 
 Shared exported types/interfaces live in that file; domain-specific types
 also live beside their stores/engines. There is no generated schema from
@@ -74,9 +73,11 @@ value)`. The 35-table schema in `src-tauri/migrations/001_initial_schema.sql`
   `session`) and in code at `src/domain/persistenceAuthority.ts`.
   `npm run docs:verify` fails if the three disagree. Adding a persisted store
   means editing all three.
-- `gl-store` is `financial-truth` / `local-draft`; the client is **not** the
-  system of record by declaration, but there is no other one that runs
-  without the server (DEC-002 open).
+- `gl-store` is `financial-truth` / `local-draft` and is the current
+  persisted authority for the desktop client. DEC-005 accepts local relational
+  SQLite as the target authority, but migration is blocked until native
+  transaction, rollback, and backup/restore checks pass; the optional server
+  database is not the current client system of record.
 - Zustand `persist` `version` + `migrate` are the only migration mechanism
   for client data. Changing a persisted shape without a migrate function
   corrupts existing installs.
@@ -111,9 +112,7 @@ The client talks to the server via `src/sdk/FpaClient` /
   a tested migration when a persisted shape changes.
 - Dates: ISO `YYYY-MM-DD`; periods `YYYY-MM`; instants ISO 8601 UTC from
   `now()`.
-- Amounts in persisted stores are numbers today; new fields that carry money
-  should be **decimal strings** (as `ImportControlTotals` does) — do not add
-  new float money fields.
+- `GLEntry` is `Money` in memory after DEC-057; its legacy-compatible storage encoding and several API/derived models still cross through decimal strings or major-unit numbers. Other persisted stores retain their own contracts. New financial state must follow the owning model's explicit `Money`/decimal-string contract; do not introduce unreviewed float money fields or assume every existing store has already migrated.
 
 ## Unverified boundaries (not absence of all prototype code)
 

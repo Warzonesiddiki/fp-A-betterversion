@@ -1,5 +1,7 @@
 # Engine-Level Governance Testing Plan — 2026-10-24
 
+> **Historical planning snapshot:** O4-open references below are superseded by DEC-102. This is not a SOX compliance system; the local chain is client evidence, not SOX authority. Q6/O7 remain distinct open boundaries.
+
 > **Status:** Planning document. Store-level governance testing is COMPLETE (39/39 stores, 684 tests, 7 dimensions). This plan addresses the 15 EXPERIMENTAL capabilities that require engine-level or integration tests.
 >
 > **Owner may correct anything here.** All agent decisions are provisional under delegated authority (see DEC-058).

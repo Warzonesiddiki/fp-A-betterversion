@@ -3,6 +3,8 @@
 > **Status:** Implemented (as-built) · **Recorded:** 2026-08-25 · **Branch:** phase0/w02-tenancy
 > **Scope:** root storage key (`K_root`) recovery for the offline-first encrypted store
 > (`masterStorage`). OS-keychain mirroring is **deferred** (see §8).
+>
+> **2026-11-04 scope clarification:** DEC-101 says no third-party key escrow; the recovery code is user-held (`docs/discovery/decision-log.md:163`). “Escrow” here describes the local wrapped recovery record, not third-party custody; backup restore does not install that record automatically. Source review confirms the crypto and the onboarding/settings surfaces, while the global boot-gate UI, OS-keychain mirror, and existing-user enrollment prompt remain deferred (§8). No independent cryptographic or platform review was performed.
 
 ## 1. Problem
 

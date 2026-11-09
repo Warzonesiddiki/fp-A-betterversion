@@ -1,20 +1,25 @@
 # FP&A Copilot — Audit & Product Discovery Pack
 
 > **Product goal (authoritative):** [`docs/VISION.md`](../VISION.md). This folder
-> is the discovery-phase plan of record — requirements, decisions, risks and the
-> gated roadmap. Where this pack and VISION.md disagree on *product direction*,
-> VISION.md wins; where they disagree on *requirements evidence*, this pack wins.
+> owns discovery requirements, decisions, risks and evidence. The detailed
+> proposed product strategy and execution approach is
+> [`MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](MASTER_PRODUCT_AND_EXECUTION_PLAN.md);
+> [`roadmap.md`](roadmap.md) is its high-level gate summary. Accepted decisions
+> in `decision-log.md` override any proposal. Where this pack and VISION.md
+> disagree on product direction, VISION.md wins; where they disagree on
+> requirement evidence, the measured evidence wins.
 
-**Status:** Plan of record (proposed, DEC-006) — adopted into `docs/discovery/` on 2026-10-15; target repository checks executed, see [audit progress](audit-progress-2026-10-15.md) and the full audit [`../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md`](../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md)  
-**Product ambition:** An all-in-one FP&A workspace that becomes the user's trusted one-stop solution.  
-**Current known workflow:** The user exports a General Ledger (GL) dump from Microsoft Dynamics 365 each month, performs FP&A work, and highlights abnormalities and potentially incorrect entries.
+**Status:** Discovery/governance records, updated for owner review on 2026-11-04. The detailed plan is explicitly proposed; no new provider or industry support is certified by it. The historical repository audit remains at [`../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md`](../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md).
+**Product ambition:** An all-in-one FP&A workspace; universal user-mapped finance-data intake and all-industry extensibility are long-term goals (DEC-033/104 + 2026-11-04 direction).
+**Current owner-specific workflow:** The user exports a General Ledger (GL) dump from Microsoft Dynamics 365 each month, performs FP&A work, reviews potentially incorrect entries, guides the accounts team, and compares daily/monthly/yearly results. D365 remains the first real-source validation target.
 
 > This pack prepares for an evidence-based audit and product-definition session. It is not a claim that the product already implements any capability. All product choices below are proposals until validated with the user and repository evidence.
 
 ## Documents
 
-0. [Preliminary repository reconnaissance](preliminary-repository-recon.md) — first-pass GitHub inspection; corrects the apparent target/reference technology mix-up and records evidence limits.
-0a. [Audit progress (2026-10-15)](audit-progress-2026-10-15.md) — shallow-clone baseline, reference test result, source observations, and next audit steps.
+0. [Master product and execution plan](MASTER_PRODUCT_AND_EXECUTION_PLAN.md) — detailed proposal for owner review: product boundaries, current truth, import/API strategy, architecture, phased work packages, gates, risks, measures and open decisions.
+0a. [Preliminary repository reconnaissance](preliminary-repository-recon.md) — first-pass GitHub inspection; corrects the apparent target/reference technology mix-up and records evidence limits.
+0b. [Audit progress (2026-10-15)](audit-progress-2026-10-15.md) — shallow-clone baseline, reference test result, source observations, and next audit steps.
 1. [Audit charter and evidence plan](audit-charter.md) — scope, method, evidence rules, and audit checklist.
 2. [Product vision and scope](product-vision.md) — ambition, users, outcomes, boundaries, and success measures.
 3. [Current workflow and discovery questions](current-workflow.md) — known monthly process, proposed workflow map, and information needed.
@@ -25,7 +30,8 @@
 8. [Audit evidence checklist](audit-evidence-checklist.md) — evidence to collect before making claims or prioritizing remediation.
 9. [Proposed roadmap](roadmap.md) — discovery-to-vertical-slice sequence, conditional on audit findings.
 10. [Decision log](decision-log.md) — DEC-001 onward; owner rulings are binding, agent technical dispositions are marked delegated.
-11. [Full repository audit vs. FPA-modular](../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md) — measured findings and the 25-item prioritised list (outside this folder).
+11. [Full repository audit vs. FPA-modular](../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md) — historical measured findings and the 25-item prioritised list (outside this folder).
+12. [Vision/connector recheck (2026-11-02)](VISION_ALIGNMENT_RECHECK_2026_11_02.md) — current routed workflow, connector reachability, pagination/import limits, and remaining owner validation; supersedes the October 24 audit's current-state conclusions without rewriting its history.
 12. [Owner scope register 108–200](OWNER_SCOPE_REGISTER_111_200.md) — blocker record: 93 owner-checklist sections remain unassessed until the exact source is recovered; do not infer titles.
 13. [Owner decision packet](OWNER_DECISION_PACKET.md) — one-page O1–O9 and §12 request with recommended safe defaults and a reply template.
 

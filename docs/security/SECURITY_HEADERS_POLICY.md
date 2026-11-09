@@ -4,6 +4,8 @@
 **Audience**: Security reviewers, RATIFICATION GATE 2026-06-22 16:00 UTC, SOC 2 CC6.6
 **CWE Coverage**: CWE-79, CWE-1021, CWE-319, CWE-352, CWE-693
 
+> **Current boundary recheck (2026-11-04):** This June document is not a current response-header certification. `SecurityHeaders` and `CsrfProtection` are separate JavaScript utility classes; a bounded source search found no non-test caller. The API server instead applies a separate Helmet configuration (`server/src/index.ts:41-70`), including CSP and HSTS only when `NODE_ENV=production`; its settings are not identical to this document's strict preset. `index.html` and the Tauri config define separate CSP policies (`index.html:17`; `src-tauri/tauri.conf.json:25-26`), and the CSP regression tests read those files rather than deployed HTTP responses (`src/__tests__/csp.test.ts:43-62`). No live server/edge scan was run; front-end deployment headers are `[UNVERIFIED: deployment response was not inspected]`. The `HttpOnly` cookie plus “JavaScript reads the cookie” CSRF description is internally inconsistent, and no production caller of `CsrfProtection` was found. The document's 61/61 tally is a dated unit-test claim, not evidence of response wiring or effective product CSRF protection.
+
 ---
 
 ## 1. Overview

@@ -14,6 +14,8 @@ ledger: docs/security/CASCADE_HOLD_LEDGER.md
 tests: tests/security/HuskyGate10.test.sh (41 tests, 41/41 PASS)
 ---
 
+> **Current source boundary (2026-11-05):** The `.husky/pre-push` hard-block logic and `.github/workflows/cascade-hold-check.yml` exist. This checkout has no upstream, so the hook's `@{u}` range fails and its fallback inspects the last 10 commits rather than the exact push range. The workflow is configured for pushes and pull requests to `main`; it was not run in this audit. `tests/security/HuskyGate10.test.sh` checks files, permissions/YAML, and expected strings; it does not invoke the hook against simulated commits. Its assertion helpers print pass/fail glyphs but do not aggregate failures or return a failing status when an assertion is false. Its “41/41 PASS” header is not a current test result here. This remains a dated v0.1 DRAFT; tentative ratification and standards mappings are not independently verified security/compliance controls.
+
 # Husky Gate 10 — CASCADE-HOLD-BUNDLE Auto-Detection
 
 ## §1 Purpose

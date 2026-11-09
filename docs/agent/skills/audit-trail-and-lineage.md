@@ -32,8 +32,9 @@ someone will be asked to defend.
   Do not describe them as one.
 - Cell lineage: v2 migration keeps JSON cells and verifies hash recompute
   (DEC-029). Extend that rather than adding a parallel map.
-- SOX authority is O4-blocked. An audit trail existing is not the same as a
-  control being certified.
+- DEC-102 resolves O4: the product is not a SOX compliance system, and the
+  local chain is client evidence—not SOX authority. An audit trail existing is
+  not the same as a control being certified.
 
 ## Red flags
 

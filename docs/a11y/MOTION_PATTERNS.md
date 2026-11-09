@@ -10,6 +10,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** The global CSS reduced-motion rule is present, but the dated 40+ file/60+ class-instance census was not repeated across the current tree. The selector targets CSS animation/transition durations; it does not establish coverage of arbitrary JavaScript/requestAnimationFrame motion. Browser emulation and a comprehensive motion audit were not run, so treat the count and blanket coverage language as historical guidance, not verified current coverage.
+
 ## 🎯 PURPOSE
 
 Codify the project's `prefers-reduced-motion` defense-in-depth pattern so that:

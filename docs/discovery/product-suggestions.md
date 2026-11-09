@@ -1,12 +1,12 @@
 # Product and Feature Suggestions
 
-**Status:** Brainstorming options; not approved scope. Recommendations are conditional on audit evidence and workflow discovery.
+**Status:** Historical brainstorming; options remain unapproved unless recorded in the decision log. DEC-104 and the 2026-11-04 owner direction now set a broader target. Follow [`MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](MASTER_PRODUCT_AND_EXECUTION_PLAN.md) for the current proposed strategy and staged review; do not read the older D365-first sequence below as a scope ceiling.
 
 ## Product direction
 
-Aim for an integrated **FP&A close and review workspace**: the user can import or connect the finance data, validate it, analyze it, investigate exceptions, document decisions, and produce a reviewable output in one coherent experience. Keep Dynamics 365 as the source of accounting records unless a later decision explicitly changes that.
+Aim for an integrated **all-in-one FP&A workspace**: the user can bring finance data from accounting/ERP systems through a user-customizable mapping/template or a validated provider connector, validate/reconcile it, analyze, plan, investigate exceptions, document decisions and produce reviewable outputs in one coherent experience. DEC-104 accepts the universal template direction; Dynamics 365 is the first owner-specific proof, not the source boundary. The ERP remains the system of record unless a later decision explicitly approves write-back.
 
-“One-stop” should mean a coherent user journey for the selected use cases—not an attempt to reproduce every adjacent product at once.
+“One-stop” means no mandatory external FP&A app or spreadsheet hop for the supported journey. The all-industry aspiration should use a shared FP&A core plus reviewed, configurable industry packs; it is not a claim that every vertical is currently supported.
 
 ## Opportunity map
 
@@ -49,10 +49,10 @@ Only after deterministic calculations and source traceability are dependable:
 ### 6. Planning and forecasting — discover before building
 Potential future modules: budgets, forecasts, scenario planning, assumptions, department collaboration, and forecast-versus-actual. These require source inputs and workflows beyond a GL export. Confirm current tools and user pain before expanding.
 
-### 7. Integrations — staged strategy
-- First: reliable, documented file import for one export format.
-- Next: validate repeatability and user value; improve mapping and templates.
-- Later: assess a supported Dynamics 365 API/connector with authentication, least privilege, and reconciliation. Do not build a connector before understanding the user's tenant, permissions, environment, licensing, and security constraints.
+### 7. ERP/finance data intake — staged hybrid strategy
+- First: converge the existing CSV/XLSX upload profiles and universal template engine into one user-facing mapping/validation path and canonical financial contract.
+- Then: validate D365 export shapes the owner uses against anonymized samples and source control totals; generic user-mapped exports remain the broad baseline for other ERP/accounting tools.
+- Later: add native APIs only for prioritized providers, with official versioned API research, least privilege, secure token lifecycle, pagination/update/delete behavior and source reconciliation. Do not interpret an API connector or catalog badge as complete GL support.
 
 ## Build / buy / integrate questions
 
@@ -68,10 +68,11 @@ Evaluate user value, data access, control requirements, implementation cost, and
 
 ## Suggested product phases
 
-**Foundation:** one user, one agreed export schema, one period workflow, data validation, reconciliation, traceable calculations.  
-**Review:** explainable exception queue, notes/disposition, exportable review evidence, usability testing.  
-**Team:** roles, assignments, approvals, shared history, deployment/retention controls based on actual threat model.  
-**Expansion:** budgets/forecasts, additional D365 configurations, connector/API, constrained AI commentary, additional ERP sources only when justified.
+**Foundation:** approved source/template contract, the owner-used D365 shapes, reconciliation, close and traceable calculations.
+**Review:** the J2/J3/J4 in-app journey with owner/account-team acceptance; exports are optional.
+**Expand:** prioritized provider APIs and broader FP&A pillars on the trusted spine; measure real outcomes.
+**Industry:** versioned configurable packs chosen with the owner and domain reviewers; no certification without representative evidence.
+**Deployment:** resolve local single-user vs team/shared access, data egress, secrets, backup and recovery before shipping that operating model.
 
 ## Ideas to resist until proven
 

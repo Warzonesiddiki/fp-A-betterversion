@@ -8,6 +8,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** `LiveRegion` and ARIA/content tests exist, but the Q5 Vitest test does not measure announcement latency; the Playwright file remains TODO and no screen-reader runtime was checked. The collaboration announcer is `src/components/collaboration/PresenceIndicator.tsx`; `src/components/ui/PresenceIndicator.tsx` is a separate status dot. The dated handoff/score and 18.7M user claim are not owner acceptance or runtime evidence.
+
 ## 1. WCAG 4.1.3 (Status Messages) Acceptance Criterion
 
 > "Status messages must be programmatically determined through role or properties such that they can be presented to the user by assistive technologies without receiving focus."

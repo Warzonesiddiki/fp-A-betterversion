@@ -13,6 +13,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** General `RealtimeCollaborationManager` is used through presence hooks/components, and `PresenceIndicator` announces resource join/leave/status updates politely. The proposed priority queue, event coalescing/rate limits, pause/resume controls, and per-user preference persistence are not evidenced as implemented; no named `useLiveAnnouncer` or Q5.9 test file was found. The draft lists Phase 2/3 as planned but later marks the hard acceptance gates green; treat those as unsupported draft assertions, not test results or owner approval. The concrete standalone `AuditLogger` is not wired; `SecretsVault`'s type-only audit-sink interface is a different contract with no implementation/adapter evidenced. Demographic and standards claims remain `[UNVERIFIED: no external research or owner ratification inspected]`.
+
 ## §1. PURPOSE & SCOPE
 
 Real-Time Collaboration A11Y = **aria-live priority coordination** for multi-user concurrent events. When 5+ users edit simultaneously, screen reader users must (a) hear events in priority order, (b) avoid announcement flooding, (c) collapse similar events ("3 edits in 2s"), (d) pause/resume announcements on demand.

@@ -1,10 +1,13 @@
-# FinPlan Pro — Agent Squad Backlog
+# FinPlan Pro — Historical Agent Squad Backlog Snapshot
 
-> Priority order is a shared default, not a promise. Change it only by editing this file with a
-> one-line reason. Each item should be finishable with tests + evidence in one or a small number
-> of commits, not by leaving a vague “working on it” state.
+> **Snapshot of the 2026-10-18 squad queue; do not use as the current work list.**
+> Some entries below are complete or contradicted by later route evidence. The
+> live engineering queue is [`../agent/WORKING_AGREEMENT.md`](../agent/WORKING_AGREEMENT.md)
+> §4; current detailed priorities and dependencies are in
+> [`../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
+> Keep the dated notes below as history; do not silently mark a stale item current.
 
-## Active priorities
+## Historical priority list (not active)
 
 ### P0 — Close the highest-value documented gaps with evidence
 
@@ -71,14 +74,12 @@
    - Auth model, backup/restore, multi-user, hosted path, and similar items are not automatic
      next steps. They belong behind an explicit owner decision and a data-boundary agreement.
 
-## Do not do
+## Historical guardrail note (current rules are in AGENTS.md)
 
-- Add new routes/pages/engines/stores/sector packs/connectors unless the docs say the spine is
-  allowed to expand.
-- Add AI-generated numbers or ERP write-back.
-- Start cloud sync, multi-tenant login, or real-time collaboration without explicit owner approval.
-- Weaken a gate, skip a test, or lower a bar to make something green.
-- Claim a capability without evidence that the tree can reproduce.
+- Do not act on the historical queue above. The live rule is planned, dependency-ordered work: DEC-104 universal template/import convergence is foundation work; other provider APIs and industry packs follow the master plan's canonical-contract, owner-priority and evidence gates.
+- No AI-generated financial numbers or ERP write-back without an accepted decision.
+- No cloud sync, multi-tenant login, or real-time collaboration without explicit owner approval.
+- Never weaken a gate, skip a test, or claim a capability without reproducible evidence.
 
 ## How to claim an item is done
 

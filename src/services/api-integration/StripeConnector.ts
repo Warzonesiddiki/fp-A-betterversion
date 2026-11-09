@@ -87,10 +87,10 @@ export class StripeConnector extends BaseConnector {
     pagination?: PaginationParams
   ): Promise<PaginatedResponse<ExternalTransaction>> {
     const pageSize = pagination?.pageSize ?? 100;
+    const params: Record<string, string | number> = { limit: pageSize };
+    if (pagination?.cursor) params.starting_after = pagination.cursor;
 
-    const response = await this.client.get<StripeChargeList>('/charges', {
-      limit: pageSize,
-    });
+    const response = await this.client.get<StripeChargeList>('/charges', params);
 
     const charges: StripeCharge[] = Array.isArray(response.data.data) ? response.data.data : [];
 
@@ -111,6 +111,10 @@ export class StripeConnector extends BaseConnector {
       page: pagination?.page ?? 1,
       pageSize,
       hasNext: response.data.has_more === true,
+      nextCursor:
+        response.data.has_more === true && charges.length > 0
+          ? charges[charges.length - 1]?.id
+          : undefined,
     };
   }
 

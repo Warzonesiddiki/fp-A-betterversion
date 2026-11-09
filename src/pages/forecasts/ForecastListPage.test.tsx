@@ -41,6 +41,10 @@ vi.mock('lucide-react', () => {
     Plus: makeIcon(),
     Eye: makeIcon(),
     TrendingUp: makeIcon(),
+    Inbox: makeIcon(),
+    Search: makeIcon(),
+    FileX: makeIcon(),
+    AlertCircle: makeIcon(),
   };
 });
 

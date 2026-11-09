@@ -32,10 +32,16 @@ group: finance
 
 - Hydration gate: representable rows re-encode; the rest are quarantined verbatim
   and shown (`LedgerQuarantineNotice`).
-- The D365 export/file-intake path is documented but **no D365 shape is verified**
-  (O1 open). Do not describe a mapping as validated against real data.
+- DEC-104 accepts universal import using the user's own templates for D365 and
+  other accounting/finance sources. The owner has not supplied anonymized D365
+  source samples plus independent controls for each claimed shape; do not call a
+  mapping real-data validated just because the architecture decision is settled.
+- `GLUploadPage` currently calls `parseGLRows` and uses saved header-signature
+  mapping profiles; the separate `universalImportEngine` has governance tests
+  but is not wired as that page's parser. Inspect and converge the paths rather
+  than introducing a third mapping authority. See the master execution plan.
 - Imports are the start of the spine (import → quarantine → tie-out → close →
-  exception → export); a change here must keep the spine's evidence intact.
+  analysis/review); a change here must keep its evidence intact.
 
 ## Red flags
 

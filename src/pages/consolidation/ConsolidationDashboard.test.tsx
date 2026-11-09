@@ -33,6 +33,11 @@ vi.mock('lucide-react', () => {
     Edit2: makeIcon(),
     LayoutGrid: makeIcon(),
     List: makeIcon(),
+    Inbox: makeIcon(),
+    Search: makeIcon(),
+    FileX: makeIcon(),
+    AlertCircle: makeIcon(),
+    Building2: makeIcon(),
   };
 });
 
@@ -85,8 +90,9 @@ describe('ConsolidationDashboard — loading branch announce-once', () => {
     expect(container.querySelectorAll('[aria-hidden="true"]').length).toBeGreaterThan(0);
   });
 
-  it('non-loading render exposes no status region', () => {
+  it('non-loading empty state exposes its status, not the hydration announcement', () => {
     renderPage();
-    expect(screen.queryByRole('status')).toBeNull();
+    expect(screen.getByRole('status', { name: 'No entities defined yet' })).toBeInTheDocument();
+    expect(screen.queryByText(/Loading consolidation dashboard/i)).toBeNull();
   });
 });

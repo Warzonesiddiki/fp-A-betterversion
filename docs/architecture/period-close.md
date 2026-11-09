@@ -2,7 +2,7 @@
 
 ## Overview
 
-FinPlan Pro has a local period-close state machine and workflow. This is not a SOX-compliance claim: owner O4 blocks SOX audit authority, and DEC-008 write-guard coverage remains partial.
+FinPlan Pro has a local period-close state machine and workflow. This is not a SOX-compliance claim: DEC-102 records the owner's decision that the product is not a SOX compliance system and the local chain is not SOX authority. DEC-008 write-guard coverage remains partial.
 
 ## Key Controls
 

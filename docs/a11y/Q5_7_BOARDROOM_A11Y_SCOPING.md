@@ -9,6 +9,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** This is planning provenance; no Boardroom-specific route/component, `useBoardroomPresence`, `ConflictResolutionModal`, Yjs/CRDT dependency, or Q5.7 test was found in the bounded source inventory. Separate general WebSocket/presence/change-broadcasting code exists (`RealtimeCollaborationManager`, `usePresence`, `PresenceIndicator`) and does not evidence the proposed collaborative grid/merge flow. The 15-minute idle timeout is a `SECURITY.md` requirement, not demonstrated auth-route behavior. Prior PICK/shipping, population, and market assertions remain `[UNVERIFIED: no current source, owner, or external research inspected]`. The concrete standalone `AuditLogger` class is not wired; `SecretsVault` references a distinct type-only sink interface with no implementation/adapter.
+
 ## 1. Scope
 
 **Boardroom A11Y = Collaborative editing with screen reader merge resolution**

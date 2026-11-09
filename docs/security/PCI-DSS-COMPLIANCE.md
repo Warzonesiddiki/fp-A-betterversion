@@ -8,6 +8,8 @@
 **HEAD baseline:** `f26c339e` 1002c (32nd HEAD DRIFT, 1002-COMMIT MILESTONE)
 **Status:** SPEC — awaiting implementation by Demeter + Apollo
 
+> **Current audit boundary (2026-11-04):** This remains a June specification, not an implementation record, PCI assessment, or certification. The TLS-policy and secure-fetch source paths referenced in §3 were not found in the app tree; direct `fetch` calls remain in sampled auth, connector, and LLM-egress files. This bounded source search is not a finding that the webview/runtime lacks TLS, nor evidence about deployed transport settings. No staging TLS scan, production endpoint check, PAN-scope determination, QSA assessment, or qualified legal review was performed. The §2 statement that current code constitutes a GDPR Art. 32 violation and the regulatory applicability/mapping claims remain `[UNVERIFIED: no authoritative standards or legal assessment reviewed]`. Do not claim PCI compliance or certification from this draft.
+
 ---
 
 ## 1. Scope and Compliance Frame

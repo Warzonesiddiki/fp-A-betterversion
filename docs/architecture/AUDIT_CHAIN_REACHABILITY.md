@@ -2,6 +2,8 @@
 
 **Inventory baseline:** measured 2026-10-19 on `arena/b72c910a-fp-a-betterversion` at the N2 audit-chain consolidation slice. **Current-session N2 follow-up:** 2026-10-20 on `arena/d9a8f733-fp-a-betterversion`, based on the verified PR #78 merge commit. This is an evidence map, not a declaration that the audit authorities have been consolidated.
 
+> **Current decision correction (2026-11-04):** DEC-102 resolves O4: the product is not a SOX compliance system, and the local audit chain is client evidence—not SOX authority. O4 is not an open owner blocker. Any O4-blocked phrasing in the 2026-10-19/20 census and session record below is historical. Q6 server-audit fate, production wiring, native durability and other boundaries remain open; no SOX compliance claim is made.
+
 ## Current N2 result
 
 `auditTrailStore` is the only client audit trail in this inventory that is both persisted and currently used as an audit chain by a user-facing general audit page. `AuditTrailPage` now subscribes to its persisted entries and adapts its schema to the existing table/export model. The page no longer reads a module-level `CellAuditTrailEngine` instance.

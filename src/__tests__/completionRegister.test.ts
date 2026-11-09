@@ -403,10 +403,124 @@ describe('completion-register.mjs', () => {
       engines: 180,
       requirements: 19,
       annex: 200,
-      capabilities: 74,
+      capabilities: 83,
     });
-    expect(data.rows).toHaveLength(708);
+    expect(data.rows).toHaveLength(709);
     for (const row of data.rows) expect(data.vocabulary).toContain(row.status);
+  });
+
+  it('refuses SUPPORTED routes without current CONNECTED and GOVERNED evidence', () => {
+    const root = fixture();
+    expect(run(['--seed'], root).status).toBe(0);
+
+    const connectedFile = 'src/pages/DashboardPage.test.tsx';
+    const governedFile = 'src/__tests__/spineGovernance.test.ts';
+    const connectedTitle = 'renders the dashboard route with real page state';
+    const governedTitle = 'GOVERNED /dashboard — viewer can read dashboard';
+    const write = (rel: string, body: string) => {
+      const full = join(root, rel);
+      mkdirSync(join(full, '..'), { recursive: true });
+      writeFileSync(full, body);
+    };
+    write(
+      connectedFile,
+      `import { it, expect } from 'vitest';\nit('${connectedTitle}', () => expect(true).toBe(true));\n`
+    );
+    write(
+      governedFile,
+      `import { it, expect } from 'vitest';\nit('${governedTitle}', () => expect(true).toBe(true));\n`
+    );
+
+    const data = readJson(root);
+    const dashboard = row(data, 'route:/dashboard') as {
+      status: string;
+      evidence: Record<string, unknown>;
+    };
+    Object.assign(dashboard, {
+      status: 'SUPPORTED',
+      evidence: {
+        gatedBy: '/dashboard',
+        disposition: 'RETAIN',
+        tests: [connectedFile, governedFile],
+        gate: 'docs:verify',
+        doc: 'docs/CAPABILITY_TRUTH_MATRIX.md',
+      },
+    });
+    writeJson(root, data);
+    run([], root); // Render with the mutated row when the old gate still accepts it.
+
+    const missingEvidence = run(['--check'], root);
+    expect(missingEvidence.status).toBe(1);
+    expect(missingEvidence.stderr).toMatch(
+      /route:\/dashboard: SUPPORTED route requires canonical CONNECTED evidence/
+    );
+    expect(missingEvidence.stderr).toMatch(
+      /route:\/dashboard: SUPPORTED route requires canonical GOVERNED evidence/
+    );
+
+    write(
+      'docs/plan/spine-evidence.json',
+      JSON.stringify({
+        routes: {
+          '/dashboard': {
+            claims: { journey: { file: connectedFile, title: connectedTitle } },
+          },
+        },
+      })
+    );
+    write(
+      'docs/plan/governance-evidence.json',
+      JSON.stringify({
+        routes: {
+          '/dashboard': {
+            claims: { authorization: { file: governedFile, title: governedTitle } },
+          },
+        },
+      })
+    );
+
+    const evidenced = readJson(root);
+    const evidencedDashboard = row(evidenced, 'route:/dashboard') as {
+      evidence: Record<string, unknown>;
+    };
+    evidencedDashboard.evidence.connected = [
+      { file: connectedFile, title: 'stale connected title' },
+    ];
+    evidencedDashboard.evidence.governed = [{ file: governedFile, title: 'stale governed title' }];
+    writeJson(root, evidenced);
+
+    const staleCopy = run(['--check'], root);
+    expect(staleCopy.status).toBe(1);
+    expect(staleCopy.stderr).toMatch(
+      /route:\/dashboard: connected evidence does not match the canonical spine manifest/
+    );
+    expect(staleCopy.stderr).toMatch(
+      /route:\/dashboard: governed evidence does not match the canonical governance manifest/
+    );
+
+    const partialGate = readJson(root);
+    const partialGateDashboard = row(partialGate, 'route:/dashboard') as {
+      evidence: Record<string, unknown>;
+    };
+    partialGateDashboard.evidence.connected = [{ file: connectedFile, title: connectedTitle }];
+    partialGateDashboard.evidence.governed = [{ file: governedFile, title: governedTitle }];
+    partialGateDashboard.evidence.gate = 'governance:evidence';
+    writeJson(root, partialGate);
+    const governanceOnly = run(['--check'], root);
+    expect(governanceOnly.status).toBe(1);
+    expect(governanceOnly.stderr).toMatch(/SUPPORTED route gate must be "docs:verify"/);
+
+    // The exact canonical claims, both test files, and the full verification
+    // gate are the only route-level evidence that earns SUPPORTED.
+    const current = readJson(root);
+    const currentDashboard = row(current, 'route:/dashboard') as {
+      evidence: Record<string, unknown>;
+    };
+    currentDashboard.evidence.connected = [{ file: connectedFile, title: connectedTitle }];
+    currentDashboard.evidence.governed = [{ file: governedFile, title: governedTitle }];
+    currentDashboard.evidence.gate = 'docs:verify';
+    saveRows(root, current);
+    expect(run(['--check'], root).status).toBe(0);
   });
 
   it('refuses a CONNECTED claim whose test file or title does not resolve', () => {

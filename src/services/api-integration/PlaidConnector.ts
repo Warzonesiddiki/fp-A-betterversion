@@ -153,6 +153,7 @@ export class PlaidConnector extends BaseConnector {
     const response = await this.plaidRequest<PlaidTransactionsSyncResponse>('/transactions/sync', {
       access_token: this.accessToken,
       count: pageSize,
+      ...(pagination?.cursor ? { cursor: pagination.cursor } : {}),
     });
 
     const added = Array.isArray(response.added) ? response.added : [];
@@ -172,6 +173,7 @@ export class PlaidConnector extends BaseConnector {
       page: pagination?.page ?? 1,
       pageSize,
       hasNext: response.has_more === true,
+      nextCursor: response.has_more === true ? response.next_cursor : undefined,
     };
   }
 

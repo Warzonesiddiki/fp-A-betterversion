@@ -228,6 +228,75 @@ describe('SalesforceConnector', () => {
     });
   });
 
+  describe('getAccounts pagination', () => {
+    it('follows Salesforce nextRecordsUrl cursors instead of using them as SOQL offsets', async () => {
+      const account = (id: string) => ({
+        attributes: { type: 'Account', url: `/services/data/v59.0/sobjects/Account/${id}` },
+        Id: id,
+        Name: `Account ${id}`,
+        AccountNumber: null,
+        Industry: null,
+        AnnualRevenue: null,
+        NumberOfEmployees: null,
+        BillingCity: null,
+        BillingState: null,
+        BillingCountry: null,
+        Phone: null,
+        Website: null,
+        Type: null,
+        IsActive: true,
+        LastModifiedDate: '2026-09-01T00:00:00.000Z',
+      });
+      const mockGet = vi
+        .fn()
+        .mockResolvedValueOnce({
+          data: {
+            totalSize: 2,
+            done: false,
+            nextRecordsUrl: '/services/data/v59.0/query/next-page-2000',
+            records: [account('001-first')],
+          },
+        })
+        .mockResolvedValueOnce({
+          data: {
+            totalSize: 2,
+            done: true,
+            records: [account('001-second')],
+          },
+        });
+      (connector as unknown as { client: { get: typeof mockGet } }).client.get = mockGet;
+
+      const first = await connector.getAccounts({ page: 1, pageSize: 1 });
+      expect(first.nextCursor).toBe('/services/data/v59.0/query/next-page-2000');
+      const second = await connector.getAccounts({
+        page: 2,
+        pageSize: 1,
+        cursor: first.nextCursor,
+      });
+
+      expect(second.items.map((item) => item.externalId)).toEqual(['001-second']);
+      expect(mockGet.mock.calls[0]?.[0]).not.toContain('OFFSET');
+      expect(mockGet).toHaveBeenNthCalledWith(
+        2,
+        'https://login.salesforce.com/services/data/v59.0/query/next-page-2000'
+      );
+    });
+  });
+
+  it('rejects cross-origin Salesforce pagination cursors before sending a request', async () => {
+    const mockGet = vi.fn();
+    (connector as unknown as { client: { get: typeof mockGet } }).client.get = mockGet;
+
+    await expect(
+      connector.getAccounts({
+        page: 2,
+        pageSize: 1,
+        cursor: 'https://attacker.example/services/data/v59.0/query/next-page',
+      })
+    ).rejects.toThrow('Invalid Salesforce nextRecordsUrl');
+    expect(mockGet).not.toHaveBeenCalled();
+  });
+
   describe('mapOpportunity', () => {
     it('should map to canonical shape with stage→category lookup', () => {
       const opp = {

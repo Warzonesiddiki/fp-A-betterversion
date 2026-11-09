@@ -8,6 +8,8 @@
 **Authoritative cross-references:** SECURITY.md v1.0.0 §12 @ 384b8ac96; THREAT_MODEL.md (PATCH 10 `d0fe9107`); INCIDENT_RESPONSE.md (PATCH 9 GHOST-SHA `d445b721`)
 
 > **Audit sink status (2026-10-19):** Statements below that require or describe persistence through PATCH 12 `AuditLogger` are requirements/design assumptions only. The repository has no production caller or durable adapter for that class; these references are not evidence that audit events are currently persisted or that a compliance control is operating. See `../architecture/AUDIT_CHAIN_REACHABILITY.md`.
+>
+> **Current wiring boundary (2026-11-05):** The policy's `LIVE` status is not supported as the canonical operating control. The `RateLimiter` / `CircuitBreaker` classes and factories exist, but no non-test frontend `src/` factory callsites were found in the bounded search. The API server separately mounts `express-rate-limit`: default 100 requests per 15 minutes per IP for general routes and 10 per 15 minutes per IP for auth (`server/src/middleware/rateLimit.ts:1-29`; `server/src/index.ts:119-141`). These are not the policy's per-identity token-bucket matrix, and they do not establish deployment of the policy's circuit-breaker flows or audit sink. No load/performance test or deployed configuration was inspected; the sub-microsecond and memory-cap claims remain unverified.
 
 ---
 

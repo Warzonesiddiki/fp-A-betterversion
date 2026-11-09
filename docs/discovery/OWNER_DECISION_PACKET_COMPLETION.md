@@ -1,6 +1,8 @@
-# Owner Decision Pack — Completion Status (2026-10-24)
+# Owner Decision Pack — Historical Completion Snapshot (2026-10-24)
 
-> **Status:** ALL 9 DECISIONS RESOLVED (O1-O9). O2 resolved (DEC-096), O3 resolved (DEC-101), O4 resolved (DEC-102), O9 resolved (DEC-103), O1 resolved (DEC-104). O5, O6, O7, O8 remain BLOCKED-ON-OWNER with conservative defaults. All defaults provisional.
+> **Historical record only.** The statements and capability counts below record the 2026-10-24 decision-pack snapshot; they are not current product truth or current capability certification. For current status see `docs/CAPABILITY_TRUTH_MATRIX.md`, `docs/agent/09_KNOWN_GAPS.md`, and the 2026-11-04 master product/execution proposal. DEC-104 did accept universal user-template import direction, but repository recheck found the upload UI's saved mapping profiles and the separate template engine are not yet one end-to-end user path. Never use this page's historic “SUPPORTED” claim to infer live ERP compatibility.
+>
+> **Decision history as recorded on 2026-10-24:** O1 architecture resolved (DEC-104); O2 (DEC-096), O3 (DEC-101), O4 (DEC-102), and O9 (DEC-103) have decision records. O5, O6, O7, O8 remained blocked on owner choices/evidence at that snapshot. Consult the current decision log for status.
 > **Original base:** b2cff43
 > **Current branch:** arena/b035ac80-fp-a-betterversion
 > **Last updated:** 2026-10-24 (O1 universal importer built — 200 SUPPORTED, 0 BLOCKED-ON-OWNER for data/admin/govern pillars)

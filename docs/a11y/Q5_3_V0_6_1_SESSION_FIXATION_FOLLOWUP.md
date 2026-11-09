@@ -9,6 +9,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** This remains a dated cross-witness proposal (Hephaestus review marked PENDING), not evidence of owner ratification or product session policy. `useSessionAnnounce` exists, but bounded search found no production callsite; the Q5 test passes `event` as a harness prop and hand-builds modal/session-list markup, and its `sessionid-rotated` event does not update that prop. Auth routes issue/rotate refresh tokens; they do not show the proposal's sessionId privilege-rotation flow, IP/User-Agent HMAC binding, wired idle-timeout behavior, or five-session user-revocable list. `sessionBinding.ts` implements local cached-session device-profile binding, not §4.3.2. User counts and external standards claims remain `[UNVERIFIED: no external research or owner ratification inspected]`.
+
 ## 1. Scope of A11Y × §4.3 Cross-Witness
 
 Hephaestus SECURITY.md v1.0.0 §4.3 (lines 204-216) defines three session-fixation/hijack defenses:

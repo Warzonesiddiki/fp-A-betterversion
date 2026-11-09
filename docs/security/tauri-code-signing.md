@@ -5,6 +5,8 @@
 **Auditor:** censor  
 **Status:** PASS (with risks)
 
+> **Historical snapshot / current-state recheck (2026-11-04):** Do not treat the June 8 `PASS` / “Ready for staging” verdict or its “No Updater Configuration” finding as current release evidence. The current Tauri config declares `plugins.updater`, but its public key is a placeholder and its endpoint uses `updates.example.invalid` (`src-tauri/tauri.conf.json:34-40`). The release workflow references signing-secret names (`.github/workflows/release.yml:164-169`); secret availability or successful signed-release use was not verified. No secret values/private keys were inspected and no signed build, release, or production update endpoint was tested.
+
 ---
 
 ## Summary

@@ -1,8 +1,13 @@
-# FinPlan Pro — Next-Session Master Handover Prompt
+# FinPlan Pro — Historical Next-Session Handover Prompt
 
-> Purpose: give the incoming session one self-contained brief so it can resume with
-> almost no reconstruction work. Read this file first. It is the only prompt you
-> should paste into the fresh session's first user message.
+> **Historical session snapshot; do not paste or follow as current instructions.**
+> This handover refers to an older `main`-branch session and is retained for
+> evidence only. Current authority is [`AGENTS.md`](../../../AGENTS.md),
+> [`docs/agent/WORKING_AGREEMENT.md`](../../agent/WORKING_AGREEMENT.md),
+> [`docs/VISION.md`](../../../docs/VISION.md), and the proposed
+> [MASTER_PRODUCT_AND_EXECUTION_PLAN.md](../../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
+> Recheck the active branch, tree status, decisions and evidence in the current
+> session before acting.
 
 ---
 

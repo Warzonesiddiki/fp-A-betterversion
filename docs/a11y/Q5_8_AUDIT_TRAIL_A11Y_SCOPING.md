@@ -13,6 +13,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** The current audit page/store provides persisted client entries, filtering, a table marked `role="grid"` with keyboard row activation, and CSV/JSON export. This does not establish the scope's PATCH 12 producer, live WebSocket stream, audit-chain tree, PDF/UA export/conformance, or screen-reader/browser validation; no Q5.8-specific test file was found. `SecretsVault` uses a separate type-only audit-sink interface; no adapter connects it to the standalone `AuditLogger` helper. Phase 2/3 are described as planned while the later hard-acceptance list marks every gate green; treat the latter as unsupported draft assertions. Demographic and standards claims remain `[UNVERIFIED: no external research or owner ratification inspected]`.
+
 ## §1. PURPOSE & SCOPE
 
 Audit Trail A11Y = **accessible presentation of Hephaestus PATCH 12 AuditLogger events** for FP&A compliance, debugging, and transparency. Screen reader users must (a) navigate audit log timeline, (b) filter by event type / user / time / cell, (c) hear event details on demand, (d) export filtered view as accessible report.

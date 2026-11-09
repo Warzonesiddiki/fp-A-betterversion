@@ -1,10 +1,11 @@
 # Q5 — the `GLEntry` amount type: staged plan (DEC-051)
 
 Audit P1-11's target state: _"amounts are a `Money` type (integer minor units +
-currency) end to end."_ The requirement text is explicit that this is **Q5 — its
-own DEC and staged plan — and must not be started under N8**.
+currency) end to end."_ This page began as DEC-051's staged plan, when the migration
+was explicitly gated under N8. DEC-057 later records Stage 4 shipped; the old
+gate language in the historical sections below is not the current status.
 
-This page is that plan. Stages 1–3 and the stage-4 precondition are implemented; the type change itself and stages 5–6 are not.
+This page records the staged plan and its dated results. Stages 1–4 are implemented in the canonical ledger/store; DEC-057 records the stage-4 type flip on 2026-10-22. Stages 5–6 (remaining engine/service consumers and page/component display adoption) are not complete. The blast-radius measurements below are historical 2026-10-21 measurements, not a current inventory.
 
 ## Measured blast radius (2026-10-21, HEAD `dc0f5209`)
 
@@ -369,10 +370,13 @@ policy was worth building before the type change rather than after.
 - **Cross-currency consolidation semantics** beyond "convert at an explicit rate
   into the reporting currency, then compare `Money` values".
 
-## Not claimed
+## Historical Stage 3 closeout (2026-10-21; superseded by DEC-057)
 
-`GLEntry` amounts are still `number`, and stages 1–3 changed no stored shape.
-Stage 3 changed _derived_ behaviour in one visible way: an amount the ledger
-cannot represent now refuses the view instead of being rounded out of it.
-Nothing here says the migration is cheap — it says it needs no data migration,
-and that the display side has exactly one adapter to convert against.
+At the time of this snapshot, `GLEntry` amounts were `number` and stages 1–3
+had changed no stored shape. Stage 3 changed _derived_ behaviour in one visible
+way: an amount the ledger could not represent refused the view instead of being
+rounded out of it. This is preserved as historical evidence, not a statement of
+the current type. DEC-057 records the subsequent Stage 4 flip: canonical
+`GLEntry` fields are `Money`; Stages 5–6 remain incomplete. The no-data-rewrite
+finding refers to the legacy-compatible `$d:<canonical>` encoding, not to a
+claim that every database, API, page or engine is already fixed-point end to end.

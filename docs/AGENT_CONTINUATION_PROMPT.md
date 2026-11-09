@@ -1,19 +1,17 @@
-# FinPlan Pro — continuation prompt for the working agent
+# FinPlan Pro — Historical continuation-prompt snapshot
 
-**Purpose.** This is the paste-ready instruction set for the next agent session. It
-turns the owner's 2026-10-20 complete-project task register into an execution
-order, a decision mandate, and an evidence contract. It does not replace the
-repository's measured evidence; it tells the agent what to trust, what to
-re-measure, what to decide, and what must never be guessed.
+> **Do not paste or follow this as current instructions.** This is a
+> 2026-10-20 session-specific prompt preserved as historical provenance. It
+> refers to old branch, route counts, O1 status and plan assumptions; some were
+> superseded by later decisions and code evidence. Current instructions are
+> [`AGENTS.md`](../AGENTS.md) and
+> [`docs/agent/WORKING_AGREEMENT.md`](agent/WORKING_AGREEMENT.md); current product
+> direction and proposed execution are in [`docs/VISION.md`](VISION.md) and
+> [`docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
+> Recheck the active branch, decision log and status before acting.
 
-**How to use.** Start the agent in the repository root on the session branch.
-Copy from the heading **"You are the lead engineering agent for FinPlan Pro"**
-through the end of **"14. Start now — first actions, in order"** and paste it as
-the first message. The appendices are for the human owner and for the
-end-of-session report.
-
-**Prepared:** 2026-10-20, against base commit `b2cff43` (merge of PR #78).
-**Status of this document:** instruction, not a certification.
+**Historical preparation:** 2026-10-20, against base commit `b2cff43` (merge of PR #78).
+The prompt and appendices below are retained for evidence only.
 
 **Standing style (all sessions):** [`docs/agent/skills/ponytail.md`](agent/skills/ponytail.md)
 — smallest complete change, one-read reply, finish every caller/test the change

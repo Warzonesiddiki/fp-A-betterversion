@@ -8,6 +8,8 @@
 **HEAD baseline:** `f26c339e` 1002c (32nd HEAD DRIFT, 1002-COMMIT MILESTONE)
 **Status:** SPEC — awaiting implementation by Demeter + Hades
 
+> **Current implementation boundary (2026-11-05):** A bounded `src/` filename/content search did not find a dedicated general persisted-data pseudonymization module or the example address-book/locale stores. `src/services/llm/llmEgress.ts:114-146` optionally substitutes email addresses using unkeyed FNV-1a 32-bit; this egress-only helper is not the specification's scoped HMAC mapping or a persistent identity vault. The separate `PIIRedactor` token strategy uses FNV-1a 64-bit (`src/services/PIIRedactor.ts:776-793`) and the class has no production caller, as `docs/security/PII_REDACTION_POLICY.md:5-7` states. General stored-PII coverage, legal review, ROPA/DPIA and regulatory conformity are `[UNVERIFIED: not assessed in this repository audit]`.
+
 ---
 
 ## 1. Scope and Compliance Frame

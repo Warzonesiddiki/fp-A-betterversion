@@ -1,39 +1,40 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-vi.mock('recharts', () => ({
-  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="responsive-container">{children}</div>
-  ),
-  Sankey: () => <div data-testid="sankey" />,
-  Tooltip: () => <div data-testid="tooltip" />,
-}));
-
-vi.mock('lucide-react', () => ({}));
-
-import { render, screen } from '@/test/testUtils';
+import { describe, expect, it } from 'vitest';
+import { render, screen, within } from '@/test/testUtils';
 import DataFlowMapPage from '@/pages/data/DataFlowMapPage';
 
 describe('DataFlowMapPage', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+  it('identifies itself as an illustrative code-level map, not live tracing', () => {
+    render(<DataFlowMapPage />);
+
+    expect(screen.getByRole('heading', { name: 'Data Flow Map' })).toBeInTheDocument();
+    expect(screen.getByText(/illustrative.*not live usage/i)).toBeInTheDocument();
   });
 
-  it('renders the page heading', () => {
+  it('shows the implemented GL file and connector paths into glStore', () => {
     render(<DataFlowMapPage />);
-    expect(screen.getByText(/Data Flow Map/i)).toBeInTheDocument();
+
+    expect(screen.getByText('parseGLRows')).toBeInTheDocument();
+    expect(screen.getByText('integrationStore')).toBeInTheDocument();
+    expect(screen.getAllByText('glStore.importGLData')).toHaveLength(2);
   });
 
-  it('renders the sankey diagram container', () => {
+  it('lists ledger-importable providers separately from CRM and notification connectors', () => {
     render(<DataFlowMapPage />);
-    expect(screen.getByText(/Data Flow Sankey Diagram/i)).toBeInTheDocument();
-  });
 
-  it('renders the four legend cards', () => {
-    render(<DataFlowMapPage />);
-    expect(screen.getAllByText(/Data Sources/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/Excel, CSV, ERP, API/i)).toBeInTheDocument();
-    expect(screen.getByText(/159 calculation engines/i)).toBeInTheDocument();
-    expect(screen.getByText(/22 Zustand stores/i)).toBeInTheDocument();
-    expect(screen.getByText(/140 UI pages/i)).toBeInTheDocument();
+    const importable = screen.getByRole('list', { name: 'Ledger-importable providers' });
+    const excluded = screen.getByRole('list', { name: 'Not marked for ledger import' });
+
+    expect(within(importable).getByText('QuickBooks Online')).toBeInTheDocument();
+    expect(within(importable).getByText('Xero')).toBeInTheDocument();
+    expect(within(importable).getByText('Stripe')).toBeInTheDocument();
+    expect(within(importable).queryByText('Salesforce')).not.toBeInTheDocument();
+    expect(within(importable).queryByText('Microsoft Dynamics 365')).not.toBeInTheDocument();
+    expect(within(excluded).getByText('Salesforce')).toBeInTheDocument();
+    expect(within(excluded).getByText('Microsoft Dynamics 365')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Dynamics connector is Dataverse CRM, not D365 F\s*&?O or Business Central GL/i
+      )
+    ).toBeInTheDocument();
   });
 });

@@ -5,9 +5,9 @@
 
 ## 1. Branch and commit discipline
 
-- Work on `main` for this session unless all active agents agree otherwise and record it here.
+- Follow `AGENTS.md` and the active Arena session's branch constraints. This squad file does not authorize switching branches or pushing elsewhere.
 - One logical change per commit when practical; small and verifiable beats large and risky.
-- Do not push unless a human asked for it.
+- Push only to the active session branch and only when permitted by the session instructions.
 - Do not commit secrets. The repo’s pre-commit hook scans for key material.
 
 ## 2. Coordination before touching the same thing
@@ -34,10 +34,9 @@
 
 ## 5. Scope discipline
 
-- No new surface before the docs say the spine is allowed to expand.
-- Do not add AI-generated financial numbers or ERP write-back.
-- Do not assume D365 schema or source identity is verified unless there is a real or clearly
-  synthetic sample in hand for that exact claim.
+- Follow the current master product plan's dependency gates. DEC-104's universal user-mapped import and its convergence with the upload UI are explicit foundation work; other APIs and industry packs require the shared contract, owner priority and evidence.
+- Do not add AI-generated financial numbers or ERP write-back without a separate accepted decision.
+- Do not assume D365 schema or source identity is owner-verified; synthetic fixtures and real owner samples have different evidence labels.
 
 ## 6. Environment caveat
 

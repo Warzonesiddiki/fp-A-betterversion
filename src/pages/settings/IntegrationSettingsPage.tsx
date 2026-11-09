@@ -9,7 +9,7 @@ import {
   type IntegrationCategory,
   type IntegrationDefinition,
 } from '@/config/integrations';
-import { useIntegrationStore } from '@/store/integrationStore';
+import { useIntegrationStore, type ImportToLedgerResult } from '@/store/integrationStore';
 import { IntegrationCard } from '@/components/integrations/IntegrationCard';
 import { ConnectIntegrationModal } from '@/components/integrations/ConnectIntegrationModal';
 
@@ -26,6 +26,7 @@ export default function IntegrationSettingsPage() {
   const [categoryFilter, setCategoryFilter] = useState<IntegrationCategory | 'all'>('all');
   const [connecting, setConnecting] = useState<IntegrationDefinition | null>(null);
   const [connectError, setConnectError] = useState<string | undefined>(undefined);
+  const [importResults, setImportResults] = useState<Record<string, ImportToLedgerResult>>({});
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Integrations';
@@ -68,6 +69,16 @@ export default function IntegrationSettingsPage() {
           'Connection failed — check your credentials and try again.'
       );
     }
+  };
+
+  const handleImport = async (provider: string) => {
+    setImportResults((current) => {
+      const next = { ...current };
+      delete next[provider];
+      return next;
+    });
+    const result = await importToLedger(provider);
+    setImportResults((current) => ({ ...current, [provider]: result }));
   };
 
   return (
@@ -155,7 +166,8 @@ export default function IntegrationSettingsPage() {
                   onConnect={setConnecting}
                   onTest={test}
                   onSync={sync}
-                  onImport={importToLedger}
+                  onImport={handleImport}
+                  importResult={connections[def.provider] ? importResults[def.provider] : undefined}
                   onDisconnect={disconnect}
                 />
               ))}

@@ -1,5 +1,7 @@
 # 01 — Project brief
 
+**Detailed proposed product/engineering plan:** [`../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md) (owner review pending). Product north-star: [`../VISION.md`](../VISION.md); accepted decisions remain in [`../discovery/decision-log.md`](../discovery/decision-log.md).
+
 ## The product, honestly
 
 **Ambition (owner-stated):** an all-in-one FP&A workspace that becomes the
@@ -10,27 +12,37 @@ owner exports a General Ledger dump from Microsoft Dynamics 365, performs
 FP&A work on it, and highlights abnormalities and potentially incorrect
 entries by hand.
 
-**What the product must therefore do first (plan of record, Gate 2 in
-`docs/discovery/roadmap.md`):**
+**First supported product slice (current code evidence plus the 2026-11-04 direction):** D365 remains the first real-source proof; DEC-104 establishes the user's universal-template direction, which must converge with the current upload UI.
 
 ```text
-D365 GL export (CSV/XLSX)
-  → import: schema validation, file hash, batch id, per-row rejection reasons,
-    atomic commit, control totals, source-row provenance        [partially built]
-  → period scope: which period/entity/currency this batch covers [partially built]
-  → trial balance tie-out and statement views with drill-to-source [TB exists; drill open]
-  → exception review: versioned rules → findings with evidence → human disposition [not built]
-  → board outputs: Excel / PDF / (PPT) that tie out to the screen   [Excel/PDF exist;
-    board-pack Excel tied out by test 2026-10-18, PDF + the other
-    export surfaces untested]
+D365 GL export or a user-mapped CSV/XLSX finance export
+  → import, mapping, provenance, row reasons and control totals
+    [implemented against synthetic shapes; real owner sample/totals pending]
+  → period/entity/currency scope and trial-balance/statement views
+    [code paths exist; missing fields remain unavailable, not zero]
+  → exception review: versioned rules, findings/evidence, human disposition
+    [routed at /data/exceptions; owner rule-cycle validation pending]
+  → correction follow-through
+    [routed at /data/corrections; human lifecycle exists; real team cycle pending]
+  → day/month/year comparison with source-entry drill-through
+    [routed at /data/comparison; “not in file” is not zero; owner review pending]
+  → board outputs
+    [board-pack Excel ties to screen in a test; PDF/PPT output surfaces need
+     their own tie-out evidence]
 ```
 
-Everything else in the codebase — 18 sector dashboards, consolidation,
-collaboration, plugins, AI copilots, 9 ERP connectors — is **out of scope
-until the spine above works end-to-end on a synthetic D365 file and the
-owner has validated it.** Do not extend it; do not delete it without the
-owner's decision (DEC-006 covers documents; code archival is a separate
-decision to raise).
+**Import-path caveat:** `GLUploadPage` calls `parseGLRows` and uses saved
+header-signature mapping profiles from `glUploadStore`; the separate
+`universalImportTemplate`/`universalImportEngine` path has governance tests but
+is not currently the upload page's parser. Unifying those paths and reconciling
+the completion-register/capability-matrix evidence is the first proposed
+engineering work package—not a completed universal workflow.
+
+These are code paths, not a claim of owner-accepted completion. The full product
+contains broader FP&A capabilities; their maturity is governed by the route and
+capability evidence, not by file presence. Follow the accepted owner scope and
+roadmap, preserve breadth (DEC-006), and do not label a workflow supported until
+its evidence and external validation requirements are met.
 
 ## Who uses it
 
@@ -46,43 +58,48 @@ decision to raise).
 - No consolidation / FX translation in the first spine.
 - No AI that computes or posts numbers. AI may draft commentary only from
   approved, verified facts (AI-001) and is deferred.
-- No new industry packs, dashboards, or connectors.
+- No API connector for every ERP in the first slice. The universal mapped CSV/XLSX path is the accepted coverage foundation; provider APIs are prioritized later and must use the same canonical import contract. Existing broader FP&A modules remain in scope, but route/capability grade—not file presence—determines what can be called supported.
 
-## What is true right now (measured 2026-10-15)
+## What is true right now (updated 2026-11-04; connector audit dated 2026-11-02)
 
-| Area               | Truth                                                                                                                                                                                    | Where measured                                      |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| Build & gates      | `tsc`, `eslint`, `prettier`, full suite (8 shards) green on the working branch                                                                                                           | `npm run check`                                     |
-| CI on `main`       | red since 2026-08-20 (E2E job has no timeout); fix is in `ci-patches/`, needs a human                                                                                                    | `gh run list`                                       |
-| Import             | CSV/XLSX via `GLUploadPage` → `importGLData`. SHA-256 idempotency, atomic on validation errors, per-row rejections, provenance, control totals, scope — on the branch                    | `glStore.provenance.test.ts`                        |
-| Export contract    | none: no agreed D365 column dictionary, no synthetic sample                                                                                                                              | DEC-001 open                                        |
-| Persistence        | whole Zustand stores as encrypted JSON blobs in one `stores(id,value)` table; 35-table relational schema unused by the client                                                            | `src/utils/masterStorage.ts`, `08_DATA_MODEL.md`    |
-| Server             | Express/SQLite with JWT+RBAC exists; the GL store has a commit client (`src/sdk/`) but it is unconfigured by default and nothing else calls the server; not bundled with the desktop app | `02_ARCHITECTURE.md`                                |
-| Auth offline       | production build refuses mock auth and real auth needs the server → desktop cannot sign in offline                                                                                       | DEC-004 open                                        |
-| Money              | `src/utils/money.ts` correct; money-safety 0 unsafe (goal met); adoption 30.16 % (proxy, floor: 320 modules)                                                                             | `money:adoption` + `money:ast`                      |
-| Determinism        | 344 wall-clock/random sites across 79 calculation-path files, ratcheted per file                                                                                                         | `determinism:ratchet`                               |
-| Engines            | 182 engine modules; 95 reachable from runtime, 87 orphaned                                                                                                                               | `verify-readme-stats.mjs --list`                    |
-| Exceptions         | anomaly services exist, unwired; no rule catalogue, finding key, or disposition                                                                                                          | `09_KNOWN_GAPS.md`                                  |
-| Dynamics connector | targets Dataverse CRM entities, not F&O/BC GL; unwired                                                                                                                                   | `src/services/api-integration/DynamicsConnector.ts` |
+| Area | Truth | Where measured |
+| --- | --- | --- |
+| Build & gates | Fresh `tsc`, lint, format, production build, docs/link gates and server tests pass on 2026-11-04. The fresh full frontend sharded rerun timed out after 1,800 s at shard 7/8 and was terminated without a summary; status is inconclusive. The earlier **17,937 passed, 1 skipped; 8/8 shards** result is historical (2026-11-02), not a fresh 2026-11-04 pass. | 2026-11-04 validation log in `docs/_agent/PROGRESS_LOG.md`; historical suite details in the 2026-11-02 vision recheck |
+| CI on `main` | Not freshly verified here; last recorded GitHub Actions queries were blocked by HTTP 403, so CI is neither claimed green nor red. | `gh run list` history in `docs/TASKBOARD.md` |
+| Import | CSV/XLSX through `GLUploadPage` → `parseGLRows` → `glStore.importGLData`, with UI mapping, separate saved header-signature profiles, validation, provenance, controls, and synthetic D365 fixtures. The distinct universal template/engine code has governance tests but is not the UI's parsing path. Real owner export/control totals remain unvalidated. | `glStore.provenance.test.ts`; `GLUploadPage.d365.integration.test.tsx`; `glUploadStore`; `universalImportEngine.governance.test.ts`; DEC-104 |
+| D365 export validation | DEC-015 says all documented shapes are in scope; the owner’s real anonymized sample and matching control totals are still required before any shape is called verified. | `docs/discovery/decision-log.md`; `docs/TASKBOARD.md` O1 |
+| Persistence | Whole Zustand stores use the local storage abstraction; the 35-table relational schema is not written by the client. | `src/utils/masterStorage.ts`, `08_DATA_MODEL.md` |
+| Server | Express/SQLite with JWT/RBAC exists; the GL commit client is unconfigured by default and the server is not bundled with the desktop app. | `02_ARCHITECTURE.md` |
+| Auth offline | Production refuses mock auth. First online enrollment/login requires the server; an enrolled desktop can restore its cached profile offline for up to 30 days. The current binding is device-profile based, not verified OS-user binding; do not claim complete offline/no-egress compliance. | DEC-004/014; `src/store/authStore.ts`; `src/App.tsx` |
+| Money | `money:ast` detects 0 unsafe operations; adoption 30.16 % baseline (floor: 320 modules). The 2026-11-02 command scanned 1,063 financial modules and found 320 using the primitive (30.1 %, rounded display). | `money:adoption` + `money:ast`; `scripts/money-adoption-baseline.json` |
+| Determinism | 344 wall-clock/random sites across 79 calculation-path files, ratcheted per file. | `determinism:ratchet` |
+| Engines | 180 engine modules; 98 have runtime consumers and 82 are orphaned by the measured reachability convention. | `verify-readme-stats.mjs --list` |
+| Exceptions | `/data/exceptions` runs ordinary and aggregate exception rules; findings remain review candidates until a human disposition. Real-data rule acceptance is open. | `ExceptionQueuePage.test.tsx`; FR-008; DEC-016 |
+| Corrections | `/data/corrections` provides the human correction-request lifecycle and event history; a real accounts-team cycle is not validated. | `CorrectionsPage.test.tsx`; FR-010; DEC-035 |
+| Comparison | `/data/comparison` supports day/month/year, absent-period “not in file” treatment, and entry drill-through; owner-cycle validation remains open. | `ComparisonPage.test.tsx`; FR-011; DEC-016/017 |
+| Integrations | `/settings/integrations` → catalog → `integrationStore` → connector → `glStore` is a code-level import path. It paginates, reports incomplete coverage, and shows imported/skipped results. Provider tests are mocked, not live. | `integrationStore.test.ts`; connector and settings-page focused suites |
+| Dynamics connector | Targets Dataverse CRM entities, has no GL transaction feed, and is not a Dynamics 365 F&O or Business Central GL connector. | `src/services/api-integration/DynamicsConnector.ts`; catalog capability tests |
+| Dependency advisories | Historical 2026-11-02 root audit: 15 (13 moderate, 2 high). Latest recorded 2026-11-04 root audit: 13 (11 moderate, 2 high); server audit: 2 high, 0 critical. No fixes applied. | `npm audit --omit=dev`; `(cd server && npm audit --omit=dev)`; raw output summarized in `docs/_agent/PROGRESS_LOG.md` |
 
-## Open decisions that gate work (owner)
+## Owner inputs that remain open
 
-| ID      | Decision                                                     | Blocks                                                                   |
-| ------- | ------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| DEC-001 | First supported D365 export shape (product, columns, sample) | export contract, atomic policy, control-total comparison, rule catalogue |
-| DEC-002 | First FP&A view / exception use case                         | which statement view and which rules first                               |
-| DEC-003 | Data storage and external-service/AI policy                  | Sentry/PWA/LLM flags, retention                                          |
-| DEC-004 | Authentication and offline model                             | login, RBAC, server role                                                 |
-| DEC-005 | Store of record (blob vs relational SQLite vs server)        | queries, drill-down, schema tests                                        |
-| DEC-006 | Plan-of-record documents (archive the rest)                  | repository hygiene                                                       |
+DEC-001's technical first slice, DEC-002's all-surfaces dependency order,
+and DEC-006's documentation authority were decided; DEC-015/016/017 record
+that the owner wants all D365 GL shapes and all comparison/exception surfaces.
+DEC-104 resolves the universal user-template direction. The remaining D365
+owner evidence request is anonymized sample(s) and matching source controls per
+shape—this is not an unresolved architecture decision. O2/O3/O4/O9 have later
+resolution records; O5/O6/O7/O8 retain conservative open defaults. See the
+current [`../discovery/decision-log.md`](../discovery/decision-log.md) and
+[`../TASKBOARD.md`](../TASKBOARD.md); do not resolve owner questions implicitly
+in code.
 
-Ask for these explicitly; never resolve them implicitly in code.
+## Success looks like
 
-## Success looks like (first working week, from the roadmap)
-
-A synthetic D365 export imports with a visible batch record; every row is
-accepted with provenance or rejected with a reason; control totals tie to the
-source; the trial balance balances; one agreed exception rule produces
-findings with evidence; the owner can mark a finding reviewed with a note
-that survives reload; and `npm run check` is green with no claim in any doc
-that a script cannot back.
+The code already exercises the synthetic import, exception-review,
+correction-request, and day/month/year comparison paths. The product-level
+success condition is not yet met: the owner must reconcile a real D365 export's
+control totals, and the owner/accounts team must validate the same supported
+cycle through findings, correction follow-through, comparison, and board output.
+Until those external checks occur, report the implementation as code/test
+coverage—not owner-accepted workflow completion.

@@ -61,6 +61,9 @@ describe('App dead-link contract', () => {
       for (const match of source.matchAll(LINK_PATTERN)) {
         const target = match[1].split('?')[0].replace(/\/$/, '') || '/';
         if (NON_ROUTE_PREFIXES.some((prefix) => target.startsWith(prefix))) continue;
+        // Retired screens intentionally redirect to /404; the explicit
+        // wildcard route renders the NotFound page at that destination.
+        if (target === '/404' && APP_SOURCE.includes('path="*"')) continue;
         if (ASSET_EXTENSION.test(target)) continue;
         if (!isRoutable(target)) dead.push(`${file}: ${target}`);
       }

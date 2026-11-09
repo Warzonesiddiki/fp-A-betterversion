@@ -2,9 +2,9 @@
 
 ## Overview
 
-FinPlan Pro enforces a zero-tolerance policy against floating-point rounding errors in financial computations. Raw JavaScript `number` (IEEE 754 float) is banned in financial _calculation_ paths.
+The target is zero binary-floating-point authority for financial calculations. `npm run money:ast` currently reports zero unsafe expressions in its scanned financial paths, but the result is bounded by the detector's scope and explicit suppressions; it is not proof that every calculation or storage boundary is float-free.
 
-One exception remains and is named below rather than glossed over: the persisted `GLEntry` money fields are still `number` (audit P1-11).
+Since DEC-057 (2026-10-22), in-memory `GLEntry.debit`, `credit`, `netChange`, and `amount` are `Money` values. Compatibility boundaries still use major-unit `number` values (including server wire DTOs and some derived/page models), and engine/service plus page/component adoption remains staged. The Tauri/server SQL schema also contains `REAL` amount columns; the active persistence authority and migration status must be distinguished from those schema declarations.
 
 ## The Money Primitive (`src/utils/money.ts`)
 
@@ -13,13 +13,13 @@ One exception remains and is named below rather than glossed over: the persisted
 - Provides arithmetic operators (`addMoney`, `subtractMoney`, `multiplyMoney`, `divideMoney`, `sumMoney`, `allocateMoney`) with a single declared rounding mode: **ROUND_HALF_UP** at `DEFAULT_CURRENCY_PLACES` (2).
   (Corrected 2026-10-21: this page previously claimed "half-even / banker's rounding". The code has always used half-up — `1.005 → 1.01`, `2.675 → 2.68` — and `src/utils/money.test.ts` KAV-08 pins it. The doc was wrong, not the code.)
 - Invalid input (NaN, ±Infinity, empty string, non-numeric string) throws `InvalidMoneyError`. Nothing silently returns 0.
-- `allocateMoney` performs deterministic largest-remainder allocation in integer cents, so the parts always sum exactly to the parent.
+- `allocateMoney` currently conserves integer-cent totals deterministically, but it is **not largest-remainder allocation**: the code floors proportional shares using JavaScript-number weights, then distributes residual cents by input index. The allocation policy and numerical treatment of weights need review; see the Stage 1 audit.
 
 ## Ledger admission scale (P1-11 phase 1, 2026-10-21)
 
 `LEDGER_SCALE` (= `DEFAULT_CURRENCY_PLACES`, 2) is the precision at which the ledger stores and reconciles money. Every write surface — `setEntries`, `addEntries`, `addEntry`, `importGLData` through `validateEntries`, and the server hydrate path — applies one rule:
 
-> A ledger amount is a finite, non-negative (for `debit`/`credit`) number carrying at most `LEDGER_SCALE` decimal places.
+> At input/compatibility boundaries, a ledger amount must be finite, non-negative (for `debit`/`credit`), and representable at `LEDGER_SCALE`; the canonical in-memory `GLEntry` fields are `Money` minor units since DEC-057.
 
 Finer precision is **refused with a named reason**, never rounded on write. Money that cannot be represented exactly would be discarded, and FR-006 forbids silent discard. `decimalPlacesOf` and `hasSubUnitPrecision` expose the check in the primitive; the store decides how to report it.
 
@@ -33,23 +33,13 @@ Finer precision is **refused with a named reason**, never rounded on write. Mone
 | `debit: 0.1 + 0.2`                               | `0.30000000000000004`           | The analysis view printed `0.30`; a raw read showed the artefact.                             |
 | `validateEntries([{ debit: 0.004, credit: 0 }])` | `isValid: true`, 0 errors       | `toCents(0.004) === toCents(0) === 0`, so the balance gate saw a balanced row carrying money. |
 
-### Status — the `Money` type exists; adoption is staged (Q5, DEC-051/053)
+### Status — ledger `Money` shipped; adoption remains staged (Q5, DEC-051–057)
 
-`GLEntry.debit/credit/amount/netChange` remain JS `number`. This phase makes
-every stored amount provably whole-cent and makes the accounting identity
-checkable in cents (`toCents(amount) === toCents(debit) − toCents(credit)`).
+`GLEntry.debit`, `credit`, `netChange`, and `amount` are typed as `Money` in `src/types/index.ts:743-755`. DEC-057 records the stage-4 type flip and hydration gate. `glStore` normalizes representable rows into integer minor units and quarantines unrepresentable legacy rows verbatim rather than rounding or dropping them.
 
-`Money = { minor: number; currency?: string }` now exists in `src/utils/money.ts`
-with exact integer arithmetic, and the persist boundary encodes it to the same
-`$d:<canonical>` bytes a numeric field produces — so adoption needs no data
-migration. Stage 3 converted the DERIVED rows (`TrialBalanceRow`,
-`AccountAnalysis`); `GLEntry` itself is stage 4 and stays gated on a policy for
-sub-cent rows already on disk (see `docs/architecture/money-type-migration.md`).
+`Money = { minor: number; currency?: string }` is exact integer minor units. The persist boundary preserves canonical `$d:<decimal>` bytes, so the in-memory type flip did not require a data rewrite. Stage 4 is **SHIPPED** for the canonical ledger type/store, not for the entire application. Stages 5–6 (remaining engines/services, pages/components, and a common display adapter) remain open; several derived DTOs and server/API wire contracts still use major-unit `number` values. See the current stage ledger in `docs/architecture/money-type-migration.md` and DEC-057.
 
-An amount finer than `LEDGER_SCALE` is refused wherever it would have to become
-`Money`. In a derived view that means the view is emptied and the reason named;
-in a stored row the hydrate policy is still undecided, which is precisely why
-`GLEntry` has not been converted.
+A sub-cent, non-finite, or unparseable legacy row is quarantined with its value and reason; it is not silently made into `Money`. `masterStorage` retains compatibility decoding for other persisted stores. SQL `REAL` declarations and number-valued server contracts are separate persistence/wire surfaces and remain part of the fixed-precision architecture gap.
 
 ## Migration & Enforcement
 

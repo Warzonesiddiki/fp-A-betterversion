@@ -8,6 +8,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** The stylesheet reduced-motion rule and hook/test exist, but the listed `TourOverlay` Framer Motion finding is stale: current `TourOverlay.tsx` says Framer Motion was removed and uses CSS, while `GuidedTour.tsx` calls `useReducedMotion()`. The Vitest test checks hook/CSS text only; Playwright cases are TODO. No full browser-computed motion audit, conformance assessment, or independent validation of the ≤200ms project target was run.
+
 ## 1. WCAG 2.3.3 (AAA) Acceptance Criterion
 
 > "For animations that are not essential, users can disable them via `prefers-reduced-motion: reduce`."

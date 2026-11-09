@@ -5,6 +5,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** The active waiver lists are empty. The policy says a waiver may allow a violation through and asks PRs to cite an ID, but the current CI workflow does not read `WAIVERS.md`, parse commit-message IDs, or implement a waiver bypass; when `test:a11y` exists, the workflow runs it as a blocking job with `--bail=1`. Thus this file is a manual policy record, not an executable CI exception. The 2026-06 co-sign cites another branch/commit and a pre-P0-3 `continue-on-error` state; it is historical, not evidence of current ratification. Its forward reference `docs/codif/RULE_50.md` remains absent (intentionally allowlisted). Approval authority and any external compliance effect are `[UNVERIFIED: no current owner ratification or independent assessment inspected]`.
+
 ## Purpose
 
 Per **NEVER-AGAIN RULE #50 (A11Y-CI-ENFORCEMENT)**, critical a11y violations (axe-core
