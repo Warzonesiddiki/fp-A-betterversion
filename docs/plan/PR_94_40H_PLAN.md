@@ -1,5 +1,7 @@
 # PR #94 — 40-Hour Quota Plan (covers PR #89 shortfall + PR #94)
 
+> **Historical planning snapshot (2026-10-23):** This plan's O4-blocked language predates DEC-102. Current owner decision: this product is not a SOX compliance system; its local chain is client evidence, not SOX authority. O4 is resolved, not a current blocker.
+
 > **Rule**: 20h productive per PR, no idle time. Last PR #89 broke rule (1-line fix merged). This PR must deliver 40h productive work (20h + 20h).
 > **Status**: planning, adopted 2026-10-23, branch `arena/0c09f26a-fp-a-betterversion`
 > **Skills activated**: ponytail (full), executing-plans, writing-plans, verification-before-completion, systematic-debugging, test-driven-development, onboarding-a-codebase, performance-and-bundle, financial-domain-modeling, money-and-decimals, audit-trail-and-lineage, reconciliation-and-tie-out, architecture-boundaries, react-state-and-stores, testing-strategy, docs-and-decisions, requirements-traceability, accessibility-wcag, frontend-design, charts-and-data-display, excel-and-report-exports, forms-and-validation, gates-and-ratchets

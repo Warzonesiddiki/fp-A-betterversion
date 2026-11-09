@@ -90,7 +90,7 @@ export default function CashForecastPage() {
   if (importError) {
     return (
       <div className="p-12 text-center" role="alert" aria-live="assertive">
-        <h2 className="text-xl font-semibold mb-2 text-[var(--negative)]">
+        <h2 className="text-xl font-semibold mb-2 text-[var(--text-negative)]">
           Failed to load cash data
         </h2>
         <p className="text-[var(--text-muted)] mb-6">{importError}</p>
@@ -137,7 +137,9 @@ export default function CashForecastPage() {
       key: 'receipts',
       header: 'Receipts',
       align: 'right',
-      render: (_, r) => <span className="text-[var(--positive)]">{fmt.currency0(r.receipts)}</span>,
+      render: (_, r) => (
+        <span className="text-[var(--text-positive)]">{fmt.currency0(r.receipts)}</span>
+      ),
       sortable: true,
     },
     {
@@ -145,7 +147,7 @@ export default function CashForecastPage() {
       header: 'Disbursements',
       align: 'right',
       render: (_, r) => (
-        <span className="text-[var(--negative)]">{fmt.currency0(r.disbursements)}</span>
+        <span className="text-[var(--text-negative)]">{fmt.currency0(r.disbursements)}</span>
       ),
       sortable: true,
     },
@@ -154,7 +156,9 @@ export default function CashForecastPage() {
       header: 'Net',
       align: 'right',
       render: (_, r) => (
-        <span className={r.net >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}>
+        <span
+          className={r.net >= 0 ? 'text-[var(--text-positive)]' : 'text-[var(--text-negative)]'}
+        >
           {fmt.currency0(r.net)}
         </span>
       ),

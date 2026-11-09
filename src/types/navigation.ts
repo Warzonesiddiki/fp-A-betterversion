@@ -487,7 +487,6 @@ export const NAV_SECTIONS: readonly NavSection[] = [
         label: 'Education',
         items: [
           { path: '/sector/education', label: 'Education', hidden: true },
-          { path: '/sectors/education', label: 'Education (legacy path)', hidden: true },
           { path: '/education', label: 'Education Overview' },
           { path: '/education/enrollment', label: 'Enrollment & Retention' },
           { path: '/education/research-grants', label: 'Research Grants' },
@@ -519,7 +518,6 @@ export const NAV_SECTIONS: readonly NavSection[] = [
         label: 'Government & Public Sector',
         items: [
           { path: '/sector/government', label: 'Government', hidden: true },
-          { path: '/sectors/government', label: 'Government (legacy path)', hidden: true },
           { path: '/government', label: 'Government Overview' },
           { path: '/government/grants', label: 'Grants & Disbursement' },
           { path: '/government/procurement', label: 'Procurement Cycle' },
@@ -551,7 +549,6 @@ export const NAV_SECTIONS: readonly NavSection[] = [
         label: 'Logistics & Transport',
         items: [
           { path: '/sector/logistics', label: 'Logistics', hidden: true },
-          { path: '/sectors/logistics', label: 'Logistics (legacy path)', hidden: true },
           { path: '/logistics', label: 'Logistics Overview' },
           { path: '/logistics/fleet-cost', label: 'Fleet Cost' },
           { path: '/logistics/warehouse-cost', label: 'Warehouse Cost' },
@@ -606,7 +603,6 @@ export const NAV_SECTIONS: readonly NavSection[] = [
         label: 'Telecom',
         items: [
           { path: '/sector/telecommunications', label: 'Telecommunications', hidden: true },
-          { path: '/sectors/telecom', label: 'Telecom', hidden: true },
           { path: '/telecom', label: 'Telecom Overview' },
         ],
       },

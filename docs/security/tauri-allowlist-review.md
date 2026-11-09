@@ -4,6 +4,8 @@
 **Date:** 2026-06-08  
 **Status:** COMPLETED
 
+> **Historical snapshot / current config recheck (2026-11-04):** The June 8 `shell:allow-execute` and unrestricted-filesystem findings do not match the current `default` capability: it contains no shell permission, and `fs:allow-read` / `fs:allow-write` are accompanied by app-data, local-data, app-config, and app-log scopes (`src-tauri/capabilities/default.json:3-20`). The current CSP still permits `wasm-unsafe-eval`, inline styles, and external HTTPS images (`src-tauri/tauri.conf.json:25-26`). This is a bounded config review of the default capability, not a complete runtime permission audit or penetration test; other runtime/deployment behavior remains `[UNVERIFIED: not tested]`.
+
 ---
 
 ## Summary

@@ -1,15 +1,23 @@
 # FinPlan Pro — Agent Squad Coordination Hub
 
-> **Branch:** `main` · **repo:** FinPlan Pro (all-in-one FP&A desktop workspace)
-> **Project goal:** one trusted workspace that carries a finance team from raw GL import to
-> reviewed, board-ready output, with zero compromises on the measured standards.
+> **Branch:** environment/session-specific; follow the current repository instructions and never infer a branch from this historical squad guide.
+> **Project goal:** one-stop, all-in-one FP&A across trusted data intake, close,
+> planning, analysis, correction review and reporting; the owner's D365 export
+> is the first real-source proof, while DEC-104 accepts user-mapped templates
+> for other accounting/finance sources and the long-term product is industry-extensible.
+> This is the north-star, not current universal-provider or industry certification.
+>
+> **Squad-corpus caution:** this directory contains historical multi-agent
+> roster/log/prompt records. Use its coordination files only if the squad is
+> explicitly active. Root `AGENTS.md`, the current Arena branch constraints,
+> `docs/agent/WORKING_AGREEMENT.md`, and the master product plan take precedence.
 
 ## Quick join checklist
 
 1. Read this file fully before touching anything.
 2. Claim/confirm your seat in `agents-comms/ROSTER.md` and post a `JOIN` note in
    `agents-comms/COMMS_LOG.md` (protocol: `agents-comms/README.md`).
-3. `git status`, then `git pull` if other agents have committed.
+3. Check the active branch and `git status`; do not switch branches or pull unless the current session instructions explicitly permit it.
 4. If `node_modules` is missing or odd, run `npm ci --ignore-scripts` first.
 5. Run the gate before landing code: `npm run tsc && npm run lint && npm run format:check`.
 6. Add or update tests that fail without the change you are making.
@@ -23,7 +31,7 @@ docs/agent-squad/
   AGENT_JOIN_GUIDE.md      this file
   SQUAD_STATE.md           shared living state: current mission, active work, blockers
   SQUAD_AGREEMENT.md       how agents coordinate, conflict rules, commit discipline
-  SQUAD_BACKLOG.md         prioritized next work for any agent to pick up
+  SQUAD_BACKLOG.md         historical queue snapshot; not the live work list
   agents-comms/            the squad's message bus (the repo IS the channel)
     README.md              the communication protocol — read at session start
     ROSTER.md              seats: 11 Gemini + 1 Freebuff partner + the lead
@@ -32,7 +40,7 @@ docs/agent-squad/
     BLOCKERS.md            open blockers and the decision each needs
     CLAIMS.md              one-writer-per-file claims
     TEMPLATES.md           copy-paste note formats
-    START_PROMPTS.md       canonical start prompts for new members
+    START_PROMPTS.md       historical 2026-10-16 prompt snapshots (do not paste as current instructions)
   agent-patches/           patches for a human to apply (CI workflows, deps)
 ```
 
@@ -51,10 +59,12 @@ Project-level instructions that still win over anything else in the repo:
 - `docs/agent/00_INDEX.md`
 - `docs/agent/09_KNOWN_GAPS.md`
 
-Plan of record for product scope and decisions:
-- `docs/discovery/requirements-register.md`
-- `docs/discovery/decision-log.md`
-- `docs/discovery/roadmap.md`
+Plan and product authority:
+- `docs/VISION.md` — product north-star and scope
+- `docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md` — detailed proposal for owner review
+- `docs/discovery/requirements-register.md` — requirements and evidence status
+- `docs/discovery/decision-log.md` — accepted decisions and open owner inputs
+- `docs/discovery/roadmap.md` — high-level gates linked to the master plan
 
 What actually exists right now (measured):
 - `docs/CAPABILITY_TRUTH_MATRIX.md`
@@ -62,18 +72,18 @@ What actually exists right now (measured):
 
 ## Current mission (this session)
 
-Ship verified increments toward the all-in-one FP&A vision without weakening any gate.
-The immediate highest-value work is the documented gap list, not random feature expansion.
+Ship evidence-backed increments toward the all-in-one vision without weakening any gate. Follow the detailed proposed sequence in `docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`; do not expand into unranked feature work.
 
-Priority order (may change only with a note in SQUAD_BACKLOG.md):
-1. FR-001 to FR-006 acceptance work that is still outstanding and testable
-2. Gate 2–4 spine work: import → control totals → trial balance → close → exception review
-3. Verified export tie-out against what the UI already shows
-4. Real-source-dependent items only after a real or clearly synthetic sample is in hand
+Priority order (changes require owner/lead review and a note in SQUAD_BACKLOG.md):
+1. Review and align current documentation to the 2026-11-04 owner direction.
+2. Converge the existing GL upload mapping profiles and DEC-104 universal template engine into one user-facing import/validation contract.
+3. Reconcile owner D365 export shapes to anonymized samples and source control totals when available.
+4. Validate the real J2/J3/J4 review, correction and comparison workflow; then prioritize APIs, broader FP&A and industry packs by user evidence.
 
-Do not start a new surface until the docs say it is allowed. The product handbook says:
-no new routes, pages, engines, stores, sector packs or connectors until Gate 2 is green.
-Wire or delete; do not add.
+Do not start an unplanned surface. DEC-104's user-mapped universal import is
+explicit foundation work, not a feature expansion to block. Other provider APIs
+and industry packs follow the master plan's canonical-contract, owner-priority,
+and evidence gates. Code presence never earns a support claim.
 
 ## Coding rules you must not relax
 
@@ -89,22 +99,21 @@ Wire or delete; do not add.
 6. **Missing is not zero.** Absent inputs render as unavailable, with a reason, not as 0.
 7. **A potential exception is never an error.** Flags are review candidates with a rule id and
    evidence; only a human disposition makes them wrong.
-8. **No new surface before the spine works.** See above.
+8. **No unplanned surface expansion; follow the current master plan's dependency gates.** Universal template/import convergence is accepted foundation work under DEC-104.
 9. **No egress by default.** No network calls, telemetry, or AI provider calls unless behind an
    explicit allow-listed, user-initiated path.
 10. **Do not weaken a gate to pass it.** No skipped tests, lowered bars, `as any`, or
     `@ts-expect-error` to make something green. Fix the cause or stop and report.
 11. **One source of truth per fact.** If a number or rule lives in two places, delete one or
     assert equality.
-12. **Owner decisions are not yours.** DEC-001…DEC-012 in `docs/discovery/decision-log.md` are
-    open or owner-delegated. Implement around them, never through them.
+12. **Owner decisions are not yours.** The current `docs/discovery/decision-log.md` records accepted decisions and open owner inputs. Implement around them, never through them; the detailed product proposal does not itself supersede an accepted decision.
 
 ## Git and commit discipline
 
-- Work on `main` only for this session unless the squad agrees otherwise in SQUAD_AGREEMENT.md.
-- One logical item per commit.
+- Follow `AGENTS.md` and the active Arena session's branch constraints; never infer or change the tracked branch from this guide.
+- One logical item per commit when commits are requested.
 - Commit message should say why, not just what.
-- Do not push unless a human asked for it.
+- Push only to the active session branch and only when permitted by the session instructions.
 - Prefer `git commit -am` when the change is self-contained and safe.
 - Do not commit sensitive values. The pre-commit hook scans for key material.
 

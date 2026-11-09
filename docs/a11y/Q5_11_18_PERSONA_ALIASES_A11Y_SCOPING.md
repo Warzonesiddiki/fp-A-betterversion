@@ -11,6 +11,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** The registry and test assert 19 aliases, including `compliance_officer` as the 19th; this conflicts with the document's 18-persona union. The source matrix is generated from `primarySectors`: 18 personas map to all 16 sectors and `compliance_officer` to sectors 7–12, yielding 294 cells, not the comments' 304. The Q5.11 test bounds the matrix between 95 and 304 and checks registry/help/shortcut/profile consistency; it does not establish the cited 1,344/1,344 external checks or actual screen-reader/browser use. Its draft phases are marked planned while hard-acceptance checkboxes are green; treat those as unsupported draft assertions. Population, market, standards, and external cross-witness claims remain `[UNVERIFIED: no external research or owner ratification inspected]`.
+
 ## §1. PURPOSE & SCOPE
 
 18 Persona Aliases A11Y = **A11Y coverage of all 18 persona aliases** (8 Boardroom sub-personas from PICK I.1 + 10 personas from Iris PERSONA_UX v0.2) across all 5 A11Y v0.7 P2 items. Each persona alias must have (a) A11Y test coverage, (b) persona-specific Help topic, (c) keyboard shortcut mapping, (d) screen reader optimization profile.

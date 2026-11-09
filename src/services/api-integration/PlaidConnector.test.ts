@@ -148,6 +148,47 @@ describe('PlaidConnector', () => {
         expect.objectContaining({ body: expect.stringContaining('access-sandbox-xyz') })
       );
     });
+
+    it('passes Plaid next_cursor to the next transactions/sync request', async () => {
+      const response = (added: string[], hasMore: boolean, nextCursor: string) => ({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: vi.fn().mockResolvedValue({
+          added: added.map((id) => ({
+            transaction_id: id,
+            account_id: 'acct-1',
+            date: '2026-08-01',
+            name: id,
+            amount: 10,
+            iso_currency_code: 'USD',
+            pending: false,
+          })),
+          modified: [],
+          removed: [],
+          has_more: hasMore,
+          next_cursor: nextCursor,
+        }),
+      });
+      mockFetch.mockResolvedValueOnce(response(['txn-page-1'], true, 'cursor-1'));
+      mockFetch.mockResolvedValueOnce(response(['txn-page-2'], false, 'cursor-2'));
+      const connector = new PlaidConnector({
+        ...baseConfig,
+        secret: 'secret-123',
+        accessToken: 'access-sandbox-xyz',
+      });
+
+      const first = await connector.getTransactions('acct-1', { page: 1, pageSize: 1 });
+      expect(first.nextCursor).toBe('cursor-1');
+      const second = await connector.getTransactions('acct-1', {
+        page: 2,
+        pageSize: 1,
+        cursor: first.nextCursor,
+      });
+
+      expect(second.items.map((item) => item.externalId)).toEqual(['txn-page-2']);
+      expect(JSON.parse(mockFetch.mock.calls[1]?.[1]?.body as string).cursor).toBe('cursor-1');
+    });
   });
 
   describe('sync', () => {

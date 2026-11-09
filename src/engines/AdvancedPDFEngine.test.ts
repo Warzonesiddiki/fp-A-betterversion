@@ -290,14 +290,7 @@ describe('AdvancedPDFEngine', () => {
   });
 
   describe('generateReport and exportToPDF', () => {
-    it('generates full multi-section report with TOC, watermark, tables and header/footer', () => {
-      // Mock jsPDF constructor globally for generateReport
-      (window as any).jsPDF = class MockJsPDF {
-        constructor() {
-          return mockPdf;
-        }
-      };
-
+    it('generates full multi-section report with TOC, watermark, tables and header/footer', async () => {
       const sections = [
         {
           title: 'Section 1: Revenue Analysis',
@@ -316,7 +309,7 @@ describe('AdvancedPDFEngine', () => {
         },
       ];
 
-      const doc = AdvancedPDFEngine.generateReport(sections, {
+      const doc = await AdvancedPDFEngine.generateReport(sections, {
         title: 'Board Report',
         subtitle: 'Q2 2026',
         watermark: 'STRICTLY CONFIDENTIAL',

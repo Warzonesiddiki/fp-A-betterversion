@@ -129,6 +129,66 @@ describe('StripeConnector', () => {
       expect(result.hasNext).toBe(true);
     });
 
+    it('uses Stripe starting_after cursors to fetch the next transaction page', async () => {
+      const client = (connector as unknown as { client: { get: ReturnType<typeof vi.fn> } }).client;
+      client.get
+        .mockResolvedValueOnce({
+          data: {
+            data: [
+              {
+                id: 'ch_page_1',
+                amount: 100,
+                currency: 'usd',
+                created: 1,
+                description: 'First page',
+                status: 'succeeded',
+                receipt_url: null,
+              },
+            ],
+            has_more: true,
+            url: '/v1/charges',
+          },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        })
+        .mockResolvedValueOnce({
+          data: {
+            data: [
+              {
+                id: 'ch_page_2',
+                amount: 200,
+                currency: 'usd',
+                created: 2,
+                description: 'Second page',
+                status: 'succeeded',
+                receipt_url: null,
+              },
+            ],
+            has_more: false,
+            url: '/v1/charges',
+          },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        });
+
+      const first = await connector.getTransactions('stripe', { page: 1, pageSize: 1 });
+      expect(first.nextCursor).toBe('ch_page_1');
+      const second = await connector.getTransactions('stripe', {
+        page: 2,
+        pageSize: 1,
+        cursor: first.nextCursor,
+      });
+
+      expect(second.items.map((item) => item.externalId)).toEqual(['ch_page_2']);
+      expect(client.get).toHaveBeenNthCalledWith(1, '/charges', { limit: 1 });
+      expect(client.get).toHaveBeenNthCalledWith(2, '/charges', {
+        limit: 1,
+        starting_after: 'ch_page_1',
+      });
+    });
+
     it('returns empty list when API returns no data array', async () => {
       const client = (connector as unknown as { client: { get: ReturnType<typeof vi.fn> } }).client;
       client.get.mockResolvedValue({ data: {}, status: 200, statusText: 'OK', headers: {} });

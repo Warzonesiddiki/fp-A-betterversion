@@ -11,23 +11,26 @@ import React from 'react';
 // ---------------------------------------------------------------------------
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    entries: [],
-    accounts: [],
-    trialBalance: [],
-    accountAnalysis: null,
-    columnMappings: [],
-    isLoading: false,
-    importResult: null,
-    setEntries: vi.fn(),
-    setAccounts: vi.fn(),
-    addEntries: vi.fn(),
-    clearEntries: vi.fn(),
-    setColumnMappings: vi.fn(),
-    importData: vi.fn(),
-    undo: vi.fn(),
-    redo: vi.fn(),
-  })),
+  useGLStore: vi.fn((selector?: (state: Record<string, unknown>) => unknown) => {
+    const state = {
+      entries: [],
+      accounts: [],
+      trialBalance: [],
+      accountAnalysis: null,
+      columnMappings: [],
+      isLoading: false,
+      importResult: null,
+      setEntries: vi.fn(),
+      setAccounts: vi.fn(),
+      addEntries: vi.fn(),
+      clearEntries: vi.fn(),
+      setColumnMappings: vi.fn(),
+      importData: vi.fn(),
+      undo: vi.fn(),
+      redo: vi.fn(),
+    };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 vi.mock('@/store/uiStore', () => ({

@@ -4088,11 +4088,17 @@ describe('GOVERNED positive-path — Admin write actions (batch 2)', () => {
 
   it('GOVERNED /drill-down — Admin writeCell writes a cube cell', () => {
     actAs('Admin');
-    useCubeStore
-      .getState()
-      .writeCell('gov-cell-1', 'gov-scenario', 'gov-period', 'gov-line', 100, 'number');
-    // writeCell returns void; verify no throw and cube state is accessible
-    expect(useCubeStore.getState().isInitialized).toBeDefined();
+    const store = useCubeStore.getState();
+    store.initialize();
+    const coords = {
+      Account: '1000',
+      Entity: 'GOV',
+      Time: '2026-01',
+      Scenario: 'Actual',
+      Currency: 'USD',
+    };
+    store.writeCell('GL_Actuals', coords, 'amount', 100, 'input');
+    expect(store.getCellValue('GL_Actuals', coords, 'amount')).toBe(100);
   });
 
   it('GOVERNED /plugins — Admin addDocument creates a document', () => {
@@ -5784,7 +5790,7 @@ describe('GOVERNED capability-level — budget lifecycle validation tests (batch
     const budgetId = useBudgetStore.getState().budgets[0]!.id;
     await useBudgetStore.getState().submitBudget(budgetId);
     expect(useBudgetStore.getState().budgets[0]!.status).toBe('InReview');
-    expect(() => useBudgetStore.getState().submitBudget(budgetId)).rejects.toThrow(
+    await expect(useBudgetStore.getState().submitBudget(budgetId)).rejects.toThrow(
       /Cannot submit.*InReview/
     );
   });

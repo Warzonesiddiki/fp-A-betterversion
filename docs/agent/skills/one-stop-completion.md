@@ -15,10 +15,11 @@ or auditing whether a user can finish FP&A work without another app.
 ## Why this exists
 
 The vision's one-stop acceptance is a **requirement, not a claim**: a user must
-be able to complete supported FP&A work without another app or tool. A connected
-source may supply data and exports may be offered for interoperability, but a
-separate application must not be a mandatory step. Two conflicts are recorded
-rather than smoothed over (DEC-058, PR #90).
+be able to complete the agreed supported FP&A work without another FP&A app or
+mandatory spreadsheet/script round-trip. An accounting ERP may remain an
+upstream system of record; optional exports are interoperability. The in-app
+correction request lifecycle exists and Excel export is optional (DEC-035), but
+real accounts-team use and owner acceptance remain unproven (DEC-058).
 
 ## Method
 
@@ -26,10 +27,14 @@ rather than smoothed over (DEC-058, PR #90).
    confirm each has a UI surface inside the app. A step done by hand, by email,
    or in a spreadsheet is not in-app.
 2. **Name the hand-offs.** For every step that leaves the app, say exactly what
-   it is and whether it is mandatory. Two known conflicts:
-   - the manual D365 export / file-intake path (data enters the app by file).
-   - the DEC-018 Excel correction hand-off (corrections leave the app until the
-     in-app correction path is proven sufficient).
+   it is and whether it is mandatory. Current boundaries:
+   - D365 is a source system and may still provide a manual export; this is an
+     input hand-off, not proof of a native connector or an FP&A-app dependency.
+   - Excel correction export is optional under DEC-035; the in-app request
+     lifecycle exists, but the accounts team has not accepted it on a real
+     cycle. Do not claim owner-complete until that workflow is validated.
+   - Record any other spreadsheet, BI, email, script or app dependency for the
+     exact workflow being called supported.
 3. **Do not claim one-stop while a mandatory hand-off exists.** If a workflow
    requires an external tool at a mandatory step, the workflow is **not**
    one-stop-complete. Report it as blocked on the hand-off, not as supported.
@@ -47,6 +52,8 @@ rather than smoothed over (DEC-058, PR #90).
 - The requirement: [`docs/VISION.md`](../../VISION.md) §1 ("One-stop acceptance").
 - The recorded conflicts: DEC-058, PR #90; decision log
   [`docs/discovery/decision-log.md`](../../discovery/decision-log.md).
+- The proposed acceptance gates and owner-review items:
+  [`docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](../../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
 - The census: `docs/plan/completion-register.json` (one-stop column);
   [`docs/plan/COMPLETION_REGISTER.md`](../../plan/COMPLETION_REGISTER.md).
 - The gate: `npm run docs:verify` (one-stop census check).
@@ -56,8 +63,8 @@ rather than smoothed over (DEC-058, PR #90).
 
 - "Supported" claimed for a workflow with a mandatory external step.
 - A census row left blank instead of `true` / `false` / `unverified`.
-- The D365 export hand-off or the Excel correction hand-off treated as
-  completed rather than as a recorded conflict.
+- A manual source export treated as native provider connectivity, or optional
+  Excel correction export treated as required in-app completion (or vice versa).
 - Promoting a route to SUPPORTED without the one-stop value.
 
 **Proves itself with:** a census row per supported route with an honest

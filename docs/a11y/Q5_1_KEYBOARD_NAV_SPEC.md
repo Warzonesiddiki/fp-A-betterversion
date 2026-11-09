@@ -8,6 +8,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** Treat the dated handoff, 9.5/10 score, 4-ICP statements, and 18.7M user figure below as historical/unverified, not owner ratification or conformance evidence. The Vitest file measures repeated `document.body.focus()` calls rather than keyboard patterns, and the Playwright file remains a TODO skeleton. No browser latency or cross-page result is evidenced; the Q5 gate paths are not aligned with the files in this checkout.
+
 ## 1. Acceptance Criteria (WCAG 2.1.1 + 2.4.7)
 
 | Criterion           | Threshold                                 | Test Surface                                                        |

@@ -33,7 +33,7 @@ adding one is a valid, welcome unit of work.
 
 | Rule                                                                                                                | Gate                                |
 | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| No new route, page, engine, store, sector pack or connector until Gate 2 is green                                   | review; `engines:verify` (manifest) |
+| No unplanned surface expansion: universal user-mapped import is explicit DEC-104 foundation work; other APIs/industry packs follow the master plan's shared-contract and owner-priority gates | review; `engines:verify` (manifest) |
 | Touching an orphan engine means wiring it to a caller with a test or leaving it alone — never "improving" dead code | `verify-readme-stats.mjs --list`    |
 | New dependency only with a removed dependency and a licence check                                                   | `license:check`, review             |
 

@@ -8,6 +8,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** The generic hook exists, but a bounded search found no production callsite; `Modal` maintains its own focus refs and the named `Toast`/`Dropdown`/route integrations are not evidenced. The Q5 unit test's focus-timing case is skipped and its active case does not assert restored focus; a separate hook test checks restoration but not the 50ms budget. The Playwright file remains TODO, so the CLOSED/9.5 score and cross-surface timing claim are unsupported as current results.
+
 ## 1. WCAG 2.4.3 (Focus Order) + 2.4.6 (Headings and Labels) Acceptance Criterion
 
 > "When a user triggers a navigation or state change, focus must be programmatically moved to the new context within 50ms, preserving the logical reading order."

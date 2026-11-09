@@ -8,6 +8,8 @@
 **HEAD baseline:** `f26c339e` 1002c (32nd HEAD DRIFT, 1002-COMMIT MILESTONE)
 **Status:** SPEC — awaiting implementation by Hades + Apollo + Demeter
 
+> **Current implementation and claim boundary (2026-11-05):** Undo/redo state actions exist, but the reviewed store paths use `UndoRedoEngine` instances; no `state.undo` / `state.redo` audit event or `linkedEntryId` integration was found. The engine's static `persistHistory` / `restoreHistory` methods are separate from those store instances. The server audit middleware records selected authenticated HTTP mutations, not local client-store undo/redo (`server/src/middleware/auditMiddleware.ts:45-62`). The “SOC 2 violation” and readiness-blocking language below is an unverified requirements assertion, not an auditor finding or legal conclusion; `docs/security/SECURITY.md:7-10, 43-49` says no SOC 2 report or operating-control assessment was audited. No external compliance/legal review was performed.
+
 ---
 
 ## 1. Scope and Compliance Frame

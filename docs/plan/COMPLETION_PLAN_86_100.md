@@ -8,6 +8,14 @@
 >
 > **Owner may correct anything here.** The owner-facing asks are isolated in §7
 > so they can be answered or refused without re-reading the engineering plan.
+>
+> **Current decision-status correction (2026-11-04):** DEC-102 resolves O4: the
+> product is not a SOX compliance system and the local audit chain is client
+> evidence, not SOX authority. O4 is not an open owner blocker. Historical PR #94
+> and earlier N2/N3 checkpoint paragraphs below retain their original as-measured
+> wording; this correction supersedes their O4-open status. The current generated
+> completion register has 711 rows (115 SUPPORTED, 374 EXPERIMENTAL, 2 RETIRED,
+> 220 NOT_BUILT, 0 BLOCKED-ON-OWNER); older counts in this plan are dated snapshots.
 
 ---
 
@@ -170,7 +178,7 @@ the two disagree.
 
 | Status             | Means                                                    | Required evidence field        |
 | ------------------ | -------------------------------------------------------- | ------------------------------ |
-| `SUPPORTED`        | Completable in-app, graded CONNECTED **and** GOVERNED    | test ids, gate line, doc link  |
+| `SUPPORTED`        | Completable in-app; routes must match canonical CONNECTED **and** GOVERNED manifests | test ids, `docs:verify` gate, doc link |
 | `EXPERIMENTAL`     | Reachable, may change, may not be described as supported | the route/flag that gates it   |
 | `BLOCKED-ON-OWNER` | Cannot progress without a named owner decision           | `O1`–`O9` id + the question    |
 | `RETIRED`          | Deliberately removed or unreachable; decision recorded   | DEC id + removal commit        |
@@ -189,8 +197,12 @@ the two disagree.
 
 - every discovered route/engine/requirement/section has exactly one row;
 - no blank status; no unknown status;
-- `SUPPORTED` requires ≥ 1 test id **and** a gate line, and both must resolve to
-  files that exist;
+- `SUPPORTED` requires ≥ 1 test id, a real gate line, and an existing doc;
+- a `SUPPORTED` route requires non-empty CONNECTED and GOVERNED claims that match
+  `spine-evidence.json` and `governance-evidence.json` exactly; its test list must
+  include every canonical evidence file and its gate must be `docs:verify`;
+- a route row's disposition must match the current truth matrix, and `EXPERIMENTAL`
+  or `RETIRED` routes cannot be `SUPPORTED`;
 - `BLOCKED-ON-OWNER` must name an `O`-id that exists in the taskboard OWNER table;
 - `RETIRED` must name a DEC id present in the decision log;
 - no route row may carry a `REVIEW` disposition (it means nobody decided), and an
@@ -199,8 +211,22 @@ the two disagree.
 - counts are printed and compared to the generators, so a new route with no row
   fails the build the day it lands.
 
-This is the piece that makes the last ten PRs verifiable instead of rhetorical.
-Until it exists, "we are nearly done" is an opinion.
+### Current recheck — 2026-11-02
+
+The earlier register accepted route `SUPPORTED` from generic test/gate/doc
+pointers alone. On the current tree that allowed **104** route rows to say
+`SUPPORTED` while the canonical manifests had **19 CONNECTED** routes and
+**104 GOVERNED** routes (intersection: 19). The register now checks exact claims
+against both manifests, refreshes its copied evidence on seed, and routes must
+use `docs:verify`, which runs both evidence checks and the one-stop census.
+
+Measured after the correction: **709 rows** (227 routes, 180 engines, 19
+requirements, 200 annex sections, 83 capabilities); **SUPPORTED 115 ·
+EXPERIMENTAL 374 · BLOCKED-ON-OWNER 0 · RETIRED 2 · NOT_BUILT 218**. Of the 227
+routes, **19 are SUPPORTED**; 85 governed-only routes and 123 routes without
+CONNECTED or GOVERNED evidence remain EXPERIMENTAL. The command-level result is
+recorded by `npm run docs:verify`; this grade change does not remove runtime
+screens or claim live-provider/D365 verification.
 
 ---
 
@@ -241,7 +267,7 @@ writes into it.
 | #87  | Route disposition sweep                 | **47 REVIEW → 0**; 47 Unclassified → pillar; every route MIGRATE/RETAIN/EXPERIMENTAL/RETIRED                 | disposition census green; `docs/product/ROUTE_MAP.md` regenerated |
 | #88  | Spine CONNECTED evidence                | Spine routes graded CONNECTED with loading/empty/error/stale handling and integration tests                  | spine rows CONNECTED with test ids; matrix regenerated            |
 | #89  | Spine GOVERNED evidence + N2/N3 closure | Authz, audit, entity scope, write guards for the spine; RBAC census closed; audit chain bounded              | GOVERNED rows carry test ids; N2/N3 closed or bounded in board    |
-| #90  | One-stop acceptance                     | In-app correction path sufficient; Excel optional; D365 intake in-app; DEC-018 revision                      | `oneStop:acceptance` census green; DEC recorded                   |
+| #90  | One-stop acceptance                     | Supported FP&A workflows complete without another FP&A app; in-app correction lifecycle, Excel optional (DEC-035); manual ERP export is an allowed source hand-off | `oneStop:acceptance` census green; in-app J3 owner/team acceptance and source boundaries recorded |
 | #91  | Missing-is-not-zero sweep               | Census of `?? 0` / `\|\| 0` on money reads in supported surfaces; quarantine shown wherever a total is short | census green; funded-by-test evidence per fix                     |
 | #92  | PLAN to supported                       | Budget versions, scenarios, driver cascade tie-out, forecast semantics (or O2-blocked)                       | oracle-value tests; register rows SUPPORTED or BLOCKED-ON-OWNER   |
 | #93  | MODEL/CONSOLIDATE to supported          | IC elimination, consolidation twin, FX translation; cross-currency conversion decided                        | tie-out oracle tests; DEC for FX scope                            |
@@ -310,13 +336,17 @@ claim restart durability without O7, server authority without Q6, SOX authority
 without O4; N3 cannot claim payload-source authentication. A bounded closure
 with boundary written down is acceptable; silent promotion is not.
 
-**#90 — One-stop acceptance.** The vision's acceptance rule is not met today:
-DEC-018 still describes an Excel correction hand-off. The fix is an in-app
-correction path that is _sufficient_, with Excel remaining an optional export.
-A census enumerates supported workflows and fails if any of them names an
-external tool as required. DEC-018 gets a revision row; DEC-003/DEC-015 are not
-edited. **This is the PR where the product either satisfies the one-stop rule or
-says plainly that it does not.**
+**#90 — One-stop acceptance (historical programme item; rechecked 2026-11-04).**
+The acceptance rule remains: every workflow labelled SUPPORTED must be
+completable without a mandatory external FP&A application or spreadsheet/script
+round-trip. The in-app correction-request lifecycle now exists and Excel export
+is optional under DEC-035; the route/store evidence does not yet prove the
+accounts team accepted it or that a specific source entry was corrected.
+Likewise, a manual D365 export is an allowed upstream source hand-off, not proof
+of native API connectivity. The one-stop census and owner real-cycle validation
+remain necessary; do not repeat the older claim that the correction path itself
+is absent. Current direction and proposed acceptance gates are in
+[`docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
 
 **#91 — Missing is not zero.** Census every money read that defaults: `?? 0`,
 `|| 0`, `Number(x) || 0`, `parseFloat(x) || 0`. In supported surfaces each hit is
@@ -394,7 +424,7 @@ register status, not a TODO.
 | --- | ---------------------------------- | ---------------------------------------------- | ----------- |
 | 1   | Any D365 shape "verified"          | No real export sample; synthetic fixtures only | O1          |
 | 2   | "Your data is safe" / backup story | No key-escrow decision                         | O3          |
-| 3   | SOX / audit authority              | No authority decision                          | O4          |
+| 3   | SOX-compliance claim / authority   | DEC-102: the product is not a SOX compliance system; the local chain is client evidence, not SOX authority | Resolved — DEC-102 (not a blocker) |
 | 4   | Rolling-forecast correctness       | Roll semantics undefined                       | O2          |
 | 5   | Sector/jurisdiction support tiers  | Tiering undecided                              | O5          |
 | 6   | Any non-local AI                   | DEC-022 holds until decided                    | O6          |

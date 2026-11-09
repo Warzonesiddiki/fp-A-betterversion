@@ -59,6 +59,10 @@ const SPINE_EXTRA = [
 const NON_MONETARY: Record<string, string> = {
   'src/services/import/glCsvTokenizer.ts':
     'tokenises CSV/XLSX text and hashes chunks; emits strings, performs no arithmetic',
+  'src/services/import/universalImportEngine.ts':
+    'routes source rows to the existing GL parsers and aligns row-level results; no amount arithmetic',
+  'src/services/import/universalImportTemplate.ts':
+    'validates source-column mappings and template metadata; no amount arithmetic',
   'src/services/import/glPeriodWriteGuard.ts': 'date/period comparisons only; no amount arithmetic',
   'src/services/import/glStagingRepository.ts':
     'persists and reads staged rows; no amount arithmetic',

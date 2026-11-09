@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { CheckCircle, Download, Plug, RefreshCw, XCircle } from 'lucide-react';
 import { CATEGORY_LABELS, type IntegrationDefinition } from '@/config/integrations';
-import type { IntegrationConnection } from '@/store/integrationStore';
+import type { ImportToLedgerResult, IntegrationConnection } from '@/store/integrationStore';
 import { cn } from '@/utils/cn';
 
 interface IntegrationCardProps {
@@ -13,6 +13,7 @@ interface IntegrationCardProps {
   onTest: (provider: string) => void;
   onSync: (provider: string) => void;
   onImport: (provider: string) => void;
+  importResult?: ImportToLedgerResult;
   onDisconnect: (provider: string) => void;
 }
 
@@ -28,6 +29,7 @@ export function IntegrationCard({
   onTest,
   onSync,
   onImport,
+  importResult,
   onDisconnect,
 }: IntegrationCardProps) {
   const status = connection?.status ?? 'disconnected';
@@ -100,16 +102,18 @@ export function IntegrationCard({
                         <RefreshCw className="h-3 w-3 mr-1" />
                         Sync
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onImport(definition.provider)}
-                        disabled={busy}
-                        aria-label={`Import ${definition.name} to ledger`}
-                      >
-                        <Download className="h-3 w-3 mr-1" />
-                        Import
-                      </Button>
+                      {definition.ledgerImportable && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onImport(definition.provider)}
+                          disabled={busy}
+                          aria-label={`Import ${definition.name} to ledger`}
+                        >
+                          <Download className="h-3 w-3 mr-1" />
+                          Import
+                        </Button>
+                      )}
                     </>
                   )}
                   {connection.lastImportAt && (
@@ -144,6 +148,28 @@ export function IntegrationCard({
                 </Button>
               )}
             </div>
+            {importResult && (
+              <div
+                className={cn(
+                  'mt-3 rounded-md border px-3 py-2 text-xs break-words',
+                  importResult.success && importResult.complete && importResult.skipped === 0
+                    ? 'border-[var(--positive)] bg-[var(--positive-subtle)] text-[var(--text-positive)]'
+                    : 'border-[var(--warning)] bg-[var(--warning-subtle)] text-[var(--warning)]'
+                )}
+                role={
+                  importResult.success && importResult.complete && importResult.skipped === 0
+                    ? 'status'
+                    : 'alert'
+                }
+                aria-live="polite"
+                aria-label={`Import result for ${definition.name}`}
+              >
+                <p>{importResult.message}</p>
+                <p className="mt-1 text-[var(--text-muted)]">
+                  Imported {importResult.imported} rows · Skipped {importResult.skipped} rows.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>

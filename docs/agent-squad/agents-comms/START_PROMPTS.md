@@ -1,8 +1,11 @@
-# Squad Start Prompts
+# Historical Squad Start-Prompt Snapshots
 
-> Copy one block into each member session before its first message. Lead-authored 2026-10-16.
-> The prompts are self-contained: they point at repo files, not at chat history.
-> Update this file if the protocol changes — it is the canonical copy.
+> **Do not paste or follow these blocks as current instructions.** They were
+> authored 2026-10-16 for an older multi-agent `main`-branch setup and contain
+> stale branch, seat, and project-status assumptions. Retained for provenance.
+> Current instructions are `AGENTS.md`, `docs/agent/WORKING_AGREEMENT.md`, and
+> `docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md` (proposed for owner
+> review). Recheck the active branch and current decision/evidence docs.
 
 ## Gemini member prompt (paste into each of the 11 Gemini sessions)
 

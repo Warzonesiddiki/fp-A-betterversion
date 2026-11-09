@@ -4,6 +4,8 @@
 
 The current `pubkey` in `src-tauri/tauri.conf.json` is a **placeholder** and must be replaced before production release.
 
+> **Current-state recheck (2026-11-04):** `src-tauri/tauri.conf.json:35-38` still contains a placeholder key and an `updates.example.invalid` endpoint. `docs/security/UPDATER_SETUP.md:1-37,39-104` documents the inert updater and remaining operator steps. The base64-like value below is an older placeholder and does not match the current config; do not copy it. The generic rotation sequence below has not been checked against current Tauri 2 vendor guidance. No private signing key or secret was inspected, and this is not production signing/release validation.
+
 ```
 pubkey: "dW50cmFja2VkIHB1YmtleSAtIGdlbmVyYXRlIHdpdGggdGF1cmkgc2lnbmVyIGFuZCBzdG9yZSBzZWN1cmVseQ=="
 ```

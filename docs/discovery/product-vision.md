@@ -1,18 +1,19 @@
 # Product Vision and Scope
 
-> **Superseded for product direction (2026-10-16, DEC-011).** The authoritative
-> product goal and all-in-one module map now live in [`docs/VISION.md`](../VISION.md).
-> This page is retained as the discovery-phase proposal record — its principles,
-> non-goals and success measures were carried into VISION.md. Do not treat it as
-> the live product definition.
+> **Historical discovery proposal.** Superseded for product direction by
+> [`docs/VISION.md`](../VISION.md), later owner decisions including DEC-104, and
+> the detailed proposal
+> [`MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](MASTER_PRODUCT_AND_EXECUTION_PLAN.md)
+> (2026-11-04). Retained as a record of earlier hypotheses; do not treat old
+> D365-only sequencing or non-goals here as the live product definition.
 
-**Status:** Discovery-phase proposal, superseded by [`docs/VISION.md`](../VISION.md)
+**Status:** Historical discovery-phase proposal; current product direction is in VISION.md and the master plan.
 
 ## Vision
 
 Build a trusted, all-in-one FP&A workspace that helps finance teams move from monthly source data to reviewed, explainable decisions in one place—reducing spreadsheet and app fragmentation without hiding uncertainty or removing human accountability.
 
-The aspiration is **one stop for the user's agreed FP&A workflow**, not an unsupported promise to replace every finance, ERP, BI, spreadsheet, or accounting system. Dynamics 365 remains the current source system unless a future decision changes that boundary.
+The aspiration is **one stop for supported FP&A workflows**, not an unsupported promise to replace every finance, ERP, BI, spreadsheet, or accounting system. Dynamics 365 is the first owner-specific source proof; DEC-104 accepts user-template import for D365 and other accounting/finance sources. The ERP remains the system of record unless a separate decision explicitly approves write-back.
 
 ## Known starting point (owner-stated)
 
@@ -44,9 +45,9 @@ A user should be able to:
 
 ## Candidate first-release outcome (provisional)
 
-A dependable monthly GL review workspace for one agreed Dynamics 365 export format and one agreed initial user workflow. It should validate and reconcile an import, present a limited set of approved financial views, flag explainable exceptions, let the user disposition them, and export a traceable review package.
+A dependable, owner-accepted monthly GL review workflow for every documented D365 shape the owner uses, plus a reusable user-mapped CSV/XLSX path for other accounting exports. It should validate and reconcile an import, present approved financial views, flag explainable exceptions, let the user disposition and track corrections in-app, compare day/month/year in detail, and produce traceable outputs.
 
-This is a proposal, not an approved scope. Confirm the user's most valuable month-end task before implementation.
+This is staged: DEC-015 and DEC-104 set the source-direction, but each source shape still needs real samples, independent controls and owner acceptance. The all-in-one/all-industry vision extends well beyond this first trusted slice; see the master plan for the proposed phases.
 
 ## Explicit non-goals for the initial slice
 
@@ -54,7 +55,8 @@ This is a proposal, not an approved scope. Confirm the user's most valuable mont
 - Guaranteed discovery of all errors, fraud, or accounting misstatements.
 - Inference of unsupported operating metrics (for example, headcount-based ratios without payroll/headcount data).
 - Unbounded natural-language access to confidential financial records.
-- Multiple ERP connectors and full planning/forecasting suites before the first workflow is reliable.
+- Native API connectors for every ERP in the first slice; the accepted universal mapped-file path is the broad baseline, with APIs staged by actual need.
+- Full FP&A planning/model depth before the trusted data spine; it remains in ultimate scope and is staged behind data prerequisites and owner priorities.
 
 ## Success measures to baseline and agree
 

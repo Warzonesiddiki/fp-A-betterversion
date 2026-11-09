@@ -5,7 +5,7 @@
 > Retired documents live in [`docs/archive/`](archive/) and are provenance, not
 > instructions.
 
-Last reorganised: **2026-10-16** (DEC-011). Every number quoted in these docs is
+Last reorganised: **2026-11-04** (DEC-011's 2026-10-16 archive boundary retained). Every number quoted in these docs is
 produced by a command named next to it. Do not update a number by hand.
 
 ---
@@ -18,10 +18,13 @@ produced by a command named next to it. Do not update a number by hand.
 AGENTS.md                       rules, session protocol, commands (read first)
   → docs/README.md              this page: the doc map
   → docs/agent/WORKING_AGREEMENT.md  the owner's goal as stated + the queue I work in
-  → docs/VISION.md              the product goal and the all-in-one module map
+  → docs/VISION.md              product goal and all-in-one module map
+  → docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md detailed proposed strategy and owner review
   → docs/agent/00_INDEX.md      engineering handbook index + source-of-truth matrix
-  → docs/agent/09_KNOWN_GAPS.md what works, what is unwired, what is false
-  → docs/discovery/roadmap.md   the gated plan of record
+  → docs/agent/09_KNOWN_GAPS.md current implementation gaps and evidence
+  → docs/03_CURRENT_STATUS_AND_AUDIT.md Stage 1 code-vs-document audit, matrices and defect register
+  → docs/discovery/VISION_ALIGNMENT_RECHECK_2026_11_02.md dated code/connector recheck
+  → docs/discovery/roadmap.md   high-level gate summary
 ```
 
 Squad member sessions (the 11-seat Gemini team, the Freebuff partner seat, the lead) start from
@@ -40,12 +43,14 @@ docs/agent/08_DATA_MODEL.md     types, persistence truth, schema homes
 ### If you are a human evaluating the product
 
 ```text
-docs/VISION.md                          what the product is and where it is going
-docs/discovery/requirements-register.md what was asked, and its evidence status
-docs/discovery/roadmap.md               the gated sequence to a working product
-docs/discovery/decision-log.md           every decision made, and by whom
-docs/discovery/risk-register.md          what can go wrong, and its mitigation
-docs/CAPABILITY_TRUTH_MATRIX.md          per-route/per-module maturity (generated)
+docs/VISION.md                                  product goal and all-in-one promise
+docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md detailed proposed approach and owner questions
+docs/03_CURRENT_STATUS_AND_AUDIT.md             Stage 1 source-vs-doc evidence, matrices, defects
+docs/discovery/requirements-register.md         what was asked, and its evidence status
+docs/discovery/roadmap.md                       high-level gated sequence
+docs/discovery/decision-log.md                 accepted decisions and open owner inputs
+docs/discovery/risk-register.md                what can go wrong, and its mitigation
+docs/CAPABILITY_TRUTH_MATRIX.md                 per-route/per-module maturity (generated)
 ```
 
 ---
@@ -57,14 +62,17 @@ docs/CAPABILITY_TRUTH_MATRIX.md          per-route/per-module maturity (generate
 | File                                      | Owns                                                                                                                              |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `docs/README.md`                          | This map; the definition of "authoritative".                                                                                      |
+| `docs/03_CURRENT_STATUS_AND_AUDIT.md`      | Stage 1 repository/doc reality audit, 18-module and 12-industry matrices, and defect register.                                      |
 | `docs/VISION.md`                          | Product goal, the all-in-one module map, scope, non-goals, success.                                                               |
+| `docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md` | Detailed proposed strategy, architecture, work packages, dependencies, evidence and owner-review questions. |
 | `docs/discovery/requirements-register.md` | FR/NFR/UX requirements with acceptance criteria and evidence status.                                                              |
-| `docs/discovery/roadmap.md`               | The gated delivery sequence (Gate 0 → Gate 6).                                                                                    |
+| `docs/discovery/roadmap.md`               | High-level delivery gates; points to the master plan for the detailed sequence.                                                   |
 | `docs/discovery/decision-log.md`          | DEC-001… every decision, owner, rationale, review trigger.                                                                        |
 | `docs/discovery/risk-register.md`         | Risks with likelihood/impact/mitigation.                                                                                          |
 | `docs/discovery/current-workflow.md`      | The owner's real monthly workflow and its open questions.                                                                         |
 | `docs/discovery/d365-export-contract.md`  | Cited D365 GL export contract (expected shape; not verified support).                                                             |
-| `docs/AGENT_CONTINUATION_PROMPT.md`       | Paste-ready continuation prompt: execution order, decision authority, evidence contract and owner blockers for the working agent. |
+| `docs/discovery/VISION_ALIGNMENT_RECHECK_2026_11_02.md` | Current code-level vision and connector audit; supersedes the 2026-10-24 recheck conclusions, not its historical record. |
+| `docs/AGENT_CONTINUATION_PROMPT.md`       | Historical 2026-10-20 prompt snapshot; do not paste as current instructions. Current direction is in the master plan and working agreement. |
 
 ### Engineering handbook — `docs/agent/`
 
@@ -91,8 +99,11 @@ per file and long on precision. See `docs/agent/00_INDEX.md` for the full table.
 
 ### Squad coordination — `docs/agent-squad/`
 
-The squad (11 Gemini seats, 1 Freebuff partner seat, the lead) coordinates through these files.
-The folder is the message bus; `docs/agent-squad/AGENT_JOIN_GUIDE.md` is its entry point.
+This folder preserves the historical multi-agent squad setup and communication
+records. If a squad is explicitly active, the entry point is
+`docs/agent-squad/AGENT_JOIN_GUIDE.md`; otherwise the archived prompts/rosters
+are provenance only. Root `AGENTS.md` and the active Arena branch constraints
+always take precedence.
 
 | File                                                                                                          | Owns                                                   |
 | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
@@ -103,7 +114,7 @@ The folder is the message bus; `docs/agent-squad/AGENT_JOIN_GUIDE.md` is its ent
 | `docs/agent-squad/agents-comms/COMMS_LOG.md`                                                                  | Append-only inter-agent messages.                      |
 | `docs/agent-squad/agents-comms/BLOCKERS.md`                                                                   | Open blockers and the decision each needs.             |
 | `docs/agent-squad/agents-comms/CLAIMS.md`                                                                     | One-writer-per-file claims.                            |
-| `docs/agent-squad/SQUAD_STATE.md`, `docs/agent-squad/SQUAD_BACKLOG.md`, `docs/agent-squad/SQUAD_AGREEMENT.md` | Session state, prioritized work, working agreement.    |
+| [SQUAD_STATE.md](agent-squad/SQUAD_STATE.md), [SQUAD_BACKLOG.md](agent-squad/SQUAD_BACKLOG.md), [SQUAD_AGREEMENT.md](agent-squad/SQUAD_AGREEMENT.md) | Current snapshot plus historical queue/coordination records; not higher authority than AGENTS.md or the master plan. |
 | `docs/agent-squad/agent-patches/`                                                                             | CI/dependency patches for a human to apply.            |
 
 ### Reference (governed by scripts)

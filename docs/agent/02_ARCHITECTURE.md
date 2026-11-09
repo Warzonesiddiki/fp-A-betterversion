@@ -81,7 +81,7 @@ Rules:
 | `src/components/<domain>/`                                               | domain components (data, budget, reports, consolidation, …)                                                                                                          |
 | `src/store/`                                                             | Zustand stores (`persist` + `immer` + `subscribeWithSelector`); authority and keys in the persistence map                                                            |
 | `src/engines/`                                                           | calculation modules + `manifest.generated` + `__tests__/` (financial oracles)                                                                                        |
-| `src/services/`                                                          | `GLImportService`, `ImportPipeline` (both unwired), `import/importProvenance.ts` (wired), export engines, `api-integration/*Connector.ts` (unwired), `commandClient` |
+| `src/services/`                                                          | `GLImportService` / `ImportPipeline` (unwired), `import/importProvenance.ts` (wired), export engines, and the connector framework; `/settings/integrations` uses catalog → `integrationStore` → `glStore` for ledger-importable feeds (`ConnectorRegistry` is not on this path) |
 | `src/sdk/`                                                               | `FpaClient`, `gl/GlCommitNamespace` — the only client code that talks to `server/`; refuses to call anything unless `VITE_API_URL` is set                            |
 | `src/hooks/`                                                             | `use*` hooks incl. `useCurrencyFormatter`                                                                                                                            |
 | `src/workers/`                                                           | Monte Carlo, consolidation, formula, storage and exact GL staging workers                                                                                            |
@@ -99,6 +99,22 @@ Canonical measured engine/store/worker inventory: [README](../../README.md),
 asserted by `npm run docs:verify`; `npm run engines:verify` checks the manifest.
 Page/route mapping: `npm run routemap:check`. Directory roles above do not
 certify module reachability, financial correctness or supported maturity.
+
+Connector boundary (code recheck dated 2026-11-02): `/settings/integrations`
+uses the catalog and `integrationStore` to import catalogued transaction feeds
+to `glStore`; this UI path does not use `ConnectorRegistry`. The Dynamics
+connector targets Dataverse CRM and has no GL transaction feed, so it is not a
+Dynamics 365 F&O or Business Central GL connector. Provider reachability is
+code-level evidence, not live-provider verification.
+
+Universal-import boundary (reviewed 2026-11-04): `GLUploadPage` calls
+`parseGLRows` and uses `glUploadStore`'s persisted header-signature mapping
+profiles. `universalImportTemplate.ts` / `universalImportEngine.ts` form a
+separate service path with governance tests; the current upload UI does not call
+the engine's parse/auto-detect entry points. Do not treat those paths as one
+integrated template workflow until callers, validation and evidence are
+reconciled. The proposed target contract and sequencing are in
+[`../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md); DEC-104 already accepts user-customizable universal import, but implementation/support claims remain evidence-gated.
 
 ## State management pattern (required shape)
 
@@ -141,21 +157,26 @@ export const useXStore = create<XState>()(
   budgets, …, 35 tables) is **not written by the client**. The optional
   `server/` applies those same migrations plus ~10 in-code tables (auth,
   audit) and does query `gl_entries`. `npm run schema:equality` checks only
-  the one table defined in both places (`audit_trail`). Choosing a store of
-  record is **DEC-005**.
+  the one table defined in both places (`audit_trail`). DEC-005 accepts local
+  relational SQLite as the target authority, but the current persisted Zustand
+  stores remain authoritative until migration, rollback, and backup/restore
+  checks pass.
 - Consequence for agents: in the desktop app there is no SQL to query GL
-  entries; all reads go through Zustand selectors over in-memory arrays. Design features
-  accordingly until DEC-005 is made.
+  entries; all reads go through Zustand selectors over in-memory arrays. Design
+  features accordingly until the DEC-005 migration gate is met.
 
 ## Server (`server/`)
 
 Express + better-sqlite3-style SQLite, JWT auth, RBAC, tenancy, period-close
-and GL commit routes, audit logging. **Status:** complete enough to run and
-test via its separate package scripts (not covered by client-suite totals), but:
-not bundled with the desktop app; only
-`src/sdk/gl/GlCommitNamespace` targets it, and it is inert without
-`VITE_API_URL`. Its role is **DEC-004 / P1-13**. Do not add client calls to
-it before that decision.
+and GL commit routes, audit logging. It is not bundled with the desktop app and
+its separate tests are not included in client-suite totals. Only
+`src/sdk/gl/GlCommitNamespace` calls the GL commit API; it is inert without
+`VITE_API_URL`. The auth client requires the server for first online
+registration/login; DEC-014 also provides a cached-profile offline restore for
+up to 30 days after enrollment. That cache currently uses device-profile
+binding, not verified native OS-user binding. DEC-003/004/005 still govern
+egress, desktop scope, and authority; do not add automatic network calls or a
+server sidecar by inference.
 
 ## Configuration surface (`import.meta.env`)
 

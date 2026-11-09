@@ -1,13 +1,19 @@
 # FinPlan Pro — Project Audit & Execution Plan
 
-> **This is the master working document for this project from 2026-10-18.**
-> Every future session (human or AI agent) starts here, then follows the
-> session ritual in §11. Where this document and measured code disagree, the
-> code and the script that measured it win — and this document is the bug.
+> **Historical audit and execution-plan snapshot, dated 2026-10-18.** This
+> document preserves the findings, decisions and plan as they stood on its
+> audit branch; it is not the live master plan or current implementation truth.
+> Future work follows [`docs/VISION.md`](VISION.md), accepted decisions in
+> [`docs/discovery/decision-log.md`](discovery/decision-log.md), and the detailed
+> owner-review proposal in
+> [`docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
+> Current code evidence is maintained in `docs/CAPABILITY_TRUTH_MATRIX.md`,
+> `docs/agent/09_KNOWN_GAPS.md` and the dated connector recheck.
 >
-> **Status:** Audit performed 2026-10-18 on branch
+> **Historical status:** Audit performed 2026-10-18 on branch
 > `arena/2b91a53b-fp-a-betterversion` @ `29b19a9` (single-commit checkout).
-> **Companion documents (do not duplicate them, follow them):**
+> The rest of this document is retained as a dated record; later owner decisions
+> (including DEC-104) and current evidence take precedence. **Companion documents:**
 > [`AGENTS.md`](../AGENTS.md) (engineering rules) ·
 > [`docs/VISION.md`](VISION.md) (product goal) ·
 > [`docs/agent/WORKING_AGREEMENT.md`](agent/WORKING_AGREEMENT.md) (owner's goal + live queue) ·

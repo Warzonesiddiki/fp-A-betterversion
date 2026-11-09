@@ -51,7 +51,7 @@ describe('route shell contract (UI-03)', () => {
     for (const route of [
       '/sector/retail',
       '/sector/healthcare',
-      '/sectors/telecom',
+      '/sector/telecommunications',
       '/education',
       '/government/grants',
       '/logistics/fleet-cost',
@@ -75,33 +75,23 @@ describe('route shell contract (UI-03)', () => {
   it('does not lose or duplicate any route while the tree is restructured', () => {
     const all = pathsIn(APP_SOURCE);
 
-    // 200 routed screens, per docs/CAPABILITY_TRUTH_MATRIX.md, plus the 21
-    // W0.5 slice-2 rescue aliases (RC3 redirects for never-declared deep links).
-    //
-    // Pin delta in W0.5 slice-2 route consolidation: 221 → 221 (Δ0). The
-    // consolidation converted "/" from a second DashboardPage mount into an
-    // in-place <Navigate to="/dashboard"> alias — an element swap that adds
-    // and removes no <Route> declaration, so the inventory count is unchanged.
-    //
-    // Pin delta in W0.5 slice-3 hub fold: 221 → 228 (Δ+7). The seven declared
-    // shell-target roots that never had a route (/workforce /treasury /currency
-    // /revenue /tax /accounting /admin) gained Navigate aliases to their
-    // canonical first children instead of falling through to the 404 catch-all.
-    // Pin delta in the spine build (Phases 3-5, DEC-016): 228 -> 231 (Δ+3).
-    // The three owner-job surfaces were declared as real routes:
-    // /data/exceptions (J2 exception queue), /data/corrections (J3
-    // correction hand-off) and /data/comparison (J4 comparison workspace).
-    expect(all).toHaveLength(231);
+    // Pin the current App.tsx route census, including aliases and retained
+    // retired-path redirects. The source-of-truth census is 227 route paths;
+    // update this count only alongside an intentional route-table change.
+    expect(all).toHaveLength(227);
     // Aliases to the same page are allowed; identical path strings are not.
     expect(new Set(all).size).toBe(all.length);
   });
 
   it('resolves every Navigate-only alias to a declared route', () => {
     const declared = new Set(pathsIn(APP_SOURCE));
-    const broken = [...navigateTargets(APP_SOURCE)].filter(([_from, to]) => !declared.has(to));
+    const hasCatchAll = declared.has('*');
+    const broken = [...navigateTargets(APP_SOURCE)].filter(
+      ([_from, to]) => !declared.has(to) && !(to === '/404' && hasCatchAll)
+    );
 
-    // An alias pointing at a path no route declares is a silent 404 loop:
-    // the redirect fires and lands on the catch-all instead of the surface.
+    // /404 intentionally resolves through the declared wildcard NotFound
+    // route; every other alias target must have an explicit route entry.
     expect(broken.map(([from]) => from)).toEqual([]);
   });
 

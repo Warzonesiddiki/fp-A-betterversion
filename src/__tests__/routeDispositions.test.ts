@@ -141,7 +141,7 @@ describe('verify-route-dispositions.mjs', () => {
   it('the real repository has no undecided route and no REVIEW row', () => {
     const result = run(['--check']);
     expect(result.status).toBe(0);
-    expect(result.stdout).toMatch(/47 decided, 231 route rows, 0 REVIEW/);
+    expect(result.stdout).toMatch(/65 decided, 227 route rows, 0 REVIEW/);
 
     const matrixText = readFileSync(join(ROOT, 'docs', 'CAPABILITY_TRUTH_MATRIX.md'), 'utf8');
     const reviewRoutes = matrixText

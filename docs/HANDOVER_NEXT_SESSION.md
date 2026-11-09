@@ -1,4 +1,11 @@
-# Handover — current continuation and historical session records
+# Handover — historical session records
+
+> All session entries in this file are dated October 2026 snapshots. They are
+> preserved for provenance, not current instructions or code truth. Current
+> direction: [`VISION.md`](VISION.md), current implementation evidence:
+> [`agent/09_KNOWN_GAPS.md`](agent/09_KNOWN_GAPS.md), accepted decisions:
+> [`discovery/decision-log.md`](discovery/decision-log.md), and the proposed
+> [`discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
 
 ## 2026-10-23 (o) — consolidation/scenarios/forecasts GOVERNED as 11th-13th routes, SUPPORTED 30, money adoption 36.37%, bundle optimization measured, skills 56 (PR #94 40h quota)
 

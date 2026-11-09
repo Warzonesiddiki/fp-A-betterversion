@@ -11,6 +11,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** This is a Phase 1 scope proposal. Bounded source inventory found no `useMobileA11y`, global hit-zone stylesheet, proposed mobile action-bar/floating-action/split-view components, foldable/orientation handler, or Q5.10 test. A few navigation controls already specify 44×44px minimums; that is not a product-wide 48px target-size audit. The §1 claim pairs TalkBack with iOS and VoiceOver with Android, contradicting this document's own device table (VoiceOver on iOS/iPadOS; TalkBack on Android). User counts, platform guidance, and WCAG mappings remain `[UNVERIFIED: no external standards, platform, or demographic research inspected]`.
+
 ## §1. PURPOSE & SCOPE
 
 Mobile A11Y = **touch + gesture patterns for FP&A mobile-first users** (Treasury Analyst persona, P5 in PICK I.1). All interactive elements must (a) meet 48px hit zone minimum, (b) support gesture alternatives (swipe, pinch, long-press with button alternative), (c) work with on-screen keyboard, (d) handle orientation change without focus loss.

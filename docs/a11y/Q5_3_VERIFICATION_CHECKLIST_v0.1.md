@@ -8,6 +8,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** Treat the 20-minute timeout, warning offset, endpoint names, DRI handoff, and 4-ICP scores below as a proposed checklist, not an accepted security policy or implemented behavior. The bounded auth review found login/refresh/logout and token/offline-cache expiry, but no evidenced idle-warning, extension/reauth flow, or user timeout setting; the cited Q5.3 Playwright cases are TODO skeletons. No owner decision or external WCAG/security assessment was inspected.
+
 ## 1. WCAG 2.2.1 (Timing Adjustable) Acceptance Criterion
 
 > "For each time limit, the user can extend, disable, or adjust the time limit."

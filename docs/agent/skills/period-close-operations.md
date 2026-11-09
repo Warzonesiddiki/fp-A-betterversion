@@ -23,7 +23,7 @@ group: finance
    the prior period.
 6. **Close order is explicit** (chain per period, genesis verified) so a gap is
    detectable.
-7. **Nothing about close is claimed as SOX-compliant** without O4.
+7. **No SOX-compliance claim is made**: DEC-102 says this is not a SOX compliance system and the local chain is not SOX authority. Reopen only if the owner reverses that decision.
 
 ## In this repo
 

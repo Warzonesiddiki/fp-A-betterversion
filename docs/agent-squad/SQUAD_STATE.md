@@ -1,29 +1,55 @@
 # FinPlan Pro — Squad State
 
-> Last updated: session handoff
-> This file is a living record. Append a short note when the shared state changes; do not rewrite history.
+> **Current snapshot: 2026-11-04.** This file's dated 2026-10-16/17 entries
+> below are historical session records. Current instructions are `AGENTS.md`
+> and `docs/agent/WORKING_AGREEMENT.md`; current product direction and proposed
+> sequence are in `docs/VISION.md` and
+> `docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`. Do not revive old branch,
+> test, route, or surface-gating claims from the historical log.
 
-## Mission for this session
+## Current mission (2026-11-04)
 
-Continue verified progress toward the all-in-one FP&A workspace under the zero-compromise
-standard. The spine — import with provenance + control totals → trial balance → period close
-guards → reviewed exception output — is the priority surface.
+Align and deliver the owner's one-stop, all-in-one FP&A goal with evidence:
+universal user-mapped accounting/ERP intake (DEC-104), D365 as the first real
+source proof, in-app J2/J3/J4 review, and an extensible all-industry target.
+Build in dependency order; do not claim provider or industry certification
+from code presence. Follow the master plan and active owner queue.
 
-## Where we are
+## Current state
 
-- Core spine is present and tested: GL import, provenance, duplicate/file-hash guard, period
-  write guards on the local write paths, and a money-integrity guard on the GL store mutation
-  paths.
-- Rules-for-exceptions: the versioned catalogue, canonical finding key and persisted disposition
-  audit trail are built and tested (13 + 8 + 2 + 9 = 32 tests, rehydration included). What is
-  missing is a page/route consumer for the review queue — blocked by the roadmap's no-new-surface
-  rule (Gate 2 is not provably green without the owner's real D365 export, DEC-001). The register
-  has been corrected from "Not met" to "Partial" with this evidence.
-- Export surfaces exist and are tested against synthetic ledgers; board-pack tie-out is the next
-  evidence layer to tighten, not a new feature to invent.
-- Documentation consolidation was already done. There is one authoritative live doc set.
-- 3 tests fail in this sandbox for a known Node-version reason. They are not regressions from
-  current work and must not be weakened.
+- The current upload UI calls `parseGLRows` and persists user mapping profiles
+  by normalized header signature. The separate universal template/engine path
+  has governance tests but is not wired into that UI. Convergence and evidence
+  reconciliation remain proposed first engineering work.
+- The completion register and generated capability matrix disagree about
+  universal-import test evidence; resolve through the generator, not by hand
+  editing generated output.
+- `/data/exceptions`, `/data/corrections` and `/data/comparison` are routed and
+  have focused tests. Owner/accounts-team acceptance on a real supported cycle
+  remains open; FR-008/009/011 are not missing pages.
+- D365 owner samples and source control totals have not been reconciled. DEC-104
+  settles the universal-template direction, not per-shape compatibility.
+- Catalogued provider tests are mocked; no live provider validation was done.
+- The fresh full local frontend sharded run on 2026-11-04 timed out after 1,800 s
+  at shard 7/8 and was terminated before a summary; status is inconclusive. The
+  completed 17,937-passed / 1-skipped, 8/8 result is historical (2026-11-02).
+  Focused server, connector/workflow, typecheck, lint, format and build checks have
+  separate recorded passes. Re-run documentation gates after this alignment; the
+  annex still warns on unresolved source-owed sections.
+
+## Current blockers / owner review
+
+- Review `docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md` §11 and confirm
+  product interpretation, first provider/industry priorities and team/deployment
+  expectations.
+- Provide anonymized D365 sample(s) with independent source controls per used
+  shape, or confirm unavailable.
+- Resolve whether the accounts team needs separate workspace access; current
+  decisions describe a local single-user product.
+- Live provider sandbox, native-desktop/security/recovery evidence, and legacy
+  annex source sections remain open.
+
+## Historical session log
 
 ## 2026-10-16 16:52 UTC — F-01: FR-006 hydrate residual closed
 

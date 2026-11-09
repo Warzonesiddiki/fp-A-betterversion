@@ -13,6 +13,8 @@
 
 ---
 
+> **2026-11-07 repository review note:** No dedicated Boardroom route/component, `useBoardroomPresence`, conflict-resolution modal, Yjs/CRDT dependency, or Q5.7 test was found in the bounded source inventory. General WebSocket presence/change broadcasting exists but does not establish this collaborative editing/merge flow. The 15-minute idle timeout is a policy requirement, not demonstrated auth behavior. This draft marks Phase 2/3 implementation and testing as planned, yet later marks all hard acceptance gates green; treat those checkmarks as unsupported draft assertions, not test results or owner approval. `SecretsVault`'s type-only audit sink is distinct from the standalone `AuditLogger` helper and has no implementation/adapter evidenced. User counts, standards mapping, and cross-witness scores remain `[UNVERIFIED: no external assessment or owner ratification inspected]`.
+
 ## §1. PURPOSE & SCOPE
 
 Boardroom A11Y = **collaborative editing with screen reader merge resolution** for FP&A multi-user scenarios. When 2+ users edit the same report/scenario simultaneously, screen reader users must (a) know who is editing which cell, (b) hear merge resolution events, (c) be informed when remote overwrites local, (d) navigate conflict UI via keyboard alone.

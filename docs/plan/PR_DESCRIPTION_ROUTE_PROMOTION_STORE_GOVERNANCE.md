@@ -1,5 +1,7 @@
 # PR Description — Route Promotion + Store-Level + Engine-Level Governance (86+ commits)
 
+> **Historical PR description (2026-10-24):** Its O4/governance status language predates or is superseded by DEC-102. The product is not a SOX compliance system; the local chain is client evidence, not SOX authority. O4 is resolved, not blocked.
+
 > **Branch:** `arena/02c267fa-fp-a-betterversion`
 > **Base:** `main` (de26d0a)
 > **Date:** 2026-10-24

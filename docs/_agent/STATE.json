@@ -1,0 +1,81 @@
+{
+  "version": "5.0-APEX",
+  "current_stage": "STAGE_1_FORENSIC_AUDIT",
+  "docs_gate_passed": false,
+  "human_approved_for_coding": false,
+  "doc_health_score": 0,
+  "doc_health_score_status": "Not scored: 85 scoped reviews and 155 PENDING entries; 17 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
+  "completed_stages": [
+    "STAGE_0_BOOTSTRAP"
+  ],
+  "doc_remediation_queue": [
+    "Complete semantic review of the 147 PENDING live-document entries in docs/_agent/LIVE_DOCS_REVIEW.csv; investigate 25 active C-grade documents (governance-evidence manifest, six ADRs, encryption-at-rest and security-header policies, Cascade-Hold ledger, rate-limit policy, Undo/Redo specification, SOC 2 overview, SOX-controls page, Q5.1–Q5.3 accessibility records, Q5.3 fixation follow-up, Q5.7 Boardroom scoping/spec, Q5.8/Q5.9 scopes, Q5.10 mobile, Q5.11 persona, and A11Y waivers) while preserving dated evidence.",
+    "Continue O9 reconciliation against DEC-103, 104 route entityScope objects, stale cited titles, the period-scope capability proves sentence, and verifier schema; do not weaken the gate or change test/gate code while docs_gate_passed is false.",
+    "Finish deeper source/test traceability for all 18 modules, 12 industries, import paths, and ten invariants; preserve UNVERIFIED boundaries for inaccessible sources.",
+    "Resolve MDEC-006 naming/authority conflict between docs/adr/ and the proposed docs/decisions/ before authoring ADRs.",
+    "Repeat docs:verify, strict docs:links, completion-register check, and git diff --check after any future documentation edits; preserve the current annex warnings.",
+    "Proceed to Stage 2 research, Stage 3 ADRs, Stage 4 canonical specifications, and Stage 5 adversarial traceability gate only in order; keep application coding unauthorized until a verified docs gate and required approval."
+  ],
+  "completed_docs": [
+    "docs/03_CURRENT_STATUS_AND_AUDIT.md (partial Stage 1 report; not a stage exit)",
+    "docs/_agent/LIVE_DOCS_REVIEW.csv (complete path inventory; 147 entries remain pending review)",
+    "docs/security/ and docs/compliance/: prior seven-document batch plus the final eight pending records reviewed and reclassified; docs/_agent/GLOSSARY.md updated with bounded privacy terminology; Stage 1 remains partial.",
+    "docs/a11y/: first six pending keyboard-navigation, focus-restore, session-timeout, live-region, motion-audit, and motion-pattern records reviewed on 2026-11-07; all six PARTIAL (3 B, 3 C), Stage 1 remains partial.",
+    "docs/a11y/: remaining eight pending Q5.3 fixation, Q5.7–Q5.11, and waiver records reviewed on 2026-11-07; all eight PARTIAL / grade C. See AUD-030–033; Stage 1 remains partial."
+  ],
+  "active_task_id": "AUDIT-001",
+  "completed_task_ids": [
+    "BOOT-001"
+  ],
+  "blockers": [
+    "No live ERP account, customer sample, or source-side control totals are available in this workspace; provider and reconciliation claims remain unverified.",
+    "The network allowlist excludes most vendor documentation sites, so external product and API research may remain unverified unless an allowed source is available.",
+    "Current docs inventory: 561 files including archive (546 Markdown); 240 live files (233 Markdown); 79 entries had scoped review before the 2026-11-07 A11Y tranche, 85 after the first six, and 93 after the remaining eight; 147 remain PENDING. Stage 1 review is incomplete.",
+    "Governance evidence O9 reconciliation remains open: DEC-103 resolves the decision, but 104 route entityScope objects and 22 route title descriptions retain O9 blocked language; 103 matching stale titles remain in spineGovernance tests, and one close.period-entity-scope proves string retains O9 wording. The verifier contract is unreconciled.",
+    "MDEC-006 remains open: docs/adr/ is the current record namespace; docs/decisions/ is absent, and precedence must be reconciled before ADR authoring.",
+    "docs_gate_passed is false and human_approved_for_coding is false; no further application-source changes are authorized by this mission.",
+    "The branch already contained application-source changes from earlier work; no application-source files were changed during this audit continuation.",
+    "Tauri updater remains dormant: current pubkey is a placeholder and endpoint is updates.example.invalid; production key, endpoint, frontend flow and signed release are not evidenced. No secrets were inspected.",
+    "Six live ADR records are PARTIAL / grade C: five retain pending-ratification headers at the elapsed 2026-06-22 target; ADR-001 is marked accepted but has an implementation mismatch. The ADR namespace/authority conflict MDEC-006 remains unresolved; do not treat these as current owner approval or code truth.",
+    "Eight additional security/compliance records have bounded reviews: five C-grade mismatches/unsupported claims (Cascade-Hold ledger, LIVE rate-limit policy, Undo/Redo compliance wording, SOC 2 overview, SOX controls) and three B-grade specifications/policies. Gate 10 tests/CI, application tests, deployed controls, full-history commit validation, and external legal/compliance assessments were not run; historical SHA validity remains unverified in this shallow checkout.",
+    "2026-11-07 A11Y review: Q5.1 keyboard latency evidence is synthetic, Q5.2 closed focus-restoration claims exceed observed production wiring/timing, and Q5.3 timeout policy remains an unratified proposal. Q5.4/Q5.5 foundations are partial; browser/screen-reader evidence was not run. Focused test command could not load Vitest because node_modules/vitest/vitest.mjs is absent.",
+    "2026-11-07 remaining A11Y review: all eight records are PARTIAL/C. Found synthetic session-announcement tests vs. auth behavior, unimplemented proposed Boardroom/audit/collaboration details, Phase 2/3 plans paired with green hard-gate checkboxes, a reversed mobile screen-reader/platform pairing, 18-vs-19 persona and 294-vs-304 matrix discrepancies, and a manual waiver policy not consumable by blocking CI. No A11Y tests ran because Vitest is absent; no external WCAG/demographic research or owner ratification was inspected."
+  ],
+  "last_updated": "2026-11-07",
+  "branch": "arena/9bc7a934-fp-a-betterversion",
+  "baseline": {
+    "documentation_and_specification_files_including_archive": 549,
+    "strict_docs_links_before_bootstrap_repairs": "Failed: one broken Markdown link and four broken backtick citations.",
+    "git_diff_check_before_bootstrap_repairs": "Passed.",
+    "existing_application_source_changes_before_this_mission": true
+  },
+  "stage_1_status": "IN_PROGRESS_PARTIAL",
+  "current_inventory": {
+    "captured_at": "2026-11-07",
+    "documentation_files_including_archive": 561,
+    "markdown_files_including_archive": 546,
+    "archived_files": 321,
+    "archived_markdown_files": 313,
+    "live_files_excluding_archive": 240,
+    "live_markdown_files": 233,
+    "live_other_files": 7,
+    "review_status_counts": {
+      "PARTIAL": 67,
+      "HISTORICAL-NOTE": 24,
+      "GENERATED-SOURCE-REVIEWED": 1,
+      "GENERATED-RENDERED": 1,
+      "PENDING": 147
+    }
+  },
+  "latest_validation": {
+    "captured_at": "2026-11-07",
+    "docs_verify": "PASS 2026-11-07 after second A11Y batch; three known non-failing coverage-annex warnings remain: legacy 110-section header vs DEC-034 200-section scope; sections 108–110 unresolved; 93 sections 108–200 SOURCE OWED.",
+    "strict_docs_links": "PASS 2026-11-07: 0 broken links and 0 broken citations.",
+    "completion_register_check": "PASS 2026-11-07: 711 rows (115 SUPPORTED, 374 EXPERIMENTAL, 2 RETIRED, 220 NOT_BUILT, 0 BLOCKED-ON-OWNER); exact historical evidence SHA c9b84116ad408b2d574e952cd953c67b92edcbab fetched to FETCH_HEAD in this shallow checkout; no branch switch.",
+    "governance_evidence_check": "PASS mechanically 2026-11-07: 104 routes / 312 state claims, 81 capabilities / 255 claims, 2 census claims; O9 semantic discrepancies remain unreconciled.",
+    "git_diff_check": "PASS 2026-11-07.",
+    "audit_citation_inventory_check": "PASS 2026-11-07: 0 issues; 240 live files, 67 PARTIAL (40 B, 25 C, 2 A), 24 HISTORICAL-NOTE, 2 GENERATED, 147 PENDING; all ledger line counts match current files and report/state counts agree.",
+    "focused_a11y_test_run": "BLOCKED before test collection 2026-11-07: npm run test:a11y -- --reporter=dot could not load node_modules/vitest/vitest.mjs; no test assertions executed and dependencies were not installed.",
+    "scope_note": "Documentation-only review of the remaining eight pending A11Y records plus report, ledger, state, progress log, AGENTS handbook, and mission glossary synchronization. All eight reviewed rows are PARTIAL/C; Stage 1 remains partial. docs:verify, strict docs:links, completion-register check, governance-evidence check, git diff --check, and custom inventory/state/line-count validation passed; docs:verify retains three known non-failing annex warnings. No application-source files or tests changed/run in this batch. The focused A11Y attempt from the earlier batch stopped before collection because Vitest is absent. This is not Stage 1 exit or Stage 5 approval: 147 live documents remain PENDING, 25 active C-grade records and broader module/industry/invariant traces remain open, docs_gate_passed is false, and human_approved_for_coding is false."
+  }
+}

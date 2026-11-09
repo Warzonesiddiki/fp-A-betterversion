@@ -5,17 +5,20 @@
 > `CLAUDE.md` and `GEMINI.md` only point here.
 >
 > The documentation map is [`docs/README.md`](docs/README.md). The product goal
-> is [`docs/VISION.md`](docs/VISION.md). **The master audit and execution
-> plan I follow is
-> [`docs/PROJECT_AUDIT_AND_EXECUTION_PLAN.md`](docs/PROJECT_AUDIT_AND_EXECUTION_PLAN.md)**
-> (owner's four jobs J1–J4, findings register, phase queue, definition of
-> done; owner decisions DEC-015…DEC-018 recorded 2026-10-18). If another document contradicts this
-> file or `docs/agent/`, this file wins — and the contradiction is a bug to be
-> fixed, not a choice to be made.
+> is [`docs/VISION.md`](docs/VISION.md). **The detailed proposed product and
+> execution plan is
+> [`docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md)**;
+> the high-level gates are in [`docs/discovery/roadmap.md`](docs/discovery/roadmap.md).
+> [`docs/PROJECT_AUDIT_AND_EXECUTION_PLAN.md`](docs/PROJECT_AUDIT_AND_EXECUTION_PLAN.md)
+> is a dated historical snapshot, not the live master plan. Accepted owner
+> decisions live in `docs/discovery/decision-log.md`. If another document
+> contradicts this file or `docs/agent/`, this file wins — and the contradiction
+> is a bug to be fixed, not a choice to be made.
 
-Handbook baseline: **2026-10-16**; inventory refreshed via `docs:verify` on
-**2026-10-20**. Every number below is produced
-by a script named next to it; do not update a number by hand.
+Handbook rules originated **2026-10-16**; product scope and execution guidance
+were aligned to owner direction on **2026-11-04**. Current-state facts must be
+rechecked in the linked evidence docs and commands; every measured number below
+comes from a named script and must not be updated by hand.
 
 ---
 
@@ -25,19 +28,28 @@ by a script named next to it; do not update a number by hand.
   finance team from raw General Ledger data to reviewed, board-ready output.
   Desktop-first (Tauri 2 shell): React 19 + TypeScript strict + Vite 8 +
   Tailwind 4 + Zustand/Immer. Package name `finplan-pro`.
-- **Owner's real workflow (the thing we must serve first):** each month the
-  owner exports a General Ledger dump from **Microsoft Dynamics 365**, does
-  FP&A work on it, and highlights abnormalities and potentially wrong entries.
-- **Plan of record:** [`docs/VISION.md`](docs/VISION.md) (product goal and
-  module map) + [`docs/discovery/`](docs/discovery/) (requirements register,
-  risk register, decision log, gated roadmap) + [`docs/audit/`](docs/audit/)
-  (the measured audit). Everything under
-  [`docs/archive/`](docs/archive/) is **provenance, not instructions**.
+- **Owner's first proven-source workflow:** each month the owner exports a
+  General Ledger dump from **Microsoft Dynamics 365**, performs FP&A work on it,
+  identifies entries for human review, guides the accounts team and compares
+  daily/monthly/yearly results. **Broader owner direction (2026-11-04):** build
+  toward one-stop FP&A, user-mapped data from any accounting/ERP source, and
+  industry configurability. D365 is the first owner-specific proof; DEC-104
+  already accepts the universal template direction. See the master plan for
+  staged execution and unverified boundaries.
+- **Product and execution authority:** [`docs/VISION.md`](docs/VISION.md) is the
+  north-star; [`docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md)
+  is the detailed proposal under owner review; [`docs/discovery/requirements-register.md`](docs/discovery/requirements-register.md)
+  owns acceptance/evidence, [`docs/discovery/decision-log.md`](docs/discovery/decision-log.md) owns accepted decisions, and
+  [`docs/discovery/roadmap.md`](docs/discovery/roadmap.md) summarizes gates. Dated audits are evidence snapshots. Everything
+  under [`docs/archive/`](docs/archive/) is **provenance, not instructions**.
 - **Current truth:** the codebase is wide (180 engines, 48 stores) and shallow
-  where it matters. The GL ingestion spine (exact-string staging, promotion,
-  consolidation, board-pack export) is built and tested; synthetic tests are not real-owner D365 verification or an accounts-team
-  acceptance run. **Native/offline sign-in and programme completion remain
-  unverified.** Current limitations and evidence:
+  where it matters. The live GL upload path is `GLUploadPage` → `parseGLRows` →
+  `glStore.importGLData`; a separate exact-string staging/promotion pipeline is
+  built/tested but has no UI consumer or downstream reader. The universal
+  template engine is also separate from the upload UI's persisted header-based
+  mapping profiles. Synthetic tests are not real-owner D365 verification or an
+  accounts-team acceptance run. **Native/offline sign-in and programme
+  completion remain unverified.** See
   [`docs/agent/09_KNOWN_GAPS.md`](docs/agent/09_KNOWN_GAPS.md).
 
 ## 2. Non-negotiable rules (the short list)
@@ -65,10 +77,14 @@ Full rationale and examples:
    Say "not in file" / "unavailable" and why.
 7. **A potential exception is never an error.** Flags are review candidates
    with a rule id and evidence; only a human disposition makes them wrong.
-8. **No new surface before the spine works.** No new routes, pages, engines,
-   stores, sector packs or connectors until Gate 2 of
-   [`docs/discovery/roadmap.md`](docs/discovery/roadmap.md) is green. Wire or
-   delete; do not add.
+8. **No unplanned surface expansion; execute the agreed vision in dependency
+   order.** The user-mapped universal import path and its integration with the
+   current upload flow are explicit foundation work under DEC-104; do not block
+   them with the superseded Gate 2 wording. Add other API connectors and
+   industry packs only in the dependency order of
+   [`docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md),
+   with an owner-prioritized work item and one shared financial contract. Code
+   or catalog presence never earns a support claim.
 9. **No egress by default.** No network calls, telemetry, or AI provider calls
    unless behind an explicit allow-listed, user-initiated path.
 10. **Do not weaken a gate to pass it.** No skipping tests, lowering bars,
@@ -151,7 +167,7 @@ src/types/index.ts domain types (GLEntry etc.)   src/test/setup.ts global test m
 src-tauri/        Rust shell + SQLite migrations (client never writes them)
 server/           Express + SQLite API (JWT/RBAC) — no frontend caller, not bundled
 scripts/          every gate and generator      docs/agent/     this handbook
-docs/VISION.md    product goal + module map      docs/discovery/ plan of record
+docs/VISION.md    product goal + module map      docs/discovery/ master plan + gates + decisions
 docs/audit/       measured audit                docs/archive/   retired docs (not instructions)
 ```
 
@@ -189,3 +205,12 @@ Stop and ask the owner with a concrete question that names the decision (e.g.
 leave it implicit in code. Record the answer in
 [`docs/discovery/decision-log.md`](docs/discovery/decision-log.md) before
 building on it.
+
+## 8. Active docs-first architecture mission
+
+The repository-wide architecture mission is tracked in [`docs/_agent/STATE.json`](docs/_agent/STATE.json), with its target scope in [`docs/_agent/MISSION_CONTRACT.md`](docs/_agent/MISSION_CONTRACT.md). Its partial Stage 1 evidence report is [`docs/03_CURRENT_STATUS_AND_AUDIT.md`](docs/03_CURRENT_STATUS_AND_AUDIT.md), and per-file review status is in [`docs/_agent/LIVE_DOCS_REVIEW.csv`](docs/_agent/LIVE_DOCS_REVIEW.csv); use `STATE.json` for the current gate/count snapshot instead of copying counts into this handbook. The audit and design work is documentation-first: do not make further application-source changes until the Stage 1–5 evidence is complete and `docs_gate_passed` is true. Existing source edits already present in the branch predate this bootstrap and are not evidence that the new gate has passed.
+For A11Y scopes and waiver policies, dated sign-offs, green checklist marks, and a manual waiver record are not runtime/test evidence unless the current implementation, CI behavior, and accepted owner decision support them.
+
+The user-provided fixed-precision, accounting-identity, cash-flow, retained-earnings, time-aggregation, polarity, currency-translation, elimination, allocation, bi-temporal lineage, and deterministic-AI rules are target requirements. They do not describe current implementation status. Preserve accepted owner decisions and mark each provider, industry, security, and calculation capability only to the exact evidence available. Use `[UNVERIFIED: reason]` for a dependency, credential, source shape, or external claim that has not been checked.
+
+Parallelize independent inspections and validations. Do not run conflicting writes concurrently. Share concise action plans and evidence-backed findings; do not present unsupported implementation or research claims.

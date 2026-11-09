@@ -1,8 +1,10 @@
 # 10 — Glossary (repo and domain terms an agent will meet)
 
-This page is the authoritative glossary. The earlier long-form product glossary
+This page is the authoritative repository and product-domain glossary. The earlier long-form product glossary
 was retired on 2026-10-16 (DEC-011) and is kept for provenance at
 `docs/archive/legacy-2026-10/docs/GLOSSARY.md`.
+
+[`docs/_agent/GLOSSARY.md`](../_agent/GLOSSARY.md) is a supplemental glossary for the 2026-11-04 architecture mission's target terms. It does not redefine repository vocabulary or implementation status. If a term overlaps, this handbook, accepted owner decisions, and measured code/tests take precedence; the mission glossary describes requested targets only.
 
 ## Repo / process terms
 

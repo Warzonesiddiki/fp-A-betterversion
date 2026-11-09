@@ -1,5 +1,7 @@
 # PR #95 — 60-Hour Quota Plan (covers PR #93 + #94 shortfall + PR #95) — 25x + 350 Zero-Compromise Expanded (575 Tasks, 142h)
 
+> **Historical planning snapshot (2026-10-23):** Task T492 and other O4-open language predate/currently fail to reflect DEC-102. O4 is resolved: this is not a SOX compliance system, and the local chain is not SOX authority. Do not treat the plan's historical O4 task as an active owner blocker.
+
 > **Rule**: 20h productive per PR, no idle time. Last 2 branches (arena/0c09f26a and previous) closed early per user report — this PR must deliver 60h productive work (40h debt + 20h current) with unlimited tokens, nonstop.
 > **Expansion Rule**: User requested 25× more tasks — original 9 tasks expanded to 225 micro-tasks (0.15h–0.45h each, avg 0.267h). Then user requested +350 more useful tasks, zero compromises — total 575 tasks (T001-T575), 142h productive, avg 0.247h (14.8 min) per task, for full C1-C6 closure.
 > **Status**: expanded 2026-10-23 v2, branch `arena/b6432303-fp-a-betterversion`, 575 tasks, zero compromise

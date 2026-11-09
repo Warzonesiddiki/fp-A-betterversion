@@ -4,10 +4,10 @@
 **Author:** Hephaestus (Security Muse) — domain owner
 **Effective date:** 2026-06-16
 **Review cycle:** 90 days
-**Status:** Requirements/design document; runtime implementation claims are not generally re-verified (reviewed 2026-10-19)
+**Status:** Requirements/design document; Stage 1 rechecked 2026-11-04. Runtime control closure and legal/regulatory conformity are not generally verified here; no certification or compliance claim is made.
 **Authoritative cross-references:** A11Y_READINESS v0.5 v2 §3 P1-2 (Q5.3) @ 0b979c10a; A11Y_READINESS v0.6 (forthcoming); PATCH 11 `3547f51e`; PATCH 12 `db1b5bfd3`; PATCH 13 `edff05258`; SECURITY_HEADERS_POLICY.md; SECRET_ROTATION_AUDIT_LOGGING_POLICY.md; PII_REDACTION_POLICY.md
 
-> **Runtime-evidence boundary (2026-10-19, DEC-031/032):** This document states security requirements, not proof they are implemented. `AuditLogger` and `PIIRedactor` have no production caller or durable adapter; references to them below are design assumptions, not evidence of event persistence or product-wide PII redaction. See `../architecture/AUDIT_CHAIN_REACHABILITY.md` and `../discovery/decision-log.md`.
+> **Runtime-evidence boundary (DEC-031/032; reviewed 2026-11-04):** This document states security requirements, not proof they are implemented. `AuditLogger` and `PIIRedactor` have no production caller or durable adapter; references to them below are design assumptions, not evidence of event persistence or product-wide PII redaction. DEC-102 resolves O4: this product is **not a SOX compliance system**, and the local audit chain is client evidence, not SOX authority. Legacy PATCH numbers, test counts and verification language in the policy body are historical design notes unless independently rechecked against current source and tests; they do not establish operating controls. See `../architecture/AUDIT_CHAIN_REACHABILITY.md` and `../discovery/decision-log.md`.
 
 ---
 
@@ -40,13 +40,13 @@ This document supersedes any conflicting security guidance in the codebase. Wher
 
 ### §1.3 Compliance scope
 
-| Regime                                    | Mapped sub-policies                                                                                                              | Status                                                                                                    |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| SOC 2 Type II                             | §2 (CC6.1), §3 (CC6.1), §4 (CC6.1, CC6.7), §5 (CC6.1, CC6.7), §6 (CC7.2, CC7.3), §7 (CC6.7, P4.1), §8 (CC7.1), §9 (CC7.4, CC8.1) | 13/13 TSC closed (CC6.1, CC6.3, CC6.6, CC6.7, CC6.8, CC7.1, CC7.2, CC7.3, CC7.4, A1.1, A1.2, CC8.1, P4.1) |
-| GDPR                                      | §4 (Art. 5, Art. 32), §7 (Art. 5, Art. 25, Art. 32)                                                                              | Art. 5/25/32 closed                                                                                       |
-| CCPA                                      | §7 (§1798.105 right to erasure via redaction-on-demand)                                                                          | §1798.105 closed                                                                                          |
-| PCI DSS (consumer financial planning app) | §4.2 (session timeout), §7 (PII redaction of card-like data)                                                                     | Self-attested: out-of-scope (no card storage)                                                             |
-| NIST SP 800-63B                           | §4.1, §4.2 (re-auth, session lifetime)                                                                                           | Aligned to AAL2                                                                                           |
+| Regime                                    | Mapped sub-policies                                                                                                              | Evidence status (not an attestation)                                                                                                      |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| SOC 2 Type II                             | §2 (CC6.1), §3 (CC6.1), §4 (CC6.1, CC6.7), §5 (CC6.1, CC6.7), §6 (CC7.2, CC7.3), §7 (CC6.7, P4.1), §8 (CC7.1), §9 (CC7.4, CC8.1) | Design mapping only. No SOC 2 report, independent assessment, or operating-control evidence was audited here; **not claimed**.            |
+| GDPR                                      | §4 (Art. 5, Art. 32), §7 (Art. 5, Art. 25, Art. 32)                                                                              | Requirements mapping only; legal review and operational conformity are **[UNVERIFIED: not evidenced by this repository audit]**.          |
+| CCPA                                      | §7 (§1798.105 right to erasure via redaction-on-demand)                                                                          | Requirements mapping only; scope, legal review and operating evidence are **[UNVERIFIED: not evidenced by this repository audit]**.       |
+| PCI DSS                                   | §4.2 (session timeout), §7 (PII redaction of card-like data)                                                                     | Scope/out-of-scope determination and any attestation are **[UNVERIFIED: no assessed card-data boundary or attestation was inspected]**.     |
+| NIST SP 800-63B                           | §4.1, §4.2 (re-auth, session lifetime)                                                                                           | Design mapping only; assurance-level alignment is **[UNVERIFIED: no independent assessment was inspected]**.                              |
 
 ---
 
@@ -54,7 +54,7 @@ This document supersedes any conflicting security guidance in the codebase. Wher
 
 **See:** `docs/security/SECURITY_HEADERS_POLICY.md` §2 for full policy.
 
-**Summary:** CSP `default-src 'self'`, HSTS `max-age=63072000; includeSubDomains; preload`, COOP `same-origin`, COEP `require-corp`, CORP `same-origin`, Permissions-Policy `geolocation=(), camera=(), microphone=()`. Verified by PATCH 11 test suite (47/47 tests pass). Maps to CWE-693, CWE-1021, CWE-79. SOC 2 CC6.1.
+**Historical PATCH 11 summary (not reverified in this audit):** CSP `default-src 'self'`, HSTS `max-age=63072000; includeSubDomains; preload`, COOP `same-origin`, COEP `require-corp`, CORP `same-origin`, Permissions-Policy `geolocation=(), camera=(), microphone=()`. The original policy reported 47/47 tests passing; that count and the listed headers were not independently rechecked against current configuration or a deployment in this audit. CWE/SOC 2 references are mappings, not attestations.
 
 ---
 
@@ -62,13 +62,13 @@ This document supersedes any conflicting security guidance in the codebase. Wher
 
 **See:** `docs/security/SECURITY_HEADERS_POLICY.md` §3 for full policy.
 
-**Summary:** Double-submit cookie pattern with HMAC-SHA256 binding of (sessionId, csrfToken, issuedAt, nonce). CSRF token TTL: **3600 seconds (1 hour)** — overlaps with §4.2 idle timeout for graceful UX. Constant-time comparison on server. Maps to CWE-352. SOC 2 CC6.1.
+**Design summary (not runtime verification):** This policy specifies a double-submit cookie pattern with HMAC-SHA256 binding of (sessionId, csrfToken, issuedAt, nonce), a **3600-second (1-hour)** token TTL, and constant-time server comparison. This repository audit did not establish a production CSRF server implementation. CWE/SOC 2 references are mappings, not attestations.
 
 ---
 
 ## §4. Session Management
 
-Session management covers the full lifecycle of an authenticated user session: token issuance (§4.1), idle and absolute timeouts (§4.2), and session-fixation/hijack defenses (§4.3). All session events are recorded in the hash-chained audit log (PATCH 12 `db1b5bfd3`).
+Session management requirements cover token issuance (§4.1), idle and absolute timeouts (§4.2), and session-fixation/hijack defenses (§4.3). The historical PATCH 12 design called for session events to be written to a hash-chained audit log; runtime session-event recording is not established, as detailed in §4.2.7 and §6.
 
 ### §4.1 Session token format and lifetime
 
@@ -100,7 +100,7 @@ This section is the authoritative source for the Q5.3 "Session timeout policy" c
 3. **On-read enforcement:** Every authenticated endpoint, before serving, checks `now() - lastUserActivityAt > 900_000ms`. If true, the session is terminated per §4.2.5.
 4. **Client-side warning:** Per WCAG 2.2.1 (Timing Adjustable), the client displays a non-modal warning banner at the 13-minute mark (120s before timeout) with options to "Continue session" or "Log out". The warning itself does NOT count as user activity — clicking "Continue" does.
 
-**Audit event:** `category=auth, eventType=session.idle_timeout, severity=info, actor=<userId>, payload={sessionId, lastActivityAt, idleMs}`. Hash-chained via PATCH 12 AuditLogger.
+**Design event schema (not runtime evidence):** `category=auth, eventType=session.idle_timeout, severity=info, actor=<userId>, payload={sessionId, lastActivityAt, idleMs}`. The PATCH 12 AuditLogger integration is not wired (see §4.2.7).
 
 #### §4.2.2 Absolute timeout (30 minutes)
 
@@ -114,7 +114,7 @@ This section is the authoritative source for the Q5.3 "Session timeout policy" c
 2. **On-read enforcement:** Every authenticated endpoint, before serving, checks `now() - sessionCreatedAt > 1_800_000ms`. If true, the session is terminated per §4.2.5.
 3. **No override:** Unlike the idle timeout, the absolute timeout has NO warning and NO extension. It is a hard cap.
 
-**Audit event:** `category=auth, eventType=session.absolute_timeout, severity=info, actor=<userId>, payload={sessionId, sessionCreatedAt, lifetimeMs}`. Hash-chained via PATCH 12 AuditLogger.
+**Design event schema (not runtime evidence):** `category=auth, eventType=session.absolute_timeout, severity=info, actor=<userId>, payload={sessionId, sessionCreatedAt, lifetimeMs}`. The PATCH 12 AuditLogger integration is not wired (see §4.2.7).
 
 #### §4.2.3 Sliding-window refresh
 
@@ -135,7 +135,7 @@ This section is the authoritative source for the Q5.3 "Session timeout policy" c
 
 **Step-up re-auth window:** The server flags a session with `pendingStepUp = true` after idle timeout. Any high-sensitivity or critical request in this state returns HTTP 401 with `X-Step-Up-Required: true` header. The client then triggers the re-auth flow. On success, `pendingStepUp = false` and `lastUserActivityAt = now()`.
 
-**Audit event:** `category=authorization, eventType=session.step_up_required, severity=notice` (challenge sent); `eventType=session.step_up_succeeded` or `session.step_up_failed, severity=warning` (on failure).
+**Design event schema (not runtime evidence):** `category=authorization, eventType=session.step_up_required, severity=notice` (challenge sent); `eventType=session.step_up_succeeded` or `session.step_up_failed, severity=warning` (on failure).
 
 #### §4.2.5 Session termination procedure
 
@@ -147,7 +147,7 @@ When a session terminates for ANY reason (idle timeout, absolute timeout, explic
 4. **Refresh token:** If a refresh token was issued (NOT in v1.0.0; deferred to v1.1.0 per PATCH 11 sub-class D.1), it MUST also be invalidated server-side.
 5. **Concurrent session revocation:** If the user has a "log out of all devices" setting enabled, ALL sessions for that userId MUST be terminated.
 
-**Audit event:** `category=auth, eventType=session.terminated, severity=info, actor=<userId>, payload={sessionId, terminationReason, terminatedAt}`. (For suspicious activity or admin revoke, severity escalates to `warning` or `critical` per §9.)
+**Design event schema (not runtime evidence):** `category=auth, eventType=session.terminated, severity=info, actor=<userId>, payload={sessionId, terminationReason, terminatedAt}`. (For suspicious activity or admin revoke, the proposed severity escalates to `warning` or `critical` per §9.)
 
 #### §4.2.6 Cookie/session token invalidation on timeout
 
@@ -157,11 +157,11 @@ The session token is bound to a `sessionId` in the server-side session store. Th
 - Stolen tokens used after absolute timeout
 - Admin-initiated session revocation
 
-This is implemented in `src/services/SessionManager.ts` (forthcoming — implementation tracked under §4.1 of the RATIFICATION_GATE_RUNBOOK).
+Historical implementation-plan reference: the original policy named `src/services/SessionManager.ts` as a planned location and marked implementation “forthcoming” under §4.1 of the RATIFICATION_GATE_RUNBOOK. This reference is not evidence that a session manager exists or is wired.
 
 #### §4.2.7 Audit and redaction status (design requirements; not wired)
 
-The historical design required session events to flow through PATCH 12 `AuditLogger` and to be redacted by PATCH 13 `PIIRedactor`. The 2026-10-19 source census (DEC-031/032) found no production caller or durable adapter for either helper. Therefore no session-event chain, non-repudiable record, or PIIRedactor-based confidentiality control is established by this repository. These are requirements for future reviewed wiring, not operating controls. The current client `auditTrailStore` is a separate, bounded chain with no general session-event or workbook-edit producer; see `../architecture/AUDIT_CHAIN_REACHABILITY.md`. Q6/O4 authority questions remain open.
+The historical design required session events to flow through PATCH 12 `AuditLogger` and to be redacted by PATCH 13 `PIIRedactor`. The 2026-10-19 source census (DEC-031/032) found no production caller or durable adapter for either helper. Therefore no session-event chain, non-repudiable record, or PIIRedactor-based confidentiality control is established by this repository. These are requirements for future reviewed wiring, not operating controls. The current client `auditTrailStore` is a separate, bounded chain with no general session-event or workbook-edit producer; see `../architecture/AUDIT_CHAIN_REACHABILITY.md`. Q6 server-authority integration remains open. DEC-102 resolves O4 by explicitly disclaiming SOX-compliance-system status; it is not an open authority question.
 
 #### §4.2.8 WCAG 2.2 alignment (cross-witness with Artemis)
 
@@ -221,7 +221,7 @@ A user MAY have up to **5 concurrent active sessions** across devices (desktop, 
 
 **See:** `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §2 for full policy.
 
-**Summary:** PBKDF2 100,000-iteration KDF for all secret material. Web Crypto API only (`crypto.subtle`, `crypto.getRandomValues`). Default 32-byte secrets, 64-byte max, 16-byte min. Secret types: `jwt`, `hmac`, `api-key`, `session`, `encryption`, `csrf`. Grace period 3600s on rotation, max 604800s. Maps to SOC 2 CC6.1, CC6.7, CC7.1. PATCH 12 `db1b5bfd3`.
+**Historical PATCH 12 design summary (not reverified):** PBKDF2 100,000-iteration KDF, Web Crypto API (`crypto.subtle`, `crypto.getRandomValues`), secret-size limits/types, and rotation grace periods were specified. The repository audit did not establish these as product-wide runtime controls; SOC 2 references are mappings, not attestations.
 
 ---
 
@@ -229,7 +229,7 @@ A user MAY have up to **5 concurrent active sessions** across devices (desktop, 
 
 **See:** `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §3 for full policy.
 
-**Runtime status (DEC-031, 2026-10-19):** `AuditLogger` remains an isolated in-memory helper with JSON/JSONL snapshot APIs. No production caller or persistence adapter was found; no session, secret-rotation, or PIIRedactor event flow to it is established. The helper's tests and policy text do not prove product logging or SOC 2 controls. The requirements below are design intent only; Q6/O4 remain open.
+**Runtime status (DEC-031, 2026-10-19; reviewed 2026-11-04):** `AuditLogger` remains an isolated in-memory helper with JSON/JSONL snapshot APIs. No production caller or persistence adapter was found; no session, secret-rotation, or PIIRedactor event flow to it is established. The helper's tests and policy text do not prove product logging or SOC 2 controls. The requirements below are design intent only. Q6 server-authority integration remains open; DEC-102 resolves O4 by disclaiming SOX-compliance-system status.
 
 ---
 
@@ -253,7 +253,7 @@ A user MAY have up to **5 concurrent active sessions** across devices (desktop, 
 
 **See:** the incident-response playbook (archived in the 2026-08-07 docs triage).
 
-**Summary:** P1 (data breach) → 1h escalation; P2 (auth bypass) → 4h; P3 (DoS) → 24h. Playbook covers detection (PATCH 9 GHOST-SHA), containment, eradication, recovery, post-mortem. Maps to SOC 2 CC7.4, CC8.1. PATCH 9 GHOST-SHA `d445b721` + IncidentResponse `5223d3b5`.
+**Historical incident-response summary (playbook archived in the 2026-08-07 docs triage; current process not verified):** P1 (data breach) → 1h escalation; P2 (auth bypass) → 4h; P3 (DoS) → 24h. The historical plan covers detection, containment, eradication, recovery, and post-mortem. SOC 2 references are mappings, not attestations.
 
 ---
 
@@ -261,7 +261,7 @@ A user MAY have up to **5 concurrent active sessions** across devices (desktop, 
 
 **See:** `docs/security/SECURITY_HEADERS_POLICY.md` §2 (HSTS).
 
-**Summary:** TLS 1.3 minimum, HSTS preload list submitted, OCSP stapling, certificate transparency monitoring. Maps to CWE-319, CWE-321. SOC 2 CC6.7, A1.2. PATCH 11 `3547f51e`.
+**Historical PATCH 11 deployment summary — [UNVERIFIED: no current production endpoint, TLS configuration, or certificate-monitoring evidence was inspected]:** TLS 1.3 minimum, HSTS preload submission, OCSP stapling, and certificate-transparency monitoring were listed as targets/status. CWE/SOC 2 references are mappings, not attestations.
 
 ---
 

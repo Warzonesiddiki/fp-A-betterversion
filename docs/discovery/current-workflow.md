@@ -1,6 +1,6 @@
 # Current Workflow and Discovery
 
-**Status:** Initial owner-stated baseline; details pending interview and artifact review.
+**Status:** Owner-stated D365 workflow plus broader product direction; detailed operating facts remain pending interview and artifact review. The 2026-11-04 master execution proposal is [`MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
 
 ## Known monthly pattern
 
@@ -22,6 +22,15 @@ Recorded as FR-010 (correction hand-off with owner and due date) and FR-011
 [`requirements-register.md`](requirements-register.md); the working order for
 building them is [`../agent/WORKING_AGREEMENT.md`](../agent/WORKING_AGREEMENT.md) §4.
 
+**Broader owner direction (2026-11-04):** one-stop FP&A with no mandatory
+other app for supported work; accounting/ERP data usable through the product's
+own user-customizable format; extensibility to every industry. DEC-033 records
+all FP&A as the ultimate scope and DEC-104 accepts universal import through user
+templates. This expands the product goal, not the known monthly D365 workflow
+facts. D365 remains the first owner-specific real-source proof; provider and
+industry support are not yet certified. See the detailed proposal in
+[`MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
+
 Still not documented, and not to be assumed:
 
 - what "extreme detail" is scoped to (which accounts, entities and periods),
@@ -37,8 +46,8 @@ Do not assume the user imports into the target application today.
 | Stage | User goal | Questions/evidence needed | Product opportunity (proposed) |
 |---|---|---|---|
 | Prepare period | Define period, entity, currency, and close context | Fiscal calendar? Entity structure? Comparison periods? | Period workspace with explicit scope |
-| Export | Obtain the correct Dynamics 365 data | Which D365 product/version? Export steps? File and columns? | Guided export checklist; later evaluate connector/API |
-| Import | Bring data into analysis safely | File size, encoding, headers, repeated exports, permissions? | Preview, schema mapping, duplicate detection, atomic validation |
+| Export | Obtain the correct Dynamics 365 data for the first real-source proof; later accept other accounting/ERP exports | Which D365 product/version/report? Which other ERPs are used? Export steps, file, columns and source controls? | Guided export checklist; user-mappable CSV/XLSX templates as baseline; optional validated API connector |
+| Import | Bring data into analysis safely through one user-facing template path | File size/encoding/locale, headers, custom fields, repeated exports, mapping version and permissions? | Template selection/create/preview/version, row reasons, source controls, duplicate policy and atomic validation |
 | Validate | Establish completeness and correctness | Control totals? Row count? Missing account/dimensions? | Validation report with row-level errors and reconciliation status |
 | Analyze | Perform FP&A analysis | Which exact reports, budgets, forecasts, dimensions? | Agreed actuals and variance views with drill-down |
 | Investigate | Understand abnormal or suspected wrong entries | Current heuristics? Materiality? Who confirms? | Explainable flag queue; source-row evidence; human disposition |

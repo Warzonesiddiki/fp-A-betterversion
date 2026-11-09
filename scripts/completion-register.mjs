@@ -31,6 +31,9 @@
  *   5. RETIRED needs a DEC id present in the decision log (+ a commit sha)
  *   6. NOT_BUILT needs the row/document that names it; EXPERIMENTAL its gate
  *   7. the rendered markdown must match the JSON byte for byte
+ *   8. SUPPORTED routes must match current CONNECTED + GOVERNED manifests and
+ *      use the full docs:verify gate, which runs both evidence checks and the
+ *      one-stop acceptance census
  *
  * USAGE
  *   node scripts/completion-register.mjs             # validate + render the view
@@ -517,14 +520,10 @@ function seedRows(c, existingRows) {
 
   for (const route of c.routes) {
     const existingRow = existing.get(route.id);
-    if (existingRow) {
-      // Disposition is census-derived, not authored: keep it aligned with the
-      // matrix so PR #87's sweep is visible in the register the moment it lands.
-      existingRow.evidence = {
-        ...existingRow.evidence,
-        ...(route.disposition ? { disposition: route.disposition } : {}),
-      };
-    }
+    const conn = c.routeConnected?.get(route.path) ?? [];
+    const gov = c.routeGoverned?.get(route.path) ?? [];
+    const connected = conn.map((claim) => ({ file: claim.file, title: claim.title }));
+    const governed = gov.map((claim) => ({ file: claim.file, title: claim.title }));
     const derivedRoute = {
       kind: 'route',
       id: route.id,
@@ -532,6 +531,8 @@ function seedRows(c, existingRows) {
       evidence: {
         gatedBy: route.path,
         ...(route.disposition ? { disposition: route.disposition } : {}),
+        ...(connected.length > 0 ? { connected } : {}),
+        ...(governed.length > 0 ? { governed } : {}),
       },
       note:
         `Routed screen (${route.component}); not graded CONNECTED or GOVERNED in ` +
@@ -540,29 +541,44 @@ function seedRows(c, existingRows) {
           ? ' Disposition REVIEW — no recorded decision yet (PR #87).'
           : ''),
     };
-    const conn = c.routeConnected?.get(route.path) ?? [];
-    const gov = c.routeGoverned?.get(route.path) ?? [];
-    if (conn.length > 0) {
-      derivedRoute.evidence = {
-        ...derivedRoute.evidence,
-        connected: conn.map((claim) => ({ file: claim.file, title: claim.title })),
-      };
-      if (gov.length === 0) {
-        derivedRoute.note = `CONNECTED evidence recorded (${conn.length} test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89.`;
-      }
+    if (connected.length > 0) {
+      derivedRoute.note =
+        gov.length === 0
+          ? `CONNECTED evidence recorded (${conn.length} test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89.`
+          : `CONNECTED evidence recorded (${conn.length} test id(s)); GOVERNED evidence recorded (${gov.length} test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.`;
+    } else if (governed.length > 0) {
+      derivedRoute.note = `GOVERNED evidence recorded (${gov.length} test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.`;
     }
-    if (gov.length > 0) {
-      derivedRoute.evidence = {
-        ...derivedRoute.evidence,
-        governed: gov.map((claim) => ({ file: claim.file, title: claim.title })),
-      };
-      if (conn.length > 0) {
-        derivedRoute.note = `CONNECTED evidence recorded (${conn.length} test id(s)); GOVERNED evidence recorded (${gov.length} test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.`;
-      } else {
-        derivedRoute.note = `GOVERNED evidence recorded (${gov.length} test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.`;
-      }
+
+    if (!existingRow) {
+      rows.push(derivedRoute);
+      continue;
     }
-    rows.push(keep(route.id, derivedRoute));
+
+    // Route claims, unlike handwritten notes elsewhere in the register, are
+    // copies of canonical manifests. Refresh them on every seed so a removed or
+    // changed manifest claim cannot survive as stale register evidence.
+    const evidence = { ...(existingRow.evidence ?? {}), gatedBy: route.path };
+    if (route.disposition) evidence.disposition = route.disposition;
+    else delete evidence.disposition;
+    if (connected.length > 0) evidence.connected = connected;
+    else delete evidence.connected;
+    if (governed.length > 0) evidence.governed = governed;
+    else delete evidence.governed;
+    if (existingRow.status === 'SUPPORTED') {
+      evidence.tests = [...new Set([...connected, ...governed].map((claim) => claim.file))];
+      evidence.gate = 'docs:verify';
+    }
+
+    // Keep specific capability notes (e.g. ASC 810 tie-out) while replacing
+    // the stale counts/status text with the current manifest-derived summary.
+    const detail =
+      / — entity-scope BLOCKED-ON-OWNER O9(?: — (.+))?$/.exec(existingRow.note ?? '')?.[1];
+    rows.push({
+      ...existingRow,
+      evidence,
+      note: `${derivedRoute.note}${detail ? ` — ${detail}` : ''}`,
+    });
   }
 
   for (const engine of c.engines) {
@@ -694,6 +710,15 @@ function seedRows(c, existingRows) {
 // ---------------------------------------------------------------------------
 // Validation
 // ---------------------------------------------------------------------------
+function sameRouteClaims(actual, expected) {
+  if (!Array.isArray(actual)) return false;
+  const keys = (claims) =>
+    claims
+      .map((claim) => `${claim?.file ?? ''}\u0000${claim?.title ?? ''}`)
+      .sort();
+  return JSON.stringify(keys(actual)) === JSON.stringify(keys(expected));
+}
+
 function validate(rows, c) {
   const problems = [];
   const seen = new Set();
@@ -730,6 +755,14 @@ function validate(rows, c) {
         // unclassified, and a decided route cannot quietly slide back.
         problems.push(
           `${row.id}: disposition REVIEW — no recorded decision; decide it in ${ROUTE_DECISIONS}`
+        );
+      }
+    }
+    if (row.kind === 'route') {
+      const route = c.routes.find((candidate) => candidate.id === row.id);
+      if (route && evidence.disposition !== route.disposition) {
+        problems.push(
+          `${row.id}: disposition does not match the route matrix (expected ${route.disposition ?? 'none'})`
         );
       }
     }
@@ -792,6 +825,53 @@ function validate(rows, c) {
         if (!str(evidence.doc)) problems.push(`${row.id}: SUPPORTED requires a doc link`);
         else if (!existsSync(join(ROOT, evidence.doc))) {
           problems.push(`${row.id}: doc "${evidence.doc}" does not exist`);
+        }
+        if (row.kind === 'route') {
+          const routePath = row.id.slice('route:'.length);
+          const connected = (c.routeConnected?.get(routePath) ?? []).map((claim) => ({
+            file: claim.file,
+            title: claim.title,
+          }));
+          const governed = (c.routeGoverned?.get(routePath) ?? []).map((claim) => ({
+            file: claim.file,
+            title: claim.title,
+          }));
+          if (connected.length === 0) {
+            problems.push(
+              `${row.id}: SUPPORTED route requires canonical CONNECTED evidence in ${SPINE_EVIDENCE}`
+            );
+          } else if (!sameRouteClaims(evidence.connected, connected)) {
+            problems.push(
+              `${row.id}: connected evidence does not match the canonical spine manifest ${SPINE_EVIDENCE}`
+            );
+          }
+          if (governed.length === 0) {
+            problems.push(
+              `${row.id}: SUPPORTED route requires canonical GOVERNED evidence in ${GOVERNANCE_EVIDENCE}`
+            );
+          } else if (!sameRouteClaims(evidence.governed, governed)) {
+            problems.push(
+              `${row.id}: governed evidence does not match the canonical governance manifest ${GOVERNANCE_EVIDENCE}`
+            );
+          }
+          if (['EXPERIMENTAL', 'RETIRED'].includes(evidence.disposition)) {
+            problems.push(
+              `${row.id}: SUPPORTED route cannot have ${evidence.disposition} matrix disposition`
+            );
+          }
+          if (evidence.gate !== 'docs:verify') {
+            problems.push(
+              `${row.id}: SUPPORTED route gate must be "docs:verify" to run both evidence checks and one-stop acceptance`
+            );
+          }
+          const testFiles = new Set(Array.isArray(tests) ? tests : []);
+          for (const claim of [...connected, ...governed]) {
+            if (!testFiles.has(claim.file)) {
+              problems.push(
+                `${row.id}: SUPPORTED route tests must include canonical evidence file ${claim.file}`
+              );
+            }
+          }
         }
         break;
       }
@@ -944,8 +1024,10 @@ function viewDocument(block) {
 > Vocabulary and rules: docs/plan/COMPLETION_PLAN_86_100.md §3, adopted in DEC-058.
 
 A row saying SUPPORTED means a test fails when the behaviour breaks, a gate is
-named, and a document explains it. A row saying BLOCKED-ON-OWNER names the owner
-question that stops it. Nothing here is promoted by prose.
+named, and a document explains it. For routes, the register must also match the
+current CONNECTED and GOVERNED manifests exactly; docs:verify runs those checks
+and one-stop acceptance. A row saying BLOCKED-ON-OWNER names the owner question
+that stops it. Nothing here is promoted by prose.
 
 ${block}
 `;
