@@ -4,12 +4,12 @@
   "docs_gate_passed": false,
   "human_approved_for_coding": false,
   "doc_health_score": 0,
-  "doc_health_score_status": "Not scored: 184 scoped records (141 PARTIAL, 40 HISTORICAL-NOTE, 3 GENERATED) and 56 PENDING entries; 25 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
+  "doc_health_score_status": "Not scored: 186 scoped records (143 PARTIAL, 40 HISTORICAL-NOTE, 3 GENERATED) and 54 PENDING entries; 25 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
   "completed_stages": [
     "STAGE_0_BOOTSTRAP"
   ],
   "doc_remediation_queue": [
-    "Complete semantic review of the 56 PENDING live-document entries in docs/_agent/LIVE_DOCS_REVIEW.csv; investigate 25 active C-grade documents (governance-evidence manifest, six ADRs, encryption-at-rest and security-header policies, Cascade-Hold ledger, rate-limit policy, Undo/Redo specification, SOC 2 overview, SOX-controls page, Q5.1\u2013Q5.3 accessibility records, Q5.3 fixation follow-up, Q5.7 Boardroom scoping/spec, Q5.8/Q5.9 scopes, Q5.10 mobile, Q5.11 persona, and A11Y waivers) while preserving dated evidence.",
+    "Complete semantic review of the 54 PENDING live-document entries in docs/_agent/LIVE_DOCS_REVIEW.csv; investigate the 25 active C-grade documents (governance-evidence manifest, six ADRs, encryption-at-rest and security-header policies, Cascade-Hold ledger, rate-limit policy, Undo/Redo specification, SOC 2 overview, SOX-controls page, Q5.1-Q5.3 accessibility records, Q5.3 fixation follow-up, Q5.7 Boardroom scoping/spec, Q5.8/Q5.9 scopes, Q5.10 mobile, Q5.11 persona, and A11Y waivers) while preserving dated evidence.",
     "Continue O9 reconciliation against DEC-103, 104 route entityScope objects, stale cited titles, the period-scope capability proves sentence, and verifier schema; do not weaken the gate or change test/gate code while docs_gate_passed is false.",
     "Finish deeper source/test traceability for all 18 modules, 12 industries, import paths, and ten invariants; preserve UNVERIFIED boundaries for inaccessible sources.",
     "Resolve MDEC-006 naming/authority conflict between docs/adr/ and the proposed docs/decisions/ before authoring ADRs.",
@@ -21,7 +21,7 @@
     "docs/_agent/LIVE_DOCS_REVIEW.csv (complete path inventory; 147 entries remain pending review)",
     "docs/security/ and docs/compliance/: prior seven-document batch plus the final eight pending records reviewed and reclassified; docs/_agent/GLOSSARY.md updated with bounded privacy terminology; Stage 1 remains partial.",
     "docs/a11y/: first six pending keyboard-navigation, focus-restore, session-timeout, live-region, motion-audit, and motion-pattern records reviewed on 2026-11-07; all six PARTIAL (3 B, 3 C), Stage 1 remains partial.",
-    "docs/a11y/: remaining eight pending Q5.3 fixation, Q5.7\u2013Q5.11, and waiver records reviewed on 2026-11-07; all eight PARTIAL / grade C. See AUD-030\u2013033; Stage 1 remains partial.",
+    "docs/a11y/: remaining eight pending Q5.3 fixation, Q5.7–Q5.11, and waiver records reviewed on 2026-11-07; all eight PARTIAL / grade C. See AUD-030–033; Stage 1 remains partial.",
     "docs/agent-fleet/FLEET_OPERATING_MODEL.md reviewed on 2026-11-10 and classified HISTORICAL-NOTE / H; no longer an active fleet proposal or decision request.",
     "docs/agent-squad/SQUAD_ACTIVITY_AND_TRACKER.md reviewed 2026-11-10 and classified HISTORICAL-NOTE / H; roster, allocations, and test tallies are not current evidence.",
     "docs/agent-squad/SQUAD_AGREEMENT.md reviewed 2026-11-10 and classified HISTORICAL-NOTE / H; conditional squad instructions are not active unless a squad is explicitly activated.",
@@ -55,7 +55,7 @@
     "docs/agent/skills/testing-strategy.md reviewed 2026-11-10; removed unverified runtime estimate and clarified coverage execution.",
     "docs/agent/skills/gates-and-ratchets.md reviewed 2026-11-10 against current scripts and governing rules.",
     "docs/agent/skills/verification-before-completion.md reviewed 2026-11-10; CI status now requires current check evidence.",
-    "docs/agent/skills/owner-pack-completion.md reviewed 2026-11-10; updated to accepted DEC-103/104/105 and open R1\u2013R12.",
+    "docs/agent/skills/owner-pack-completion.md reviewed 2026-11-10; updated to accepted DEC-103/104/105 and open R1–R12.",
     "docs/agent/skills/release-candidate-checklist.md reviewed 2026-11-10; corrected open decisions, command names, safety claims, and coverage distinction.",
     "docs/agent/skills/finishing-a-branch.md reviewed 2026-11-10; removed hazardous generic hard-reset recovery, false gh edit assertion, and unmeasured suite duration.",
     "docs/agent/skills/full-test-suite-execution.md reviewed 2026-11-10 against test runner; removed stale file count and invented shard assignments.",
@@ -115,7 +115,9 @@
     "docs/agent/skills/ponytail-gain.md reviewed 2026-11-10; Compared benchmark figures to upstream 2026-10-07 report; figures match, source limits them to benchmark tasks and not this repository.",
     "docs/agent/skills/ponytail-help.md reviewed 2026-11-10; Reviewed level/command/platform-specific instructions; preserved verbatim; exact client-version compatibility remains unverified.",
     "docs/agent/skills/ponytail-review.md reviewed 2026-11-10; Reviewed output contract against root docs-first gates; preserved verbatim owner-set content; root mission remains higher authority.",
-    "docs/agent/skills/ponytail.md reviewed 2026-11-10; Reviewed smallest-change guidance against project non-negotiables; preserved verbatim per owner-set rule."
+    "docs/agent/skills/ponytail.md reviewed 2026-11-10; Reviewed smallest-change guidance against project non-negotiables; preserved verbatim per owner-set rule.",
+    "docs/discovery/requirements-register.md reviewed 2026-11-11; the governance heading had split the requirements table and orphaned FR-010-FR-013, which is repaired so all 21 rows sit under one header. Requirement statuses and evidence were not re-verified; PARTIAL / B.",
+    "docs/discovery/risk-register.md reviewed 2026-11-11; stale Verified claims for R-001, R-005 and R-012 corrected against DEC-047, DEC-079 and current measurement (227 routes, 180 engines, 98 reachable/82 orphan, money ratchet 320/0). Ratings and the not-approved-for-production posture retained; PARTIAL / B."
   ],
   "active_task_id": "AUDIT-001",
   "completed_task_ids": [
@@ -124,7 +126,7 @@
   "blockers": [
     "No live ERP account, customer sample, or source-side control totals are available in this workspace; provider and reconciliation claims remain unverified.",
     "The network allowlist excludes most vendor documentation sites, so external product and API research may remain unverified unless an allowed source is available.",
-    "Current docs inventory: 561 files including archive (546 Markdown); 240 live files (233 Markdown); 79 entries had scoped review before the 2026-11-07 A11Y tranche, 85 after the first six, and 128 after the 2026-11-10 Stage 1 document reviews; 111 remain PENDING. Stage 1 review is incomplete.",
+    "Current docs inventory: 561 files including archive (546 Markdown); 240 live files (233 Markdown); ledger status is 143 PARTIAL, 40 HISTORICAL-NOTE, 3 GENERATED and 54 PENDING after the 2026-11-11 requirements/risk-register review. Stage 1 review is incomplete.",
     "Governance evidence O9 reconciliation remains open: DEC-103 resolves the decision, but 104 route entityScope objects and 22 route title descriptions retain O9 blocked language; 103 matching stale titles remain in spineGovernance tests, and one close.period-entity-scope proves string retains O9 wording. The verifier contract is unreconciled.",
     "MDEC-006 remains open: docs/adr/ is the current record namespace; docs/decisions/ is absent, and precedence must be reconciled before ADR authoring.",
     "docs_gate_passed is false and human_approved_for_coding is false; no further application-source changes are authorized by this mission.",
@@ -133,10 +135,12 @@
     "Six live ADR records are PARTIAL / grade C: five retain pending-ratification headers at the elapsed 2026-06-22 target; ADR-001 is marked accepted but has an implementation mismatch. The ADR namespace/authority conflict MDEC-006 remains unresolved; do not treat these as current owner approval or code truth.",
     "Eight additional security/compliance records have bounded reviews: five C-grade mismatches/unsupported claims (Cascade-Hold ledger, LIVE rate-limit policy, Undo/Redo compliance wording, SOC 2 overview, SOX controls) and three B-grade specifications/policies. Gate 10 tests/CI, application tests, deployed controls, full-history commit validation, and external legal/compliance assessments were not run; historical SHA validity remains unverified in this shallow checkout.",
     "2026-11-07 A11Y review: Q5.1 keyboard latency evidence is synthetic, Q5.2 closed focus-restoration claims exceed observed production wiring/timing, and Q5.3 timeout policy remains an unratified proposal. Q5.4/Q5.5 foundations are partial; browser/screen-reader evidence was not run. Focused test command could not load Vitest because node_modules/vitest/vitest.mjs is absent.",
-    "2026-11-07 remaining A11Y review: all eight records are PARTIAL/C. Found synthetic session-announcement tests vs. auth behavior, unimplemented proposed Boardroom/audit/collaboration details, Phase 2/3 plans paired with green hard-gate checkboxes, a reversed mobile screen-reader/platform pairing, 18-vs-19 persona and 294-vs-304 matrix discrepancies, and a manual waiver policy not consumable by blocking CI. No A11Y tests ran because Vitest is absent; no external WCAG/demographic research or owner ratification was inspected."
+    "2026-11-07 remaining A11Y review: all eight records are PARTIAL/C. Found synthetic session-announcement tests vs. auth behavior, unimplemented proposed Boardroom/audit/collaboration details, Phase 2/3 plans paired with green hard-gate checkboxes, a reversed mobile screen-reader/platform pairing, 18-vs-19 persona and 294-vs-304 matrix discrepancies, and a manual waiver policy not consumable by blocking CI. No A11Y tests ran because Vitest is absent; no external WCAG/demographic research or owner ratification was inspected.",
+    "PR #95 was merged to main as a9a3c9f on 2026-11-11T05:44:47Z while eight check groups failed and both coding gates were false; the merge tree equals failing head 7d9b866c. An owner decision on revert-or-accept is required (AUD-092).",
+    "CI for 7d9b866c is red for four distinct, now-reproduced reasons: shallow-checkout evidence-SHA resolution in the docs job, a per-shard 50% coverage threshold that shard mode cannot satisfy, root production advisories (2 high), and server-workspace advisories (2 high). Every fix path touches CI/gate or dependency configuration, which the current authorization forbids (AUD-093)."
   ],
-  "last_updated": "2026-11-10",
-  "branch": "arena/87cec58b-fp-a-betterversion",
+  "last_updated": "2026-11-11",
+  "branch": "arena/950617a0-fp-a-betterversion",
   "baseline": {
     "documentation_and_specification_files_including_archive": 549,
     "strict_docs_links_before_bootstrap_repairs": "Failed: one broken Markdown link and four broken backtick citations.",
@@ -145,7 +149,7 @@
   },
   "stage_1_status": "IN_PROGRESS_PARTIAL",
   "current_inventory": {
-    "captured_at": "2026-11-10",
+    "captured_at": "2026-11-11",
     "documentation_files_including_archive": 561,
     "markdown_files_including_archive": 546,
     "archived_files": 321,
@@ -154,21 +158,21 @@
     "live_markdown_files": 233,
     "live_other_files": 7,
     "review_status_counts": {
-      "PARTIAL": 141,
+      "PARTIAL": 143,
       "HISTORICAL-NOTE": 40,
       "GENERATED-SOURCE-REVIEWED": 2,
       "GENERATED-RENDERED": 1,
-      "PENDING": 56
+      "PENDING": 54
     }
   },
   "latest_validation": {
-    "captured_at": "2026-11-10",
-    "docs_verify": "PASS 2026-11-10 after deepening the shallow local main history to restore two cited evidence commit objects: 711 completion rows; three known non-failing annex warnings remain (legacy 110-section header vs DEC-034 scope 200; sections 108\u2013110 unresolved; sections 108\u2013200 SOURCE OWED).",
+    "captured_at": "2026-11-11",
+    "docs_verify": "PASS 2026-11-10 after deepening the shallow local main history to restore two cited evidence commit objects: 711 completion rows; three known non-failing annex warnings remain (legacy 110-section header vs DEC-034 scope 200; sections 108–110 unresolved; sections 108–200 SOURCE OWED).",
     "strict_docs_links": "PASS 2026-11-10: 0 broken links and 0 broken citations after six owner-skill review citations were qualified.",
     "completion_register_check": "PASS mechanically through npm run docs:verify: 711 rows; 115 SUPPORTED, 374 EXPERIMENTAL, 2 RETIRED, 220 NOT_BUILT, 0 BLOCKED-ON-OWNER.",
     "governance_evidence_check": "PASS mechanically 2026-11-10 through npm run docs:verify: 104 routes / 312 state claims, 81 capabilities / 255 claims, 2 census claims; O9 semantic discrepancies remain unreconciled.",
     "git_diff_check": "PASS 2026-11-10 after documentation-only changes.",
-    "audit_citation_inventory_check": "PASS custom reconciliation 2026-11-10: 240 ledger rows; 141 PARTIAL, 40 HISTORICAL-NOTE, 3 GENERATED, 56 PENDING; all line counts match; state counts and fixed branch match; gates remain false.",
+    "audit_citation_inventory_check": "PASS custom reconciliation 2026-11-11: 240 ledger rows; 143 PARTIAL, 40 HISTORICAL-NOTE, 3 GENERATED, 54 PENDING; all line counts match; state counts and branch match; both coding gates remain false.",
     "focused_a11y_test_run": "BLOCKED before test collection 2026-11-07: npm run test:a11y -- --reporter=dot could not load node_modules/vitest/vitest.mjs; no test assertions executed and dependencies were not installed.",
     "scope_note": "2026-11-10 documentation-only review: sixteen workflow, UI, debugging, state, plan, import, and verification skills corrected; six Ponytail owner skills reviewed and kept verbatim; upstream benchmark figures checked against the dated source and not treated as project performance. Inventory: 240 files, 141 PARTIAL, 40 HISTORICAL-NOTE, 3 GENERATED, 56 PENDING. Stage 1 remains partial; coding gates false; no application source/tests/gates changed. Root dependencies were installed for verification; 4 import-related test files (101 tests), tsc, and lint passed. Production dependency audit remains red (2 high, 11 moderate); no dependency change was made. This and the docs/coding gates block merge.",
     "vitest_attempt": "`npm run test:sharded -- --help` unexpectedly invoked all eight shards because the runner has no --help mode; all stopped before test collection: node_modules/vitest/vitest.mjs is absent. No test assertions ran.",
@@ -176,6 +180,7 @@
     "typescript": "PASS 2026-11-10: npm run tsc.",
     "lint": "PASS 2026-11-10: npm run lint.",
     "targeted_import_tests": "PASS 2026-11-10: 4 files / 101 tests (glUploadStore, GLUploadPage deep, GLUploadPage D365 integration, universalImportEngine governance).",
-    "production_dependency_audit": "FAIL 2026-11-10: npm run audit:prod reports 13 production advisories (11 moderate, 2 high: follow-redirects and zod; transitive glob/minimatch advisories); full npm audit reports 20 (17 moderate, 3 high). No dependency changes made."
+    "production_dependency_audit": "FAIL 2026-11-10: npm run audit:prod reports 13 production advisories (11 moderate, 2 high: follow-redirects and zod; transitive glob/minimatch advisories); full npm audit reports 20 (17 moderate, 3 high). No dependency changes made.",
+    "ci_triage_pr95": "TRIAGED 2026-11-11 for merged head 7d9b866c (merge commit a9a3c9f, same tree). CONFIRMED docs-job cause: scripts/completion-register.mjs --check cannot resolve evidence commit c9b8411 in a depth-1 checkout; reproduced with a --depth=1 clone (exit 1, two 'does not resolve' problems) while all thirteen docs:verify sub-scripts pass in full history. CONFIRMED test-job cause: coverage threshold only, not assertions; shard 1 without coverage passed 366 files / 4445 tests with exit 0, while shard 1 with coverage failed at statements 32.40%, branches 26.69%, functions 30.62%, lines 33.14% against the configured 50%. CONFIRMED dependency causes: root audit:prod 13 advisories (11 moderate, 2 high: zod GHSA-mrhx-c7xc-m3w5 and follow-redirects); server workspace audit 2 high (body-parser GHSA-27r3-jxmh-p828, zod). NOT REPRODUCED: E2E job failure at 'Install Playwright'. Job logs still return EOF; causes come from jobs API step metadata plus local reproduction. No CI, gate, dependency, or application file changed."
   }
 }

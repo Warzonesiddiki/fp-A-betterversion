@@ -63,6 +63,67 @@ Document grades in the CSV use: **A** = current authority, reviewed within the s
 - 2026-11-10 documentation-only continuation: baseline `npm run tsc` and full `npm run lint` passed before edits. After reviewing the squad tracker and agreement, historical fleet model, backlog, and working agreement, `npm run docs:verify` and strict documentation links passed; current inventory and ledger line counts were reconciled; `git diff --check` passed. See the latest continuation note in `docs/_agent/PROGRESS_LOG.md` for exact results. This is not Stage 1 exit or Stage 5 approval.
 - These documentation checks do not complete Stage 1 or set the Stage 5 mission gate. The full frontend test result remains inconclusive regardless of documentation-gate status.
 
+### 3.3 CI failure triage for merged head `7d9b866c` (2026-11-11)
+
+PR #95 was merged to `main` as `a9a3c9f` at 2026-11-11T05:44:47Z while eight check
+groups were failing, `docs_gate_passed` was `false`, and
+`human_approved_for_coding` was `false`. That merge is a recorded process defect
+for this audit (AUD-092); it is not a gate pass and does not authorize coding.
+The merge commit tree is byte-identical to the failing head `7d9b866c`
+(`git diff --quiet 7d9b866c a9a3c9f` reports no tree difference), so the
+following failures describe the current `main` tree as well.
+
+Job logs (`gh run view --log-failed`) still return `EOF`, so causes below come
+from job step metadata (`gh api .../actions/jobs/<id>`) plus local
+reproduction in a full checkout with `npm ci --ignore-scripts`
+(835 packages installed, 18 advisories reported by install).
+
+- **Docs & Engine Manifest Integrity → "Verify README / architecture claims"
+  (`npm run docs:verify`): CONFIRMED, environment/history depth.**
+  All thirteen `docs:verify` sub-scripts pass in a full local checkout. A
+  depth-1 clone of the same commit fails
+  `scripts/completion-register.mjs --check` with exit code 1 and two problems:
+  `cap:govern.entity-scope` and `cap:govern.sox-authority` cite commit
+  `c9b84116ad408b2d574e952cd953c67b92edcbab`, which "does not resolve". That
+  commit exists in full history ("feat: resolve O3/O4/O9 — promote
+  backup-restore, retire sox-authority and entity-scope"). The job's
+  `actions/checkout` step uses the default shallow depth and the workflow has
+  no fetch-depth override, so the evidence-SHA lookup cannot resolve. This is
+  a reproducible cause, not a documentation error; the same class of failure
+  was previously masked locally by deepening history. Fixing it would require
+  a CI/gate change and is therefore blocked by the current gate rules.
+- **Unit Tests (shards 1–4) and Vitest (single-run): CONFIRMED, coverage
+  threshold, not assertion failure.** Shard 1 run without coverage reports
+  **366 files / 4,445 tests passed, exit code 0**. The same shard with
+  `--coverage` fails only on the global threshold: statements 32.40%
+  (20,837/64,298), branches 26.69% (10,955/41,036), functions 30.62%
+  (5,363/17,513), lines 33.14% (18,902/57,025), all below the configured 50%.
+  Per-shard coverage is a fraction of the suite, so the threshold is
+  structurally unreachable in shard mode; the merged-coverage job inherits the
+  same failing condition and stops before its own coverage pass. Threshold
+  configuration is a gate change and is not authorized here.
+- **Dependency Audit (production): CONFIRMED, unresolved advisories.**
+  `npm run audit:prod` reproduces **13 advisories (11 moderate, 2 high)** in the
+  root workspace; the two high findings are `zod` (`GHSA-mrhx-c7xc-m3w5`,
+  fix needs a breaking major) and `follow-redirects`. Unknown or
+  non-reproducible advisories are not being claimed. No remediation attempted:
+  `npm audit fix` and dependency changes require authorization.
+- **Server (typecheck + tests): CONFIRMED, separate workspace audit.** The job
+  fails at "Production dependency audit (server)", not at typecheck or tests.
+  `npm audit --omit=dev --audit-level=high` inside `server/` reproduces
+  **2 high** advisories: `body-parser` (`GHSA-27r3-jxmh-p828`) and `zod`
+  (`GHSA-mrhx-c7xc-m3w5`). This is a second, independently pinned lockfile, so
+  the root remediation alone would not clear it.
+- **E2E Tests: NOT REPRODUCED, unverified cause.** The job fails at
+  "Install Playwright" (`npx playwright install --with-deps chromium`), before
+  any test collection. Local reproduction was not attempted because it needs
+  network browser downloads outside this environment's allowlist. Registry or
+  browser-mirror availability is a hypothesis, not a confirmed cause.
+- **CI Summary: consequence only.** It aggregates the failures above.
+
+None of these findings changes a gate value, a threshold, a workflow, or a
+dependency pin. The authoritative ledger record for this triage is AUD-092.
+
 ## 4. Document-versus-code assessment
 
 This is a targeted assessment of high-impact active documents. The complete inventory and per-file review state are in `docs/_agent/LIVE_DOCS_REVIEW.csv:1-241`.
@@ -286,12 +347,16 @@ The laws are retained as target constraints in `docs/_agent/MISSION_CONTRACT.md:
 | AUD-089 | Medium | `docs/agent/skills/zero-compromise-verification.md` still presented O9/entity-scope as BLOCKED-ON-OWNER although DEC-103 resolves O9 as single-user; it also prescribed EXPERIMENTAL as the universal missing-evidence status. | Updated O9 boundary and directed authors to the closed status vocabulary's specific evidence contract. Classified PARTIAL / B. |
 | AUD-090 | Low | `docs/agent/skills/bulk-refactor-and-codemod.md` presented old money sweep/error counts as an unqualified current example, and `docs/agent/skills/requesting-review.md` asserted a local `gh pr edit` failure as universal repository behavior. | Marked old counts historical and removed the unsupported CLI failure workaround; review guidance now requires verification of returned status/result. Classified PARTIAL / B. |
 | AUD-091 | Low | The six Ponytail owner skills are declared “reproduced verbatim” in `docs/agent/00_INDEX.md`, but the local owner-set files do not pin a source commit/version; external platform setup instructions may drift. | Preserved all six owner skills unchanged. Compared the Ponytail Gain scoreboard with the upstream benchmark report dated 2026-10-07; figures agree and that source explicitly limits them to its benchmark, not this repository. Record current owner-version provenance before any future sync: https://github.com/DietrichGebert/ponytail/blob/main/benchmarks/results/2026-10-07-agentic.md. Classified six files PARTIAL / B; no local savings/performance claims inferred. |
+| AUD-092 | High | PR #95 was merged as `a9a3c9f` at 2026-11-11T05:44:47Z while eight check groups were failing, `docs_gate_passed` was `false`, and `human_approved_for_coding` was `false`; the handover describes it as an open draft. | Verified with `gh pr view 95` (state MERGED, mergeCommit `a9a3c9f`) and `gh pr checks 95`. The merge tree is byte-identical to failing head `7d9b866c` (`git diff --quiet 7d9b866c a9a3c9f` reports no difference), so the failing checks describe the current `main` tree. Recorded as a process defect; no gate, threshold, workflow, dependency, or application file was changed in response. | Open — requires an owner decision on reverting or accepting the merge; Stage 1 remains partial and both coding gates remain false. |
+| AUD-093 | High | The failing CI groups for `7d9b866c` had no verified cause; job logs returned `EOF` and earlier notes left the docs failure as a history-depth hypothesis. | Recovered causes from job step metadata plus local reproduction in a full checkout. CONFIRMED: docs job fails because `scripts/completion-register.mjs --check` cannot resolve evidence commit `c9b8411` in a depth-1 checkout (reproduced with a `--depth=1` clone: exit 1, two `does not resolve` problems); unit-test shards and the single-run Vitest job fail only the 50% coverage threshold while all 4,445 shard-1 tests pass (32.40% statements / 26.69% branches / 30.62% functions / 33.14% lines); root `audit:prod` reproduces 13 advisories (11 moderate, 2 high) and the server workspace audit reproduces 2 high (`body-parser`, `zod`). NOT REPRODUCED: E2E failure at Playwright installation. No remediation applied; all fixes would touch CI gates or dependency pins, which the current authorization forbids. | Open — evidence recorded in §3.3; blocks a green CI claim, not the documentation review itself. |
+| AUD-094 | High | `docs/discovery/requirements-register.md` put the `## Requirement governance` heading in the middle of the requirements table, orphaning FR-010–FR-013 from its header so those requirements could not be read as register rows. The first three change-control bullets were also stranded above the heading. | Verified the table structure and the requirement census (21 requirements, matching the generated completion register). Moved the heading below FR-013 so all 21 rows sit under the header, then placed the governance bullets under the heading. No requirement status, evidence, or acceptance criterion was changed. Reclassified PENDING → PARTIAL / B. |
+| AUD-095 | High | `docs/discovery/risk-register.md` carried three stale "Verified" claims: R-001 said no export contract existed although DEC-047 defines and maps the documented D365 header set; R-012 cited 242 routes, 182 engines and 18 sector dashboards although measurement gives 227 routes and 180 engines and DEC-079 retired those dashboards; R-005 cited 87 unwired engines and asserted raw `number` amounts without noting the current money ratchet or the missing-is-not-zero census. | Re-measured with `node scripts/verify-readme-stats.mjs` (227 routes, 180 engines, 98 reachable / 82 orphan), checked DEC-047 in `docs/discovery/d365-export-contract.md`, DEC-079 in `src/App.tsx` (18 `/sector/*` redirects to `/404`), and `npm run money:adoption` (ratchet holds at 320 modules, 0 raw `toFixed` sites; `verify-missing-is-not-zero` runs inside `docs:verify`). Rewrote only those three status cells, kept every risk rating and the "not approved for production use" posture, and did not convert any open gap into a positive claim. Reclassified PENDING → PARTIAL / B. |
 
 ## 9. Stage 1 exit work still required
 
 Stage 1 is **not complete**. Before moving to Stage 2:
 
-1. Complete the file-by-file live-doc review in `docs/_agent/LIVE_DOCS_REVIEW.csv`; 56 entries remain PENDING after the latest 2026-11-10 batch review. Investigate the 25 active C-grade records (governance manifest, six ADRs, encryption-at-rest and security-header policies, Cascade-Hold ledger, rate-limit policy, Undo/Redo specification, SOC 2 overview, SOX-controls page, Q5.1–Q5.3 accessibility records, the Q5.3 fixation follow-up, Q5.7 Boardroom scoping/spec, Q5.8/Q5.9 A11Y scopes, Q5.10 mobile scope, Q5.11 persona scope, and A11Y waivers); preserve decision/ratification history and distinguish requirements from unsupported status claims.
+1. Complete the file-by-file live-doc review in `docs/_agent/LIVE_DOCS_REVIEW.csv`; 54 entries remain PENDING after the latest 2026-11-11 review of the requirements and risk registers. Investigate the 25 active C-grade records (governance manifest, six ADRs, encryption-at-rest and security-header policies, Cascade-Hold ledger, rate-limit policy, Undo/Redo specification, SOC 2 overview, SOX-controls page, Q5.1–Q5.3 accessibility records, the Q5.3 fixation follow-up, Q5.7 Boardroom scoping/spec, Q5.8/Q5.9 A11Y scopes, Q5.10 mobile scope, Q5.11 persona scope, and A11Y waivers); preserve decision/ratification history and distinguish requirements from unsupported status claims.
 2. Complete O9 governance-evidence reconciliation against DEC-103, the exact cited test titles, and the verifier schema. The manifest now marks legacy blockers stale; do not silently rewrite the owner decision, weaken the gate, or change test/gate code before the docs-first coding authorization is satisfied.
 3. Finish a source-backed trace for each module, industry and invariant beyond the representative evidence in this first report; distinguish code presence, test coverage, route maturity, owner acceptance, and certification.
 4. Reconcile the `docs/adr/` versus requested `docs/decisions/` namespace and decision precedence before ADR authoring (MDEC-006).
