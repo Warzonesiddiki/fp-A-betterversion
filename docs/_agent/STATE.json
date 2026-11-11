@@ -4,7 +4,7 @@
   "docs_gate_passed": false,
   "human_approved_for_coding": false,
   "doc_health_score": 0,
-  "doc_health_score_status": "Not scored: 226 scoped records (177 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 14 PENDING entries; 29 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
+  "doc_health_score_status": "Not scored: 227 scoped records (178 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 13 PENDING entries; 29 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
   "completed_stages": [
     "STAGE_0_BOOTSTRAP"
   ],
@@ -152,7 +152,8 @@
     "2026-11-11 persistence inventory coverage gap: scripts/persistence-map-check.mjs only recognises persist() names ending in -store, so finplan_exception_dispositions (src/store/exceptionDispositionStore.ts:333) and finplan:exception-rules (src/store/exceptionRuleCatalogue.ts:641) are unregistered and absent from docs/architecture/PERSISTENCE_MAP.md even though exception dispositions and correction records are user-visible and persisted. AUD-112. Not fixed: the real fix is the checker regex plus two registry rows, which is gate-adjacent machinery and out of bounds while docs_gate_passed is false.",
     "2026-11-11 statement-export honesty gap (AUD-115): the Budget-vs-Actual export builder (src/engines/reportDataBuilder.ts:275,290) absolutises amounts and re-derives favourability from a bare code prefix instead of resolveAccountClass, contradicting docs/product/STATEMENT_SIGN_CONTRACT.md; and no export builder discloses unclassified entries, so the DEC-017 honesty guarantee that holds on the statement pages does not hold in downloaded statements. Application-source fix; barred while docs_gate_passed is false.",
     "2026-11-11 stale completion claims (AUD-118): docs/discovery/OWNER_DECISION_PACKET_COMPLETION.md states 200 SUPPORTED / 0 BLOCKED-ON-OWNER / 0 EXPERIMENTAL, while docs/plan/governance-evidence.json holds 81 capabilities with 129 BLOCKED-ON-OWNER markers and zero SUPPORTED strings. The page is annotated as a dated snapshot; the live manifest remains the authority and its O9 contradiction (AUD-105) is unresolved pending owner input.",
-    "2026-11-11 route-disposition coverage gap: 74 of the 123 routes in src/App.tsx that have no governance evidence entry also have no entry in docs/product/route-dispositions.json (65 routes), whose _comment still claims 47. Measured, not remediated: filling dispositions is a governance decision and the file is gate-input (verify-route-dispositions.mjs --check)."
+    "2026-11-11 route-disposition coverage gap: 74 of the 123 routes in src/App.tsx that have no governance evidence entry also have no entry in docs/product/route-dispositions.json (65 routes), whose _comment still claims 47. Measured, not remediated: filling dispositions is a governance decision and the file is gate-input (verify-route-dispositions.mjs --check).",
+    "2026-11-11 unauthenticated client->server call (AUD-120): src/store/periodCloseStore.ts:417 POSTs /api/periods/:id/transition with no Authorization header to a route that always 401s, and swallows the rejection, so every period transition fires a guaranteed-failing request while the UI reports success. No financial figure is affected (the client state machine is canonical), but the skill rule claiming no src/ module calls the server is false and architecture:guardrails has no rule that would catch this class."
   ],
   "last_updated": "2026-11-11",
   "branch": "arena/950617a0-fp-a-betterversion",
@@ -173,11 +174,11 @@
     "live_markdown_files": 233,
     "live_other_files": 7,
     "review_status_counts": {
-      "PARTIAL": 177,
+      "PARTIAL": 178,
       "HISTORICAL-NOTE": 46,
       "GENERATED-SOURCE-REVIEWED": 2,
       "GENERATED-RENDERED": 1,
-      "PENDING": 14
+      "PENDING": 13
     }
   },
   "latest_validation": {
