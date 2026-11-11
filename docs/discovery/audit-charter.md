@@ -1,5 +1,22 @@
 # Audit Charter and Evidence Plan
 
+> **2026-11-11 repository review note:** The charter's own scope boundaries still govern this review, and were honoured: repository
+> evidence is distinguished from owner statements, unverified items are labelled `[UNVERIFIED: …]` rather than asserted, and no
+> confidential GL data was used. Two operational notes from following it for a full stage:
+>
+> - The charter's evidence discipline is what caught the defects this review found. In every case (AUD-109 consent registry, AUD-116
+>   `PeriodCloseEngine` caller, AUD-115 export honesty, AUD-112 unregistered stores) the failure mode was a **document asserting a
+>   capability whose symbol, producer or caller does not exist**. A text search for the claimed name would not have found these; following
+>   the symbol to a caller did. That method is worth promoting from practice to charter.
+> - The reference-repository comparison the charter describes (`FPA-modular` @ `641d3d8`) has **not** been repeated in this review, and
+>   this checkout contains no copy of that repository, so every comparative statement in the audit lineage remains
+>   `[UNVERIFIED: reference repository not available in this workspace]`. Claims that FinPlan Pro does or does not match FPA-modular
+>   behaviour should be treated as unexamined here rather than as checked.
+>
+> The charter's date-based snapshot note still applies: it was written for the 2026-10-15 audit and its process has since been run
+> repeatedly; nothing in it was superseded by this review.
+
+
 **Status:** Draft  
 **Purpose:** Establish what exists, what is safe to trust, and what should be built next—without confusing assumptions with findings.
 

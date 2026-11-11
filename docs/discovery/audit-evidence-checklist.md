@@ -1,5 +1,30 @@
 # Audit Evidence Checklist
 
+> **2026-11-11 repository review note:** The checklist is a usable instrument and its 2026-10-15 legend is honest, but three of its
+> "collected" entries point at material that has since moved or is now known to be wrong, and several "not yet collected" items were
+> closed afterwards by work this review has itself verified.
+>
+> **Stale in section A:** the counts "242 routes, 182 engines, 95 reachable" are superseded — measured today, `src/App.tsx` declares
+> **227** routes and `engineManifest.generated.ts` holds **180** engines (98 shipped / 82 orphan). The `docs/audit/` and
+> `docs/PROJECT_AUDIT_AND_EXECUTION_PLAN.md` references elsewhere still repeat 242/182. The dependency line ("advisories root 3H/1M/1L,
+> server 1C/4M → 0/0") does not describe the present state: `npm run audit:prod` today reports 13 advisories (2 high) at root and 2 high
+> in `server/`, both unpatched by design pending owner authorization.
+>
+> **Closed since this list was written**, so the box status is pessimistic rather than false: section D "sign and statement presentation
+> rules documented" is now satisfied by [`docs/product/STATEMENT_SIGN_CONTRACT.md`](../product/STATEMENT_SIGN_CONTRACT.md) — though that
+> review also found the Budget-vs-Actual export still absolutises (AUD-115); section G "data at rest / in transit / authentication /
+> LLM egress" is now covered by `docs/security/ENCRYPTION_AT_REST_TAURI_IPC_POLICY.md`, [`docs/security/PSEUDONYMIZATION.md`](../security/PSEUDONYMIZATION.md), [`docs/security/PII_REDACTION_POLICY.md`](../security/PII_REDACTION_POLICY.md)
+> and the TLS-absent finding in `docs/compliance/soc2-readiness.md`; and section C's "no D365 export contract exists to test against" is
+> obsolete — [`docs/discovery/d365-export-contract.md`](d365-export-contract.md) now exists and its DEC-047 implementation re-verified
+> in this review (12/12 tests, exact aliases, 5/5 + 7/7 counts accurate), while still explicitly unverified against a real export.
+>
+> **Still genuinely open, and the right reading of this page:** sections B (D365 owner confirmation, sample data, control totals), D
+> ("selected output independently recalculated", "missing/zero/not-applicable differentiated" — still a verified gap), E (abnormality
+> taxonomy, dispositions), and F (usability sessions) remain uncollected. Section D's "metrics catalog identifies formula, unit,
+> required inputs and provenance" is still uncollected: there is no metrics-catalogue document in `docs/product/`. No external auditor
+> has reviewed this checklist, and no owner has confirmed the B-section items.
+
+
 > Legend: `[x]` collected 2026-10-15 (see `audit-progress-2026-10-15.md`), `[~]` partial, `[ ]` not yet collected. Items marked **Verified gap** were checked and found absent in the target.
 
 Use this checklist to distinguish repository evidence from product-owner statements. Record evidence links, date, and reviewer. Do not paste confidential GL data into the audit pack.
