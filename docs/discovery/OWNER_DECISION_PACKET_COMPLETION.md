@@ -7,6 +7,30 @@
 > **Current branch:** arena/b035ac80-fp-a-betterversion
 > **Last updated:** 2026-10-24 (O1 universal importer built — 200 SUPPORTED, 0 BLOCKED-ON-OWNER for data/admin/govern pillars)
 
+> **2026-11-11 repository review note:** This is a 2026-10-24 snapshot and almost every headline figure in §Summary is stale against
+> the current tree, in several cases by design rather than by error:
+>
+> - **Capability counts.** The snapshot says 200 SUPPORTED / 254 claims / 0 BLOCKED-ON-OWNER / 0 EXPERIMENTAL. The current
+>   `docs/plan/governance-evidence.json` carries **81 capabilities** with **129 `BLOCKED-ON-OWNER` occurrences and zero
+>   `SUPPORTED` strings**. The two documents are not describing the same census, so this page's counts must not be cited as present
+>   state. (The O9-vs-DEC-103 contradiction inside that manifest is AUD-105 and is still open.)
+> - **"All gates PASS" with `eslint` "zero problems, zero warnings".** Lint state is not re-asserted here; the trailing-counts claim
+>   (17,854 passed) likewise belongs to 2026-10-24.
+> - **Money adoption 36.37% (371/1020).** Measured today: the ratchet holds at **320 modules / 0 `toFixed`** (server: 3 modules /
+>   0), so both the numerator and the denominator in the snapshot are historical.
+> - **`engines:verify (180)` still holds** — 180 engines in `engineManifest.generated.ts`. This is the one headline figure that
+>   matches today.
+> - **"104 GOVERNED routes"** remains the figure `verify-governance-evidence.mjs` enforces and matches the manifest's 104 route
+>   entries; see AUD-105 for the owner-blocker defect that makes those claims unverifiable in practice.
+> - **All five cited decision records are real and locatable** — DEC-096, DEC-101, DEC-102, DEC-103 and DEC-104 each appear in
+>   `docs/discovery/decision-log.md`. So the decisions themselves were made; what no longer holds is the derived "0 BLOCKED-ON-OWNER"
+>   and "0 EXPERIMENTAL" conclusion.
+> - The "Original base: b2cff43 / Current branch: arena/b035ac80-..." footer refers to a since-replaced working branch and is kept only
+>   as provenance.
+>
+> The page's own header already says it is a historical record and must not be used to infer live capability, and this recheck confirms
+> that instruction is load-bearing rather than boilerplate.
+
 ## Summary
 
 The completion programme has achieved:
