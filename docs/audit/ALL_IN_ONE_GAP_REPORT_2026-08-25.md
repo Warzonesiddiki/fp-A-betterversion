@@ -8,6 +8,26 @@
 
 Exceptional chassis (214 engines, 47 fail-closed stores, real connector code) wrapped around ~19 industry pages that are ONE generic GL template, 2 contaminated screens, and 3 missing one-stop pillars. Honest label: **BUILT-wide, CONNECTED-thin**.
 
+> **2026-11-11 repository review note:** This 2026-08-25 spot-check has been **partly superseded by fixes**, which is the right direction for
+> an audit but means its grades must not be quoted as current. Re-checked the sampled items:
+>
+> - **The headline clone finding is fixed where it was sampled.** The report grades `/manufacturing/overview` **SHALLOW** because
+>   "`ManufacturingEngine` exists but NOT imported". Today `src/pages/manufacturing/ManufacturingPage.tsx:29` **imports
+>   `ManufacturingEngine`**, and the page header documents that all sector KPIs come from `ManufacturingEngine.calculateStats` — with an explicit
+>   note that `getOutputTrend` ignores its entries argument. That is the DEEP-style wiring the report said was missing, plus a disclosure of the
+>   engine's own limit. `/healthcare/overview` also now has a dedicated `src/pages/healthcare/HealthcarePage.tsx` rather than the "identical clone".
+> - **The counts are stale in both directions.** "214 engines, 47 fail-closed stores" measures **180 engines** today (the same 180 that
+>   `engines:verify` enforces and that other documents record), and the store inventory is 43 persisted / 48 total with two persisted stores
+>   missing from the map entirely (AUD-112). The 47 "fail-closed" figure has no current evidence behind it and should be treated as the August
+>   count.
+> - **The verdict still describes the product at the level that matters.** "BUILT-wide, CONNECTED-thin" remains the most accurate one-line
+>   summary in the repository. The defects found later in this review all fit it: a consent registry with no producer (AUD-109), an
+>   `auditTrailGdprEvents` consumer nothing feeds (AUD-109), a temporal engine with no caller (AUD-116), a period-transition call that always
+>   401s (AUD-120), and one still-unfixed sector KPI gap made latent by retired routes (AUD-121). Nothing in this review contradicts the verdict;
+>   several batches merely found more instances of it.
+> - Whether the *unsampled* industries were fixed the way manufacturing was is `[UNVERIFIED: not re-graded in this review]`. The table above
+>   should be read as an August snapshot with a demonstrated fix programme behind it, not as a current grade sheet.
+
 ## Vertical coverage (spot-check grades)
 
 DEEP=engine-wired+store+export · FUNCTIONAL=basic flows wired · SHALLOW=generic shell with icon swap.
