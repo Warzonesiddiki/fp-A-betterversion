@@ -27,8 +27,12 @@ anything with a branch that a user can reach. One good test beats a percentage.
 
 ## In this repo
 
-- `npm run test` is the full run (~20 min, 8 GB heap); `npm run test:sharded`
-  is the CI-shaped run; `npm run test:a11y` targets the accessibility suite.
+- `npm run test` runs Vitest in one process with an 8 GB heap; `npm run test:sharded`
+  runs the sequential 8-shard suite (2 workers per shard by default). Wall time is
+  environment-dependent; report the actual command and final tally, never an estimate.
+  Neither command collects coverage by default. `npm test -- --coverage` is a separate
+  coverage run; configured thresholds are 50% per metric in `vite.config.ts`.
+  `npm run test:a11y` targets the accessibility suite.
 - A test asserting a `Money` value must assert the rendered string, because that
   is what the user sees.
 - Time and randomness are injected, not read from the clock inside an engine

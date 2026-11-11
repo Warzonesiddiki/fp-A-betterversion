@@ -26,14 +26,16 @@ group: meta
 
 ## In this repo
 
-- `docs/discovery/requirements-register.md` holds 19 rows (FR-001–011, 4 NFR,
-  3 UX, 1 AI). `node scripts/check-coverage-annex.mjs` reports 107 mapped and 93
-  source owed.
-- `npm run capability:inventory` regenerates the 231-row truth matrix with
-  dispositions and grades; 0 of 231 are CONNECTED or GOVERNED today, and the 47
-  REVIEW rows are a release blocker by the matrix's own policy.
-- The completion register (PR #86) is the closed vocabulary;
-  `docs/plan/COMPLETION_PLAN_86_100.md` §3 defines the statuses.
+- `docs/discovery/requirements-register.md` owns requirement IDs and evidence.
+  Re-run `node scripts/check-coverage-annex.mjs` for the current mapped and
+  SOURCE-OWED counts; do not carry dated totals forward.
+- `docs/CAPABILITY_TRUTH_MATRIX.md` is generated static source/test evidence, not
+  end-to-end support or certification. Regenerate/check it with
+  `npm run capability:inventory:check`; inspect its generated definitions before
+  interpreting any maturity label.
+- `npm run completion:register:check` validates the current machine-readable
+  completion vocabulary and evidence rules. Use its current output rather than
+  old PR totals or copied status counts.
 
 ## Red flags
 

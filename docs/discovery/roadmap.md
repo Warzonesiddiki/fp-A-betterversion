@@ -1,6 +1,6 @@
 # FinPlan Pro — High-Level Roadmap
 
-**Status:** Proposed sequencing for owner review — 2026-11-04. This is a high-level index, not a date promise or capability claim. The detailed work packages, dependencies, risks, acceptance tests, evidence labels and owner questions live in [`MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
+**Status:** Owner approved proceeding with this proposed sequence on 2026-11-10 (DEC-105). This is a high-level index, not a date promise or capability claim; unresolved R1–R12 questions retain their safe defaults. The detailed work packages, dependencies, risks, acceptance tests, evidence labels and owner questions live in [`MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
 
 **Scope:** DEC-033 establishes all FP&A as the ultimate product scope. DEC-104 accepts universal accounting/finance import using the user's own template system. The owner’s Dynamics 365 workflow is the first real-source proof, not a product boundary. The earlier 2026-10-16 Gate 0–6 roadmap is superseded as the *current sequence*; the accepted owner and technical decisions remain binding in [`decision-log.md`](decision-log.md). No accepted scope is silently removed by this reordering.
 
@@ -15,16 +15,16 @@
 
 ## Gates
 
-### Gate 0 — Align product intent and review scope (current)
+### Gate 0 — Align product intent and review scope (approved; open inputs tracked)
 
 **Goal:** establish one shared interpretation of “one stop,” “any ERP,” user-customizable templates, all industries, and “perfect.”
 
-- Align [`../VISION.md`](../VISION.md), this roadmap, the requirements register, connector architecture, agent instructions and current-state docs with the 2026-11-04 owner direction.
+- Keep [`../VISION.md`](../VISION.md), this roadmap, the requirements register, connector architecture, agent instructions and current-state docs aligned to the owner's reaffirmed 2026-11-10 direction; the detailed proposal is in the master plan.
 - Review the master product/execution proposal; preserve DEC-033 and DEC-104 and record any new owner rulings in the decision log.
 - Confirm user roles and whether the current single-user/local-first decisions (DEC-004/103) meet the accounts-team correction workflow.
 - Reconcile the completion register and generated capability matrix evidence for universal import.
 
-**Exit:** owner comments/accepts the product interpretation and the highest-impact review questions in the master plan; conflicts are recorded as decisions, not implicit code.
+**Gate decision:** the owner approved proceeding with the sequence on 2026-11-10 (DEC-105). Open R1–R12 inputs are not treated as resolved; the safe defaults continue to govern while Phase 1 foundation work proceeds. Record any later owner clarifications as decisions, not implicit code.
 
 ### Gate 1 — One canonical user-configurable import contract
 

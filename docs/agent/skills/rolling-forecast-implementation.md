@@ -1,7 +1,7 @@
 ---
 name: rolling-forecast-implementation
 description: >
-  Use when implementing or changing rolling forecast, driver-based forecasting, or continuous planning: 12-18 month horizon, 5-day cycle, driver-based, back-test.
+  Use when implementing or changing rolling forecasts, drivers, or continuous planning; validate horizon, versioning, and actual-replacement semantics against current owner decisions.
 group: finance
 ---
 
@@ -11,16 +11,16 @@ group: finance
 
 ## Method
 
-1. **Driver-based framework**: identify 5-7 key drivers that explain business, build financial model from them. Don't forecast every GL account. Integrate financial + operational data so driver changes flow to statements.
-2. **12-18 month horizon**: always looks same distance forward (12, 18, 24 months), not fiscal year. Long enough for seasonality, short enough for relevant assumptions.
-3. **Time fence**: first 3 months locked for execution, months 4-6 lightly reviewed, months 7-18 directional.
-4. **5-day monthly cycle**: Day1 load actuals, Day2-3 analyze variances, Day4 update drivers, Day5 publish/socialize. Cap revisions at 10% OpEx per cycle to prevent drift.
-5. **Continuous updates**: actuals replace forecasts as periods close; view stays future-focused. Updated monthly/quarterly, not annually.
-6. **Pilot**: one BU for one cycle to validate data feeds and acceptance, then enterprise-wide.
-7. **Automate**: connectors from ERP/CRM/HRIS reduce manual errors 40%. Target 75% GL accounts auto-loaded.
-8. **KPIs**: forecast cycle time <5 days, data automation 75%, user satisfaction 4.2/5, MAPE 3mo <7%, budget-to-actual variance <10%, working capital days -5 in 12mo.
-9. **Off-cycle trigger**: revenue/cost deviates >5% annual plan for 2 consecutive months, or catalyst shifts annual EBITDA >$3M.
-10. **Accuracy**: IBM research (widely cited since 2017): rolling forecasts deliver 12% greater accuracy, 50% less prep time, 10% profitability improvement.
+1. **Driver-based framework**: choose assumptions appropriate to the planning question, document their source/owner and how they affect outputs. Do not prescribe a fixed driver count or imply operational-data integration that is not evidenced.
+2. **Horizon**: follow the applicable owner decision and user-selected planning cadence. Do not present a universal 12–18 month horizon as a project requirement.
+3. **Versioning and time fence**: preserve approved versions and explicit assumptions; any locked/directional horizon rules need a documented product/accounting decision.
+4. **Review cadence**: define responsibilities and approvals for the customer workflow; do not impose a five-day cadence or arbitrary revision cap without owner evidence.
+5. **Actuals and forecast versions**: follow DEC-096 and applicable approved semantics for replacement/blending, retain prior approved versions, and make the as-of period explicit.
+6. **Pilot and rollout**: scope and acceptance require an agreed pilot plan; do not infer enterprise readiness from one test cycle.
+7. **Integrations**: no automation or reduction claim without measured evidence and an approved connector scope. User-mapped CSV/XLSX is the broad baseline; optional APIs follow the same canonical contract.
+8. **Evaluation**: establish owner-approved baselines and targets before measuring accuracy, cycle time, or adoption. Do not present generic targets as current product performance.
+9. **Off-cycle updates**: define triggers with the owner and use case; do not hard-code generic revenue/EBITDA thresholds.
+10. **Accuracy**: report only measured back-test or live results with scope, periods, data, and method. Industry claims are not project evidence.
 
 ## In this repo
 
@@ -36,5 +36,5 @@ group: finance
 - Forecast drift without governance.
 - Excel-based implementation without automation.
 
-**Proves itself with:** rolling forecast tests with 18-month horizon, driver-based calcs, 5-day cycle documented.
-**Source:** adapted from cubesoftware.com rolling forecast best practices, cleoai.tech rolling forecast implementation, metapraxis.com rolling forecasting (MIT, rewritten). IBM Institute for Business Value research cited in FP&A Trends.
+**Evidence:** verify current rolling forecast semantics against DEC-096 and `docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`; tests demonstrate only their asserted cases.
+**Source:** current owner decisions and master plan; external benchmarks, if used, must be sourced, qualified, and kept distinct from measured project outcomes.

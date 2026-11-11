@@ -9,8 +9,8 @@
 > disagree on product direction, VISION.md wins; where they disagree on
 > requirement evidence, the measured evidence wins.
 
-**Status:** Discovery/governance records, updated for owner review on 2026-11-04. The detailed plan is explicitly proposed; no new provider or industry support is certified by it. The historical repository audit remains at [`../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md`](../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md).
-**Product ambition:** An all-in-one FP&A workspace; universal user-mapped finance-data intake and all-industry extensibility are long-term goals (DEC-033/104 + 2026-11-04 direction).
+**Status:** Discovery/governance records, updated 2026-11-10. The owner approved the phased execution sequence (DEC-105); detailed source, deployment, provider and industry choices remain governed by open questions. No new provider or industry support is certified by the plan. The historical repository audit remains at [`../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md`](../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md).
+**Product ambition:** An all-in-one FP&A workspace; universal user-mapped finance-data intake and all-industry extensibility are long-term goals (DEC-033/104, reaffirmed 2026-11-10).
 **Current owner-specific workflow:** The user exports a General Ledger (GL) dump from Microsoft Dynamics 365 each month, performs FP&A work, reviews potentially incorrect entries, guides the accounts team, and compares daily/monthly/yearly results. D365 remains the first real-source validation target.
 
 > This pack prepares for an evidence-based audit and product-definition session. It is not a claim that the product already implements any capability. All product choices below are proposals until validated with the user and repository evidence.

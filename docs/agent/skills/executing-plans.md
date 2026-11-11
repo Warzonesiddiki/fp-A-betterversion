@@ -24,10 +24,13 @@ group: discipline
 
 ## In this repo
 
-- The gates are listed in `docs/agent/05_COMMANDS_AND_GATES.md`; run the narrow gate
-  during the step and the full set before the branch finishes.
-- Update `docs/TASKBOARD.md` and the handover in the same session; a plan that
-  drifts from the tree is worse than no plan.
+- Current gates are indexed in `docs/agent/05_COMMANDS_AND_GATES.md`; run the
+  narrow gate during a step and the required final set before declaring a branch
+  complete. Check the mission contract for phase-specific authorization.
+- Update the authoritative active plan and current progress record (for this
+  docs-first review: `docs/_agent/PROGRESS_LOG.md` and `docs/_agent/STATE.json`).
+  Update a taskboard or handover only when the active workflow requires it; do not
+  let historical coordination files override the master plan or mission gate.
 - Never edit a plan's exit gate to match what you achieved (that is a reversed
   ratchet; see `gates-and-ratchets`).
 

@@ -34,7 +34,9 @@ a library behaviour, a competitor feature.
 
 - External claims in docs carry a source and a date, or they are cut.
 - "Verified" is reserved for evidence measured here; a vendor page is not
-  verification (see the O1–O9 rows in `docs/TASKBOARD.md`).
+  verification. Check accepted decisions in `docs/discovery/decision-log.md` and
+  unanswered source/provider items in the master plan; dated taskboards are not
+  automatically current.
 - When a source contradicts the docs, the docs get corrected in the same session.
 
 ## Red flags

@@ -6,8 +6,10 @@
 > [`docs/agent/WORKING_AGREEMENT.md`](../../agent/WORKING_AGREEMENT.md),
 > [`docs/VISION.md`](../../../docs/VISION.md), and the proposed
 > [MASTER_PRODUCT_AND_EXECUTION_PLAN.md](../../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
-> Recheck the active branch, tree status, decisions and evidence in the current
-> session before acting.
+> The old `main` branch, dirty-path, 90%-completion/coding-everywhere target,
+> backlog order, test results and next steps below are all historical and do not
+> override current Arena instructions or mission gates. Recheck the active branch,
+> tree status, decisions and evidence in the current session before acting.
 
 ---
 

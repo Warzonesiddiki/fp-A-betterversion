@@ -9,14 +9,21 @@
 > [`docs/CAPABILITY_TRUTH_MATRIX.md`](CAPABILITY_TRUTH_MATRIX.md) and
 > [`docs/agent/09_KNOWN_GAPS.md`](agent/09_KNOWN_GAPS.md).
 >
-> **Broader owner direction, 2026-11-04:** make FinPlan Pro a one-stop FP&A
-> product that removes mandatory app-hopping for supported workflows, accepts
-> accounting/ERP data through the owner's user-customizable format, and is
-> extensible across industries. DEC-104 already accepts the universal template
-> direction. This target expands the D365-first starting workflow; it does not
-> certify universal ERP coverage or any industry today.
+> **Broader owner direction, reaffirmed 2026-11-10:** build a one-stop FP&A
+> product so users do not need another app to complete supported FP&A work; use
+> data from accounting/ERP systems through the product's user-customizable
+> format; and cater to all industries. DEC-104 already accepts the universal
+> template direction. This target expands the D365-first starting workflow; it
+> does not certify universal ERP coverage or any industry today.
+>
+> **Format principle:** users should map their existing structured exports into
+> a versioned FinPlan canonical model rather than manually reshape every source
+> to a proprietary layout. The product may provide a documented FinPlan
+> template format for repeatable interchange, but it must be an option, not a
+> barrier to importing source-native CSV/XLSX. Mappings may not invent financial
+> values or silently discard unmapped fields.
 
-Last reviewed: **2026-11-04**. Detailed proposed execution is in
+Last reviewed: **2026-11-10**. Detailed proposed execution is in
 [`docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md);
 [`docs/discovery/roadmap.md`](discovery/roadmap.md) is its high-level gated
 summary. Accepted decisions remain in

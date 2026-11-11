@@ -30,8 +30,10 @@ imports, settings.
   once, at the edge, with a field name.
 - A journal that does not balance is refused with the imbalance amount, not a
   generic error.
-- Import wizards report per-row errors with row numbers; a silently skipped row is
-  the failure mode the quarantine design exists to prevent.
+- Import parsers can report row-numbered validation errors and rejections; inspect
+  the specific flow and whole-file policy before claiming recovery or partial
+  import. DEC-007 requires whole-file rejection for the governed GL upload path;
+  do not equate parser diagnostics with a committed partial import.
 
 ## Red flags
 

@@ -13,19 +13,17 @@ group: discipline
 A route may be graded SUPPORTED only when:
 
 1. **Page test exists:** The route's page component has a colocated `*.test.tsx` file with at least one meaningful test (not just "renders without crashing").
-2. **Exact title:** The test title is recorded verbatim in `docs/plan/completion-register.json`. The verification gate checks that the title exists in the file.
-3. **Governance evidence:** The route has at least one test in `src/__tests__/spineGovernance.test.ts` that starts with `GOVERNED {route}` and proves authorization, audit, or write-guard behavior.
-4. **Page path:** The `page` field in `governance-evidence.json` points to a real file that exists.
+2. **Canonical evidence:** The route has a valid claim in `docs/plan/spine-evidence.json`; the cited file and exact test title resolve.
+3. **Governance evidence:** The route has the required claim(s) in `docs/plan/governance-evidence.json`; exact cited files and titles resolve and prove applicable controls. Do not assume every valid claim must live in one test file or match a hand-written title prefix.
+4. **Page path:** The evidence manifests point at real page/test files; the verifier enforces the current schema and connected/governed requirements.
 
 ## Method
 
-1. Find the route's test file: `src/pages/{path}/*.test.tsx`
-2. Extract exact test titles using regex: `(?:it|test)\s*\(\s*['"\`]([^'"\`]+)['"\`]`
-3. Skip "smoke test" and "renders without crashing" — use a meaningful title.
-4. Find the governance test title: search `spineGovernance.test.ts` for titles starting with `GOVERNED {route}`.
-5. Update `completion-register.json` with the exact titles.
-6. Update `governance-evidence.json` with the exact titles and real page path.
-7. Run `npm run docs:verify` — it must PASS.
+1. Read route acceptance criteria and current status in the completion register and evidence manifests.
+2. Add/repair failing-first page behavior and governance tests where the measured gap requires them; do not write titles from memory.
+3. Record exact observed test paths/titles in the evidence records according to their current schemas; do not hand-edit generated views.
+4. Run `npm run spine:evidence`, `npm run governance:evidence`, `npm run completion:register:check`, and `npm run docs:verify`.
+5. Recheck the generated truth matrix with `npm run capability:inventory:check`; report exactly what evidence establishes and what remains unverified.
 
 ## What this prevents
 

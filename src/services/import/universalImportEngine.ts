@@ -94,11 +94,12 @@ export function universalImportParse(input: UniversalImportInput): UniversalImpo
       defaultEntity: template.defaultEntity,
     });
   } else {
-    // Generic templates use parseGLRows with the template's mappings
+    // User-defined templates use the same mapped parser as the upload UI.
+    // The parser detects known D365 date/summary-row semantics from headers,
+    // while still applying the user's explicit field mappings.
     sourceType = template.sourceType;
-    parseResult = parseGLRows(rows, template.mappings, firstRowNumber, {
-      flavor: null, // Force generic dialect for user templates
-    });
+    d365Flavor = detectD365Flavor(headers);
+    parseResult = parseGLRows(rows, template.mappings, firstRowNumber);
   }
 
   const entries = parseResult.entries;

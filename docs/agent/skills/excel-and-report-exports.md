@@ -28,9 +28,9 @@ group: product-ui
 
 - `npm run export:verify` checks CSV injection protection, entity scoping and safe
   PDF generation.
-- exceljs is the spreadsheet writer; the DEC-018 review-and-correct hand-off is
-  still an open conflict with the one-stop rule — do not build a new workflow that
-  depends on Excel as a mandatory round-trip.
+- Excel export is optional interoperability under DEC-035; the earlier DEC-018
+  mandatory spreadsheet hand-off was superseded on that point. Keep the in-app
+  correction lifecycle sufficient; do not require an Excel round-trip.
 - A quarantine or partial-data notice belongs in the workbook header when the
   screen shows one.
 

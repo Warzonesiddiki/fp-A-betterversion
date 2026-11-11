@@ -25,11 +25,15 @@ group: discipline
 
 ## In this repo
 
-- `src/App.tsx` is the route inventory; `docs/product/ROUTE_MAP.md` is generated.
+- `src/App.tsx` contains route wiring; the canonical route inventory and
+  dispositions are generated from current route/evidence sources. Check
+  `docs/product/ROUTE_MAP.md` and the relevant verifier rather than treating a
+  component tree alone as the full route contract.
 - `src/engines/` holds calculation logic; `src/store/` holds persisted state.
 - `docs/agent/00_INDEX.md` is the map of the documentation itself.
-- Two engine counts exist; read `docs/plan/COMPLETION_PLAN_86_100.md` §2.3 before
-  quoting either.
+- Engine reachability, shipped status, and manifest membership are distinct. Use
+  current `npm run engines:verify` and `node scripts/verify-readme-stats.mjs --list`
+  outputs; do not use a dated completion plan as count authority.
 
 ## Red flags
 

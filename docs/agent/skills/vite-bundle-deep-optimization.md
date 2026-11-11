@@ -18,19 +18,18 @@ group: product-ui
    - Function form only (object form deprecated in Vite 8, breaks in Rolldown). One narrow rule per group.
    - Stable vendors isolated: react-vendor, chart-vendor, grid-community-vendor, excel-core-vendor, pdf-vendor, db-vendor, icon-vendor.
    - Do NOT use generic `/node_modules/` regex — it drags `vite/preload-helper` into lazy chunk and eagerly preloads heavy vendors (pdf 616KB case).
-   - Sector pages: avoid grouping 19 dashboards into one `sector-pages` chunk (350KB raw). Let each be its own lazy chunk or split by domain — better cache, same total but smaller per-route.
-4. **Route-level lazy**: every route in `src/App.tsx` is `lazy(() => import(...))` + Suspense. A visitor to `/dashboard` never downloads `/sector/*`.
-5. **Avoid barrels**: `import { X } from '@/components/ui'` loads entire ui folder. Import directly: `import { Button } from '@/components/ui/Button'`. Barrel files force bundler to load whole graph.
-6. **ESM + sideEffects**: ensure deps publish ESM (`module` field). `sideEffects: false` in package.json tells bundler unused exports can be dropped.
-7. **Cherry-pick**: `import debounce from 'lodash-es/debounce'` not `from 'lodash'`. `date-fns` 16KB gz vs `moment` 231KB.
+   - Sector pages currently have a `sector-pages` manual chunk rule. Do not split or re-group by prescription: test route loading, caching, total gzip, and critical path before changing it.
+4. **Route-level lazy**: inspect the actual route and emitted chunks; do not infer that a route avoids downloads solely from a lazy import. Verify the critical path and runtime behavior.
+5. **Inspect barrel imports** in the treemap. They can inhibit tree-shaking depending on exports and side effects; prefer a direct import only when the build proves it reduces unwanted code.
+6. **ESM and side effects**: inspect package exports and documented side effects. Never mark a package or project `sideEffects: false` unless that contract is true; a false declaration can remove required initialization.
+7. **Cherry-pick** only when the package supports it and current bundle analysis shows a gain. Do not repeat generic package-size comparisons as project measurements.
 8. **Dynamic import for heavy widgets**: `const HeavyChart = lazy(() => import('./HeavyChart'))` inside sector page, not at top-level. Chart lib only loads when user opens that sector.
 9. **Measure after**: build + bundle-check again. Total must not increase. Critical path must stay <750KB gz, main <150KB gz, lazy vendors <300KB gz each (G19).
-10. **Document**: commit message includes before/after gzip numbers, what was removed, and what remains.
+10. **Document**: report before/after gzip numbers from the same current build, what changed, and what remains unverified.
 
 ## In this repo
 
-- Budget: 2080KB gzip total (DEC-024, measured 2061.71KB at Phases 0-14). Target 1950KB for headroom (N7).
-- Current: 2064.16KB gzip = 99.2% of limit, 1 warning (excel 248KB, grid 206KB, pdf 179KB, chart 129KB, sector-pages 109KB).
+- Enforced limits are maintained in `scripts/bundle-check.js` (main 150 KB gzip, total 2,080 KB, named lazy vendors 300 KB each, critical path 750 KB). Do not copy historical size percentages as current; run a fresh build and `npm run bundle-check`.
 - Gates: `npm run bundle-check` (fails over limit), `npm run build` must pass tsc + eslint first.
 - Visualizer: `rollup-plugin-visualizer` with `ANALYZE=true`.
 - Critical path measured from `dist/index.html` modulepreloads — lazy vendors must NOT be in critical path (MUST_BE_LAZY check).

@@ -1071,7 +1071,8 @@ export const useGLStore = create<GLState>()(
             const stamped = stampProvenance(
               newEntries,
               { batchId, fileHash, sourceFile },
-              keptSourceRows
+              keptSourceRows,
+              source?.template
             );
             // Entry ids derive from the batch id, not the millisecond clock:
             // two batches committed in the same instant (or under a pinned
@@ -1123,6 +1124,7 @@ export const useGLStore = create<GLState>()(
               controlTotals,
               reconciliation,
               scope,
+              template: source?.template,
             };
 
             get().recordImport(result);
@@ -1138,6 +1140,7 @@ export const useGLStore = create<GLState>()(
               controlTotals,
               reconciliation,
               scope,
+              template: source?.template,
             };
           }
         ),

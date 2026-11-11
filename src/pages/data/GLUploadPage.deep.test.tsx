@@ -994,6 +994,18 @@ describe('GLUploadPage — import provenance', () => {
       sourceRows: [2, 3],
       rejections: [],
       expectedTotals: {},
+      template: {
+        status: 'one-off',
+        name: 'gl.csv',
+        sourceType: 'generic_csv',
+        signature: 'accountcode|credit|debit|postdate',
+        mappings: {
+          accountCode: 'accountCode',
+          postDate: 'postDate',
+          debit: 'debit',
+          credit: 'credit',
+        },
+      },
     });
   });
 

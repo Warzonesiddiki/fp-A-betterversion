@@ -28,10 +28,15 @@ that reads several stores.
 
 ## In this repo
 
-- 48 stores; 43 persisted through `masterStorage` with `as: 'number'`, which is why
-  the ledger's `Money` conversion is gated at `persist.merge` instead of globally.
-- `npm run persistence:map` and `npm run schema:equality` assert store/schema
-  agreement; run them when the persisted shape changes.
+- Current inventory reports 48 stores, 43 persisted. The `masterStorage` number-
+  serialization and `persist.merge` Money hydration policy are path-specific to the
+  adopted GL ledger; do not infer the same type or migration behavior for every
+  persisted store. Recheck the persistence map and money migration ledger when this
+  inventory or a store contract changes.
+- `npm run persistence:map` checks registered persisted stores;
+  `npm run schema:equality` checks shared database-table column names. They are
+  different contracts, not general proof that every store schema or persisted
+  migration is correct.
 - Mocks must be selector-faithful: a mock returning a whole store object hides
   the selector bug you are trying to test.
 

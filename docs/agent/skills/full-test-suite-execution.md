@@ -1,6 +1,6 @@
 ---
 name: full-test-suite-execution
-description: Use when running the complete test suite across all shards. Maps shard assignments, runs each shard, aggregates results, and verifies the 8/8 pass requirement.
+description: Use when running the complete test suite. Runs the repository sharded test runner, verifies every shard completed successfully, and reports its actual per-shard tally.
 group: engineering
 ---
 
@@ -10,24 +10,24 @@ group: engineering
 
 ## Method
 
-1. **Identify shards:** The test suite is split into 8 shards for parallel execution. Each shard covers a subset of test files.
-2. **Run each shard:** Execute `npm run test:sharded` which runs all 8 shards in sequence.
-3. **Check results:** All 8 shards must PASS (exit 0). Any failure is a release blocker.
-4. **Aggregate:** Sum total tests passed across all shards. The full suite has ~1429 test files.
-5. **Verify gates:** After tests pass, run all other gates (tsc, eslint, docs:verify, money gates, etc.).
+1. **Check prerequisites:** test dependencies and the repository runner must be
+   available. A missing runner means no tests ran.
+2. **Run the canonical command:** `npm run test:sharded` executes the current
+   eight-shard configuration sequentially (two workers per shard by default).
+   Do not infer file assignments; the runner/Vitest determines shard membership.
+3. **Check results:** require exit 0 and PASS for every shard in the final summary.
+   A failed, missing, timed-out, or partial shard is not a full-suite pass.
+4. **Report exactly:** quote actual per-shard file/test summaries. Do not use old
+   repository-wide file totals or sum unknown/partial output. This command does not
+   collect coverage by default.
+5. **Verify other gates separately:** a suite pass does not replace type, lint,
+   documentation, money, determinism, or release-specific checks.
 
-## Shard assignment (8 shards)
+## Runner defaults
 
-| Shard | Coverage |
-|-------|----------|
-| 1 | Core engines and stores |
-| 2 | Data import and GL |
-| 3 | Reports and exports |
-| 4 | Pages (budgets, forecasts, scenarios) |
-| 5 | Pages (data, audit, periods) |
-| 6 | Pages (analytics, AI, settings) |
-| 7 | Pages (sector, industry) |
-| 8 | Infrastructure (a11y, determinism, fabrication) |
+The current script defaults to eight shards, two workers, and a 2800 MB child-process
+heap. Confirm defaults in `scripts/test-sharded.mjs`; they may change. `--help` is not
+a supported option and should not be used as a harmless probe; the runner will execute.
 
 ## What this prevents
 

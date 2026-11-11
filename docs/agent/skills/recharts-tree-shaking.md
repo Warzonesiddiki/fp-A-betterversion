@@ -7,7 +7,7 @@ group: product-ui
 
 # Recharts tree-shaking
 
-**Use when** chart-vendor >270KB gz, sector-pages >100KB gz, or adding Treemap/Heatmap/Sparkline.
+**Use when** a fresh bundle report shows a chart-related chunk approaching its enforced limit, or a new chart/widget is proposed.
 **Skip when** change is data-only, not chart type.
 
 ## Method
@@ -15,15 +15,14 @@ group: product-ui
 1. **Granular imports**: `import { LineChart, Line } from 'recharts'` pulls less than `import * as Recharts`. Prefer named imports from ESM entry.
 2. **Avoid barrel**: `src/components/charts/index.ts` that re-exports all charts forces bundler to load whole recharts even if you use one. Import directly.
 3. **Dynamic import heavy charts**: `const TreemapChart = lazy(() => import('@/components/charts/TreemapChart'))` — chart lib only loads when route that needs it is visited. Critical path stays clean.
-4. **Measure**: `ANALYZE=true npm run build` → `bundle-report/stats.html` → BundleSizeTreemap example shows tree-shaken total 9.5KB min+gz for single LineChart vs 924KB raw for Treemap (99KB gz). Large rectangles = opportunity.
+4. **Measure**: `ANALYZE=true npm run build` and inspect the generated treemap when available; report exact current raw/gzip output. Historical LineChart/Treemap numbers are examples only, not expected savings.
 5. **SideEffects**: ensure package has `sideEffects: false` or bundler can't drop unused exports.
-6. **Alternative**: if bundle still large, consider Chart.js manual registration (208KB vs 265KB auto, -21% = -57KB) or visx (30-50KB for specific modules) — but requires DEC if swapping lib.
+6. **Alternative**: evaluate another chart library only against current usage, license, accessibility, functionality, and a measured before/after build; do not use old third-party size comparisons as evidence.
 
 ## In this repo
 
-- Recharts used in 79 places, chart-vendor 466KB raw / 129KB gz.
-- Sector pages use TreemapChart, HeatmapChart, Sparkline — currently bundled via sector-pages manualChunk (350KB raw).
-- Gate: bundle-check G19 chart-vendor <300KB gz.
+- Current `vite.config.ts` assigns Recharts to `chart-vendor` and sector-page modules to `sector-pages`; this is chunking configuration, not proof of current sizes or lazy-load behavior.
+- Run `npm run build` and `npm run bundle-check` for fresh measurements; the bundle gate applies the named lazy-vendor limit from its script.
 - Tests mock recharts to avoid layout engine: `vi.mock('recharts', () => ({ ResponsiveContainer: ... }))`.
 
 ## Red flags

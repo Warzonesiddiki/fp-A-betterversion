@@ -8,11 +8,9 @@ group: product-ui
 
 **Use it when:** the bundle is near the size limit, or a new dependency pushes total over budget.
 
-## Current State (2026-10-23)
+## Current evidence rule
 
-- **Total JS:** 95.7% of limit (warns at 1872KB / 2.0MB)
-- **Vendor chunks:** excel-core 248KB, grid 206KB, pdf 134KB, chart 121KB
-- **All G19 vendor checks PASS**
+Do not copy the October 2026 bundle sizes below or elsewhere in this library as current. Run `npm run build` and `npm run bundle-check` on the tree under review; distinguish enforced thresholds from measured output.
 
 ## Proven Methods
 
@@ -24,7 +22,7 @@ group: product-ui
 
 4. **Custom chart components** — replace heavy library components with custom SVG/div implementations.
 
-5. **Stub optional deps** — alias unused optional dependencies to stubs (html2canvas, dompurify, canvg).
+5. **Remove or stub optional dependencies only after proving they are unused on supported paths.** A bundle reduction that breaks behavior, security, or exports is not an optimization.
 
 6. **Retire EXPERIMENTAL routes** — RETIRED requires a DEC id + commit (DEC-006). Never delete SUPPORTED routes.
 

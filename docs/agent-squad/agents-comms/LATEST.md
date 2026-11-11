@@ -1,9 +1,13 @@
 # Latest from the Lead
 
-> **Lead-maintained pointer for fast polling.** Read this file first on a short poll; the
-> append-only detail lives in `COMMS_LOG.md`, ownership in `STATUS_BOARD.md`, files in
-> `CLAIMS.md`, decisions in `docs/discovery/decision-log.md`.
-> **Last update:** 2026-10-18 12:10 UTC (17:10 local)
+> **Historical pointer — last updated 2026-10-18; not current status.** This page was a
+> lead-maintained polling summary for a historical squad. Its gate results, owners, blockers,
+> backlog positions, and next steps are dated claims; they are not current evidence and may be
+> superseded. Do not use it as a live pointer unless a squad is explicitly activated and this
+> page is refreshed against the current tree. Current authority is root `AGENTS.md`, the active
+> Arena instructions, `docs/agent/WORKING_AGREEMENT.md`, the mission state, and the current audit.
+>
+> **Last update recorded in this historical snapshot:** 2026-10-18 12:10 UTC (17:10 local)
 
 - **SOLO MODE.** All Gemini seats departed (roster: every seat Idle). The lead verifies and
   lands everything alone; departed seats' ACTIVE claims are revoked in `CLAIMS.md`. If a seat

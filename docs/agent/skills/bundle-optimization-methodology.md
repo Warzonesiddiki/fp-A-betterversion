@@ -8,7 +8,9 @@ group: product-ui
 
 **Use it when:** the bundle is near the size limit, or a new dependency pushes total over budget.
 
-## Proven methods (measured on this project)
+## Methods and evidence
+
+The dated gzip deltas below are historical experiment results, not current bundle sizes, guaranteed savings, or permission to retire a route. Re-run the build and gate on the current tree before relying on a technique.
 
 1. **Vendor chunking** — `manualChunks` in vite.config.ts splits react, excel, grid, pdf, chart into separate cacheable chunks. Do NOT use a generic `/node_modules/` regex that drags preload-helper into pdf-vendor.
 
@@ -18,7 +20,7 @@ group: product-ui
 
 4. **Custom chart components** — replace heavy library components with custom SVG/div implementations. Measured savings: Treemap 99KB gz → custom flex layout, Sankey → custom div flow, Sparkline → custom SVG polyline.
 
-5. **Stub optional deps** — alias unused optional dependencies to stubs. Measured: html2canvas stub (44.7KB gz), dompurify stub (11.24KB gz), canvg stub.
+5. **Remove or stub optional deps only after verifying no required path uses them.** Measure before/after and run affected export/security tests; an old size delta does not prove the current dependency is unused.
 
 6. **Retire EXPERIMENTAL routes** — RETIRED requires a DEC id + commit (DEC-006). Never delete SUPPORTED routes to fit budget. Re-introduce when scope allows.
 

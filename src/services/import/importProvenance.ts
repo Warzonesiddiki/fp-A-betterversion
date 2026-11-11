@@ -14,6 +14,7 @@ import type {
   GLEntry,
   GLEntryProvenance,
   ImportControlTotals,
+  ImportTemplateLineage,
   ImportReconciliation,
   ImportScope,
 } from '@/types';
@@ -63,7 +64,8 @@ export function makeBatchId(fileHash: string, importedAtISO: string): string {
 export function stampProvenance<T extends Partial<GLEntry>>(
   entries: readonly T[],
   batch: { batchId: string; fileHash: string; sourceFile: string },
-  sourceRows: readonly number[]
+  sourceRows: readonly number[],
+  template?: ImportTemplateLineage
 ): Array<T & { provenance: GLEntryProvenance }> {
   if (sourceRows.length !== entries.length) {
     throw new Error(
@@ -77,6 +79,9 @@ export function stampProvenance<T extends Partial<GLEntry>>(
       fileHash: batch.fileHash,
       sourceFile: batch.sourceFile,
       sourceRow: sourceRows[i]!,
+      ...(template?.status === 'saved'
+        ? { templateId: template.templateId, templateVersion: template.templateVersion }
+        : {}),
     },
   }));
 }

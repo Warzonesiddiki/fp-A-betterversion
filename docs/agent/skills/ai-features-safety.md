@@ -13,8 +13,11 @@ generated text near numbers.
 
 ## Rules
 
-1. **Local only** unless an owner approves otherwise (DEC-022, O6 open). No new
-   network call.
+1. **No external model egress by default.** DEC-003/022 keep financial data
+   local and AI local/gated; a future provider or new narrative surface requires a
+   separate owner decision, explicit user initiation, documented data boundary, and
+   verified-facts gate. Do not call O6 an open decision ID; use current R1–R12 only
+   where the master plan defines them.
 2. **Grounded**: the model receives computed values and may only narrate them. It
    must not calculate, estimate or round a figure.
 3. **Off or explicitly invoked.** No background generation on load.

@@ -26,12 +26,15 @@ or when the cost of building the wrong thing is an hour or more.
 
 ## In this repo
 
-- Any new capability lands as a register row with a status, never as a surprise
-  screen. See `docs/plan/COMPLETION_PLAN_86_100.md`.
+- Any new capability must be scoped against the current completion register and
+  master execution plan; a proposed row or design is not evidence that a capability
+  exists or is supported.
 - A design that changes a recorded decision needs a **new** decision row; editing
   the old one is how history gets lost (`docs/discovery/decision-log.md`).
 - The design must survive the vision's bar: traceable numbers, visible missing
-  data, human authority over consequential actions (`docs/VISION.md` §1).
+  data, human authority over consequential actions (`docs/VISION.md` §1). Follow
+  the active docs-first mission gate; brainstorming authorization is not coding
+  authorization.
 
 ## Red flags
 

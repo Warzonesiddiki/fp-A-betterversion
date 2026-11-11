@@ -1,5 +1,12 @@
 # Squad Communication Log
 
+> **Historical squad communication log — not a live channel by default.** Entries below are
+> dated session records, not current status or validation. Use this file as an active message bus
+> only if a squad is explicitly activated and the current session instructions permit it. Old
+> evidence, blockers, seat assignments, and environment claims may be superseded; revalidate them
+> against the current tree before relying on them. Root `AGENTS.md`, active Arena instructions,
+> and current mission state take precedence.
+>
 > Append-only. **Newest at the bottom.** One message = one entry. Sign with your seat from
 > `ROSTER.md`. Copy-paste formats: [`TEMPLATES.md`](TEMPLATES.md).
 > Never rewrite history; a correction is a new entry that references the old one.

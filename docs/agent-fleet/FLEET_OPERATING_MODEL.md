@@ -7,7 +7,8 @@
 > unmerged branch (§3a); **(2)** the ratchet transaction in §6 is a real constraint on any future
 > parallelisation.
 
-**Status:** proposal for owner approval · 2026-10-21
+**Original status:** proposal for owner approval · 2026-10-21<br>
+**Current status:** not adopted; retained as a historical design record, not an active operating model or decision request.
 **Author:** lead seat (this session) · **Branch:** `arena/ef7aacd6-fp-a-betterversion`
 **Supersedes:** nothing. Extends [`docs/agent-squad/agents-comms/README.md`](../agent-squad/agents-comms/README.md).
 

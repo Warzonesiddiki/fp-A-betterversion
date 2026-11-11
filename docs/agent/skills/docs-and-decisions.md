@@ -20,16 +20,22 @@ group: meta
    old one; editing history removes the evidence that you changed your mind.
 4. **No claim without evidence.** "Supported" means a test that fails when broken.
    "Verified" means it happened here, not upstream.
-5. **Respect the doc's shape.** Handover entries are newest-first, one section per
-   session, and never rewritten later.
-6. **Notion explains, the repository proves.** If they disagree, the repository
-   wins and Notion is corrected in the same session.
+5. **Respect the doc's shape.** `docs/_agent/PROGRESS_LOG.md` is append-only with
+   newest entries last; the handover template is a per-session report, not that log.
+   Treat the October `docs/HANDOVER_NEXT_SESSION.md` as historical unless current
+   mission instructions explicitly require it.
+6. **External mirrors are not authority.** If the user explicitly requests a
+   connector update, the repository remains the evidence source; confirm destination
+   and sharing scope, then report the resulting action. Availability alone is not
+   authorization to publish.
 
 ## In this repo
 
 - Decision log: `docs/discovery/decision-log.md` (DEC-nnn, append only).
-- Live queue and owner blockers: `docs/TASKBOARD.md`.
-- Handover: `docs/HANDOVER_NEXT_SESSION.md` (newest entry on top).
+- Active audit queue/state: `docs/_agent/STATE.json`, `docs/_agent/PROGRESS_LOG.md`,
+  and `docs/_agent/LIVE_DOCS_REVIEW.csv`; check current mission instructions first.
+- Handover format: `docs/agent/HANDOVER_TEMPLATE.md`. Dated taskboards and the
+  October handover file are not automatically current.
 - Generated, never hand-edited: `docs/CAPABILITY_TRUTH_MATRIX.md`,
   `docs/product/ROUTE_MAP.md`.
 - Gates: `npm run docs:verify`, `npm run docs:links -- --strict`,

@@ -26,8 +26,10 @@ group: product-ui
 
 ## In this repo
 
-- `npm run test:a11y` runs the accessibility suites; `src/theme/` contract tests
-  pin contrast per token pair.
+- `npm run test:a11y` runs the configured accessibility suites; `src/theme/`
+  contract tests cover configured token pairs. A passing suite is not, by itself, a
+  WCAG conformance audit or cross-browser/screen-reader acceptance. The current
+  mission separately tracks unverified accessibility scopes and evidence.
 - Colour comes from semantic CSS custom properties (`--text-*`, `--surface-*`,
   `--action-*`). A numbered Tailwind stop (`text-slate-500`) breaks the ratchet
   and cannot flip with the theme.
@@ -39,5 +41,6 @@ group: product-ui
 - Placeholder used as a label.
 - A colour-only status indicator.
 
-**Proves itself with:** `npm run test:a11y` and a keyboard pass you actually did.
+**Proves itself with:** the relevant passing `npm run test:a11y` result plus a
+keyboard interaction check actually performed; label any untested platform or criterion.
 **Source:** original, from the repo's a11y suites and UI contract ids.

@@ -8,43 +8,38 @@ group: meta
 
 **Use it when:** verifying that the project meets zero-compromise standards before any release or completion claim.
 
-## Audit Checklist
+## Audit checklist
 
-### Code Quality
-- [ ] `tsc --noEmit` PASS (exit 0)
-- [ ] `eslint src --max-warnings 0` PASS (exit 0)
-- [ ] `prettier --check` PASS
+### Code quality
+- [ ] `npm run tsc` PASS
+- [ ] `npm run lint` PASS
+- [ ] `npm run format:check` PASS
 
-### Financial Integrity
-- [ ] `money:ast` PASS (0 unsafe operations, 100% safe)
-- [ ] `money:adoption` ratchet holds (baseline recorded)
-- [ ] `missing-is-not-zero` PASS (0 default-zero money reads on SUPPORTED surfaces)
-- [ ] `fabrication` PASS (0 financial literals in UI)
+### Financial integrity
+- [ ] `npm run money:ast` PASS at the current detector scope; no universal-safety claim
+- [ ] `npm run money:adoption` PASS; report proxy and genuine-use metrics distinctly
+- [ ] `npm run docs:verify` PASS, including missing-is-not-zero acceptance
+- [ ] `npm run fabrication:audit` PASS at the configured ratchet and stated scope
 
-### Documentation
-- [ ] `docs:verify` PASS (all ratchet values match gates)
-- [ ] `docs:links --strict` PASS (0 broken links)
-- [ ] `verify-readme-stats` PASS (all measured claims match)
-- [ ] `skills:verify` PASS (all skills indexed, frontmatter valid)
-
-### Evidence
-- [ ] `spine:evidence` PASS (every cited test exists and carries the cited title)
-- [ ] `governance:evidence` PASS (every cited test exists and carries the cited title)
-- [ ] `completion:register` PASS (691 rows, statuses valid)
-- [ ] `routemap:check` PASS (route dispositions decided)
-- [ ] `one-stop:acceptance` PASS (SUPPORTED routes completable in-app)
-
-### AI Safety
-- [ ] `ai-census` PASS (0 ungated surfaces)
+### Documentation and evidence
+- [ ] `npm run docs:verify` and `npm run docs:links -- --strict` PASS
+- [ ] `node scripts/verify-readme-stats.mjs` PASS
+- [ ] `npm run skills:verify` PASS
+- [ ] `npm run spine:evidence` and `npm run governance:evidence` PASS
+- [ ] `npm run completion:register:check` and `npm run routemap:check` PASS
+- [ ] Inspect `docs:verify` output for current route disposition, one-stop, and AI-census results
 
 ### Accessibility
-- [ ] `a11y-q5` PASS (WCAG 2.1 AA, all tests pass)
+- [ ] `npm run test:a11y` PASS for its configured suite; this alone is not WCAG certification
+- [ ] Reconcile current mission accessibility scopes, platform evidence, and owner decisions; mark missing evidence unverified
 
-### Determinism
-- [ ] `determinism` ratchet holds (344 sites baseline)
+### Determinism and bundle
+- [ ] `npm run determinism:ratchet` PASS against the current baseline
+- [ ] `npm run bundle-check` PASS; record measured size and warnings
 
-### Bundle
-- [ ] `bundle-check` PASS (under limit or warning acknowledged)
+### Tests and coverage
+- [ ] `npm run test:sharded` PASS (8/8 shards with complete tally; no coverage collection by default)
+- [ ] If coverage is a release criterion, run `npm test -- --coverage` and report configured 50% thresholds separately; coverage is not correctness evidence
 
 ## What this prevents
 

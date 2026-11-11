@@ -1,7 +1,8 @@
 # FinPlan Pro — Agent Squad Agreement
 
-> This is the working agreement for the session. It is short on purpose. If two agents read
-> different things, AGENT_JOIN_GUIDE.md and AGENTS.md in the repo still win.
+> **Current disposition:** Historical/conditional squad guidance, not an active agreement for this Arena session. The docs map says to use squad coordination records only when a squad is explicitly active. Root `AGENTS.md`, the active Arena branch constraints, and the current master plan take precedence.
+>
+> **Original note:** This was the working agreement for the squad session when written. It is short on purpose. If two agents read different things, `AGENT_JOIN_GUIDE.md` and root `AGENTS.md` win. The dated comms instructions and sandbox-caveat claim below are not current evidence.
 
 ## 1. Branch and commit discipline
 

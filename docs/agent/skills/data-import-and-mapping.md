@@ -36,10 +36,14 @@ group: finance
   other accounting/finance sources. The owner has not supplied anonymized D365
   source samples plus independent controls for each claimed shape; do not call a
   mapping real-data validated just because the architecture decision is settled.
-- `GLUploadPage` currently calls `parseGLRows` and uses saved header-signature
-  mapping profiles; the separate `universalImportEngine` has governance tests
-  but is not wired as that page's parser. Inspect and converge the paths rather
-  than introducing a third mapping authority. See the master execution plan.
+- Current upload path: `GLUploadPage` constructs a transient user template and
+  calls `universalImportParse` → `parseGLRows` → `glStore.importGLData`; preview
+  also uses `parseGLRows`. Saved header-signature profiles have immutable local
+  revisions and batches retain the exact mapping snapshot, with saved id/version
+  only on exact match. This is not a complete template lifecycle: clone/edit/replace,
+  unknown-column behavior, built-in selection, and standalone auto-detect workflow
+  remain open. No owner D365 sample/source controls have been reconciled. See the
+  current connector architecture and master execution plan.
 - Imports are the start of the spine (import → quarantine → tie-out → close →
   analysis/review); a change here must keep its evidence intact.
 

@@ -5,8 +5,10 @@
 1. Is the item in `docs/discovery/roadmap.md` for the current open gate, or
    in the audit's prioritised list (`docs/audit/…` §8) for P0/P1? If not,
    do not do it.
-2. Does it depend on an open decision (DEC-001…006)? If yes, either build
-   the decision-neutral part only (and say which part) or ask the owner.
+2. Does it depend on an unresolved owner decision? Check the current
+   `docs/discovery/decision-log.md` and master-plan `OWNER REVIEW` items; name
+   the exact DEC/R identifier. Build only decision-neutral parts or ask the owner.
+   Do not assume a fixed range of decision IDs is still open.
 3. Prefer: making a gate stricter, wiring an existing module, deleting dead
    surface, converting a claim into a measurement — over adding anything.
 
@@ -64,7 +66,7 @@ Do not merge without a human.
 cat AGENTS.md docs/agent/00_INDEX.md docs/agent/09_KNOWN_GAPS.md   # 10 minutes well spent
 git status && git log --oneline -8
 ls node_modules >/dev/null 2>&1 || (npm ci --ignore-scripts && (cd server && npm ci --ignore-scripts))
-npm run tsc && npm run lint                                        # must be clean before any edit
+npm run tsc && npm run lint                                        # must be clean before application-source edits; follow the active docs-first gate
 ```
 
 If the tree is not clean/green at start, your first commit is to make it so

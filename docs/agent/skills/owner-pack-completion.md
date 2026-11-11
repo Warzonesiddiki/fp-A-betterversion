@@ -1,28 +1,29 @@
 ---
 name: owner-pack-completion
-description: Use when compiling owner decisions O1-O9 into a completion document. Records what is claimed, what is blocked, and what the owner must answer.
+description: Use when reporting open plan-review questions and owner decisions. Separates accepted decisions, unanswered questions, safe defaults, and evidence limits.
 group: meta
 ---
 
 # Owner Pack Completion
 
-**Use it when:** summarizing the state of owner decisions (O1-O9) for a release or completion report.
+**Use it when:** summarizing current owner decisions and unanswered plan-review questions for a release or completion report.
 
 ## Method
 
-1. **Enumerate all O-ids:** O1 through O9, each with its question, recommended default, and what stays blocked.
-2. **Record status:** For each O-id, state whether the owner has answered, or whether it remains BLOCKED-ON-OWNER.
-3. **No inference:** Never infer an answer from silence. Silence means the provisional default is adopted, recorded as provisional, and named as such in every report.
-4. **State boundaries:** Explicitly list what the agent will never do without an answer (no D365 verified, no "your data is safe", no SOX authority, no CI green claim, no entity-scope authorization).
-5. **Reply template:** Provide a copy-paste template for the owner to answer in one reply.
+1. **Read current authorities:** distinguish accepted decisions in `docs/discovery/decision-log.md` from the open R1–R12 questions in the master plan. DEC-104 resolves O1’s universal-template direction; DEC-103 resolves O9 as a single-user product; DEC-105 approves the phased plan without answering R1–R12.
+2. **Record status accurately:** cite the decision/question, date, evidence, and owner. Do not relabel an open question as accepted or BLOCKED-ON-OWNER unless the governing register says so.
+3. **No inference:** silence is not an answer. Retain the documented safe default, label the choice OWNER REVIEW, and state its release/work impact.
+4. **State boundaries:** distinguish intended scope from proven capability. Do not claim real-source verification, data safety, SOX authority, CI status, or multi-user authorization without evidence; do not call DEC-103 entity scope unanswered.
+5. **Reply template:** provide a copy-paste template for the owner to answer an actually open question.
 
 ## What this prevents
 
 - Claiming D365 verified without a real export
 - Saying "your data is safe" without a restore test
 - Claiming SOX compliance without an authority source
-- Claiming CI green when GitHub Actions returns 403
-- Inferring entity-scope authorization from the active entity
+- Inferring CI status from a local run or an unavailable check
+- Treating unanswered plan questions as accepted owner decisions
+- Reopening DEC-103 entity scope without a new owner decision
 
 ## Related
 

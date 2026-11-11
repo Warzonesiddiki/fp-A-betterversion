@@ -37,7 +37,9 @@ No completion claim without evidence produced **in this session**.
 
 ## In this repo
 
-- Actions returns 403 here, so **no CI claim is possible**. Say "local run".
+- A local run does not establish CI status. Check the current GitHub check result
+  when available; if it cannot be inspected, label CI status unverified rather than
+  inferring green or red.
 - A recorded number is dated and named as recorded — never restated as measured.
 - A partial run is reported as partial, with the files it covered.
 

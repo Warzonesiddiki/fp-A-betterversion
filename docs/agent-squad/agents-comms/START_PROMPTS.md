@@ -2,8 +2,9 @@
 
 > **Do not paste or follow these blocks as current instructions.** They were
 > authored 2026-10-16 for an older multi-agent `main`-branch setup and contain
-> stale branch, seat, and project-status assumptions. Retained for provenance.
-> Current instructions are `AGENTS.md`, `docs/agent/WORKING_AGREEMENT.md`, and
+> stale branch, seat, and project-status assumptions. Retained for provenance; they do not
+> activate a squad, create seat assignments, or grant permissions. Current instructions are
+> `AGENTS.md`, `docs/agent/WORKING_AGREEMENT.md`, and
 > `docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md` (proposed for owner
 > review). Recheck the active branch and current decision/evidence docs.
 

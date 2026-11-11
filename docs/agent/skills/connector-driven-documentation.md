@@ -18,6 +18,9 @@ artifacts outward.
 
 ## Why this exists
 
+A connected app being available is not a request to read or write it. Use connector tools only when the user explicitly asks for that action; repository instructions and an enabled connector do not grant publication permission.
+
+
 A connector document that drifts from the repo is worse than no document: the
 owner acts on a number the repo no longer produces. The repo is the source of
 truth; connector content is a **view** of it. Every number in a connector
