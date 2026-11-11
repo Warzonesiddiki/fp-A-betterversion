@@ -1,4 +1,4 @@
-# FP&A Copilot — Audit & Product Discovery Pack
+# FinPlan Pro — Audit & Product Discovery Pack
 
 > **Product goal (authoritative):** [`docs/VISION.md`](../VISION.md). This folder
 > owns discovery requirements, decisions, risks and evidence. The detailed
@@ -32,8 +32,11 @@
 10. [Decision log](decision-log.md) — DEC-001 onward; owner rulings are binding, agent technical dispositions are marked delegated.
 11. [Full repository audit vs. FPA-modular](../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md) — historical measured findings and the 25-item prioritised list (outside this folder).
 12. [Vision/connector recheck (2026-11-02)](VISION_ALIGNMENT_RECHECK_2026_11_02.md) — current routed workflow, connector reachability, pagination/import limits, and remaining owner validation; supersedes the October 24 audit's current-state conclusions without rewriting its history.
-12. [Owner scope register 108–200](OWNER_SCOPE_REGISTER_111_200.md) — blocker record: 93 owner-checklist sections remain unassessed until the exact source is recovered; do not infer titles.
-13. [Owner decision packet](OWNER_DECISION_PACKET.md) — one-page O1–O9 and §12 request with recommended safe defaults and a reply template.
+13. [Vision/connector audit (2026-10-24)](VISION_ALIGNMENT_AUDIT_2026_10_24.md) — the audit that the 2026-11-02 recheck supersedes; retained as dated evidence for its current-state conclusions only.
+14. [Owner scope register 108–200](OWNER_SCOPE_REGISTER_111_200.md) — blocker record: 93 owner-checklist sections remain unassessed until the exact source is recovered; do not infer titles.
+15. [Owner decision packet](OWNER_DECISION_PACKET.md) — one-page O1–O9 and §12 request with recommended safe defaults and a reply template.
+16. [Owner decision packet completion](OWNER_DECISION_PACKET_COMPLETION.md) — dated record of that packet's status; not an owner reply and not a decision source.
+17. [D365 GL export mapping contract](d365-export-contract.md) — research basis for the parser contract and the DEC-047 header-alias implementation; explicitly **not** verified D365 support until a real anonymised export validates it.
 
 ## How to use this pack
 
