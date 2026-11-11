@@ -1,5 +1,22 @@
 # FinPlan Pro — High-Level Roadmap
 
+> **2026-11-11 repository review note:** Verified current and internally consistent — this is one of the cleaner governance documents in
+> the review. **DEC-105 is real** (`docs/discovery/decision-log.md:171`, dated 2026-11-10) and its text says exactly what this page says it
+> says: approval to proceed in dependency order, explicitly **not** an answer to R1–R12, not write-back authorization, and not a coverage
+> certification. The twelve questions **R1–R12 are defined in
+> [`MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](MASTER_PRODUCT_AND_EXECUTION_PLAN.md) §510-521** with recommended defaults, so the "unresolved
+> R1–R12 retain their safe defaults" claim is checkable and accurate. All nine relative links resolve. The Gate 0–6 sections state entry
+> criteria and exits rather than status, and **no gate is claimed passed** anywhere on the page — the only gate decision recorded is Gate 0's
+> approval, which matches DEC-105.
+>
+> Two honest limits worth carrying forward. First, the "Active dependencies and blockers" table remains correct in substance: no D365 sample
+> or control totals have arrived (Gate 2 unstarted), O5 still certifies no industry, and the security/dependency posture is still open — the
+> root advisories now measure 13 (2 high) with 2 high in `server/`. Second, the evidence ladder (designed → implemented → unit tested →
+> integrated → sample validated → owner accepted → production supported) is the right instrument and is **not** being met by most of the tree:
+> this review repeatedly found documents describing steps 1–3 while implying 5 or 7 (AUD-109 consent, AUD-116 temporal, AUD-115 exports).
+> The ladder is the correct standard; the product does not yet reach it, which is what the remainder of this ledger records.
+
+
 **Status:** Owner approved proceeding with this proposed sequence on 2026-11-10 (DEC-105). This is a high-level index, not a date promise or capability claim; unresolved R1–R12 questions retain their safe defaults. The detailed work packages, dependencies, risks, acceptance tests, evidence labels and owner questions live in [`MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](MASTER_PRODUCT_AND_EXECUTION_PLAN.md).
 
 **Scope:** DEC-033 establishes all FP&A as the ultimate product scope. DEC-104 accepts universal accounting/finance import using the user's own template system. The owner’s Dynamics 365 workflow is the first real-source proof, not a product boundary. The earlier 2026-10-16 Gate 0–6 roadmap is superseded as the *current sequence*; the accepted owner and technical decisions remain binding in [`decision-log.md`](decision-log.md). No accepted scope is silently removed by this reordering.

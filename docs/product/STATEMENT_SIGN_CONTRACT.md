@@ -5,6 +5,28 @@ every statement surface follows. Implementation lives in exactly one place:
 `src/utils/accountClassification.ts`. Statement builders must not classify
 accounts with ad-hoc code checks again.
 
+> **2026-11-11 repository review note:** Re-verified against source and the core of the contract holds. `src/utils/accountClassification.ts`
+> is the single resolver, twelve modules import it, the §1 table matches `SignConventionEngine.getNaturalSign` for every `AccountType`
+> (`accountClassification.test.ts:82-86` pins the comparison), `signedClassAmount` never absolutises, and the §3 derivation rule is real.
+>
+> Two places still step outside the contract, both in **export builders**, which §7 claims follow "this same split":
+>
+> 1. **`buildBudgetVsActualRows` absolutises every account** (`src/engines/reportDataBuilder.ts:275`:
+>    `Math.abs(roundTo(subtractMoney(e.debit, e.credit), 2))`) and then applies its own bare prefix test
+>    (`const isRevenue = code.startsWith('4')`, line 290) instead of `resolveAccountClass`. That is the F-P2-02 pattern §1 retires,
+>    surviving in the Budget-vs-Actual export, and it is the one builder that follows neither §1 nor §2. `SignConventionEngine`'s
+>    contra-account list is a third, unconsulted favourability source. The §6 claim is therefore honest about statement builders but
+>    not about the BvA export.
+> 2. **No export builder discloses unclassified entries.** §2.3 says every statement builder returns `unclassifiedCount` and
+>    `unclassifiedMovement`, and the three statement *pages* do display them (`ProfitLossPage.tsx:293-297` and the balance-sheet
+>    equivalent). The export builders return only `headers`/`rows`/`footers`, so an account the convention cannot classify vanishes
+>    from a downloaded P&L with no zero-line and no note — the same silence §2.3 exists to prevent, and the DEC-017 honesty claim
+>    holds on screen but not in the export. §7's "the same split" overstates this.
+>
+> Also worth noting for anyone reading §1 alone: `resolveAccountClass` promotes an OpEx-typed account to `interest`/`tax` by code prefix
+> (lines 84-92), so the seven demo entries (1xxx–6xxx only) never produce interest or tax — net income is unaffected, but the
+> contract's four P&L classes are not all exercised by the default fixture.
+
 ## 1. Classes and natural signs
 
 | Class          | Natural balance (positive direction) | Source types       |

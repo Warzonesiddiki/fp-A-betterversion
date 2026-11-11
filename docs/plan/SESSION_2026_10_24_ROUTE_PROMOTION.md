@@ -1,5 +1,29 @@
 # Route Promotion Session — 2026-10-24
 
+> **2026-11-11 repository review note:** This session log is unusual in this review because it **survives verification**, and the
+> verification was done against git history rather than by reading.
+>
+> - **All 16 batch commits resolve in the full 1,820-commit history** (`e277be7`, `33818de`, `7c75aab`, `a167942`, `4e1c9a5`, `27a7f9c`,
+>   `554f034`, `15c3669`, `6659cd2`, `e3e5b59`, `726acb7`, `46c9597`, `cc409eb`, `2c463e1`, `ecb7191`, `3463bac`), each carrying the
+>   expected "promote 4 more routes with real governance evidence" message and each touching exactly
+>   `docs/plan/governance-evidence.json` plus `src/__tests__/spineGovernance.test.ts`. Unlike the escape ledger, whose 40 SHAs were 0/40
+>   unresolvable (AUD-106), there is no fabricated provenance here.
+> - **The claims are backed.** The manifest now holds 104 routes with 416 claims (104 each of authorization / audit / writeGuards /
+>   entityScope), 312 of which cite `src/__tests__/spineGovernance.test.ts`, and **every one of those 312 title strings is present verbatim
+>   in the test file**. That file executes and passes: **714 tests in 1 file**. 81 capabilities carry 255 claims, matching
+>   `totalCapabilityClaims`.
+> - **The "all eligible routes promoted" conclusion holds in the strict sense:** the 104 governed paths are a subset of the 227 routes in
+>   `src/App.tsx`, and of the 123 ungoverned remainder, **zero are canonical** — 25 are RETIRED (DEC-077/DEC-079), the rest are MIGRATE
+>   aliases, plus one dev-only RETAIN. So no live canonical route lacks governance evidence.
+> - **Two caveats, both already known and both material.** (1) Each route's fourth claim, `entityScope`, carries no test file at all — it is
+>   the `BLOCKED-ON-OWNER O9` object — which is exactly the contradiction in AUD-105: the manifest's own `census.entityScope` says O9 is
+>   RESOLVED while all 104 claims still assert it is blocked. (2) The counts here ("409 governance tests", "312 state claims") do not match
+>   the manifest today (416 route claims, 255 capability claims); they described the 2026-10-24 state and should be quoted as such.
+> - Note the intersection with the disposition manifest: `docs/product/route-dispositions.json` covers 65 routes and its `_comment` still
+>   says "the 47 routes the capability matrix could not classify", while **74 of the 123 ungoverned routes have no disposition entry at
+>   all** (AUD-107 recorded the stale comment; this review measured the coverage gap).
+
+
 ## Executive Summary
 
 This session focused on **Priority #3: Promote more routes with real governance evidence**.

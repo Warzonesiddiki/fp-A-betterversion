@@ -8,6 +8,15 @@ status: accepted
 
 # ADR-001: Currency Translation Method Default (Closing Rate vs Average Rate)
 
+
+> **Implementation recheck 2026-11-11:** the per-type default described below is implemented as
+> stated in `src/engines/MultiCurrencyEngine.ts:135-190` — assets and liabilities use `closingRate`,
+> equity uses `historicalRate`, revenue and expenses use `averageRate`, and the CTA adjustment is
+> derived from the same exact decimals so it reconciles instead of carrying a float residue.
+> Boundary: the item amounts and rates are still plain `number`, converted through the money
+> helpers, not the `Money` type throughout, so this ADR's determinism premise is only partly
+> enforced by the type system. No external IAS 21 / ASC 830 review was performed, and no
+> ratification record for the `accepted` status was found in `docs/discovery/decision-log.md`.
 ## Context
 
 FinPlan Pro's MultiCurrencyEngine must comply with IAS 21 (The Effects of Changes in Foreign Exchange Rates) and ASC 830 (Foreign Currency Matters) for translating foreign operations into the presentation currency. The standard requires different translation rates for different financial statement elements:

@@ -3,6 +3,13 @@
 **Reviewed:** 2026-10-15 (web-visible GitHub pages and raw files)  
 **Scope limitation:** This is a preliminary public-repository inspection, not a local checkout, full code audit, or test run. No code was executed. Page content may change; findings are pinned to the visible commit IDs below where available.
 
+**Status (annotation added 2026-11-11):** historical reconnaissance record, kept for provenance. Its own open question —
+whether the product of record is this TypeScript/Tauri application or the Python `FPA-modular` reference — was answered by the
+executed local audit recorded in [`audit-progress-2026-10-15.md`](audit-progress-2026-10-15.md): the TypeScript/React/Vite/Tauri
+application is the product of record. The stack, commit-count and capability observations below remain web-page evidence from
+2026-10-15 and must not be re-read as current measured facts; current measurement lives in
+[`../03_CURRENT_STATUS_AND_AUDIT.md`](../03_CURRENT_STATUS_AND_AUDIT.md).
+
 ## Material correction to the project description
 
 The target repository `fp-A-betterversion` is **not presented as a Python project** by the public repository evidence inspected. Its README identifies FinPlan Pro as a TypeScript/React/Vite/Tauri desktop application, and its `package.json` defines JavaScript/TypeScript build, test, Tauri, and tooling scripts. Separately, the README describes some frozen Python files as an earlier build start. This means the current target appears to contain a substantial TypeScript/Tauri product codebase plus a Python frozen-core reference/history; the exact status and relationship require a deeper audit.

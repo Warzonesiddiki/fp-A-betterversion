@@ -7,6 +7,35 @@
 
 ## Headline
 
+> **2026-11-11 repository review note — sampling disposition.** This is a dated 30-lane audit and is **not** re-adjudicated here; no lane was
+> re-run. Instead the P0 register was sampled against current source, because a 16-item "cannot ship" list is exactly the kind of artefact
+> that gets cited long after its status changed. Two things are true at once:
+>
+> **The register was honest and it was acted on.** Sampled items carry the fix in the source with the audit id in a comment, and the fix
+> direction matches what the audit prescribed:
+>
+> | ID | Audited flaw | Present state (sampled 2026-11-11) |
+> |---|---|---|
+> | W6-P0-01 | batch-calc silently zeroes on CSP-blocked `new Function` | **FIXED.** `batch-calc.worker.ts:175-178`: "CSP-safe evaluation (W6-P0-01): tokenizer + shunting-yard — NO eval(), NO new Function(). Failures THROW and the caller records the cell key instead of silently zeroing it." |
+> | W6-P0-02 | `PluginSandbox` computed-key bypass via `String.fromCharCode` | **FIXED.** `PluginSandbox.ts:802-817` rejects any computed key that is not a literal, with a comment naming the exact `fromCharCode` vector. |
+> | W6-P0-03 | sandbox not wired into the loader while docs claimed it | **FIXED.** `PluginLoader.ts:7` imports `executeSandboxed`/`validatePluginCode`; `PluginRegistry.ts:42` throws `PluginSandboxViolationError` on entry-code violations. |
+> | W6-P0-05 | unrecoverable key → WebView reset destroys history | **ADDRESSED as a decision, not code.** `docs/security/KEY_ESCROW_RECOVERY_POLICY.md` exists and is the owner-facing artefact; DEC-101 chose no-escrow, user-held key. |
+> | W6-P0-07 | inert native menu | **FIXED.** `src-tauri/src/main.rs:18` carries "W6-P0-07 (2026-08-24): every menu item MUST have a real frontend binding". |
+> | W6-P0-08 | `ConfirmDialog` mounted nowhere, deadlock on first use | **FIXED.** `ConfirmDialog` is imported and rendered at `App.tsx:329`. |
+> | W6-P0-09 / P0-10 | unusable dates; `parseFloat` truncates `"1,234.56"` → 1 | **FIXED.** `parseImportDate` is used on the D365/import path, and `parseFinancialAmountExact` (`SmartImportMapper.ts:200`) documents and handles the comma case explicitly. |
+> | W6-P0-11 | undo/redo and `updateLineItem` bypass the period hard-lock | **FIXED.** `src/store/budgetStore.closedWrites.test.ts` exists and passes; see `docs/audit/BUDGET_TRUST_CONTINUATION_2026_10_20.md` (DEC-040), whose 7-file / 353-test command reproduces. |
+>
+> **One sampled item is still open, and it is user-visible.** W6-P0-06 — "Dashboard sector KPI tiles always render $0 (no sector sets
+> `accountCodes`)" — is **unfixed**: `src/config/sectors/index.ts:23` still declares `accountCodes?: string[]`, and **zero** sector
+> configurations in `src/config/sectors/` populate it. The defect is currently *latent* rather than visible only because the 18 `/sector/*`
+> dashboards were retired as `<Navigate to="/404" />` under DEC-079; the 19 `src/pages/sector/*DashboardPage.tsx` files remain in the tree with
+> no non-test importer (AUD-113). So the tile bug cannot be triggered today, and it will reappear the moment those routes are re-enabled.
+> Recorded as AUD-121 rather than fixed, because populating account codes is application data, not documentation.
+>
+> **Not verified, and not claimed:** the P1 (99) and P2 (62) registers were not sampled at all; the "30/30 lanes reported" orchestration
+> count is taken as written; and the report itself flags that the `docs-truth` lane's detail was lost to output-spill truncation, which no
+> amount of re-reading here can recover.
+
 | Severity | Count (raw) | Unique                              |
 | -------- | ----------- | ----------------------------------- |
 | **P0**   | 17          | **16** (sandbox escape found twice) |

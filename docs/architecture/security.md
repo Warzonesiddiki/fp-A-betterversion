@@ -169,9 +169,12 @@ keyword that permits WebAssembly compilation ONLY (it never allows JS
 `eval`); `object-src 'none'`; `base-uri 'self'`; `form-action 'self'`;
 `frame-ancestors 'none'`; no wildcard or scheme-wide `http:` source.
 
-### Accepted exception: `style-src 'unsafe-inline'` (F-0032)
+### Documented exception: `style-src 'unsafe-inline'` (F-0032)
 
-Retained deliberately. Measured evidence from a production build:
+Retained deliberately. This is a **recorded exception, not an owner-approved risk
+acceptance**: no owner decision in `docs/discovery/decision-log.md` ratifies it as
+of 2026-11-11, so it must not be cited as accepted residual risk. Measured
+evidence from a production build:
 
 - runtime `createElement('style')` / `insertRule(` calls appear in
   `dist/assets/DataGrid-*.js`, `ReportDesignerPage-*.js`, `pdf-vendor-*.js`,

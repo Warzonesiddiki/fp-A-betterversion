@@ -8,6 +8,8 @@
 **HEAD baseline:** `f26c339e` 1002c (32nd HEAD DRIFT, 1002-COMMIT MILESTONE)
 **Status:** SPEC — awaiting implementation by Apollo + Hades
 
+> **2026-11-11 repository review note:** This is a specification; none of the AC-2 to AC-10 artefacts exist. A bounded `src/` search found no consent registry, no `consentStore`/`hasActiveConsent`, no `Step3Consent` component, no privacy-notice version constant, and no `tests/e2e/onboarding-consent.spec.ts` or `src/store/consentStore.test.ts`. The shipped wizard (`src/components/ui/OnboardingWizard.tsx`) has **five** steps — welcome, company, data, review, done, matching `src/i18n/locales/en.json` — not the four-step consent flow specified in section 3.1, and it contains no consent, telemetry, crash-report or privacy-notice text. The only consent-adjacent code is the GDPR audit consumer `src/store/auditTrailGdprEvents.ts`, registered at `src/main.tsx:64-65`; it listens for `consent.captured` and the other seven event types, but a bounded search found **no producer** anywhere in `src/` or `server/` — only the consumer's own tests dispatch those events. So the consent audit path exists and is exercised only by synthetic events. The euro-20M Article 83(5)(a) exposure framing, the regulatory mappings and the legal conclusions are this document's own assertions, not an assessed finding; legal review is `[UNVERIFIED: no legal or DPO review is evidenced in this repository]`.
+
 ---
 
 ## 1. Scope and Compliance Frame

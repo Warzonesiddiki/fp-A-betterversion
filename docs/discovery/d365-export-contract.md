@@ -35,6 +35,20 @@
 > exact control-total tie-out) and `src/engines/SmartImportMapper.d365Defaults.test.ts`
 > (7/7, boundary).
 
+> **2026-11-11 repository review note:** Every in-repo claim in the DEC-047 block above re-verified and holding.
+> The alias set is exactly as described — `SmartImportMapper.ts:140-230` maps `mainaccount`, `mainaccountname`,
+> `transactionpostingdate`, `transactionnumber` and `transactioncurrency` as exact normalised headers with an explicit
+> "never substrings, so Main account cannot collide with Main account name" comment, and `src/services/import/d365Parser.ts:193-225`
+> carries the same documented header set. `defaultEntityId` is validated for non-blank and membership in `knownEntityIds`
+> (`SmartImportMapper.ts:256-273`) and does not silently replace a supplied entity column. **Both named acceptance files exist and
+> pass exactly as stated:** `vitest run` on them reports 2 files / **12 tests passed** (5 + 7), matching the published counts.
+> The path is genuinely reachable in the product: `GLUploadPage.tsx` → `d365Parser` → `parseGLRows.ts`, and
+> `src/workers/gl-ingestion.worker.ts` calls `SmartImportMapper`.
+> What this review did **not** do: re-fetch the four Microsoft Learn citations, so the external-documentation basis is unchecked here
+> and `[UNVERIFIED: external Microsoft pages not re-read in this review]`; and no real anonymised D365 export was inspected. The
+> document's own headline — "This is NOT verified D365 support ... mapping-driven, unverified (O1/DEC-043)" — is therefore accurate
+> and well scoped, which is why the evidence above is recorded as support for that boundary rather than as a capability upgrade.
+
 ## 1. There is no single "D365 GL CSV"
 
 Microsoft documents several different outputs. They have different headers, different

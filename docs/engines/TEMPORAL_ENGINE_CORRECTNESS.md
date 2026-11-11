@@ -2,6 +2,23 @@
 
 > **Historical evidence only (2026-10-19):** this report does not constitute current compliance or SOX approval. `AuditTrailEngine` was retired by DEC-028: its former hash was 32-bit FNV-1a, not cryptographic, and the class was not wired to product audit authority. This report remains provenance only. See [docs/architecture/AUDIT_CHAIN_REACHABILITY.md](../architecture/AUDIT_CHAIN_REACHABILITY.md) for current authority boundaries.
 
+> **2026-11-11 repository review note:** The report is correctly self-labelled historical, and re-running it against source produces a
+> split verdict. **The fix is real:** `src/engines/PeriodCloseEngine.ts` still imports `parseToUTCEpoch` from `./temporal` and
+> `getSLABreaches` normalises both sides to UTC epoch ms (lines 88-105), so BUG-PC-1/2 stay fixed. **The supporting suite executes and
+> passes:** `src/engines/temporal/` holds five test files and `vitest run src/engines/temporal` reports 5 files / 156 tests passed, covering
+> leap-year, DST, timezone and the 2100-not-a-leap-year century case.
+>
+> **The provenance half no longer describes this repository.** `AuditTrailEngine` — one of the four audited engines and the sole source of
+> BUG-AT-1 — does not exist (`src/engines/AuditTrailEngine.ts` is absent), consistent with its DEC-028 retirement stated above. And
+> `PeriodCloseEngine` now has **no product caller**: the only non-test references are the engine manifest/barrel and a comment in
+> `src/engines/PeriodCloseStateMachine.ts`, which is the state machine the surviving close UI actually uses. `src/engines/temporal/fiscalCalendar.ts`
+> likewise has no consumer outside its own directory. So the two HIGH fixes are verifiably correct and verifiably exercising nothing in the
+> shipped product.
+>
+> Read as: `temporal/` is a sound, well-tested UTC/DST primitive library that is currently wired only to per-side tests; this document's
+> "both fixed engines" net result is accurate as engineering history and misleading as a statement about current product behaviour. No
+> current compliance or SOX claim should be drawn from it, as the header already says.
+
 **Author:** Chronos (slot `019ecc6f-1c46-78e0-b122-15d43a3f1900`)
 **Date:** 2026-06-15
 **Scope:** Time-zone + DST + leap-year correctness for 4 temporal engines

@@ -11,6 +11,13 @@ ratification-gate: 2026-06-22T16:00:00Z
 
 # ADR-003: OLAP Cube Aggregation Engine (4-Dimensional)
 
+
+> **Implementation recheck 2026-11-11:** `src/engines/CubeEngine.ts` exists with dimension
+> definitions, dimension members, descendant indexing and slice/dice surfaces. Boundary: the
+> **performance claims below are unverified** — a search of `src/workers` and `CubeEngine` found no
+> `SharedArrayBuffer` use, no benchmark supports the stated "4-worker pool" or "sub-500ms p95 on
+> 10K rows", and the "50-user concurrent load" and "Monte Carlo 10K×5" figures have no test in this
+> tree. Do not cite these as measured. The header remains `pending-ratification`.
 ## Context
 
 FinPlan Pro's 180+ pure calculation engines need OLAP-style aggregation for financial planning and analysis:

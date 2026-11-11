@@ -9,7 +9,7 @@
 
 The audited implementation was worse than absent. `BackupRestore` enumerated an
 IndexedDB object store named `stores`, but **the application does not persist
-there**: all 36 Zustand stores go through `masterStorage`, which writes sql.js
+there**: all 44 registered persisted stores go through `masterStorage`, which writes sql.js
 in the browser and Tauri SQLite on desktop.
 
 The consequence, in plain terms: a user who opened Settings → Backup and clicked
@@ -30,8 +30,10 @@ than the product.
 
 Source of truth: `src/utils/persistedStores.ts`.
 
-- **36 persisted stores** are registered (`PERSISTED_STORE_KEYS`), matching every
-  `persist({ name })` call in `src/store`.
+- **44 persisted stores** are registered (`PERSISTED_STORE_KEYS`) and **43 are
+  backed up** (`BACKUP_STORE_KEYS`, i.e. all registered keys except the excluded
+  one) — re-counted 2026-11-11. The registry is asserted to match the
+  `persist({ name })` calls in `src/store` by the suite below.
 - **`auth-store` is deliberately excluded** (`BACKUP_EXCLUDED_KEYS`). Session
   state restored into another install would either resurrect a stale session or
   clobber the operator's own. A restore never changes who you are logged in as.
@@ -107,7 +109,8 @@ Restore is **idempotent**: applying the same file twice yields the same state.
 
 ## 6. Proof (KAV-12)
 
-`src/utils/backupRestore.test.ts` — **19 tests, all passing, ~2.6s.**
+`src/utils/backupRestore.test.ts` — **23 tests, all passing** (re-run
+2026-11-11: 1 file / 23 tests passed).
 They run against the real `masterStorage` path, not a mock of it, so a backup
 that misses application data fails the suite.
 

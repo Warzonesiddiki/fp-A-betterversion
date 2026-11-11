@@ -1,5 +1,15 @@
 # Worker Boundary Contracts Audit
 
+> **Status (2026-11-11):** dated evidence from **2026-06-08**; the inventory below is
+> stale. Four of the eight workers it lists **no longer exist** in `src/workers/`:
+> `formulaWorker.ts`, `scenarioWorker.ts`, `exportWorker.ts` and
+> `consolidationWorker.ts`, and `WorkerPool.ts` is absent too (only `worker-pool.ts`
+> remains). The current tree has **5** `*.worker.ts` modules —
+> `batch-calc.worker.ts`, `consolidation.worker.ts`, `gl-ingestion.worker.ts`,
+> `monte-carlo.worker.ts` and `storage.worker.ts` — so `gl-ingestion.worker.ts` is
+> missing from this audit entirely. Do not cite this table as the current worker
+> inventory; `npm run docs:verify` measures the count.
+
 **Task:** T03123 | **Agent:** sentinel | **Date:** 2026-06-08
 
 ## Summary

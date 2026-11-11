@@ -1,5 +1,12 @@
 # Worker Memory Audit — T02518
 
+> **Status (2026-11-11):** dated evidence from **2026-06-08**; the line counts below have
+> drifted. Measured on 2026-11-11: `src/workers/batch-calc.worker.ts` is **326** lines
+> (documented 313), `worker-pool.ts` is **380** (documented 328), `index.ts` is **220**
+> (documented 197) and `types.ts` is **194** (documented 192). The "0 critical leaks"
+> verdict is a static reading of the code as it stood in June, not a heap measurement or
+> a profiler run; no leak test was executed for this review.
+
 **Date:** 2026-06-08
 **Agent:** atlas
 **Scope:** `src/workers/batch-calc.worker.ts`, `worker-pool.ts`, `index.ts`

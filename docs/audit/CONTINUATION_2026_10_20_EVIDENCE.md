@@ -2,6 +2,26 @@
 
 Session branch: `arena/efe658d1-fp-a-betterversion`; starting commit `9f6d6a02`.
 This is engineering evidence, not supported-scope or programme certification.
+
+> **2026-11-11 repository review note:** Re-measured every row of the baseline table that can be re-run cheaply, and checked the
+> starting commit against full history (`9f6d6a02` resolves). The measurement *method* is sound and three figures are still exact.
+>
+> **Still exact:** determinism ratchet **344 sites / 79 files** (re-run today: identical). **Inventory** 180 engines / 48 stores /
+> 43 persisted still holds as a shape, though the persisted count is now known to be incomplete by two stores (AUD-112).
+>
+> **Moved:** money adoption is now **30.1%** against the recorded 305/1,017 (29.99%) — the ratchet reports a holding baseline of
+> 320 modules / 0 `toFixed` (server 3 / 0), so the numerator and denominator both changed. Palette ratchet is **5,489 raw utilities
+> across 368 files** against the recorded 5,502 / 370, i.e. it improved slightly. Production advisories are **no longer zero**:
+> `npm run audit:prod` currently reports **11 vulnerabilities (9 moderate, 2 high)**, with 2 high separately in `server/` — this row
+> should not be quoted as current.
+>
+> **Not re-run here:** the full sharded suite (1,394 files / 16,097 passed) and the build/bundle row; both are expensive and no current
+> figure is asserted. A shard-1 sample earlier in this review passed 366 files / 4,445 tests, which is consistent with, not a
+> replacement for, the recorded total.
+>
+> The document's own discipline is worth noting as correct: it distinguishes the production-only audit from the development-inclusive
+> one and says explicitly that "the production-only audit is not a claim that the entire dependency tree is clean." That distinction is
+> exactly what later compliance pages lost (AUD-104), and it is preserved here.
 The [taskboard](../TASKBOARD.md) owns assignments; the
 [handover](../HANDOVER_NEXT_SESSION.md) owns the next slice.
 

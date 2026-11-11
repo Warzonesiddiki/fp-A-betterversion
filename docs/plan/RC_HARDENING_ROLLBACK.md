@@ -3,6 +3,27 @@
 > **Status:** Rehearsal runbook — not yet executed in production
 > **Purpose:** Verify rollback works before any release candidate ships
 
+> **2026-11-11 repository review note:** The runbook is accurate about itself — it says "not yet executed in production", and no rehearsal
+> *was* executed in this review. What was checked is that each procedure targets something that actually exists:
+>
+> - **Scenario 1 (money migration)** is sound and every verification command it names is real and currently passing: `money:ast` (0 unsafe
+>   operations), `money:adoption` (ratchet holds), `docs:verify`. Its "no-op at rest" data-impact claim is consistent with DEC-051/DEC-052.
+> - **Scenario 2 (route promotion → EXPERIMENTAL)** is viable: `docs/plan/completion-register.json` really is keyed by status with the full
+>   vocabulary `SUPPORTED / EXPERIMENTAL / BLOCKED-ON-OWNER / RETIRED / NOT_BUILT`, and `npm run completion:register` is a real script. Note the
+>   register's census (227 routes / 180 engines / 21 requirements / 200 annex / 83 capabilities) agrees with the independently measured 227 and
+>   180 — this is one of the few places those numbers are consistent.
+> - **Scenario 3 (bundle diet)** requires that `route-dispositions.json` carry a non-RETIRED disposition for the route being restored. Mostly true,
+>   but 74 of the 123 ungoverned routes have **no disposition entry at all** (recorded in the route-promotion batch), so a rollback of one of those
+>   would have nothing to flip. The procedure is correct only for routes that have an entry.
+> - **Scenario 4 (AI census)** is sound; `ai-census` reports 0 ungated surfaces.
+> - **The 15-item release checklist is a good instrument, and two items are simply false today.** `npm run test:sharded` does **not** pass 8/8 —
+>   it fails on the coverage threshold at 32.40 / 26.69 / 30.62 / 33.14 against 50, and the last shard-1 sample in this review passed 366 files /
+>   4,445 tests without coverage. The final item — "Owner decisions O1–O9 either answered or recorded as BLOCKED-ON-OWNER" — is **not** satisfiable
+>   as written, because the governance manifest both claims O9 is resolved (DEC-103) and requires 104 route claims to assert it is blocked
+>   (AUD-105). A checklist item cannot be closed while the gate contradicts itself.
+> - The checkboxes are all unticked, which is the correct state and matches the Status line. Do not run this checklist and report it green: the
+>   coverage item and the O1–O9 item would both have to be lied about.
+
 ## Rollback Scenarios
 
 ### Scenario 1: Money Migration Rollback
