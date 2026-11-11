@@ -1,5 +1,16 @@
 # Tab Order Audit — T03595
 
+> **Status (2026-11-11):** dated evidence from **2026-06-08**; the counts below are
+> historical. Spot-check re-run on 2026-11-11 confirms the headline claim that there are
+> **zero positive `tabIndex` values** in `src/`. The `role="button"` claim also holds
+> better than the "30 instances" figure suggests: a brace-aware scan of all `.tsx` files
+> finds **33** non-native `role="button"` elements, of which **32 carry both `tabIndex`
+> and `onKeyDown`**; the single exception is a fixture inside
+> `src/components/ui/OnboardingWizard.a11y.test.tsx`, not production UI. No automated
+> test enforces these invariants, so this remains a point-in-time manual audit rather
+> than a regression gate. The "WCAG 2.2 AA" header records the standard the audit aimed
+> at; it is not evidence of WCAG conformance.
+
 **Agent:** amelia  
 **Date:** 2026-06-08  
 **Standard:** WCAG 2.2 AA  

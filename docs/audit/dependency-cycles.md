@@ -1,5 +1,14 @@
 # Dependency Cycle Audit — T03130
 
+> **Status (2026-11-11):** dated evidence from **2026-06-08**, not a current measurement.
+> The scan covered 1,648 files; `src/` now holds **2,682** `.ts`/`.tsx` files, so the
+> 22-cycle figure cannot be assumed to hold. `madge` is not installed in this tree, so
+> the audit was **not** re-run. Spot-check on 2026-11-11: the High-severity
+> `authStore` ↔ `tokenRotation` cycle still exists — `src/store/authStore.ts` imports
+> `parseTokenExpiry`/`startRotation`/`stopRotation` from `src/utils/tokenRotation.ts`,
+> and `src/utils/tokenRotation.ts` imports `useAuthStore` from `src/store/authStore.ts`.
+> Treat every other cycle group below as historical until a fresh madge run is recorded.
+
 **Date:** 2026-06-08
 **Tool:** madge 7.x (--circular --extensions ts,tsx --ts-config tsconfig.json)
 **Files scanned:** 1,648
