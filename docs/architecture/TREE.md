@@ -680,6 +680,27 @@ OmniPlan
 
 ## Known deviations from Part LXI (decided, not drift)
 
+> **2026-11-11 repository review note:** The framing of this file is correct and should be preserved: it is a **normative target tree**,
+> reproduced unmodified, with decided divergences listed separately, and the sync rule is stated up front. Sampled against the repository:
+>
+> - **The "avoid 600 empty directories" rationale holds.** `apps/web/`, `packages/`, `infra/` and `ops/` are all absent, and the file's own
+>   deviation table explains why. Nothing here is silent drift.
+> - **One deviation row is now stale in the safe direction.** The `.github/workflows/**` row says workflows "Cannot be pushed from this
+>   environment (GitHub App permission). Delivered as numbered patches in `ci-patches/` for a human to apply." Nine workflows are present
+>   and **tracked** under `.github/workflows/`, and the patches have been applied: `ci-patches/0003-gap7-sha-pin-workflows.patch` upgrades
+>   `actions/checkout@v4` to `@11d5960a…`, and `build.yml:41` now carries that exact pinned SHA, with
+>   `architecture:guardrails` confirming "GitHub Actions are SHA-pinned". So the delivery mechanism worked; the row reads as still-pending.
+>   The 13 patches in `ci-patches/` are worth keeping as provenance, but none of the reviewed ones is unapplied.
+> - **One authority citation points at a file that does not exist.** The table (and this line) cite **ADR-011**, which is defined only in
+>   `docs/archive/legacy-2026-10/.agent/BLUEPRINT.md:3231`; there is no `docs/adr/ADR-011-*.md`, while `docs/adr/` holds ADR-001…005 and 010
+>   only. Quoting `docs/adr/` as the ADR corpus therefore cannot resolve ADR-011, and the "known deviations" authority chain is
+>   `[UNVERIFIED: ADR-011 has no file in docs/adr/]` until one is written. This is the same `docs/adr/` vs decisions-corpus gap recorded as
+>   MDEC-006 in the Stage 1 exit items.
+> - The tree also names six documents as "Phase 0/1 extractions" (BLUEPRINT_GAPS, FINANCIAL_RULES, ERROR_CODES,
+>   METRIC_REGISTRY, SOD_MATRIX and CALENDARS markdown files). **None of the six exists under `docs/architecture/`**, which is consistent with
+>   "Phase 0/1" still being open, but it means the tree's own completeness claim is unearned and the section D "metrics catalog" item in
+>   `docs/discovery/audit-evidence-checklist.md` remains genuinely uncollected.
+
 These are the differences between the Codex tree above and what OmniPlan will actually
 build. Each is an explicit, recorded decision — not an accident. Anything **not** listed
 here is still a target, and a divergence found in the repo is a defect.
