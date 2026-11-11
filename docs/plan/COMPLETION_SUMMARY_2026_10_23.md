@@ -4,6 +4,22 @@
 > **Base:** de26d0a7c81c51b479aff3a96c6ef08b6187564b (main)
 > **Status:** Pre-release — awaiting owner decisions O1-O9
 
+> **2026-11-11 repository review note:** This summary and the release snapshot beside it carry the **same adoption error**, and this one states
+> it more strongly: "87.35% money adoption (891/1020 modules) — all financial modules migrated". Measured today, `money:adoption` reports an
+> adoption proxy of **30.1% over 1,063 modules** (≈320 adopting) with a holding baseline of 320 modules / 0 `toFixed`. The "all financial modules
+> migrated" sentence is therefore **false** regardless of which denominator is used. As with AUD-123 this is recorded as a **suspected inversion,
+> not a finding**, because the originating command was not preserved — but the direction is certain: adoption is about a third, not nine tenths.
+> `money:ast` safety is unaffected (0 unsafe operations).
+>
+> Re-measured rows: completion register is now **711 rows / 115 SUPPORTED / 374 EXPERIMENTAL / 220 NOT_BUILT / 2 RETIRED** against the recorded
+> 691 / 57 / 407 / 220 (and 7 BLOCKED-ON-OWNER, a status the register no longer uses at all); skills **63 → 72**. **Still exact:** the 65 route
+> dispositions with **MIGRATE 38 / RETAIN 2 / RETIRED 25**, and the 227-route count. The 19 spine routes / 72 claims and 40 governance routes /
+> 120 claims have since grown to 104 routes / 416 claims — see the route-promotion verification, where all 312 cited test titles were matched.
+>
+> Note the two documents disagree with each other on the same date: the snapshot says 40 SUPPORTED routes / 120 governed claims / 1,429 test files
+> and this one says 40 / 120 / 691-register; neither matches the manifest. Treat both as 2026-10-23 snapshots of a moving census, and use
+> `completion-register.json` plus `governance-evidence.json` as the authorities.
+
 ## Achievements
 
 ### Routes & Governance
