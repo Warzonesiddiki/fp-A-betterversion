@@ -4,7 +4,7 @@
   "docs_gate_passed": false,
   "human_approved_for_coding": false,
   "doc_health_score": 0,
-  "doc_health_score_status": "Not scored: 227 scoped records (178 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 13 PENDING entries; 29 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
+  "doc_health_score_status": "Not scored: 229 scoped records (180 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 11 PENDING entries; 29 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
   "completed_stages": [
     "STAGE_0_BOOTSTRAP"
   ],
@@ -174,11 +174,11 @@
     "live_markdown_files": 233,
     "live_other_files": 7,
     "review_status_counts": {
-      "PARTIAL": 178,
+      "PARTIAL": 180,
       "HISTORICAL-NOTE": 46,
       "GENERATED-SOURCE-REVIEWED": 2,
       "GENERATED-RENDERED": 1,
-      "PENDING": 13
+      "PENDING": 11
     }
   },
   "latest_validation": {

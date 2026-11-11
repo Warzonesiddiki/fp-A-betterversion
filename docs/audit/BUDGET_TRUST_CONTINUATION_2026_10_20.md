@@ -4,6 +4,27 @@ Branch: `arena/efe658d1-fp-a-betterversion`; existing [PR #82](https://github.co
 Starting commit: `80117954`. This is bounded engineering evidence, not a
 claim that the FP&A programme is complete or flaw-free.
 
+> **2026-11-11 repository review note:** This is the strongest engineering-evidence document in the review, and it was verified by
+> **re-executing its commands**, not by reading them. Both cited counts reproduce exactly:
+>
+> - `vitest run budgetStore.authorization budgetStore budgetStore.lifecycle rbacNegativeAuthorization rbacMatrixCompleteness`
+>   → **5 files / 299 tests passed** (document claims 5/299).
+> - the seven-file closed-write command → **7 files / 353 tests passed** (document claims 7/353).
+> - the AST census is real and pinned: **409 store actions = 302 guarded + 107 reasoned exceptions**, enforced by
+>   `src/store/rbacMatrixCompleteness.test.ts` and matched in `docs/plan/governance-evidence.json`.
+>
+> Both starting commits (`80117954`, and the per-decision commits `687dbc92`, `ba46f0e9`, `ea249754`) resolve in full history.
+>
+> **What is stale is only the baseline block in §1**, and each figure should be read as 2026-10-20 state: six shards / 1,395 files /
+> 16,110 passed has become 1,478 test files; `npm audit --json` "5 affected packages (2 moderate / 3 high)" now measures
+> **11 vulnerabilities (9 moderate, 2 high)** at root plus 2 high in `server/`; tracked files were 3,612 and are now **3,798**. The
+> bundle figure (2,059.60 / 2,080 KB) is not re-asserted here because no build was run. The `gh run list` HTTP 403 still stands as the
+> reason CI was recorded as **UNVERIFIABLE** rather than red — that judgement was correct and is preserved.
+>
+> One boundary the document states about itself is worth keeping: "This is not runtime negative evidence for every other store action or
+> entity authorization." That limit has since been vindicated — AUD-112 found two persisted stores the inventory never saw, and AUD-120
+> found the one client→server call has no credentials. Bounded evidence stayed bounded; the gaps appeared outside its scope.
+
 ## 1. Fresh baseline, before application edits
 
 `git status --short` was empty; branch matched the session branch.
