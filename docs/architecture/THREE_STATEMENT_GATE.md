@@ -47,9 +47,13 @@ violation rolls the candidate rows back:
   existing transaction (`gl.ts:349-353`) — an unbalanced batch is rolled back
   atomically.
 
-The route catch translates `ThreeStatementGateError` into HTTP 422 with the
-structured payload (`gl.ts:279-285`, `gl.ts:363-369`). Deletions are not yet
-gated; deleting one leg of a posted pair can unbalance books (see §6).
+`DELETE /api/gl/entries/:id` is also gated (rechecked 2026-11-11): the soft-delete
+UPDATE and `assertEntityLedgerIntegrity(tenantId, existing.entity_id)` share one
+`db.transaction`, with the UPDATE intentionally preceding the gate so the removed leg
+stops counting before the open-ledger identity is evaluated (W0.3-fix + W0.8.6 in
+`server/src/routes/gl.ts:538-548`). Rows are retained as tombstones (`deleted_at`),
+never physically erased. The route catch translates `ThreeStatementGateError` into
+HTTP 422 with the structured payload (`gl.ts:279-285`, `gl.ts:363-369`).
 
 ## 3. Error contract
 
@@ -103,11 +107,12 @@ Known limitations:
   path. The current schema has no retained-earnings or cash-flow-statement
   tables, so there is nothing to evaluate them against at runtime. Wiring is
   deferred until those sources land (see W0.8.6 design note).
-- Runtime enforcement covers GL entry creates only (single + bulk), scoped to
-  the written entity. Budget/forecast/scenario writes do not pass through the
-  gate.
-- Entry deletions are ungated; deleting one leg of a balanced pair will leave
-  the ledger open-ledger-unbalanced until a correcting entry posts.
+- Runtime enforcement covers GL entry **creates (single + bulk) and soft
+deletes**, scoped to the written entity. Budget/forecast/scenario writes do not
+  pass through the gate.
+- The soft delete is a tombstone, not a compaction: `deleted_at` rows are retained
+  for the declared SOX seven-year retention policy, so storage growth is a
+  separate operational concern from correctness.
 - The gate evaluates tenant+entity totals as-of-now, not per-period snapshots.
 
 ## 6. Writing tests against the gate
