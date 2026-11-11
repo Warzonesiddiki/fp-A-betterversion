@@ -1,5 +1,23 @@
 <!-- generated-by: gsd-doc-writer -->
 
+> **2026-11-11 repository review note:** Spot-checked against source, and this specification is unusually accurate for a
+> `generated-by: gsd-doc-writer` page — it describes real classes with real signatures.
+>
+> - **§1 FormulaEngine.** All five documented statics exist (`parseFormula`, `evaluate`, `getDependencies`, `validateFormula`,
+>   `recalculateWithCircularSupport`) and the three stated limits are real class constants:
+>   `MAX_FORMULA_LENGTH = 1000`, `MAX_NESTING_DEPTH = 100`, `MAX_ARRAY_SIZE = 100000` (`FormulaEngine.ts:32-34`). The worked example
+>   was executed rather than read — `=SUM(A1:A5) * 1.05` over 100…500 returns **1575**, exactly as documented.
+> - **§2 SafeMathParser.** The four limits match source exactly: `MAX_INPUT_LENGTH = 10_000`, `MAX_RECURSION_DEPTH = 1000`,
+>   `MAX_TOKENS = 10_000`, `MAX_FUNCTION_ARGS = 100` (`SafeMathParser.ts:23-26`).
+> - **§3 CalculationGraph.** All four documented methods exist and have non-test callers.
+> - **§4 CubeEngine.** The class exists and the documented `registerDimension`/`addMember` API is real (`CubeEngine.ts:51,77`). The
+>   "heart of the application's data layer" framing overstates reach slightly: its only production consumer path is
+>   `src/store/cubeStore.ts` → `ReportDesignerPage`/`ReportDesigner`, and [`docs/architecture/PERSISTENCE_MAP.md`](../architecture/PERSISTENCE_MAP.md) classifies `cube-store` as a **derived
+>   cache**, not a financial authority. The engine is genuinely reachable, but it is not the data layer's spine.
+> - **What this review did not do:** no complexity or throughput claim in §1 was benchmarked (the `O(N)` parsing note is asserted, not
+>   measured), and `recalculateWithCircularSupport` has a single non-test caller, so its iterative-solver behaviour is exercised narrowly.
+>   Read §Performance Characteristics as design intent, not measured results.
+
 # Core Engines Specification
 
 This document provides detailed technical specifications for the core calculation and data engines in FinPlan Pro. These engines are pure TypeScript, deterministic, and designed for offline-first performance.

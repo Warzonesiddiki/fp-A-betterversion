@@ -4,7 +4,7 @@
   "docs_gate_passed": false,
   "human_approved_for_coding": false,
   "doc_health_score": 0,
-  "doc_health_score_status": "Not scored: 224 scoped records (175 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 16 PENDING entries; 29 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
+  "doc_health_score_status": "Not scored: 226 scoped records (177 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 14 PENDING entries; 29 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
   "completed_stages": [
     "STAGE_0_BOOTSTRAP"
   ],
@@ -173,11 +173,11 @@
     "live_markdown_files": 233,
     "live_other_files": 7,
     "review_status_counts": {
-      "PARTIAL": 175,
+      "PARTIAL": 177,
       "HISTORICAL-NOTE": 46,
       "GENERATED-SOURCE-REVIEWED": 2,
       "GENERATED-RENDERED": 1,
-      "PENDING": 16
+      "PENDING": 14
     }
   },
   "latest_validation": {
@@ -198,6 +198,7 @@
     "production_dependency_audit": "FAIL 2026-11-10: npm run audit:prod reports 13 production advisories (11 moderate, 2 high: follow-redirects and zod; transitive glob/minimatch advisories); full npm audit reports 20 (17 moderate, 3 high). No dependency changes made.",
     "ci_triage_pr95": "TRIAGED 2026-11-11 for merged head 7d9b866c (merge commit a9a3c9f, same tree). CONFIRMED docs-job cause: scripts/completion-register.mjs --check cannot resolve evidence commit c9b8411 in a depth-1 checkout; reproduced with a --depth=1 clone (exit 1, two 'does not resolve' problems) while all thirteen docs:verify sub-scripts pass in full history. CONFIRMED test-job cause: coverage threshold only, not assertions; shard 1 without coverage passed 366 files / 4445 tests with exit 0, while shard 1 with coverage failed at statements 32.40%, branches 26.69%, functions 30.62%, lines 33.14% against the configured 50%. CONFIRMED dependency causes: root audit:prod 13 advisories (11 moderate, 2 high: zod GHSA-mrhx-c7xc-m3w5 and follow-redirects); server workspace audit 2 high (body-parser GHSA-27r3-jxmh-p828, zod). NOT REPRODUCED: E2E job failure at 'Install Playwright'. Job logs still return EOF; causes come from jobs API step metadata plus local reproduction. No CI, gate, dependency, or application file changed.",
     "focused_backup_restore_test": "PASS 2026-11-11: src/utils/backupRestore.test.ts, 1 file / 23 tests passed (replaces the stale 19-test claim in docs/architecture/backup-restore.md).",
-    "cascade_hold_sha_check": "PASS 2026-11-11: all eight CHB short and full SHAs resolve to commits after `git fetch --unshallow` (1,820 commits). Resolvability only; the workflow checks the short-SHA column, not the Full SHA field, and no CI run was inspected."
+    "cascade_hold_sha_check": "PASS 2026-11-11: all eight CHB short and full SHAs resolve to commits after `git fetch --unshallow` (1,820 commits). Resolvability only; the workflow checks the short-SHA column, not the Full SHA field, and no CI run was inspected.",
+    "shallow_clone_reproduction": "CONFIRMED LIVE 2026-11-11: the workspace reverted to a shallow clone (git rev-list --count HEAD = 1, .git/shallow present) and `npm run docs:verify` failed with exactly the CI signature - cap:govern.entity-scope and cap:govern.sox-authority: commit c9b84116ad408b2d574e952cd953c67b92edcbab does not resolve. After `git fetch --unshallow` (1,815 commits) docs:verify passes. This reproduces AUD-093 empirically rather than by constructing a depth-1 clone. The `fetch-depth: 0` workflow fix remains unapplied and unauthorized."
   }
 }
