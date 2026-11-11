@@ -8,6 +8,8 @@
 **HEAD baseline:** `f26c339e` 1002c (32nd HEAD DRIFT, 1002-COMMIT MILESTONE)
 **Status:** SPEC — awaiting implementation by Hades + Clio + Apollo
 
+> **2026-11-11 repository review note:** This is a specification; no DSAR export path exists. A bounded `src/` and `server/` search found no DSAR/dsar identifier, no right-of-access export action, no depseudonymize function and no export manifest builder. The document's premises are also unmet: its section framing relies on the consentRegistry recording consent events, but no consent registry exists (see [`docs/onboarding/03-CONSENT-CAPTURE.md`](03-CONSENT-CAPTURE.md)), and on pseudonymized address-book records, but no address-book store exists (see [`docs/security/PSEUDONYMIZATION.md`](../security/PSEUDONYMIZATION.md)). Read as a forward design, not as a description of the product. The Art. 15/20 obligations and one-month window are stated correctly as regulatory text but no conformance assessment was performed; legal review is `[UNVERIFIED: no legal or DPO review is evidenced in this repository]`.
+
 ---
 
 ## 1. Scope and Compliance Frame
