@@ -108,6 +108,8 @@ passed (M)`, with the command.
 - Two vitest runs in parallel on 2 vCPUs roughly double each other's time;
   check `ps aux | grep vitest` before starting another.
 
+The configured coverage thresholds are 50% for statements, branches, functions, and lines (`vite.config.ts`). `npm run test:sharded` runs the full suite in shards but does not collect coverage by default; use `npm test -- --coverage` for a coverage run. A threshold pass is a coverage measurement, not evidence that behavior or product acceptance is correct.
+
 The SQL.js staging test deliberately uses `vi.importActual('sql.js')` to bypass the
 global SQL.js stub, runs the bundled WASM, and substitutes only the low-level SQL
 transport with parameterized queries. Production masterStorage encryption and

@@ -14,8 +14,13 @@ group: discipline
 
 1. **Failing first:** Write the test that would fail without the work. Watch it fail. Then implement. Never write tests that pass trivially.
 2. **Exact evidence:** Every claim names a test file and the exact test title inside it. The verification gate fails when the file or title does not resolve.
-3. **Honest boundaries:** State what is NOT claimed. "SUPPORTED" does not mean "enterprise-ready." "GOVERNED" does not claim entity-scope authorization (O9 is BLOCKED-ON-OWNER).
-4. **Zero fabrication:** Never invent test titles, page paths, or evidence that does not exist. If the evidence is missing, the status stays EXPERIMENTAL.
+3. **Honest boundaries:** State what is NOT claimed. "SUPPORTED" does not mean
+   "enterprise-ready." DEC-103 resolves O9 as single-user; do not repeat it as an
+   open entity-scope blocker or infer multi-user authorization.
+4. **Zero fabrication:** Never invent test titles, page paths, or evidence that
+   does not exist. Select only a status from the current closed vocabulary and
+   follow that status's evidence contract; missing evidence does not imply one
+   universal fallback status.
 5. **Ratchet discipline:** Baselines move one way. If a ratchet drifts, fix the code, not the baseline (unless the baseline was wrong and the correction is recorded).
 
 ## What this prevents

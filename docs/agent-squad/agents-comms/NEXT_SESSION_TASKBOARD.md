@@ -1,5 +1,12 @@
 # FinPlan Pro — Next-Session Master Taskboard
 
+> **Historical handoff inventory — not the current queue or instructions.** This board belongs
+> to an older `main`-branch session. Its dirty-path, commit, suite, priority, and next-step claims
+> are historical, and some entries conflict internally (for example, K2 says both “never landed”
+> and “not a gap”). Apply none of its tasks unless revalidated against current authority. Root
+> `AGENTS.md`, the active Arena instructions, `docs/agent/WORKING_AGREEMENT.md`, and current
+> mission state take precedence. Squad procedures apply only if a squad is explicitly activated.
+>
 > One task per row. Do not start a second task while one is unfinished. Each task must end in one of three ways: a commit with evidence, a BLOCK entry with a reproduction, or a DONE note explaining why the unit closed without code. Treat the completion target as a planning goal, not a number you can claim from the tree until the tree proves it.
 
 ## How to read this board

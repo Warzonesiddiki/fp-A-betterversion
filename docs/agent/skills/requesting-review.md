@@ -26,10 +26,12 @@ group: discipline
 
 - PR bodies carry measured numbers with their command and date, never a summary
   someone has to re-derive.
-- `gh pr edit` silently fails here; update the body with
-  `gh api -X PATCH repos/Warzonesiddiki/fp-A-betterversion/pulls/<n> -F body=@file`.
-- The handover entry is the review artefact for the next session
-  (`docs/HANDOVER_NEXT_SESSION.md`).
+- Use the authenticated `gh` workflow for PR operations; verify the returned
+  status and resulting body rather than assuming an edit succeeded. Never include
+  secrets or credentials in a review request.
+- Record handoff details in the current repository handover/progress artifact
+  required by the active workflow; the Stage 1 ledger and progress log are
+  authoritative for this docs-first review.
 
 ## Red flags
 

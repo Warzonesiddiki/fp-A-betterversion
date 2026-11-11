@@ -36,18 +36,20 @@ visible to the owner.
      visible content.
    - **PDF:** safe to open; `NaN`, `undefined`, `[object Object]` never reach
      the page — missing renders as unavailable with a reason, never as 0.
-4. **Control totals.** The board pack's control totals tie to the source batch's
-   control totals (the ones the owner reads out of D365). A board pack that
-   balances to itself but not to the source is not trustworthy.
+4. **Control totals.** Tie the output to the selected, documented input batch and its
+   available control totals. Do not imply that a D365 source/control total exists
+   unless the user supplied and mapped it; a self-consistent export is not source
+   reconciliation.
 5. **Missing is not zero.** An absent period in the board pack says "not in
    file", never `0`.
-6. **Run the gate.** `npm run docs:verify` and the targeted tie-out test pass on
-   the committed tree. Paste the tally.
+6. **Run the gate.** the relevant export and safety gates and targeted tie-out test pass on the
+   reviewed tree. Capture their actual results; docs verification alone does not
+   establish export correctness.
 
 ## In this repo
 
 - The success criterion: [`docs/VISION.md`](../../VISION.md) §5 #7.
-- The tie-out test pattern:
+- The current tie-out test (verify its assertions before reusing as a pattern):
   `src/pages/reports/BoardPackPage.exportTieOut.test.tsx`.
 - Excel export: [`excel-and-report-exports`](excel-and-report-exports.md).
 - Missing-is-not-zero: `AGENTS.md` §2 #6;

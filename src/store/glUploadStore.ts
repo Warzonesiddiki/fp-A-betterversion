@@ -52,7 +52,10 @@ export interface UploadSession {
  * hand-mapping every month. User preference, never financial truth.
  */
 export interface MappingProfile {
+  /** Stable identity shared by all immutable versions of this mapping. */
   readonly id: string;
+  /** Monotonic configuration version. Editing a profile appends a new record. */
+  readonly version: number;
   readonly name: string;
   /** Normalised, sorted header signature (see mappingProfileSignature). */
   readonly signature: string;
@@ -77,7 +80,64 @@ export function findMappingProfile(
   headers: readonly string[]
 ): MappingProfile | undefined {
   const signature = mappingProfileSignature(headers);
-  return profiles.find((p) => p.signature === signature);
+  return profiles
+    .filter((profile) => profile.signature === signature)
+    .reduce<
+      MappingProfile | undefined
+    >((latest, profile) => (!latest || profile.version > latest.version ? profile : latest), undefined);
+}
+
+export function mappingProfilesEqual(
+  left: Readonly<Record<string, string>>,
+  right: Readonly<Record<string, string>>
+): boolean {
+  const leftKeys = Object.keys(left).sort();
+  const rightKeys = Object.keys(right).sort();
+  return (
+    leftKeys.length === rightKeys.length &&
+    leftKeys.every((key, index) => key === rightKeys[index] && left[key] === right[key])
+  );
+}
+
+/** Upgrade legacy header-signature profiles without discarding their mapping. */
+export function migrateMappingProfiles(value: unknown): MappingProfile[] {
+  if (value === undefined || value === null) return [];
+  if (!Array.isArray(value)) throw new Error('Saved GL mapping profiles must be an array.');
+
+  return value.map((item, index) => {
+    if (!item || typeof item !== 'object') {
+      throw new Error(`Saved GL mapping profile ${index + 1} is not an object.`);
+    }
+    const profile = item as Partial<MappingProfile>;
+    if (
+      typeof profile.id !== 'string' ||
+      typeof profile.name !== 'string' ||
+      typeof profile.signature !== 'string' ||
+      !Array.isArray(profile.headers) ||
+      !profile.headers.every((header) => typeof header === 'string') ||
+      !profile.mappings ||
+      typeof profile.mappings !== 'object' ||
+      Array.isArray(profile.mappings) ||
+      typeof profile.savedAt !== 'string'
+    ) {
+      throw new Error(`Saved GL mapping profile ${index + 1} has an invalid shape.`);
+    }
+    const mappings = profile.mappings as Record<string, unknown>;
+    if (!Object.values(mappings).every((column) => typeof column === 'string')) {
+      throw new Error(`Saved GL mapping profile ${index + 1} has invalid column mappings.`);
+    }
+    return {
+      ...profile,
+      headers: [...profile.headers],
+      mappings: { ...mappings } as Record<string, string>,
+      version:
+        typeof profile.version === 'number' &&
+        Number.isInteger(profile.version) &&
+        profile.version > 0
+          ? profile.version
+          : 1,
+    } as MappingProfile;
+  });
 }
 
 export interface GLUploadState {
@@ -104,7 +164,7 @@ export interface GLUploadState {
     name: string;
     headers: readonly string[];
     mappings: Record<string, string>;
-  }) => void;
+  }) => MappingProfile;
   deleteMappingProfile: (id: string) => void;
   reset: () => void;
   clearHistory: () => void;
@@ -127,7 +187,7 @@ const initialState = {
 export const useGLUploadStore = create<GLUploadState>()(
   subscribeWithSelector(
     persist(
-      immer((set) => ({
+      immer((set, get) => ({
         ...initialState,
 
         setFile: enforce(Permissions.IMPORT_CREATE, 'setFile', (fileInfo, csvColumns) => {
@@ -182,25 +242,30 @@ export const useGLUploadStore = create<GLUploadState>()(
 
         saveMappingProfile: enforce(Permissions.IMPORT_UPDATE, 'saveMappingProfile', (input) => {
           const signature = mappingProfileSignature(input.headers);
+          const name = input.name.trim() || 'Untitled profile';
+          const current = findMappingProfile(get().mappingProfiles, input.headers);
+          if (
+            current &&
+            current.name === name &&
+            mappingProfilesEqual(current.mappings, input.mappings)
+          ) {
+            return current;
+          }
+
           const profile: MappingProfile = {
-            id: `profile-${sha256Hex(signature).slice(0, 16)}`,
-            name: input.name.trim() || 'Untitled profile',
+            id: current?.id ?? `profile-${sha256Hex(signature).slice(0, 16)}`,
+            version: (current?.version ?? 0) + 1,
+            name,
             signature,
             headers: [...input.headers],
             mappings: { ...input.mappings },
             savedAt: nowISO(),
           };
           set((state) => {
-            const existing = state.mappingProfiles.findIndex((p) => p.signature === signature);
-            // Fresh literals: the immer draft wants mutable shapes, the
-            // exported profile type is readonly.
-            const draftProfile = { ...profile, headers: [...profile.headers] };
-            if (existing >= 0) {
-              state.mappingProfiles[existing] = draftProfile;
-            } else {
-              state.mappingProfiles.push(draftProfile);
-            }
+            // Keep every prior version immutable for batch lineage and rollback.
+            state.mappingProfiles.push({ ...profile, headers: [...profile.headers] });
           });
+          return profile;
         }),
 
         deleteMappingProfile: enforce(Permissions.IMPORT_DELETE, 'deleteMappingProfile', (id) => {
@@ -218,10 +283,13 @@ export const useGLUploadStore = create<GLUploadState>()(
       {
         name: 'gl-upload-store',
         storage: masterStorage,
-        version: 2,
+        version: 3,
         migrate: (state: unknown) => {
           const s = (state ?? {}) as Partial<GLUploadState>;
-          return { ...s, mappingProfiles: s.mappingProfiles ?? [] } as GLUploadState;
+          return {
+            ...s,
+            mappingProfiles: migrateMappingProfiles(s.mappingProfiles),
+          } as GLUploadState;
         },
         partialize: (state) => ({
           sessionHistory: state.sessionHistory,

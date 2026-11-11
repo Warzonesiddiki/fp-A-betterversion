@@ -5,7 +5,7 @@
 > Retired documents live in [`docs/archive/`](archive/) and are provenance, not
 > instructions.
 
-Last reorganised: **2026-11-04** (DEC-011's 2026-10-16 archive boundary retained). Every number quoted in these docs is
+Last updated: **2026-11-10** (product/connector plan aligned to the owner's reaffirmed direction; DEC-011's 2026-10-16 archive boundary retained). Every number quoted in these docs is
 produced by a command named next to it. Do not update a number by hand.
 
 ---
@@ -44,7 +44,7 @@ docs/agent/08_DATA_MODEL.md     types, persistence truth, schema homes
 
 ```text
 docs/VISION.md                                  product goal and all-in-one promise
-docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md detailed proposed approach and owner questions
+docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md owner-approved phased sequence, detailed work packages, connector strategy and open questions
 docs/03_CURRENT_STATUS_AND_AUDIT.md             Stage 1 source-vs-doc evidence, matrices, defects
 docs/discovery/requirements-register.md         what was asked, and its evidence status
 docs/discovery/roadmap.md                       high-level gated sequence
@@ -64,7 +64,7 @@ docs/CAPABILITY_TRUTH_MATRIX.md                 per-route/per-module maturity (g
 | `docs/README.md`                          | This map; the definition of "authoritative".                                                                                      |
 | `docs/03_CURRENT_STATUS_AND_AUDIT.md`      | Stage 1 repository/doc reality audit, 18-module and 12-industry matrices, and defect register.                                      |
 | `docs/VISION.md`                          | Product goal, the all-in-one module map, scope, non-goals, success.                                                               |
-| `docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md` | Detailed proposed strategy, architecture, work packages, dependencies, evidence and owner-review questions. |
+| `docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md` | Owner-approved phased sequence; detailed architecture, work packages, dependencies, evidence and open owner questions. |
 | `docs/discovery/requirements-register.md` | FR/NFR/UX requirements with acceptance criteria and evidence status.                                                              |
 | `docs/discovery/roadmap.md`               | High-level delivery gates; points to the master plan for the detailed sequence.                                                   |
 | `docs/discovery/decision-log.md`          | DEC-001… every decision, owner, rationale, review trigger.                                                                        |
@@ -126,6 +126,7 @@ always take precedence.
 | `docs/architecture/PERSISTENCE_MAP.md`                                                                                  | Persisted store keys + classification.     | `persistence:map`      |
 | `docs/audit/`                                                                                                           | The measured audit of this codebase.       | —                      |
 | `docs/adr/`                                                                                                             | Architecture decision records.             | —                      |
+| `docs/architecture/connectors.md`                                                                                       | Connector reality, shared import contract, provider evidence and rollout gates. | — |
 | `docs/architecture/`                                                                                                    | Money, period-close, RBAC, data integrity. | —                      |
 | `docs/security/`, `SECURITY.md`                                                                                         | Security policy and threat model.          | —                      |
 | `docs/a11y/`, `docs/compliance/`, `docs/testing/`, `docs/design/`, `docs/engines/`, `docs/onboarding/`, `docs/release/` | Domain reference.                          | —                      |

@@ -1,14 +1,34 @@
 # FinPlan Pro — Master Product Vision & Execution Plan
 
-**Status:** Proposed for owner review — 2026-11-04. This is the working plan, not a claim that the product already delivers the vision. No calendar estimates or new provider/industry certifications are approved by this document.
+**Status:** Owner approved proceeding with the recommended phased sequence on 2026-11-10 (DEC-105); the plan remains a proposal for unresolved choices, not a claim that the product already delivers the vision. No calendar estimates or new provider/industry certifications are approved by this document.
 
-**Owner direction:** build a “perfect” all-in-one FP&A solution; make supported FP&A work completable in FinPlan Pro without requiring another application; ingest accounting/ERP data through a user-customizable format; and design for every industry.
+**Owner direction (reaffirmed 2026-11-10):** build a “perfect” all-in-one FP&A solution; make supported FP&A work completable in FinPlan Pro without requiring another application; ingest accounting/ERP data through a user-customizable format; and design for every industry.
 
 **Decision sources:** DEC-033 (all FP&A is the ultimate scope), DEC-042 (the current v1 supported-label boundary is the DATA→CLOSE trust spine; this does not narrow the ultimate scope), DEC-104 (universal accounting/finance import with a user template system), DEC-015 (all documented D365 GL shapes are in scope), DEC-035 (correction work is completable in-tool; Excel export is optional), and the other active decisions in [decision-log.md](decision-log.md). This plan does not supersede an accepted decision. Where a required product choice is not yet decided, it is explicitly marked **OWNER REVIEW**.
 
 **Evidence baseline:** code and docs reviewed 2026-11-04; latest measured route/completion facts are in [`../CAPABILITY_TRUTH_MATRIX.md`](../CAPABILITY_TRUTH_MATRIX.md), [`../agent/09_KNOWN_GAPS.md`](../agent/09_KNOWN_GAPS.md), and [`VISION_ALIGNMENT_RECHECK_2026_11_02.md`](VISION_ALIGNMENT_RECHECK_2026_11_02.md). The 17,937-passed / 1-skipped / 8-of-8 frontend run is historical (2026-11-02). A fresh 2026-11-04 sharded run timed out after 1,800 seconds at shard 7/8 and ended without a summary; the latest full-suite status is **inconclusive**, not pass or fail. This does not establish live ERP compatibility or owner acceptance.
 
 ---
+
+## Executive summary for owner review
+
+**Recommendation:** build toward one FP&A workspace through a shared, canonical financial-data contract. First make the CSV/XLSX template journey genuinely end-to-end for the owner's D365 use and other structured exports; then prove the data and workflow against real source controls; then expand API coverage, FP&A depth, industry packs and deployment only as priorities and evidence allow.
+
+**What this approves and does not approve:** the owner approved proceeding with this phased sequence on 2026-11-10 (DEC-105), organizing the accepted all-FP&A (DEC-033) and user-template/universal-import (DEC-104) direction. It does not claim that “any ERP” or every industry is supported today; it does not authorize ERP write-back, cloud/team deployment, live credentials, or a specific new provider/industry priority. Those remain governed by existing decisions and the open questions in §11.
+
+**Proposed sequence:**
+
+1. Align the product promise and record owner decisions.
+2. Unify the current upload and universal-template paths under one parser, validator and financial commit authority.
+3. Validate each owner-used D365 export shape against anonymized source data and independent totals.
+4. Prove the trusted actuals → close → traceability spine.
+5. Validate exception review, correction follow-through and detailed comparisons in the real workflow.
+6. Add prioritized native API connectors through the same import contract.
+7. Expand planning, forecasting, scenarios, consolidation and reporting on the trusted spine.
+8. Add versioned, evidence-backed industry packs without industry code forks.
+9. Select and operationalize the deployment, then run an owner-approved pilot and release.
+
+**Owner review first:** see §11 for the explicit questions. The safe defaults stand until answered; implementation must not silently convert a proposal into an owner decision.
 
 ## 1. The vision, translated into an executable product promise
 
@@ -100,14 +120,15 @@ The product's full responsibility list stays governed by DEC-033, DEC-034 and DE
 
 ---
 
-## 4. Current state versus the destination (reviewed 2026-11-04)
+## 4. Current state versus the destination (baseline 2026-11-04; import path updated 2026-11-10)
 
 ### Verified repository facts
 
 - The application is a desktop-first Tauri/React FP&A codebase with a broad route/module inventory. The generated completion register has 711 rows; the measured route census is 227 routes, 19 SUPPORTED and 208 EXPERIMENTAL. Route presence does not prove business acceptance.
 - The current GL upload path accepts CSV/XLSX, maps fields, validates through `parseGLRows`, records provenance and control totals, and commits through `glStore.importGLData`. The D365 F&O/BC fixtures are synthetic. No owner-provided GL file/control totals have been reconciled.
-- `src/services/import/universalImportTemplate.ts` and `universalImportEngine.ts` contain the DEC-104 generic mapping/template and parse functions, with governance tests. Separately, `GLUploadPage` and `useGLUploadStore` save header-signature mapping profiles and re-apply them. The GLUploadPage currently calls `parseGLRows` directly; a repository search found no UI call to `universalImportParse`/`universalImportAutoDetect`. The two template/mapping paths need a deliberate convergence and user-journey audit—do not claim a single end-to-end template system from the type or test alone.
-- There is a documentation-evidence mismatch to reconcile: `cap:data.universal-import` is SUPPORTED in the completion register using governance tests, while the generated capability truth matrix's static service inventory lists the two service files as “BUILT — TEST NOT FOUND”. The matrix and generator must be made to represent the intended evidence consistently; do not hand-edit generated output.
+- **Updated 2026-11-10 (Phase 1 first integration):** `GLUploadPage` constructs a transient user template from the current field mappings and calls `universalImportParse` at commit. The engine delegates to `parseGLRows`; custom mappings retain automatic D365 dialect semantics. `GLDataPreview` calls `parseGLRows` directly, so preview and commit use the same financial parser. At this point mapping profiles were still unversioned; the next dated update below records the follow-on lineage implementation. The standalone `universalImportAutoDetect` path is not yet the upload's selection workflow. Focused first-integration coverage passed 5 files / 95 tests. This is implementation/test evidence using synthetic fixtures, not real owner source validation.
+- **Updated 2026-11-10 (versioned mapping and batch lineage):** `glUploadStore` migrates legacy saved profiles to version 1 and appends immutable mapping revisions; matching headers select the highest version, and unchanged saves do not create a revision. The upload attaches the exact mapping snapshot to the import result, identifies a saved profile by id/version only when its mappings still match, and stores one-off mapping snapshots without falsely attributing them to a saved profile. Batch history and the completion evidence expose mapping lineage; saved-template id/version is also copied onto committed entry provenance. `glStore.importGLData` remains the commit authority and DEC-007 behavior is unchanged. Focused validation passed 7 files / 129 tests; `npm run tsc` passed. This remains local profile persistence and synthetic-test evidence—not shared/team template storage, live ERP verification, or proof of universal support.
+- There is still a documentation-evidence mismatch to reconcile: `cap:data.universal-import` is SUPPORTED in the completion register using governance tests, while the generated capability truth matrix's static service inventory lists the service files as “BUILT — TEST NOT FOUND”. The matrix and generator must be made to represent the intended evidence consistently; do not hand-edit generated output.
 - `/data/exceptions`, `/data/corrections`, and `/data/comparison` are routed and have focused tests. They have not been accepted by the owner/accounts team on a real supported cycle. Re-verification is not yet proof that a specific source entry was corrected or the import was complete.
 - `/settings/integrations` reaches `INTEGRATION_CATALOG` → `integrationStore` → connector → `glStore` for catalogued ledger feeds. The tests are mocked. No live-provider sandbox or account was used.
 - Current code labels QuickBooks, Xero, NetSuite, Sage Intacct, Stripe and Plaid `ledgerImportable`; Stripe is charge-limited, Plaid imports `added` items only and lacks durable incremental cursor behavior. Dynamics targets Dataverse CRM, not D365 F&O/Business Central GL. Salesforce and Slack are not GL feeds.
@@ -148,7 +169,7 @@ A template is versioned configuration that maps a source shape into the canonica
 
 **Proposed access levels:** built-in templates (read-only), personal templates, and organization-shared templates only if multi-user deployment is approved. A changed mapping creates a new version; it must not rewrite historical imports. Keep API credentials out of template payloads.
 
-**Current boundary:** `GLUploadPage` already persists simple mapping profiles keyed by normalized headers; `UniversalImportTemplate` offers a richer in-memory template API. Phase 1 must audit, unify, or explicitly distinguish them so only one financial parsing/validation authority remains.
+**Current boundary:** `GLUploadPage` persists versioned local mapping profiles keyed by normalized headers and records batch snapshots; `UniversalImportTemplate` supplies the engine schema and validation API. These lifecycle models are not fully converged: clone/edit/replace, built-in/user selection, unknown-column treatment, and shared scope remain open. Phase 1 must audit, unify, or explicitly distinguish them while keeping one financial parsing/validation authority.
 
 ### 5.3 Import state machine and financial controls
 
@@ -231,7 +252,7 @@ Recommended core-plus-pack model:
 
 No dates are estimated before the owner approves priorities and the unresolved deployment/source questions. Each phase can be split into small issue-sized changes; a phase is not “done” because a document or component exists.
 
-### Phase 0 — Vision, scope, and review (current)
+### Phase 0 — Vision, scope, and review (sequence approved; owner inputs remain open)
 
 **Outcome:** everyone follows one coherent product definition.
 
@@ -242,14 +263,14 @@ No dates are estimated before the owner approves priorities and the unresolved d
 - **0.5 Current-state reconciliation:** align the completion register, capability matrix and implementation paths for the universal importer; fix any generator/evidence mismatch rather than hand-editing generated output.
 - **0.6 Baseline:** retain current green gates, route/capability census, dependency audits and explicit owner blockers.
 
-**Exit gate:** owner reviews this plan and answers the must-decide items in §11, or explicitly accepts the recommended defaults as provisional. No architectural assumption is treated as approved merely because it appears in this plan.
+**Gate result:** owner replied “GO” on 2026-11-10, approving the phased sequence (DEC-105). This authorizes Phase 1 work under the existing safe defaults. R1–R12 remain open; “GO” is not treated as answering the individual source-format, provider, industry, collaboration, egress, release-threshold or write-back questions.
 
 ### Phase 1 — One canonical import contract; converge the existing paths
 
 **Outcome:** a user can use one reliable intake path, and mappings do not fork financial logic.
 
-- **1.1 Inventory existing behavior:** compare `GLUploadPage` → `parseGLRows` → `glStore.importGLData`, `useGLUploadStore.mappingProfiles`, `universalImportTemplate`, `universalImportEngine`, D365 parser, connector `buildJournalEntries`, staging/quarantine pipeline and DEC-005 authority boundary. Record callers, data shapes, validation differences, persistence, and tests.
-- **1.2 Choose the one parsing/validation authority:** propose `universalImportEngine` as orchestration only if it can reuse the same parser/validators and maintain DEC-007 atomicity. Otherwise make the current `parseGLRows` path the authority and adapt the template system to it. Delete no contract or data namespace without a migration/reachability review.
+- **1.1 Inventory existing behavior:** compare `GLUploadPage` → upload template → `universalImportParse` → `parseGLRows` → `glStore.importGLData`, `useGLUploadStore.mappingProfiles`, `universalImportTemplate`, D365 parser, connector `buildJournalEntries`, staging/quarantine pipeline and DEC-005 authority boundary. **Initial file-upload caller audit completed 2026-11-10:** the UI now calls the universal engine at commit; preview and engine both delegate mapped rows to `parseGLRows`; profiles remain legacy header-signature records; staging remains separate and unconsumed. Finish the full inventory across connector, staging/quarantine, data shapes, persistence and tests before removing or migrating any path.
+- **1.2 Choose the one parsing/validation authority:** working integration choice (2026-11-10): `universalImportEngine` is orchestration for a user template, `parseGLRows` remains the shared row parser/validation authority, and `glStore.importGLData` remains the financial commit authority. The engine's user-template path now preserves the same automatic D365 dialect detection as the existing upload parser. This choice must retain DEC-007 whole-file atomicity; reconcile the standalone built-in D365 parser branch before widening template selection. Delete no contract or data namespace without a migration/reachability review.
 - **1.3 Write a versioned canonical GL contract:** source fields, optional fields, types, precision, date/locale/debit-credit semantics, entity/currency/dimension behavior, provenance and source identifiers. Maintain the D365 owner shapes and generic mapping as adapters, not competing models.
 - **1.4 Define mapping-template schema:** template id/name/version; provider/report/file type; header signature; field mapping; date and number parsing; dimension/account translations; warnings/blocking rules; fixture/expected controls; version ownership and change history.
 - **1.5 Establish template semantics:** built-ins read-only; user templates editable; save/reuse/delete; editing creates a new version; an imported batch keeps the exact template version; explicit rename/clone/replace behavior; no secret fields in templates.
@@ -552,4 +573,4 @@ No provider sandbox or customer ERP account was accessed. This planning exercise
 
 ## 15. Owner review record
 
-**Review status:** awaiting owner comments. Until the owner approves/corrects §§1–3 and answers §11, the phases and priorities are recommendations, not new engineering authorization. Accepted decisions DEC-033/104 remain binding; no accepted decision is silently revised by this draft.
+**Review status:** owner replied “GO” on 2026-11-10; DEC-105 records approval to execute the recommended phased sequence. Phase 1 foundation work is authorized under the documented safe defaults. This is not blanket approval of the unresolved R1–R12 choices: provider/industry priorities, file-format scope, team deployment, egress/retention, release thresholds and ERP write-back remain open unless separately decided. Accepted decisions DEC-033/104 remain binding; no accepted decision is silently revised.

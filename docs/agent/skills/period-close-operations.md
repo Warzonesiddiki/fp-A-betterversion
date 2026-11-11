@@ -23,13 +23,14 @@ group: finance
    the prior period.
 6. **Close order is explicit** (chain per period, genesis verified) so a gap is
    detectable.
-7. **No SOX-compliance claim is made**: DEC-102 says this is not a SOX compliance system and the local chain is not SOX authority. Reopen only if the owner reverses that decision.
+7. **No SOX-compliance claim is made**: DEC-102 says this is not a SOX compliance system and the local chain is not SOX authority. Do not imply this is changed by a close workflow passing tests.
 
 ## In this repo
 
-- The close log is separate from general audit and is unanchored — say so rather
-  than implying a tamper-proof record. `authStore.switchEntity` remains blocked on
-  O9, so entity scope for close actions is not authorised by inference.
+- The close log is separate from general audit and has an unkeyed local hash chain;
+  this is local consistency evidence, not tamper-proof or SOX authority. DEC-103
+  resolves O9 as single-user; do not repeat the retired entity-scope blocker or infer
+  capabilities beyond that decision.
 - DEC-030 fixed chain verification: append order preserved, per-period genesis
   verified. Keep that property when touching the store.
 - Close surfaces are part of the spine: exceptions must be visible before lock.
@@ -40,4 +41,5 @@ group: finance
 - Reopen that deletes the close record.
 - A close that succeeds with an unposted journal.
 
-**Source:** original, from DEC-030.
+**Source:** `src/store/periodCloseStore.ts` and DEC-030/102/103; the server-side
+  close implementation and native/offline behavior require separate verification.

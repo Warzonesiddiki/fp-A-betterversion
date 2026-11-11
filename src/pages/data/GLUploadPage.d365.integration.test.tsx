@@ -468,7 +468,7 @@ describe('IMP-03 — saved mapping profiles in the wizard', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: /save mapping profile/i }));
 
-    expect(await screen.findByText(/Profile "USMF monthly" saved/i)).toBeTruthy();
+    expect(await screen.findByText(/Profile "USMF monthly v1" saved/i)).toBeTruthy();
     const profiles = useGLUploadStore.getState().mappingProfiles;
     expect(profiles).toHaveLength(1);
     expect(profiles[0]?.mappings.accountCode).toBe('MainAccount');
@@ -519,5 +519,13 @@ describe('DEC-013 §4.1 — headerless CSV (mapped by the user, never guessed)',
     expect(st.entries).toHaveLength(2);
     // No header exists in this file, so the first posting IS source row 1.
     expect(st.entries.map((e) => e.provenance?.sourceRow)).toEqual([1, 2]);
+    expect(st.importHistory[0]?.template?.status).toBe('saved');
+    expect(st.importHistory[0]?.template?.templateVersion).toBe(1);
+    expect(st.importHistory[0]?.template?.mappings.accountCode).toBe('Column 1');
+    expect(
+      st.entries.every(
+        (entry) => entry.provenance?.templateId === st.importHistory[0]?.template?.templateId
+      )
+    ).toBe(true);
   });
 });

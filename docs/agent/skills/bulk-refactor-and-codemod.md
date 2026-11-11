@@ -26,10 +26,12 @@ group: discipline
 
 ## In this repo
 
-- The money sweeps are the template: 14 copies → 1 helper, 136 compiler errors →
-  0, and a census test (`src/utils/moneyTrapCensus.test.ts`) that pins the shape.
-- Use `npm run type-safety:ratchet`, `money:ast`, `fabrication:audit` as the
-  after-state measurement where they apply.
+- Historical money-sweep counts are dated examples, not current baselines or
+  expected savings. Use the census pattern only after verifying its current scope
+  (`src/utils/moneyTrapCensus.test.ts`) and report fresh before/after counts.
+- Use current applicable gates such as `npm run type-safety:ratchet`,
+  `npm run money:ast`, and `npm run fabrication:audit` for after-state checks;
+  none alone proves a mechanical transformation was behavior-preserving.
 - Prettier after the sweep; a codemod often leaves line-wrapping the repo's format
   gate rejects.
 

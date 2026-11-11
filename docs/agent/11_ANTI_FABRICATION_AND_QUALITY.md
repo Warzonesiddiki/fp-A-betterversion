@@ -75,7 +75,7 @@ replace `AGENTS.md` §2; they operationalise it.
 | **WQ-01** | **Write the failing test first.** Code a feature only after a test that fails for the right reason exists and is committed ahead of the fix.                            | AGENTS.md §2 #9            | `check` (tests included)        |
 | **WQ-02** | **Never weaken, delete, skip, or hand-edit a gate to make it pass.** If a gate is wrong, revise it by recorded DEC in public with a reason; do not disable it.          | AGENTS.md §2 #10; 04 §L #2 | the gate itself; DEC log        |
 | **WQ-03** | **Never delete breadth to make a number look better.** RETIRED requires a recorded decision + resolving commit; it is not a cleanup tool.                               | DEC-006; 04 §L #3          | `coverage:audit`, docs register |
-| **WQ-04** | **No unverified claims.** No "verified D365", no "your data is safe", no SOX authority, no "CI is green", no entity-scope authorisation — each pending an owner answer. | AGENTS.md §2 #1, #2, #3    | `docs:verify`, review           |
+| **WQ-04** | **No unverified claims.** Do not claim verified D365, data safety, SOX authority, CI status, or other capabilities without current evidence. Entity-scope authorization is not pending: DEC-103 records the owner’s single-user decision; do not add multi-user scope implicitly. | `AGENTS.md` §2 #1, #2, #3 | `docs:verify`, review |
 | **WQ-05** | **A ratchet never goes backwards without a recorded DEC.** A baseline is raised only by a recorded decision, never silently.                                            | 04 §K; ratchet discipline  | ratchet-docs-check              |
 | **WQ-06** | **The smallest change that fully solves the problem** (ponytail level full): finish callers, tests, fixtures; no new abstraction for one use.                           | ponytail skill             | review + `check`                |
 | **WQ-07** | **Every PR states which skills were applied.** A skill raises rigour, never the claim — "used skill X" is process, not evidence.                                        | AGENTS.md §1; 04 §A        | PR description; `skills:verify` |
@@ -137,8 +137,7 @@ lives in exactly one authoritative home; other docs reference, not duplicate.
 - **A ratchet-movement alert.** No automated check flags a ratchet whose value
   jumps > N % without a recorded DEC or a corresponding behaviour change (MI-09).
   _Owner: agent, next session._
-- **Owner answers O1–O9.** Several unverified-claim items remain owner-bound
-  (WQ-04); until answered they stay `pending_owner`. _Owner: owner._
+- **Open plan questions R1–R12.** DEC-105 approves proceeding with the phased plan, not blanket answers to these questions. Keep each unanswered choice at its documented safe default and `OWNER REVIEW` status; record future owner answers as separate decisions. DEC-103 already resolves O9/entity scope as single-user, so do not present that as an open owner question. _Owner: owner._
 
 ---
 
@@ -176,7 +175,8 @@ Defined in full in `10_GLOSSARY.md`; summarised here for the rule table.
 | Money-AST audit        | `npm run money:ast`                      | 0 unsafe (ratcheted) | no raw-float money arithmetic                                    |
 | Fabrication audit      | `npm run fabrication:audit`              | ratcheted            | no hand-typed financial literals / demo entities                 |
 | Mock-data audit        | `npm run mock-data:audit`                | yes                  | real compute at the data boundary                                |
-| Tests (sharded)        | `npm run test:sharded`                   | ≥75 % coverage       | behaviour is real                                                |
+| Full test suite         | `npm run test:sharded`                   | Every shard passes; this command does not collect coverage by default | Behavioural tests pass; not product/source acceptance by itself |
+| Coverage (separate run) | `npm test -- --coverage`                 | 50% statements, branches, functions, and lines in `vite.config.ts` | Measured coverage meets configured thresholds; does not prove correctness |
 | Structural             | `npm run docs:verify` + `engines:verify` | yes                  | docs match gate output, engines match base                       |
 
 The full ordered gate chain is `npm run check` (`AGENTS.md` §4): tsc → lint →

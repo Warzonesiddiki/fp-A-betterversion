@@ -1,5 +1,11 @@
 # Squad Blockers
 
+> **Conditional squad record — not the project-wide blocker source.** Use this
+> tracker only when a squad is explicitly activated for the current task. Its
+> empty table means no blockers are recorded in this squad log; it does not mean
+> the repository or mission has no blockers. Root `AGENTS.md`, the active Arena
+> instructions, and the mission state take precedence.
+
 > One row per blocker. Raise it here AND post a `COMMS_LOG.md` entry mentioning `@LEAD`.
 > Never invent an owner decision: if the blocker needs one, name the DEC id from
 > `docs/discovery/decision-log.md` and say "blocked on owner".

@@ -259,6 +259,30 @@ describe('data.universal-import — GOVERNANCE (O1: universal data importer)', (
       expect((result.entries[1]!.credit as { minor: number }).minor).toBe(50000);
     });
 
+    it('keeps D365 date semantics when the user customizes a D365-shaped mapping', () => {
+      const template = createUserTemplate('Owner D365 Mapping', 'custom', {
+        accountCode: 'MainAccount',
+        postDate: 'AccountingDate',
+        debit: 'AccountingCurrencyDebitAmount',
+        credit: 'AccountingCurrencyCreditAmount',
+      });
+      const rows = [
+        {
+          MainAccount: '1000',
+          AccountingDate: '31-Jan-2026',
+          AccountingCurrencyDebitAmount: '125.50',
+          AccountingCurrencyCreditAmount: '0.00',
+        },
+      ];
+
+      const result = universalImportParse({ rows, template });
+
+      expect(result.acceptedRows).toBe(1);
+      expect(result.rejectedRows).toBe(0);
+      expect(result.d365Flavor).toBe('d365_fo');
+      expect(result.entries[0]!.postDate).toBe('2026-01-31');
+    });
+
     it('rejects rows missing required fields', () => {
       const rows = [
         { Account: '1000', Date: '2026-01-31', Debit: '1000.00' },

@@ -2,7 +2,9 @@
 
 > **Maintained by:** Aion CLI (Lead: `01a1457a-2e72-7e92-a237-f33dfcbc65b1`) & Squad Teammates  
 > **Last Updated:** 2026-10-17  
-> **Purpose:** Single source of truth for team structure, active allocations, and status tracking so the Leader and user always know what each agent is executing.
+> **Purpose (at the time):** Single source of truth for team structure, active allocations, and status tracking so the Leader and user always know what each agent is executing.
+>
+> **Current disposition:** Historical squad snapshot as of 2026-10-17, not an active roster, allocation list, or source of current task status. The repository's docs map says to use squad coordination records only when a squad is explicitly active; root `AGENTS.md` and the current Arena branch rules take precedence. Do not treat the dated statuses, test tallies, or “this session” wording below as current evidence.
 
 ---
 

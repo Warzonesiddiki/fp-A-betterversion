@@ -26,8 +26,10 @@ export type DateFormatHint = 'iso' | 'us' | 'd365' | 'auto';
 
 /** A universal import template. */
 export interface UniversalImportTemplate {
-  /** Unique template id (e.g., 'builtin-d365-fo', 'user-my-template'). */
+  /** Unique template id (e.g., 'builtin-d365-fo', 'profile-…'). */
   readonly id: string;
+  /** Saved mapping revision, when this template is a persisted user profile. */
+  readonly version?: number;
   /** Human-readable template name. */
   readonly name: string;
   /** Description of what this template imports. */
@@ -183,18 +185,21 @@ export function createUserTemplate(
   sourceType: ImportSourceType,
   mappings: GLColumnMappings,
   options?: {
+    id?: string;
+    version?: number;
     description?: string;
     dateFormat?: DateFormatHint;
     defaultCurrency?: string;
     defaultEntity?: string;
   }
 ): UniversalImportTemplate {
-  const id = `user-${name
+  const generatedId = `user-${name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')}`;
   return {
-    id,
+    id: options?.id ?? generatedId,
+    ...(options?.version !== undefined ? { version: options.version } : {}),
     name,
     description: options?.description ?? `User template: ${name}`,
     sourceType,

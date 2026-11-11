@@ -16,15 +16,15 @@ group: engineering
 - [ ] `prettier --check` PASS
 
 ### Financial Integrity
-- [ ] `money:ast` PASS (0 unsafe operations, 100% safe)
+- [ ] `npm run money:ast` PASS (0 unsafe operations within the detector’s stated scope; not a universal safety certification)
 - [ ] `money:adoption` ratchet holds (baseline recorded)
 - [ ] `missing-is-not-zero` PASS (0 violations on SUPPORTED surfaces)
-- [ ] `fabrication` PASS (0 financial literals in UI)
+- [ ] `npm run fabrication:audit` PASS at its configured ratchet; inspect and report its actual scope/output
 
 ### Documentation
 - [ ] `docs:verify` PASS (all ratchet values match gates)
 - [ ] `docs:links --strict` PASS (0 broken links)
-- [ ] `verify-readme-stats` PASS (all measured claims match)
+- [ ] `node scripts/verify-readme-stats.mjs` PASS (measured README claims match)
 - [ ] `skills:verify` PASS (all skills indexed, frontmatter valid)
 
 ### Evidence
@@ -38,7 +38,7 @@ group: engineering
 - [ ] `ai-census` PASS (0 ungated surfaces)
 
 ### Accessibility
-- [ ] `a11y-q5` PASS (WCAG 2.1 AA, all tests pass)
+- [ ] `npm run test:a11y` PASS for the tests it runs; this is not by itself WCAG 2.1 AA or platform certification
 
 ### Determinism
 - [ ] `determinism` ratchet holds (baseline recorded)
@@ -47,13 +47,13 @@ group: engineering
 - [ ] `bundle-check` PASS (under limit or warning acknowledged)
 
 ### Tests
-- [ ] `test:sharded` PASS (8/8 shards)
+- [ ] `npm run test:sharded` PASS (8/8 shards, with the complete test/file tally; does not collect coverage by default)
+- [ ] If coverage is a release criterion: `npm test -- --coverage`; report each configured 50% threshold separately. Coverage is not a substitute for behavioral evidence.
 
-## Owner Decisions (O1-O9)
+## Owner decisions and open plan questions
 
-All 9 decisions must be either:
-- Answered by the owner, OR
-- Recorded as BLOCKED-ON-OWNER with provisional default
+- Reconcile current accepted decisions and open questions from `docs/discovery/decision-log.md` and the master plan (R1–R12). DEC-103/104/105 remain distinct: single-user entity scope; accepted user-mapped universal-import direction; approval to proceed with the phased plan.
+- For each unanswered question that affects this release, record the safe default, evidence boundary, release impact, and required owner decision. Do not treat silence as consent, and do not claim all R1–R12 must be answered before any release without a cited acceptance rule.
 
 ## Release Artifacts
 

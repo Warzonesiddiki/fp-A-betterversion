@@ -12,8 +12,13 @@ group: discipline
 
 ## Method
 
-1. **Serve it**: `npm run dev`, bound to `0.0.0.0` so the sandbox preview proxy
-   can reach it. A server bound to `127.0.0.1` looks broken to the user.
+**Scope warning:** root mission instructions and `AGENTS.md` take precedence. A
+preview does not authorize application-source work or replace required tests and
+evidence gates.
+
+1. **Serve it**: `npm run dev -- --host 0.0.0.0` so the sandbox preview proxy
+   can reach Vite. The default Vite host may be loopback; verify the actual listen
+   address and allowlisted preview origin.
 2. **Open the route you changed**, with real-ish data (seeded store, imported file).
 3. **Check the states the tests miss**: empty, loading, partial/quarantined, error,
    both themes, narrow width, keyboard-only.
@@ -25,8 +30,10 @@ group: discipline
 
 ## In this repo
 
-- The browser preview is the web app, not the desktop shell: it proves nothing
-  about Tauri packaging or offline behaviour.
+- This product currently rejects a standard browser runtime (`src/App.tsx`); a
+  Vite preview is not proof of a usable web application or of Tauri packaging,
+  native permissions, signing, recovery, or offline behavior. Use the preview only
+  for the behavior it can actually reach, and state the limitation.
 - Fixtures: seed through the store's own actions so the hydration and formatting
   paths run as they would for a user.
 - If a page needs an export to look right, that is a finding about the page.

@@ -12,14 +12,14 @@ group: finance
 
 ## Method
 
-1. **5-7 key drivers**: McKinsey research: 80% of variance explained by <15 drivers. Start with 10-15 core, expand deliberately. Too many drivers = unwieldy model.
+1. **Choose drivers to fit the decision and evidence.** Avoid importing a fixed driver count or external variance statistic as a project requirement; document each driver’s definition, source, owner, and limitations.
 2. **Three types**: operational (sales volume, headcount), financial (price per unit, margin), external (FX, market growth, raw material). Who controls each matters.
 3. **Modular separation**: inputs (drivers) separate from calculations and outputs (financial statements). Different BUs own driver sets without breaking whole system.
 4. **Three cases minimum**: base (honest expectation), upside (ramp faster), downside (half speed, payment stretch). Keep internally consistent: downside with lower revenue but unchanged hiring is not a plan.
 5. **What-if + stress**: driver-based modeling makes what-if easy: change driver, model recalculates. Stress test: severe adverse (price shock, supply failure).
 6. **Owner-assigned assumptions**: each driver has owner, source, transformation logic, last change, approved range. Document why, not just number: "7% growth based on 3yr avg 6.5-7.5% adjusted for confirmed pipeline" beats "7%".
 7. **Governance**: model factsheet listing sources, logic, owner, test results, ranges. Require approval for changing range or publishing scenario. Lock board versions.
-8. **Back-test**: load trailing 8-12 quarters historical drivers, run calcs, compare to actuals. Expect 10-25% initial error, iterate until single digits for key lines.
+8. **Back-test when sufficient comparable history exists.** Record periods, data coverage, method, and observed errors; do not promise a target accuracy or treat a generic error range as an acceptance criterion.
 9. **Scenario capability core**: design for scenario from start, not as afterthought. Driver changes flow automatically to financial statements.
 
 ## In this repo
@@ -39,4 +39,4 @@ group: finance
 - Downside case with same hiring as base.
 
 **Proves itself with:** scenario tests with oracle values, driver ownership documented, 4-state route tests.
-**Source:** adapted from pigment.com driver-based planning, farseer.com rolling forecast driver framework, getaleph.com scenario planning (MIT, rewritten).
+**Source:** original workflow guidance; specific driver counts and forecast accuracy targets require product-owner approval and evidence for the use case.

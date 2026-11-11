@@ -783,6 +783,10 @@ export interface GLEntryProvenance {
   readonly sourceFile: string;
   /** 1-based row number in the source file (header row = 1). */
   readonly sourceRow: number;
+  /** Saved user mapping identity, present when this batch used a saved template. */
+  readonly templateId?: string;
+  /** Exact saved mapping version used for this entry's batch. */
+  readonly templateVersion?: number;
 }
 
 /** One rejected source row, with a machine code and a human reason (FR-002: nothing is silently discarded). */
@@ -883,6 +887,25 @@ export interface ImportReconciliation {
   readonly differences?: { readonly rows: number; readonly debit: string; readonly credit: string };
 }
 
+/** Immutable mapping snapshot attached to an import batch. Saved templates carry a stable id/version; one-off mappings still retain the exact mapping used. */
+export type ImportTemplateLineage =
+  | {
+      readonly status: 'saved';
+      readonly templateId: string;
+      readonly templateVersion: number;
+      readonly name: string;
+      readonly sourceType: string;
+      readonly signature: string;
+      readonly mappings: Readonly<Record<string, string>>;
+    }
+  | {
+      readonly status: 'one-off';
+      readonly name: string;
+      readonly sourceType: string;
+      readonly signature: string;
+      readonly mappings: Readonly<Record<string, string>>;
+    };
+
 export interface ImportResult {
   filename: string;
   rowCount: number;
@@ -902,6 +925,8 @@ export interface ImportResult {
   reconciliation?: ImportReconciliation;
   /** Period / entity / currency coverage of the committed rows (FR-001). */
   scope?: ImportScope;
+  /** Exact user mapping/configuration snapshot used for this committed batch. */
+  template?: ImportTemplateLineage;
 }
 
 /** Identity of the source an import came from, supplied by the caller (page or connector). */
@@ -918,6 +943,8 @@ export interface ImportSource {
   readonly rejections?: readonly ImportRejection[];
   /** Totals the owner read in the source system for this file (FR-004 / IMP-02). */
   readonly expectedTotals?: ExpectedControlTotals;
+  /** Exact import mapping snapshot; saved templates identify the immutable version. */
+  readonly template?: ImportTemplateLineage;
 }
 
 export interface ImportHistoryEntry extends ImportResult {

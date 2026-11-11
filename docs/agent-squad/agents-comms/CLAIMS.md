@@ -1,5 +1,16 @@
 # File Claims — One Writer Per File
 
+> **Historical squad snapshot — no active locks by default.** This file contains
+> dated 2026-10-16/18-era claims and statuses. Apply this process only if a squad
+> is explicitly activated for the current task; entries here do not establish
+> current seat ownership, file locks, or live work. Verify any needed claim in
+> the active session instead. Root `AGENTS.md` and current Arena instructions
+> take precedence.
+>
+> Review note, 2026-11-10: the G-06 row below says `src/utils/masterStorage.test.ts`
+> “never landed,” but that file exists in the current checkout. Do not rely on
+> that historical status statement.
+
 > Before editing any file, add a claim. Reading is always allowed; writing is not.
 > Keep the smallest scope possible (a file beats a directory).
 

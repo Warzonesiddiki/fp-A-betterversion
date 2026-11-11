@@ -101,7 +101,7 @@ adding one is a valid, welcome unit of work.
 | -------------------------------------------------------------------------------------------------------------------------------- |
 | One logical change per commit; subject `type(scope): what` with a body that names the gates run and their tallies                |
 | Never rewrite pushed history on the session branch                                                                               |
-| Never touch `.github/workflows/**` from an agent; write a patch into `ci-patches/` with apply instructions                       |
+| Never touch `.github/workflows/**` from an agent; write a patch into `ci-patches/` with apply instructions; verify the active session instructions for current permissions and handoff path |
 | Do not commit `node_modules`, `dist`, `coverage`, `*.log`, lockfile backups, or generated reports except the ones listed in J    |
 | Keep the branch pushable: run the pre-commit gates manually when hooks are not installed (`npm ci --ignore-scripts` skips husky) |
 

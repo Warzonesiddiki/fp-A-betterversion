@@ -16,7 +16,8 @@
 > is a bug to be fixed, not a choice to be made.
 
 Handbook rules originated **2026-10-16**; product scope and execution guidance
-were aligned to owner direction on **2026-11-04**. Current-state facts must be
+were aligned to owner direction on **2026-11-04** and the phased sequence was
+approved to proceed on **2026-11-10** (DEC-105). Current-state facts must be
 rechecked in the linked evidence docs and commands; every measured number below
 comes from a named script and must not be updated by hand.
 
@@ -31,26 +32,42 @@ comes from a named script and must not be updated by hand.
 - **Owner's first proven-source workflow:** each month the owner exports a
   General Ledger dump from **Microsoft Dynamics 365**, performs FP&A work on it,
   identifies entries for human review, guides the accounts team and compares
-  daily/monthly/yearly results. **Broader owner direction (2026-11-04):** build
-  toward one-stop FP&A, user-mapped data from any accounting/ERP source, and
-  industry configurability. D365 is the first owner-specific proof; DEC-104
-  already accepts the universal template direction. See the master plan for
-  staged execution and unverified boundaries.
+  daily/monthly/yearly results. **Broader owner direction (2026-11-04,
+  reaffirmed 2026-11-10):** build toward one-stop FP&A, user-mapped data from any
+  accounting/ERP source, and industry configurability. D365 is the first
+  owner-specific proof; DEC-104 already accepts the universal template
+  direction. DEC-105 approves proceeding with the phased plan; it does not
+  resolve outstanding source, industry, deployment, egress or write-back
+  decisions. See the master plan for staged execution and unverified boundaries.
 - **Product and execution authority:** [`docs/VISION.md`](docs/VISION.md) is the
   north-star; [`docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md)
-  is the detailed proposal under owner review; [`docs/discovery/requirements-register.md`](docs/discovery/requirements-register.md)
+  is the approved phased execution plan (DEC-105), with unresolved choices tracked separately; [`docs/discovery/requirements-register.md`](docs/discovery/requirements-register.md)
   owns acceptance/evidence, [`docs/discovery/decision-log.md`](docs/discovery/decision-log.md) owns accepted decisions, and
   [`docs/discovery/roadmap.md`](docs/discovery/roadmap.md) summarizes gates. Dated audits are evidence snapshots. Everything
   under [`docs/archive/`](docs/archive/) is **provenance, not instructions**.
 - **Current truth:** the codebase is wide (180 engines, 48 stores) and shallow
-  where it matters. The live GL upload path is `GLUploadPage` → `parseGLRows` →
-  `glStore.importGLData`; a separate exact-string staging/promotion pipeline is
-  built/tested but has no UI consumer or downstream reader. The universal
-  template engine is also separate from the upload UI's persisted header-based
-  mapping profiles. Synthetic tests are not real-owner D365 verification or an
-  accounts-team acceptance run. **Native/offline sign-in and programme
-  completion remain unverified.** See
+  where it matters. The GL upload path now runs `GLUploadPage` → transient user
+  template → `universalImportParse` → `parseGLRows` → `glStore.importGLData`;
+  `GLDataPreview` also calls `parseGLRows`, preserving one row-parser for
+  preview and commit. Saved mapping profiles now migrate legacy entries to
+  version 1 and append immutable local revisions; batches retain the exact
+  mapping snapshot and saved id/version when it matches, and saved id/version
+  is copied to committed-entry provenance. This is local profile persistence,
+  not a fully converged/shared template lifecycle: clone/edit/replace,
+  unknown-column treatment, built-in selection and auto-detect workflow remain
+  open. A separate exact-string staging/promotion pipeline is built/tested but
+  has no UI consumer or downstream reader. Synthetic tests are not real-owner
+  D365 verification or an accounts-team acceptance run. **Native/offline
+  sign-in and programme completion remain unverified.** See
   [`docs/agent/09_KNOWN_GAPS.md`](docs/agent/09_KNOWN_GAPS.md).
+
+- **Coding authorization:** DEC-105 approves proceeding with the phased
+  product plan, but does not override the separate docs-first architecture
+  mission in §8. `docs/_agent/STATE.json` currently keeps
+  `docs_gate_passed: false` and `human_approved_for_coding: false`; therefore
+  no new application-source changes are authorized. Continue only the audit,
+  research and documentation work allowed by that mission until its required
+  evidence gates and approval are complete.
 
 ## 2. Non-negotiable rules (the short list)
 

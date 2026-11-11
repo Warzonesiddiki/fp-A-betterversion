@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useGLUploadStore, findMappingProfile, type UploadFileInfo } from './glUploadStore';
+import {
+  useGLUploadStore,
+  findMappingProfile,
+  migrateMappingProfiles,
+  type UploadFileInfo,
+} from './glUploadStore';
 import { useAuthStore } from './authStore';
 
 // F-0026: RBAC-aware fixture covering exactly the permissions the store's
@@ -180,6 +185,8 @@ describe('glUploadStore', () => {
 });
 
 describe('glUploadStore mapping profiles (IMP-03)', () => {
+  beforeEach(() => useGLUploadStore.setState({ mappingProfiles: [] }));
+
   const headers = ['Acct', 'When', 'Dr', 'Cr'];
   const mappings = { accountCode: 'Acct', postDate: 'When', debit: 'Dr', credit: 'Cr' };
 
@@ -196,17 +203,60 @@ describe('glUploadStore mapping profiles (IMP-03)', () => {
     expect(findMappingProfile(profiles, ['Acct', 'When', 'Dr'])).toBeUndefined();
   });
 
-  it('re-saving the same header set updates the profile instead of duplicating it', () => {
+  it('preserves immutable mapping versions and makes the newest version the active match', () => {
     const store = useGLUploadStore.getState();
-    store.saveMappingProfile({ name: 'First', headers, mappings });
+    store.saveMappingProfile({ name: 'Monthly ERP', headers, mappings });
+    const first = useGLUploadStore.getState().mappingProfiles[0]!;
+
     store.saveMappingProfile({
-      name: 'Renamed',
-      headers: [...headers].reverse(),
-      mappings: { ...mappings, description: 'Cr' },
+      name: 'Monthly ERP',
+      headers,
+      mappings: { ...mappings, description: 'Memo' },
     });
+
     const profiles = useGLUploadStore.getState().mappingProfiles;
-    expect(profiles).toHaveLength(1);
-    expect(profiles[0]?.name).toBe('Renamed');
+    expect(profiles).toHaveLength(2);
+    expect(profiles.map((profile) => (profile as { version?: number }).version)).toEqual([1, 2]);
+    expect(profiles[0]).toEqual(first);
+    expect(profiles[1]?.id).toBe(first.id);
+    expect(findMappingProfile(profiles, headers)?.mappings.description).toBe('Memo');
+  });
+
+  it('does not create a new version when an unchanged profile is saved again', () => {
+    const store = useGLUploadStore.getState();
+    store.saveMappingProfile({ name: 'Monthly ERP', headers, mappings });
+    store.saveMappingProfile({ name: 'Monthly ERP', headers, mappings: { ...mappings } });
+
+    expect(useGLUploadStore.getState().mappingProfiles).toHaveLength(1);
+  });
+
+  it('migrates legacy profiles to version 1 without changing their identity or mapping', () => {
+    const legacy = {
+      id: 'profile-legacy',
+      name: 'Legacy ERP',
+      signature: 'acct|cr|dr|when',
+      headers: [...headers],
+      mappings: { ...mappings },
+      savedAt: '2026-01-01T00:00:00.000Z',
+    };
+
+    expect(migrateMappingProfiles([legacy])).toEqual([{ ...legacy, version: 1 }]);
+  });
+
+  it('runs the registered v2-to-v3 persistence migration for legacy profiles', async () => {
+    const legacy = {
+      id: 'profile-persisted-legacy',
+      name: 'Legacy ERP',
+      signature: 'acct|cr|dr|when',
+      headers: [...headers],
+      mappings: { ...mappings },
+      savedAt: '2026-01-01T00:00:00.000Z',
+    };
+    const persistOptions = useGLUploadStore.persist.getOptions();
+
+    expect(persistOptions.version).toBe(3);
+    const migrated = await persistOptions.migrate?.({ mappingProfiles: [legacy] }, 2);
+    expect(migrated?.mappingProfiles).toEqual([{ ...legacy, version: 1 }]);
   });
 
   it('deletes a profile and includes profiles in the persisted slice', () => {

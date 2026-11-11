@@ -26,10 +26,12 @@ group: engineering
 
 ## In this repo
 
-- If a stored row cannot be re-encoded, the quarantine gate is the safety net; an
-  incident that bypassed it means the gate has a hole worth a test.
-- Never repair money by rounding it silently. Quarantine it, show it, let a human
-  decide.
+- The GL-ledger hydration path quarantines values it cannot safely re-encode; this
+  is a scoped recovery boundary, not a universal repair policy. For another store or
+  data path, preserve evidence and follow its documented recovery contract.
+- Never repair financial values by rounding silently. Preserve the original,
+  quantify affected rows/totals, and follow the path-specific quarantine or recovery
+  procedure with human review where required.
 - The handover entry is part of the incident record: what the next session must not
   repeat.
 

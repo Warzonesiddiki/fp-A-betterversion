@@ -134,7 +134,7 @@ to use, followed by a real anonymized D365 GL sample and matching source control
 totals. Do not label a provider or D365 shape “verified” from catalog presence,
 mocked tests, or a successful connection health check alone.
 
-## Product direction and proposed strategy — 2026-11-04
+## Product direction and proposed strategy — reaffirmed 2026-11-10
 
 DEC-104 already records the owner's decision to support universal accounting/
 finance import through the user's own template system. The 2026-11-04 product
@@ -155,27 +155,68 @@ and import-contract-first**:
 4. The accounting ERP remains upstream/system of record. ERP write-back is out
    of scope unless an explicit owner decision accepts its permissions, audit,
    rollback and security consequences.
+5. “Our own user-customizable format” means a versioned, user-owned mapping into
+   FinPlan's canonical contract—not a requirement that every customer manually
+   convert files to a proprietary layout. FinPlan may offer a documented
+   canonical template/export format as an optional convenience. Native source
+   CSV/XLSX remains the baseline; unmapped values are surfaced, never silently
+   dropped or guessed.
+
+### Connector rollout contract
+
+Every source—uploaded file or API—must pass through the same user-visible
+journey and domain authority:
+
+```text
+source selection → file/API adapter → user template or reviewed mapping
+→ canonical staged rows → row/schema/semantic validation → preview
+→ source-vs-import controls → explicit user acceptance → one ledger commit
+→ source lineage / audit / rollback
+```
+
+The API adapter owns transport and provider-specific behavior only. It must not
+implement a second set of accounting rules, write directly to the ledger, or
+turn a successful HTTP response into a reconciled batch. The shared import
+contract owns financial parsing, precision, scope, duplicate policy, period
+checks, row disposition and commit. Connector syncs remain user initiated until
+a separate automation/consent decision exists.
+
+**Recommended implementation order for connectors:**
+
+1. Fix the canonical import/template contract and prove it end-to-end for files.
+2. Add a typed adapter result that preserves provider record identity, source
+   timestamp/version, cursor/checkpoint, and complete/partial/unknown counts.
+3. Make sync resumable and idempotent; explicitly model additions, changes,
+   deletions, reversals and overlapping periods before claiming completeness.
+4. Complete auth scopes, token storage/refresh/revocation, cancellation, retry
+   and redaction requirements for the selected deployment before live credentials.
+5. Exercise a provider sandbox; verify exact product edition, API version,
+   permissions, rate limits, paging, schema drift and interruption recovery.
+6. Reconcile provider records to independent source controls and the canonical
+   ledger; conduct owner acceptance for the stated use case.
+7. Publish a provider-specific support card: edition/object scope, import
+   semantics, evidence grade, known exclusions, last validation and runbook.
+
+**Prioritization rule:** start with the source the owner actually uses (D365
+export through the shared file path). After that, select an API by confirmed
+usage and financial-data completeness—not by catalog presence or vendor
+popularity. The current Dynamics adapter is Dataverse CRM and is not a D365
+Finance & Operations/Business Central GL source. QuickBooks Online, Xero,
+NetSuite and Sage Intacct are code-level ledger-feed candidates; each needs
+sandbox and source-reconciliation evidence before support claims. Plaid and
+Stripe are supplemental feeds until their update/removal/refund/settlement
+semantics and full accounting reconciliation are proven. Salesforce is CRM
+context and Slack is outbound notification, not a ledger connector.
 
 ### Current universal-import boundary
 
-The product currently has two related but separate paths:
+The upload UI now enters through `universalImportParse` at commit time, constructing a transient user template from the selected mappings. The engine delegates user-defined templates to `parseGLRows`, preserving the upload parser's automatic D365 date and summary-row semantics while applying explicit mappings. `GLDataPreview` still calls `parseGLRows` directly; both preview and commit therefore share the same financial parser, while the engine is now a real UI caller.
 
-- `GLUploadPage` maps uploaded CSV/XLSX and calls `parseGLRows` directly. It uses
-  persisted user mapping profiles in `glUploadStore`, keyed by normalized
-  header signature.
-- `universalImportTemplate.ts` / `universalImportEngine.ts` implement a richer
-  template/parser service and have `universalImportEngine.governance.test.ts`.
-  Repository inspection found no call from the upload UI to the engine's parse
-  or auto-detect entry points.
+The profile/template models are not fully converged: `glUploadStore` persists user mappings keyed by normalized header signature, while `UniversalImportTemplate` supplies the import engine's schema and creation/validation functions. The mapping profiles now carry immutable local versions and imported batches retain a mapping snapshot plus saved id/version when the used mappings match. The standalone `universalImportAutoDetect` path remains distinct from the upload UI's explicit mapping workflow, and clone/edit/replace, unknown-column, and shared-template semantics remain open. Thus versioned local batch lineage is implemented, but a complete universal template lifecycle is not yet demonstrated.
 
-Therefore the UI has useful saved mappings and the engine has tested template
-logic, but the repo has not yet demonstrated one end-to-end user-customizable
-template workflow. Gate 1 in the master plan must inventory callers and either
-converge both on one parser/validator/commit authority or document a deliberately
-separate use. Preserve DEC-007 whole-file atomicity and the DEC-005 authority
-boundary. Reconcile `cap:data.universal-import` completion-register support with
-the generated capability matrix/service inventory via its generator; never hand
-edit generated output and never equate engine tests with user-facing integration.
+**Updated 2026-11-10 — mapping version and batch lineage follow-up:** Saved mapping profiles now migrate legacy entries to v1 and append immutable revisions; the newest header-signature match is active. A batch stores the mapping snapshot and source signature; saved id/version is recorded only if the current mapping matches that exact saved revision, otherwise lineage is explicitly one-off. Batch history and completion evidence display the mapping; saved id/version is copied to ledger-entry provenance. Historical imports without a mapping reference remain readable. `glStore.importGLData` remains the commit authority and DEC-007 whole-file atomicity is unchanged. Focused tests passed 7 files / 128 tests; TypeScript passed. This is local persistence plus synthetic-test evidence, not shared template storage, live-provider validation, or universal compatibility.
+
+Continue Gate 1 by reconciling unknown-column decisions, clone/edit/replace semantics, and the built-in/auto-detect paths; preserve DEC-007 whole-file atomicity and the DEC-005 authority boundary. Reconcile `cap:data.universal-import` completion-register support with the generated capability matrix/service inventory via its generator; never hand edit generated output and never equate engine tests with user-facing integration. The first integration's 5-file/95-test result is recorded above as historical evidence. No live-provider or owner-source validation has been performed.
 
 ### Provider evidence ladder
 

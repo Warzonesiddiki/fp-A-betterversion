@@ -1,6 +1,11 @@
 # Note Templates
 
-> Copy the block, fill it in, paste it at the **bottom** of `COMMS_LOG.md` (newest last).
+> **Conditional squad templates — inactive by default.** Use these blocks only if a squad is
+> explicitly activated for the current task. They do not authorize a seat, message, claim, commit,
+> or push and cannot override root `AGENTS.md` or active Arena instructions. Recheck the current
+> branch, tools, evidence, and mission gates before adapting any template.
+>
+> If a squad is active, copy the block, fill it in, and paste it at the **bottom** of `COMMS_LOG.md` (newest last).
 > Keep entries short. Times: `date -u` → `YYYY-MM-DD HH:MM UTC`.
 
 ## JOIN

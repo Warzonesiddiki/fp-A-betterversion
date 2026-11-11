@@ -21,12 +21,20 @@ import type {
   ImportReconciliation,
   ImportRejection,
   ImportScope,
+  ImportTemplateLineage,
 } from '@/types';
 import { parseFinancialAmountExact } from '@/utils/parseFinancialAmount';
 import { hashFileBytes } from '@/services/import/importProvenance';
-import { parseGLRows, missingRequiredMappings } from '@/services/import/parseGLRows';
+import { missingRequiredMappings } from '@/services/import/parseGLRows';
+import { universalImportParse } from '@/services/import/universalImportEngine';
+import { createUserTemplate } from '@/services/import/universalImportTemplate';
 import { detectTrialBalanceSnapshot } from '@/services/import/d365Parser';
-import { findMappingProfile, useGLUploadStore } from '@/store/glUploadStore';
+import {
+  findMappingProfile,
+  mappingProfileSignature,
+  mappingProfilesEqual,
+  useGLUploadStore,
+} from '@/store/glUploadStore';
 import {
   CheckCircle2,
   Upload,
@@ -107,6 +115,7 @@ export default function GLUploadPage() {
     rejections: readonly ImportRejection[];
     scope: ImportScope;
     reconciliation?: ImportReconciliation;
+    template?: ImportTemplateLineage;
   } | null>(null);
 
   // IMP-02: totals the owner read in Dynamics 365 for this file, entered at
@@ -384,16 +393,53 @@ export default function GLUploadPage() {
     setImportStatus('importing');
     setImportProgress(0);
 
-    // Row → entry parsing is a pure, fixture-tested function
-    // (src/services/import/parseGLRows.ts). Broken rows are excluded and
-    // reported both as banner text and as structured rejections recorded on
-    // the batch (FR-002: nothing is silently discarded).
+    // Resolve the saved profile only if the current mapping still exactly
+    // matches its immutable version. Edited-but-unsaved mappings are captured
+    // as one-off snapshots and are never attributed to an older profile.
+    const matchingProfile = findMappingProfile(
+      useGLUploadStore.getState().mappingProfiles,
+      csvColumns
+    );
+    const savedProfile =
+      matchingProfile && mappingProfilesEqual(matchingProfile.mappings, mappings)
+        ? matchingProfile
+        : undefined;
+    const fileExtension = currentFile?.name.split('.').pop()?.toLowerCase();
+    const sourceType = fileExtension === 'csv' ? 'generic_csv' : 'generic_xlsx';
+    const templateName = savedProfile?.name ?? currentFile?.name ?? 'One-off mapping';
+    const template = createUserTemplate(templateName, sourceType, mappings, {
+      ...(savedProfile ? { id: savedProfile.id, version: savedProfile.version } : {}),
+    });
+    const templateLineage: ImportTemplateLineage = savedProfile
+      ? {
+          status: 'saved',
+          templateId: savedProfile.id,
+          templateVersion: savedProfile.version,
+          name: savedProfile.name,
+          sourceType,
+          signature: mappingProfileSignature(csvColumns),
+          mappings: { ...mappings },
+        }
+      : {
+          status: 'one-off',
+          name: templateName,
+          sourceType,
+          signature: mappingProfileSignature(csvColumns),
+          mappings: { ...mappings },
+        };
+
+    // The engine delegates financial parsing to shared parseGLRows; row
+    // reasons reach the store, whose DEC-007 guard rejects the entire file.
     const {
       entries: parsedEntries,
       sourceRows,
       rejections: preRejections,
       rowErrors,
-    } = parseGLRows(rawData, mappings, noHeaderRow ? 1 : 2);
+    } = universalImportParse({
+      rows: rawData,
+      template,
+      firstRowNumber: noHeaderRow ? 1 : 2,
+    });
 
     if (parsedEntries.length === 0) {
       setImportError(
@@ -441,6 +487,7 @@ export default function GLUploadPage() {
       sourceRows,
       rejections: preRejections,
       expectedTotals,
+      template: templateLineage,
     });
 
     if (!result.success) {
@@ -465,6 +512,7 @@ export default function GLUploadPage() {
       rejections: result.rejections,
       scope: result.scope,
       reconciliation: result.reconciliation,
+      template: templateLineage,
     });
 
     // Simulate nice progress bar
@@ -488,6 +536,7 @@ export default function GLUploadPage() {
   }, [
     rawData,
     mappings,
+    csvColumns,
     noHeaderRow,
     currentFile,
     fileHash,
@@ -722,12 +771,12 @@ export default function GLUploadPage() {
                 disabled={!mappings.accountCode || !mappings.postDate}
                 onClick={() => {
                   const name = profileName.trim() || currentFile?.name || 'Monthly export';
-                  useGLUploadStore.getState().saveMappingProfile({
+                  const saved = useGLUploadStore.getState().saveMappingProfile({
                     name,
                     headers: csvColumns,
                     mappings,
                   });
-                  setSavedProfileName(name);
+                  setSavedProfileName(`${name} v${saved.version}`);
                 }}
               >
                 Save mapping profile
@@ -839,6 +888,13 @@ export default function GLUploadPage() {
                     <dd className="font-mono break-all">{batchEvidence.batchId}</dd>
                     <dt className="text-[var(--text-muted)]">File SHA-256</dt>
                     <dd className="font-mono break-all">{batchEvidence.fileHash}</dd>
+                    <dt className="text-[var(--text-muted)]">Mapping</dt>
+                    <dd>
+                      {batchEvidence.template?.name ?? 'Unknown mapping'}
+                      {batchEvidence.template?.status === 'saved' &&
+                        ` · version ${batchEvidence.template.templateVersion}`}
+                      {batchEvidence.template?.status === 'one-off' && ' · one-off snapshot'}
+                    </dd>
                     <dt className="text-[var(--text-muted)]">Rows committed</dt>
                     <dd className="tabular-nums">
                       {batchEvidence.controlTotals.rows.toLocaleString()}
@@ -945,6 +1001,9 @@ export default function GLUploadPage() {
                         Batch
                       </th>
                       <th scope="col" className="pb-3 pr-4">
+                        Mapping
+                      </th>
+                      <th scope="col" className="pb-3 pr-4">
                         Status
                       </th>
                       <th scope="col" className="pb-3 pr-4">
@@ -980,6 +1039,20 @@ export default function GLUploadPage() {
                           }
                         >
                           {h.batchId ? h.batchId.replace(/^batch-/, '').slice(0, 10) : '—'}
+                        </td>
+                        <td
+                          className="py-3 pr-4 text-xs"
+                          title={
+                            h.template?.status === 'saved'
+                              ? `${h.template.name} · version ${h.template.templateVersion}`
+                              : h.template?.status === 'one-off'
+                                ? `${h.template.name} · one-off mapping snapshot`
+                                : 'Mapping lineage unavailable for this historical import'
+                          }
+                        >
+                          {h.template
+                            ? `${h.template.name}${h.template.status === 'saved' ? ` v${h.template.templateVersion}` : ' · one-off'}`
+                            : '—'}
                         </td>
                         <td className="py-3 pr-4">
                           <Badge

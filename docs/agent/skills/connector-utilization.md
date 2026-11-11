@@ -16,6 +16,9 @@ Supabase, Vercel.
 
 ## Why this exists
 
+A connected app being available is not a request to publish. Use connector tools only when the user explicitly asks for that action, and confirm the target, audience/sharing scope, and permitted content before writing. Never send secrets or customer data merely because the connector is enabled.
+
+
 The repository is the source of truth. A connector is a **mirror**, not a
 second home: every artifact published to a connector is re-derived from the repo
 and cites the command that produced it. Nothing is hand-typed into a connector

@@ -13,8 +13,9 @@ group: discipline
 
 ## Method
 
-1. State the outcome as something measurable, not a mood. "47 REVIEW routes have
-   a disposition" beats "clean up the matrix".
+1. State the outcome as something measurable, not a mood. Prefer a current
+   command-backed result (for example, the route-dispositions gate reports 0 REVIEW)
+   over stale examples or an unmeasured "clean up the matrix".
 2. Break it into steps that each end in a **gate you can run**. A step without a
    command is a wish.
 3. Order by dependency, and say what can run in parallel. Never put a decision
@@ -26,9 +27,12 @@ group: discipline
 
 ## In this repo
 
-- The live programme is `docs/plan/COMPLETION_PLAN_86_100.md`; append to the
-  existing shape instead of starting a competing plan.
-- Steps map to PRs. One PR = one gate-able outcome.
+- The current phased product sequence is
+  `docs/discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`, summarized by
+  `docs/discovery/roadmap.md`; the active docs-first task queue/state is in
+  `docs/_agent/STATE.json`. Follow root `AGENTS.md` and the active mission gate.
+- Break work into independently verifiable units; do not assume every unit maps
+  to a PR or override the fixed session branch.
 - Recorded numbers need their command and date; a plan is not a measurement.
 
 ## Red flags

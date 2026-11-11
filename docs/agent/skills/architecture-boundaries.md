@@ -25,7 +25,8 @@ group: engineering
   importing pages, pages doing money arithmetic.
 - Shared logic goes **down** (utils/engines), never sideways by copy.
 - A new engine needs a name, a caller and a test; a manifest entry alone is not
-  reachability (see `docs/plan/COMPLETION_PLAN_86_100.md` §2.3).
+  reachability. Follow current root engineering rules and the master plan; do not
+  use a dated completion plan as current authority.
 - Prefer deleting a wrapper to documenting it.
 
 ## In this repo

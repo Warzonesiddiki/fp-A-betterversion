@@ -27,10 +27,11 @@ group: engineering
 
 - `npm run release:dry-run` runs the build-shaped checks;
   `npm run compliance:evidence` collects the evidence pack.
-- PR #100 is defined as "the register snapshot": at release, the completion
-  register's statuses are the release note (`docs/plan/COMPLETION_PLAN_86_100.md`).
-- CI cannot be verified from this sandbox (Actions returns 403), so no release note
-  may say CI is green.
+- Use current release and completion artifacts linked from `docs/README.md`; the
+  October PR #100 plan is historical context, not current release authority. Recheck
+  each register status and supporting evidence.
+- A local gate pass does not establish CI status. Inspect current GitHub checks
+  when available; otherwise mark CI status unverified in release materials.
 
 ## Red flags
 

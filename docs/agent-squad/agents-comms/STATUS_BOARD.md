@@ -1,5 +1,10 @@
 # Squad Status Board
 
+> **Historical status snapshot — last updated 2026-10-18; not current assignments.** The
+> listed seats, tasks, claimed paths, and states are dated squad records, not live work. Use or
+> update this board only if a squad is explicitly activated; do not infer current ownership from
+> it. Root `AGENTS.md`, active Arena instructions, and current mission state take precedence.
+
 > The live "who is doing what". Edit **your own row only**; the lead may reassign rows.
 > States: `ACTIVE` (slot live, no repo task yet) · `IDLE` · `WORKING` · `REVIEW` · `BLOCKED` · `DONE`.
 > Keep it honest: if you stopped, say so and say where.

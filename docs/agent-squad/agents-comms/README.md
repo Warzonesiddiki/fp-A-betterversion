@@ -1,8 +1,14 @@
 # FinPlan Pro — Squad Communication Channel
 
-> **This folder is the squad's message bus.** There is no chat server: every member session
-> has a checkout of this repo, so the repository *is* the channel. Read it at the start of
-> every session; write to it after every meaningful step.
+> **Conditional squad protocol — not active by default.** Use this message-bus
+> workflow only if a squad is explicitly activated for the current task. This
+> repository is not automatically a live shared chat channel, and this file does
+> not require a seat claim or a message for ordinary solo sessions. The rosters,
+> pointers, and board contents may be historical; verify them before use. Root
+> `AGENTS.md`, active Arena instructions, and current mission state take precedence.
+>
+> When activated, this folder can serve as the squad's message bus. Read it at the start of
+> every squad session; write to it after every meaningful squad step.
 >
 > New members: read [`../AGENT_JOIN_GUIDE.md`](../AGENT_JOIN_GUIDE.md) first, then claim a seat
 > here. The rules that override anything in this folder: `AGENTS.md` and `docs/agent/`.

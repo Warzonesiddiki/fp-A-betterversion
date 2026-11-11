@@ -1,5 +1,12 @@
 # Agent Patches
 
+> **Conditional historical guidance — not active by default.** Use this handoff
+> folder only if a squad is explicitly activated for the current task. This file
+> does not activate a squad, establish current tool permissions, or override
+> root `AGENTS.md` and the active Arena branch instructions. The procedure below
+> is retained as historical coordination guidance; verify current permissions
+> and applicable instructions before relying on it.
+
 > For changes an agent session cannot land itself — chiefly anything under
 > `.github/workflows/**` (agent sessions lack the `workflows` permission), plus
 > dependency/lockfile changes that need a human review.

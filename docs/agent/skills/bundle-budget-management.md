@@ -8,23 +8,16 @@ group: product-ui
 
 **Use it when:** the bundle is near the size limit, or a new dependency is being added.
 
-## Current Budget (2026-10-23)
+## Gate limits (not current measurements)
 
-- **Total JS:** 95.7% of limit (warns at 1872KB / 2.0MB)
-- **Vendor chunks:**
-  - excel-core-vendor: 248.23KB gzip (<= 300KB) ✓
-  - grid-community-vendor: 206.35KB gzip (<= 300KB) ✓
-  - pdf-vendor: 134.31KB gzip (<= 300KB) ✓
-  - chart-vendor: 121.16KB gzip (<= 300KB) ✓
-  - grid-react-vendor: 14.28KB gzip (<= 300KB) ✓
-- **All G19 vendor checks PASS**
+`bundle-check` currently enforces 150 KB gzip for the main chunk, 2,080 KB gzip for total JavaScript, 300 KB gzip per named lazy vendor, and 750 KB gzip for the critical path. Warnings begin at 90% for the applicable limit. These are thresholds, not current bundle sizes or a pass result. Run a fresh build and bundle check before reporting usage.
 
 ## Method
 
-1. **Measure:** Run `node scripts/bundle-check.js` to get current usage.
+1. **Measure:** Run `npm run build`, then `npm run bundle-check`; the checker reads build output.
 2. **Identify:** Which vendor chunk is largest? Which route is heaviest?
 3. **Optimize:** Apply proven methods (vendor splitting, lazy loading, tree-shaking, custom components, stubbing).
-4. **Verify:** Re-run bundle-check. All G19 vendor checks must PASS.
+4. **Verify:** Re-run bundle-check and inspect every emitted warning/error; missing or unmeasured chunks are not evidence of a pass.
 5. **Record:** If retiring EXPERIMENTAL routes, record DEC id + commit (DEC-006).
 
 ## What This Prevents

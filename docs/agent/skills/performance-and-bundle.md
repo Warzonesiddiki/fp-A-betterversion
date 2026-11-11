@@ -12,9 +12,8 @@ group: product-ui
 
 ## Rules
 
-1. **Budget first.** This repo's gzip budget is 2,080 KB and it is nearly full
-   (2,063.79 KB as of 2026-10-22). A new library needs a size answer, not a
-   feeling.
+1. **Budget first.** The bundle gate currently enforces 2,080 KB gzip total.
+   A new library needs a measured before/after size, not an old report or a feeling.
 2. **Route-level code splitting** for anything heavy; the critical path is
    measured separately from the main chunk.
 3. **Virtualise long lists.** Rendering 10k rows to show 30 is a bug with a nice
@@ -30,8 +29,8 @@ group: product-ui
 
 - `npm run build` then `node scripts/bundle-check.js` prints raw/gzip, the
   critical path and the main chunk, and fails over budget.
-- The bundle is at 99.2 % of budget: the next feature must remove weight or
-  justify it explicitly with an owner-visible note.
+- Current usage is unknown until `npm run build` and `npm run bundle-check` run
+  on the current tree. A historical percentage is not a current budget reading.
 - Benchmarks exist (`npm run test:bench`); a regression claim needs one.
 
 ## Red flags

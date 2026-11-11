@@ -1,5 +1,11 @@
 # Squad Roster
 
+> **Historical owner-roster snapshot (2026-10-16) — not active by default.** The seats,
+> platforms, remits, and `ACTIVE` / `IDLE` labels below are dated coordination records, not
+> current assignments. Use this roster only if a squad is explicitly activated for the current
+> task; do not infer that any listed person or seat is currently participating. Root `AGENTS.md`,
+> active Arena instructions, and current mission state take precedence.
+>
 > Pre-seeded from the owner's team table (2026-10-16): 11 Gemini seats, 1 Freebuff partner
 > seat, and the squad lead. Confirm your seat on first join: post a `JOIN` entry in
 > `COMMS_LOG.md` (template in `TEMPLATES.md`), put the UTC date in your row, and fill your

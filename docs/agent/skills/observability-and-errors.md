@@ -25,10 +25,12 @@ group: engineering
 
 ## In this repo
 
-- The quarantine notice is the pattern to copy: it says how many rows were held
-  back, which fields, and why per row.
-- `ledgerScaleAudit()` is the "how much did we lose" hook; if a new failure mode
-  can lose data, it needs an equivalent.
+- The GL quarantine notice is a pattern for that flow; verify that each new
+  failure path reports the affected scope, count, and actionable reason without
+  exposing sensitive values.
+- `glStore.ledgerScaleAudit()` reports the GL ledger hydration partition; it is
+  not a universal observability hook. If a new data path can lose or quarantine
+  values, surface an equivalent scoped count/reason and preserve evidence.
 - A caught error that changes a total must also be surfaced where the total is
   shown.
 

@@ -1,6 +1,6 @@
 # 01 — Project brief
 
-**Detailed proposed product/engineering plan:** [`../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md) (owner review pending). Product north-star: [`../VISION.md`](../VISION.md); accepted decisions remain in [`../discovery/decision-log.md`](../discovery/decision-log.md).
+**Approved phased product/engineering plan:** [`../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md`](../discovery/MASTER_PRODUCT_AND_EXECUTION_PLAN.md) (DEC-105, 2026-11-10); unresolved owner choices remain open. Product north-star: [`../VISION.md`](../VISION.md); accepted decisions remain in [`../discovery/decision-log.md`](../discovery/decision-log.md).
 
 ## The product, honestly
 
@@ -12,7 +12,7 @@ owner exports a General Ledger dump from Microsoft Dynamics 365, performs
 FP&A work on it, and highlights abnormalities and potentially incorrect
 entries by hand.
 
-**First supported product slice (current code evidence plus the 2026-11-04 direction):** D365 remains the first real-source proof; DEC-104 establishes the user's universal-template direction, which must converge with the current upload UI.
+**First supported product slice (current code evidence plus the 2026-11-10 approved direction):** D365 remains the first real-source proof; DEC-104 establishes the user's universal-template direction. The upload UI now calls the universal import engine at commit, while saved mapping-profile persistence and template version/lineage convergence remain incomplete.
 
 ```text
 D365 GL export or a user-mapped CSV/XLSX finance export
@@ -31,12 +31,19 @@ D365 GL export or a user-mapped CSV/XLSX finance export
      their own tie-out evidence]
 ```
 
-**Import-path caveat:** `GLUploadPage` calls `parseGLRows` and uses saved
-header-signature mapping profiles from `glUploadStore`; the separate
-`universalImportTemplate`/`universalImportEngine` path has governance tests but
-is not currently the upload page's parser. Unifying those paths and reconciling
-the completion-register/capability-matrix evidence is the first proposed
-engineering work package—not a completed universal workflow.
+**Import-path status (updated 2026-11-10):** `GLUploadPage` creates a transient
+user template from its active mappings and calls `universalImportParse` at
+commit. The engine delegates mapped rows to `parseGLRows`; the preview also
+uses `parseGLRows`, preserving one row-parser for preview and commit.
+D365-shaped custom mappings retain D365 date/summary-row behavior. Saved
+header-signature profiles now migrate legacy entries to v1 and preserve
+immutable local revisions. Each imported batch retains the mapping snapshot;
+saved profile id/version is attached only when the mapping used exactly matches
+that revision, and saved id/version is copied to entry provenance. The UI still
+does not use the engine's standalone auto-detect workflow. Clone/edit/replace,
+unknown-column treatment, built-in selection and shared-template behavior
+remain open; this is not yet a complete universal template lifecycle or live
+source validation. Capability evidence still needs generator reconciliation.
 
 These are code paths, not a claim of owner-accepted completion. The full product
 contains broader FP&A capabilities; their maturity is governed by the route and

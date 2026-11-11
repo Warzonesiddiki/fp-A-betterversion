@@ -31,10 +31,13 @@ No fix without a root cause you can state in one sentence and reproduce.
 
 ## In this repo
 
-- Money bugs are usually a type confusion: a `Money` read as `number` yields 0 or
-  `NaN`, not an error. See `src/utils/money.ts` and the census test that pins it.
-- State bugs are usually hydration: the selector is right and the stored payload
-  is wrong. Check `persist.merge` before touching the component.
+- A legacy reader that treats object-shaped `Money` as a number may silently use
+  a fallback such as zero; the exact outcome depends on the reader. Inspect the
+  boundary and use the scoped census/tests (`src/utils/money.ts`,
+  `src/utils/moneyTrapCensus.test.ts`) rather than assuming one universal symptom.
+- Hydration is one possible source of state defects, not the default diagnosis.
+  Trace the actual path across input, parse, persistence, selector, and render;
+  inspect `persist.merge` only when that store uses it.
 - Do not "fix" a test that disagrees with the product; decide which one is wrong
   and record it.
 
