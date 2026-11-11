@@ -6,7 +6,21 @@
 **Last updated:** 2026-06-17
 **Total entries:** 4 known CATCH #207 instances + ongoing
 
-> **Current source boundary (2026-11-05):** `.husky/pre-push` contains Gate 10 and `.github/workflows/cascade-hold-check.yml` contains ledger-reference checks. In this checkout, the branch has no upstream and the repository is shallow; the hook therefore falls back to scanning `git log -10`, and historical commit presence cannot be verified from this local object database. The `Full SHA` cells for CHB-001–004 duplicate 8-character short IDs; CHB-005 has a 9-character value. The workflow extracts the first hash-like value in each row (the short-SHA column), not the `Full SHA` field, and no CI run was inspected. Whether unavailable historical commits resolve in full history is `[UNVERIFIED: no full-history checkout or CI run]`. Preserve the original rows; do not treat the “Active Entries” heading, branch attribution, or this audit as full-history validation.
+> **Current source boundary, updated 2026-11-11.** `.husky/pre-push` contains Gate 10 and
+> `.github/workflows/cascade-hold-check.yml` contains the ledger-reference checks. On 2026-11-11 this
+> checkout was deepened to full history (`git fetch --unshallow`, 1,820 commits), which closes the earlier
+> `[UNVERIFIED: no full-history checkout]` boundary on the narrow question of SHA resolvability: **all
+> eight** short and full SHAs in the table below resolve to real commits, verified with
+> `git rev-parse --verify <sha>^{commit}` for CHB-001 through CHB-008.
+>
+> That result does not validate the ledger's content. The `Full SHA` cells for CHB-001 to CHB-004
+> duplicate 8-character short IDs and CHB-005 has a stale 9-character value, so those four cells cannot
+> be treated as full commit identifiers. The workflow's `grep -oE '[0-9a-f]{7,40}' | head -1` takes the
+> first hash-like value in a row, which is the short-SHA column, so the `Full SHA` cell is not the value
+> actually checked. The hook falls back to `git log -10` when there is no upstream. No CI run of that
+> workflow was inspected, and no check establishes that any CATCH #207 bundling was correctly resolved.
+> Preserve the original rows; do not treat the "Active Entries" heading, the branch attribution, or this
+> audit as full-history validation.
 
 ## Schema
 
