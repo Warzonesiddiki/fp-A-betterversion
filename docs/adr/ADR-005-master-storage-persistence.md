@@ -11,6 +11,16 @@ ratification-gate: 2026-06-22T16:00:00Z
 
 # ADR-005: masterStorage Persistence (AES-GCM-256 + WAL + Audit Trail)
 
+
+> **Implementation recheck 2026-11-11 — two stated requirements are NOT implemented.**
+> (1) Requirement 6, "90-day key rotation": no master-key rotation exists. `src/utils/tokenRotation.ts`
+> rotates *auth tokens*, and a symbol search across `src/utils` and `src/store` found no `rotateKey`,
+> `keyRotation` or `rotationDays` for the storage key. The pseudo-code below is a proposal, not code.
+> (2) Requirement 5, "crash recovery / WAL pattern": `src/utils/masterStorage.ts` contains no WAL or
+> crash-recovery mechanism, and `docs/architecture/security.md` §3 records that chunk writes are
+> *not atomic* and a crash mid-write leaves a store detected as corrupt but not repaired.
+> What *is* implemented: AES-256-GCM at rest with a per-record IV, fail-closed key handling, and
+> store migration. Read this ADR as a requirements and design record, not a satisfied control set.
 ## Context
 
 FinPlan Pro is an offline-first FP&A desktop application requiring persistent storage with:

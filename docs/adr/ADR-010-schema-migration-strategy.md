@@ -11,6 +11,14 @@ ratification-gate: 2026-06-22T16:00:00Z
 
 # ADR-010: Schema Migration Strategy (Versioned + Lazy + Zero-Downtime)
 
+
+> **Implementation recheck 2026-11-11:** the decision itself is implemented — versioned persistence
+> with a lazy `migrate()` hook lives in `src/store/migration/persistConfig.ts`, with
+> `storeMigrators.ts` and `cubeMigration.ts` carrying the per-store migrators and idempotency tests.
+> Boundary: the evidence claims below do not hold. **Property-based and mutation testing were not
+> performed** — the repository has no `fast-check` dependency and no property-based or mutation
+> suite. The "<500ms p95" figure is likewise unsupported by any benchmark in this tree. Neither may
+> be cited as verified. The header remains `pending-ratification`.
 ## Context
 
 FinPlan Pro is an offline-first FP&A desktop application. Master data schemas evolve over time (new fields, new entity types, new relationships). For offline-first users, migrations must be:

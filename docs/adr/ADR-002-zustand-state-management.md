@@ -11,6 +11,13 @@ ratification-gate: 2026-06-22T16:00:00Z
 
 # ADR-002: Zustand State Management with subscribeWithSelector + immer + persist Middleware
 
+
+> **Implementation recheck 2026-11-11:** the middleware decision holds and is now broader than the
+> record states — `src/store` contains **48** non-test store modules, **48** of them use `immer` and
+> **44** use `subscribeWithSelector`, against the "28+" cited below. Boundary: the header still says
+> `pending-ratification` with a 2026-06-22 target that has long elapsed, and no owner ratification
+> was found, so the ADR is a design record, not an approved decision. Ratification is an owner
+> action; a documentation review must not set it.
 ## Context
 
 FinPlan Pro is an offline-first FP&A desktop application requiring predictable state management for:

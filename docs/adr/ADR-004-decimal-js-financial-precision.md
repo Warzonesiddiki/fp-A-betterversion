@@ -11,6 +11,11 @@ ratification-gate: 2026-06-22T16:00:00Z
 
 # ADR-004: Decimal.js for Financial Precision (No Float Drift)
 
+
+> **Implementation recheck 2026-11-11:** the decimal.js decision is real and ratcheted —
+> `npm run money:adoption` reports the ratchet holding at **320 modules** on the money primitive with
+> **0** raw `toFixed` sites. Boundary: adoption is staged rather than universal, so "all financial
+> arithmetic is decimal" overstates the current tree; the ADR header remains `pending-ratification`.
 ## Context
 
 FinPlan Pro's 180+ pure calculation engines perform financial arithmetic where native JavaScript floats cause precision drift:
