@@ -6,6 +6,28 @@
 
 ## Measured Statistics
 
+> **2026-11-11 repository review note:** The "What This Release Does NOT Claim" section below is the best honesty block in the
+> repository and every one of its nine lines still holds. The **statistics table above it does not**: one row is wrong by a factor of
+> nearly three and several are simply older measurements presented as gate results.
+>
+> - **Money adoption "86.27% (880/1020)" is not reproducible and is the most consequential error in this document.** `npm run money:adoption`
+>   today reports an adoption proxy of **30.1% over 1,063 financial modules** (≈320 adopting modules), with the ratchet holding at a baseline
+>   of **320 modules / 0 `toFixed`** (server 3 / 0). The real figure is therefore about **a third**, not 86%. The original 880/1,020 does not
+>   match money *adoption* under any measurement available here; it is closest to an inverted reading in which ~86% of modules simply contain no
+>   raw money operation (the script itself labels adoption a "proxy — how many modules CALL a money helper; not the goal"). Recorded as a
+>   suspected inversion, not asserted: see AUD-123. **No safety claim is affected** — `money:ast` still reports 0 unsafe operations, and safety
+>   was always the metric that matters.
+> - **Route and governance counts are stale.** "SUPPORTED routes 40 / GOVERNED claims 120" does not match the manifest, which holds
+>   **104 governed routes with 416 route claims** and **zero `SUPPORTED` strings**. The 227-route row *is* still correct — re-verified via
+>   `generate-route-map.js --check` (a naive `<Route ` grep returns 212 because some routes span lines; the generator's 227 is authoritative).
+> - **Other drifted rows:** test files 1,429 → **1,481**; skills 59 → **72**. Rows that still match exactly: palette **5,489 / 368**,
+>   determinism **344 sites**, AI ungated surfaces **0**, fabrication **0**, missing-is-not-zero **0**.
+> - **A11y "443 passed, 1 skipped" is consistent** with the targeted a11y run measured in this review's A11Y batch (8 files / 443 passed),
+>   while the full `test:a11y` suite now runs 28 files / 498 tests.
+> - `tsc`, `eslint`, `docs:links` and the Base commit `de26d0a7` were not re-run here, so those PASS rows are unverified rather than confirmed.
+>
+> Read the table as a 2026-10-23 snapshot. Read the nine disclaimer lines as current.
+
 | Metric | Value | Gate | Status |
 |--------|-------|------|--------|
 | Routes | 227 | routemap:check | PASS |

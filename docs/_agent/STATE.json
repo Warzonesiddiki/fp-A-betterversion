@@ -4,7 +4,7 @@
   "docs_gate_passed": false,
   "human_approved_for_coding": false,
   "doc_health_score": 0,
-  "doc_health_score_status": "Not scored: 232 scoped records (183 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 8 PENDING entries; 29 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
+  "doc_health_score_status": "Not scored: 233 scoped records (184 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 7 PENDING entries; 30 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
   "completed_stages": [
     "STAGE_0_BOOTSTRAP"
   ],
@@ -154,7 +154,8 @@
     "2026-11-11 stale completion claims (AUD-118): docs/discovery/OWNER_DECISION_PACKET_COMPLETION.md states 200 SUPPORTED / 0 BLOCKED-ON-OWNER / 0 EXPERIMENTAL, while docs/plan/governance-evidence.json holds 81 capabilities with 129 BLOCKED-ON-OWNER markers and zero SUPPORTED strings. The page is annotated as a dated snapshot; the live manifest remains the authority and its O9 contradiction (AUD-105) is unresolved pending owner input.",
     "2026-11-11 route-disposition coverage gap: 74 of the 123 routes in src/App.tsx that have no governance evidence entry also have no entry in docs/product/route-dispositions.json (65 routes), whose _comment still claims 47. Measured, not remediated: filling dispositions is a governance decision and the file is gate-input (verify-route-dispositions.mjs --check).",
     "2026-11-11 unauthenticated client->server call (AUD-120): src/store/periodCloseStore.ts:417 POSTs /api/periods/:id/transition with no Authorization header to a route that always 401s, and swallows the rejection, so every period transition fires a guaranteed-failing request while the UI reports success. No financial figure is affected (the client state machine is canonical), but the skill rule claiming no src/ module calls the server is false and architecture:guardrails has no rule that would catch this class.",
-    "2026-11-11 phantom ADR citation (AUD-122): docs/architecture/TREE.md cites ADR-011 as authority for its CI-delivery deviation, but no ADR-011 file exists in docs/adr/ (which holds 001-005 and 010); the decision lives only in the archived blueprint. Same docs/adr/ vs archived-corpus ambiguity as MDEC-006 and needs an owner ruling on which corpus is canonical."
+    "2026-11-11 phantom ADR citation (AUD-122): docs/architecture/TREE.md cites ADR-011 as authority for its CI-delivery deviation, but no ADR-011 file exists in docs/adr/ (which holds 001-005 and 010); the decision lives only in the archived blueprint. Same docs/adr/ vs archived-corpus ambiguity as MDEC-006 and needs an owner ruling on which corpus is canonical.",
+    "2026-11-11 misleading release statistic (AUD-123, High): docs/plan/RELEASE_SNAPSHOT.md states money-primitive adoption 86.27% (880/1020) PASS while money:adoption measures 30.1% over 1,063 modules (baseline 320 modules / 0 toFixed). Suspected inversion, recorded as a hypothesis because the originating command was not preserved. No safety claim is affected (money:ast 0 unsafe operations); the defect is the release statistic itself."
   ],
   "last_updated": "2026-11-11",
   "branch": "arena/950617a0-fp-a-betterversion",
@@ -175,11 +176,11 @@
     "live_markdown_files": 233,
     "live_other_files": 7,
     "review_status_counts": {
-      "PARTIAL": 183,
+      "PARTIAL": 184,
       "HISTORICAL-NOTE": 46,
       "GENERATED-SOURCE-REVIEWED": 2,
       "GENERATED-RENDERED": 1,
-      "PENDING": 8
+      "PENDING": 7
     }
   },
   "latest_validation": {
