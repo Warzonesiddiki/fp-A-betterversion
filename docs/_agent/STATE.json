@@ -4,12 +4,12 @@
   "docs_gate_passed": false,
   "human_approved_for_coding": false,
   "doc_health_score": 0,
-  "doc_health_score_status": "Not scored: 209 scoped records (160 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 31 PENDING entries; 25 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
+  "doc_health_score_status": "Not scored: 212 scoped records (163 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 28 PENDING entries; 26 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
   "completed_stages": [
     "STAGE_0_BOOTSTRAP"
   ],
   "doc_remediation_queue": [
-    "Complete semantic review of the 31 PENDING live-document entries in docs/_agent/LIVE_DOCS_REVIEW.csv; investigate the 25 active C-grade documents (governance-evidence manifest, six ADRs, encryption-at-rest and security-header policies, Cascade-Hold ledger, rate-limit policy, Undo/Redo specification, SOC 2 overview, SOX-controls page, Q5.1-Q5.3 accessibility records, Q5.3 fixation follow-up, Q5.7 Boardroom scoping/spec, Q5.8/Q5.9 scopes, Q5.10 mobile, Q5.11 persona, and A11Y waivers) while preserving dated evidence.",
+    "Complete semantic review of the 28 PENDING live-document entries in docs/_agent/LIVE_DOCS_REVIEW.csv; investigate the 25 active C-grade documents (governance-evidence manifest, six ADRs, encryption-at-rest and security-header policies, Cascade-Hold ledger, rate-limit policy, Undo/Redo specification, SOC 2 overview, SOX-controls page, Q5.1-Q5.3 accessibility records, Q5.3 fixation follow-up, Q5.7 Boardroom scoping/spec, Q5.8/Q5.9 scopes, Q5.10 mobile, Q5.11 persona, and A11Y waivers) while preserving dated evidence.",
     "Continue O9 reconciliation against DEC-103, 104 route entityScope objects, stale cited titles, the period-scope capability proves sentence, and verifier schema; do not weaken the gate or change test/gate code while docs_gate_passed is false.",
     "Finish deeper source/test traceability for all 18 modules, 12 industries, import paths, and ten invariants; preserve UNVERIFIED boundaries for inaccessible sources.",
     "Resolve MDEC-006 naming/authority conflict between docs/adr/ and the proposed docs/decisions/ before authoring ADRs.",
@@ -125,7 +125,8 @@
     "docs/security/ reviewed 2026-11-11: the five C-grade security policies (Cascade-Hold ledger, security headers, rate limiting/circuit breaker, encryption-at-rest Tauri IPC, undo/redo audit logging) had their written boundary rechecks tested against source. Two held exactly, two were confirmed in Rust source, and the Cascade-Hold SHA-resolvability boundary was closed after deepening to full history. See AUD-102.",
     "docs/adr/ reviewed 2026-11-11: all six ADRs tested against source. ADR-001/002/004 verified as implemented; ADR-003 exists but its performance claims are unbenchmarked; ADR-005 has two unimplemented requirements (90-day master-key rotation, WAL crash recovery); ADR-010's cited property-based/mutation testing does not exist. Status headers were left pending-ratification. See AUD-103.",
     "docs/compliance/soc2-readiness.md and sox-controls.md rewritten 2026-11-11: flat control claims replaced with their enforcement boundaries; confirmed no TLS in the API server and that the DEC-008 period-write guard is real. See AUD-104.",
-    "docs/plan/governance-evidence.json reviewed read-only 2026-11-11: the O9 contradiction is confirmed (policy says resolved under DEC-103; all 104 route claims require owner O9 plus a BLOCKED-ON-OWNER note, and the verifier enforces that). Not modified - it is a gate input. See AUD-105."
+    "docs/plan/governance-evidence.json reviewed read-only 2026-11-11: the O9 contradiction is confirmed (policy says resolved under DEC-103; all 104 route claims require owner O9 plus a BLOCKED-ON-OWNER note, and the verifier enforces that). Not modified - it is a gate input. See AUD-105.",
+    "docs/product/escape-ledger.json reviewed read-only 2026-11-11: all 40 cited commit SHAs are absent from full git history, so its evidence chain is unverifiable against this lineage. docs/plan/spine-evidence.json and docs/product/route-dispositions.json reviewed and verified structurally. See AUD-106/107."
   ],
   "active_task_id": "AUDIT-001",
   "completed_task_ids": [
@@ -134,7 +135,7 @@
   "blockers": [
     "No live ERP account, customer sample, or source-side control totals are available in this workspace; provider and reconciliation claims remain unverified.",
     "The network allowlist excludes most vendor documentation sites, so external product and API research may remain unverified unless an allowed source is available.",
-    "Current docs inventory: 561 files including archive (546 Markdown); 240 live files (233 Markdown); ledger status is 160 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED and 31 PENDING after the 2026-11-11 engine-directory batch. Stage 1 review is incomplete.",
+    "Current docs inventory: 561 files including archive (546 Markdown); 240 live files (233 Markdown); ledger status is 163 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED and 28 PENDING after the 2026-11-11 gate-input review. Stage 1 review is incomplete.",
     "Governance evidence O9 reconciliation remains open and is now precisely characterized (AUD-105): docs/plan/governance-evidence.json states 'O9 RESOLVED (DEC-103)' in policy.entityScope and census.entityScope, but all 104 route entityScope claims still carry owner O9 with BLOCKED-ON-OWNER notes, and scripts/verify-governance-evidence.mjs requires owner === 'O9' plus a BLOCKED-ON-OWNER note while printing 'resolved DEC-103'. The gate cannot pass unless every route asserts a resolved blocker. Fixing this requires a reviewed change to both the manifest and the verifier, plus gate-owner authorization; it was not attempted under the current gate.",
     "MDEC-006 remains open: docs/adr/ is the current record namespace; docs/decisions/ is absent, and precedence must be reconciled before ADR authoring.",
     "docs_gate_passed is false and human_approved_for_coding is false; no further application-source changes are authorized by this mission.",
@@ -145,7 +146,8 @@
     "2026-11-07 A11Y review: Q5.1 keyboard latency evidence is synthetic, Q5.2 closed focus-restoration claims exceed observed production wiring/timing, and Q5.3 timeout policy remains an unratified proposal. Q5.4/Q5.5 foundations are partial; browser/screen-reader evidence was not run. Focused test command could not load Vitest because node_modules/vitest/vitest.mjs is absent.",
     "2026-11-07 remaining A11Y review: all eight records are PARTIAL/C. Found synthetic session-announcement tests vs. auth behavior, unimplemented proposed Boardroom/audit/collaboration details, Phase 2/3 plans paired with green hard-gate checkboxes, a reversed mobile screen-reader/platform pairing, 18-vs-19 persona and 294-vs-304 matrix discrepancies, and a manual waiver policy not consumable by blocking CI. No A11Y tests ran because Vitest is absent; no external WCAG/demographic research or owner ratification was inspected.",
     "PR #95 was merged to main as a9a3c9f on 2026-11-11T05:44:47Z while eight check groups failed and both coding gates were false; the merge tree equals failing head 7d9b866c. An owner decision on revert-or-accept is required (AUD-092).",
-    "CI for 7d9b866c is red for four distinct, now-reproduced reasons: shallow-checkout evidence-SHA resolution in the docs job, a per-shard 50% coverage threshold that shard mode cannot satisfy, root production advisories (2 high), and server-workspace advisories (2 high). Every fix path touches CI/gate or dependency configuration, which the current authorization forbids (AUD-093)."
+    "CI for 7d9b866c is red for four distinct, now-reproduced reasons: shallow-checkout evidence-SHA resolution in the docs job, a per-shard 50% coverage threshold that shard mode cannot satisfy, root production advisories (2 high), and server-workspace advisories (2 high). Every fix path touches CI/gate or dependency configuration, which the current authorization forbids (AUD-093).",
+    "docs/product/escape-ledger.json cites 40 commit SHAs and none resolves in this repository's full history (1,820 commits, non-shallow); the SHAs occur only as text in archived agent handover/journal files. Its evidence chain cannot be verified against this lineage, and its canon is transcribed from an imported blueprint. Owner input is required before the ledger can be treated as evidence. See AUD-106."
   ],
   "last_updated": "2026-11-11",
   "branch": "arena/950617a0-fp-a-betterversion",
@@ -166,11 +168,11 @@
     "live_markdown_files": 233,
     "live_other_files": 7,
     "review_status_counts": {
-      "PARTIAL": 160,
+      "PARTIAL": 163,
       "HISTORICAL-NOTE": 46,
       "GENERATED-SOURCE-REVIEWED": 2,
       "GENERATED-RENDERED": 1,
-      "PENDING": 31
+      "PENDING": 28
     }
   },
   "latest_validation": {
@@ -180,7 +182,7 @@
     "completion_register_check": "PASS mechanically through npm run docs:verify: 711 rows; 115 SUPPORTED, 374 EXPERIMENTAL, 2 RETIRED, 220 NOT_BUILT, 0 BLOCKED-ON-OWNER.",
     "governance_evidence_check": "PASS mechanically 2026-11-10 through npm run docs:verify: 104 routes / 312 state claims, 81 capabilities / 255 claims, 2 census claims; O9 semantic discrepancies remain unreconciled.",
     "git_diff_check": "PASS 2026-11-10 after documentation-only changes.",
-    "audit_citation_inventory_check": "PASS custom reconciliation 2026-11-11: 240 ledger rows; 160 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED, 31 PENDING; all line counts match; CSV parses with 0 malformed dates; state counts and branch match; both coding gates remain false.",
+    "audit_citation_inventory_check": "PASS custom reconciliation 2026-11-11: 240 ledger rows; 163 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED, 28 PENDING; all line counts match; CSV parses with 0 malformed dates; state counts and branch match; both coding gates remain false.",
     "focused_a11y_test_run": "BLOCKED before test collection 2026-11-07: npm run test:a11y -- --reporter=dot could not load node_modules/vitest/vitest.mjs; no test assertions executed and dependencies were not installed.",
     "scope_note": "2026-11-10 documentation-only review: sixteen workflow, UI, debugging, state, plan, import, and verification skills corrected; six Ponytail owner skills reviewed and kept verbatim; upstream benchmark figures checked against the dated source and not treated as project performance. Inventory: 240 files, 141 PARTIAL, 40 HISTORICAL-NOTE, 3 GENERATED, 56 PENDING. Stage 1 remains partial; coding gates false; no application source/tests/gates changed. Root dependencies were installed for verification; 4 import-related test files (101 tests), tsc, and lint passed. Production dependency audit remains red (2 high, 11 moderate); no dependency change was made. This and the docs/coding gates block merge.",
     "vitest_attempt": "`npm run test:sharded -- --help` unexpectedly invoked all eight shards because the runner has no --help mode; all stopped before test collection: node_modules/vitest/vitest.mjs is absent. No test assertions ran.",
