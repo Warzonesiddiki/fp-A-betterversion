@@ -4,7 +4,7 @@
   "docs_gate_passed": false,
   "human_approved_for_coding": false,
   "doc_health_score": 0,
-  "doc_health_score_status": "Not scored: 214 scoped records (165 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 26 PENDING entries; 28 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
+  "doc_health_score_status": "Not scored: 217 scoped records (168 PARTIAL, 46 HISTORICAL-NOTE, 3 GENERATED) and 23 PENDING entries; 28 active C-grade documents remain and full semantic review/Stage 1 exit are incomplete.",
   "completed_stages": [
     "STAGE_0_BOOTSTRAP"
   ],
@@ -148,7 +148,8 @@
     "PR #95 was merged to main as a9a3c9f on 2026-11-11T05:44:47Z while eight check groups failed and both coding gates were false; the merge tree equals failing head 7d9b866c. An owner decision on revert-or-accept is required (AUD-092).",
     "CI for 7d9b866c is red for four distinct, now-reproduced reasons: shallow-checkout evidence-SHA resolution in the docs job, a per-shard 50% coverage threshold that shard mode cannot satisfy, root production advisories (2 high), and server-workspace advisories (2 high). Every fix path touches CI/gate or dependency configuration, which the current authorization forbids (AUD-093).",
     "docs/product/escape-ledger.json cites 40 commit SHAs and none resolves in this repository's full history (1,820 commits, non-shallow); the SHAs occur only as text in archived agent handover/journal files. Its evidence chain cannot be verified against this lineage, and its canon is transcribed from an imported blueprint. Owner input is required before the ledger can be treated as evidence. See AUD-106.",
-    "2026-11-11 GDPR consent/DSAR gap confirmed from source: neither docs/onboarding/03-CONSENT-CAPTURE.md nor docs/onboarding/04-DSAR-WIRE.md is implemented. No consent registry, consent store, Step3Consent component, privacy notice, DSAR export, or depseudonymize function exists in src/ or server/. The shipped onboarding wizard is five steps (src/i18n/locales/en.json; src/components/ui/OnboardingWizard.tsx) with no consent screen. src/store/auditTrailGdprEvents.ts is registered at src/main.tsx:64-65 and handles eight GDPR event types, but a bounded search found no producer - only its own tests dispatch those events - so that audit trail is synthetic. Consequence: no evidenced Art. 6(1)(a) lawful basis captured at first run and no Art. 15 access path. Legal/DPO review is [UNVERIFIED]. This is a product-capability and compliance finding, not a gate result; both coding gates remain false and no implementation may begin without owner authorization."
+    "2026-11-11 GDPR consent/DSAR gap confirmed from source: neither docs/onboarding/03-CONSENT-CAPTURE.md nor docs/onboarding/04-DSAR-WIRE.md is implemented. No consent registry, consent store, Step3Consent component, privacy notice, DSAR export, or depseudonymize function exists in src/ or server/. The shipped onboarding wizard is five steps (src/i18n/locales/en.json; src/components/ui/OnboardingWizard.tsx) with no consent screen. src/store/auditTrailGdprEvents.ts is registered at src/main.tsx:64-65 and handles eight GDPR event types, but a bounded search found no producer - only its own tests dispatch those events - so that audit trail is synthetic. Consequence: no evidenced Art. 6(1)(a) lawful basis captured at first run and no Art. 15 access path. Legal/DPO review is [UNVERIFIED]. This is a product-capability and compliance finding, not a gate result; both coding gates remain false and no implementation may begin without owner authorization.",
+    "2026-11-11 persistence inventory coverage gap: scripts/persistence-map-check.mjs only recognises persist() names ending in -store, so finplan_exception_dispositions (src/store/exceptionDispositionStore.ts:333) and finplan:exception-rules (src/store/exceptionRuleCatalogue.ts:641) are unregistered and absent from docs/architecture/PERSISTENCE_MAP.md even though exception dispositions and correction records are user-visible and persisted. AUD-112. Not fixed: the real fix is the checker regex plus two registry rows, which is gate-adjacent machinery and out of bounds while docs_gate_passed is false."
   ],
   "last_updated": "2026-11-11",
   "branch": "arena/950617a0-fp-a-betterversion",
@@ -169,11 +170,11 @@
     "live_markdown_files": 233,
     "live_other_files": 7,
     "review_status_counts": {
-      "PARTIAL": 165,
+      "PARTIAL": 168,
       "HISTORICAL-NOTE": 46,
       "GENERATED-SOURCE-REVIEWED": 2,
       "GENERATED-RENDERED": 1,
-      "PENDING": 26
+      "PENDING": 23
     }
   },
   "latest_validation": {

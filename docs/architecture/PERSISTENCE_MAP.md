@@ -6,6 +6,23 @@
 
 **Measured 2026-10-18.** 43 persisted Zustand stores.
 
+> **2026-11-11 repository review note:** Verified against source and current: `node scripts/persistence-map-check.mjs` exits 0
+> reporting "43 persist() stores, 43 registered"; the registry (`src/domain/persistenceAuthority.ts`) and this map both carry
+> the same 43 keys with no set difference in either direction; the classification totals here (31 / 8 / 3 / 1) match the
+> registry exactly; all twelve `server route` cells correspond to mounted routers in `server/src/index.ts:121-145`; and
+> `gl-store`'s W0.8.6-G6 claim is real (`src/store/glStore.ts` tracks `entryVersions` and maps server UUIDs/versions on commit).
+>
+> **One coverage gap, and it is a checker gap, not a map error.** Two persisted stores are absent from this inventory because
+> their `persist()` names do not end in `-store`, and the drift checker's regex only matches `*-store` names:
+> `src/store/exceptionDispositionStore.ts` (`name: 'finplan_exception_dispositions'`, line 333) and
+> `src/store/exceptionRuleCatalogue.ts` (`name: 'finplan:exception-rules'`, line 641). Both are live, non-test-reachable from
+> `ExceptionReviewCard`, `ExceptionReviewList` and `docs`-linked `CorrectionsPage` — i.e. exception dispositions and
+> correction records are user-visible financial-adjacent data that the R-21 honesty statement above does not cover.
+> Neither is registered, so neither can be labelled `local-draft` and the map's "every persisted store" guarantee holds only
+> for names matching `-store`. Do not hand-fix the rows here: `--write` regenerates this file and the checker would still pass
+> with the two stores missing. The fix belongs in the checker's name regex plus two registry rows, which is gate-adjacent
+> machinery and is out of bounds while `docs_gate_passed` is false. Filed as AUD-112.
+
 | Classification  | Count | Authority rule                                              |
 | --------------- | ----- | ----------------------------------------------------------- |
 | financial-truth | 31    | Server must be SoR. Today **31 local-draft**, **0 server**. |
